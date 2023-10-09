@@ -112,10 +112,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('%s9' % incr.generate_ascii(), 'Booking State', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'Ticket Numbers', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'Currency', style.table_head_center)
-        sheet.write('%s9' % incr.generate_ascii(), 'Agent NTA Amount', style.table_head_center)
-        sheet.write('%s9' % incr.generate_ascii(), 'Agent Commission', style.table_head_center)
-        sheet.write('%s9' % incr.generate_ascii(), 'Commission Booker', style.table_head_center)
-        sheet.write('%s9' % incr.generate_ascii(), 'Upsell', style.table_head_center)
+        if not values['data_form'].get('is_corpor'):
+            sheet.write('%s9' % incr.generate_ascii(), 'Agent NTA Amount', style.table_head_center)
+            sheet.write('%s9' % incr.generate_ascii(), 'Agent Commission', style.table_head_center)
+            sheet.write('%s9' % incr.generate_ascii(), 'Commission Booker', style.table_head_center)
+            sheet.write('%s9' % incr.generate_ascii(), 'Upsell', style.table_head_center)
         ##middle agent commission
         ##ho commission
         if values['data_form']['is_ho']:
@@ -148,8 +149,10 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_column('K:V', 15)
         if values['data_form']['is_ho']:
             sheet.set_column('AH:AH', 30)
-        else:
+        elif not values['data_form'].get('is_corpor'):
             sheet.set_column('AF:AF', 30)
+        else:
+            sheet.set_column('AB:AB', 30)
 
         # ============ void start() ======================
         # declare some constant dependencies
@@ -260,10 +263,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                         sheet.write(row_data, incr.generate_number(), i.get('ticket_numbers', ''), sty_table_data)
                         sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
-                        sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
-                        sheet.write(row_data, incr.generate_number(), this_pnr_agent_commission, sty_amount)
-                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                        if not values['data_form'].get('is_corpor'):
+                            sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
+                            sheet.write(row_data, incr.generate_number(), this_pnr_agent_commission, sty_amount)
+                            sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                            sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         if values['data_form']['is_ho']:
                             sheet.write(row_data, incr.generate_number(), nta_total, sty_amount)
                             sheet.write(row_data, incr.generate_number(), commission, sty_amount)
@@ -362,10 +366,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data_center)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                        if not values['data_form'].get('is_corpor'):
+                            sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                            sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                            sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                            sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         if values['data_form']['is_ho']:
                             sheet.write(row_data, incr.generate_number(), '', sty_amount)
                             sheet.write(row_data, incr.generate_number(), '', sty_amount)
@@ -466,10 +471,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
-                    sheet.write(row_data, incr.generate_number(), this_resv_agent_nta_total, sty_amount)
-                    sheet.write(row_data, incr.generate_number(), this_resv_agent_commission, sty_amount)
-                    sheet.write(row_data, incr.generate_number(), i.get('commission_booker', 0), sty_amount)
-                    sheet.write(row_data, incr.generate_number(), upsell, sty_amount) ### IVAN 22 dec 2022 untuk data lama upsell tidak masuk ke komisi data baru upsell sudah masuk ke komisi, aftersales recap belum masuk
+                    if not values['data_form'].get('is_corpor'):
+                        sheet.write(row_data, incr.generate_number(), this_resv_agent_nta_total, sty_amount)
+                        sheet.write(row_data, incr.generate_number(), this_resv_agent_commission, sty_amount)
+                        sheet.write(row_data, incr.generate_number(), i.get('commission_booker', 0), sty_amount)
+                        sheet.write(row_data, incr.generate_number(), upsell, sty_amount) ### IVAN 22 dec 2022 untuk data lama upsell tidak masuk ke komisi data baru upsell sudah masuk ke komisi, aftersales recap belum masuk
                     if values['data_form']['is_ho']:
                         sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_commission'], sty_amount)
@@ -517,10 +523,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i.get('ticket_numbers', ''), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
-                    sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
-                    sheet.write(row_data, incr.generate_number(), this_pnr_agent_commission, sty_amount)
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    if not values['data_form'].get('is_corpor'):
+                        sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
+                        sheet.write(row_data, incr.generate_number(), this_pnr_agent_commission, sty_amount)
+                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     if values['data_form']['is_ho']:
                         sheet.write(row_data, incr.generate_number(), nta_total, sty_amount)
                         sheet.write(row_data, incr.generate_number(), commission, sty_amount)
@@ -571,10 +578,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data_center)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                        if not values['data_form'].get('is_corpor'):
+                            sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                            sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                            sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                            sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         if values['data_form']['is_ho']:
                             sheet.write(row_data, incr.generate_number(), '', sty_amount)
                             sheet.write(row_data, incr.generate_number(), '', sty_amount)
@@ -764,10 +772,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i.get('ticket_numbers', ''), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
-                    sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
-                    sheet.write(row_data, incr.generate_number(), this_pnr_agent_commission, sty_amount)
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    if not values['data_form'].get('is_corpor'):
+                        sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
+                        sheet.write(row_data, incr.generate_number(), this_pnr_agent_commission, sty_amount)
+                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     if values['data_form']['is_ho']:
                         sheet.write(row_data, incr.generate_number(), nta_total, sty_amount)
                         sheet.write(row_data, incr.generate_number(), commission, sty_amount)
@@ -918,10 +927,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
-                    sheet.write(row_data, incr.generate_number(), this_resv_agent_nta_total, sty_amount)
-                    sheet.write(row_data, incr.generate_number(), this_resv_agent_commission, sty_amount)
-                    sheet.write(row_data, incr.generate_number(), i.get('commission_booker', 0), sty_amount)
-                    sheet.write(row_data, incr.generate_number(), upsell, sty_table_data)  ### IVAN 22 dec 2022 untuk data lama upsell tidak masuk ke komisi data baru upsell sudah masuk ke komisi, aftersales recap belum masuk
+                    if not values['data_form'].get('is_corpor'):
+                        sheet.write(row_data, incr.generate_number(), this_resv_agent_nta_total, sty_amount)
+                        sheet.write(row_data, incr.generate_number(), this_resv_agent_commission, sty_amount)
+                        sheet.write(row_data, incr.generate_number(), i.get('commission_booker', 0), sty_amount)
+                        sheet.write(row_data, incr.generate_number(), upsell, sty_table_data)  ### IVAN 22 dec 2022 untuk data lama upsell tidak masuk ke komisi data baru upsell sudah masuk ke komisi, aftersales recap belum masuk
                     if values['data_form']['is_ho']:
                         sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_commission'], sty_amount)
@@ -969,10 +979,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i.get('ticket_numbers', ''), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
-                    sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
-                    sheet.write(row_data, incr.generate_number(), this_pnr_agent_commission, sty_amount)
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    if not values['data_form'].get('is_corpor'):
+                        sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
+                        sheet.write(row_data, incr.generate_number(), this_pnr_agent_commission, sty_amount)
+                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     if values['data_form']['is_ho']:
                         sheet.write(row_data, incr.generate_number(), nta_total, sty_amount)
                         sheet.write(row_data, incr.generate_number(), commission, sty_amount)
@@ -1166,10 +1177,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), 'Total', sty_table_data_center)
-        sheet.write(row_data, incr.generate_number(), total_all_agent_nta, sty_amount)
-        sheet.write(row_data, incr.generate_number(), total_all_agent_commission, sty_amount)
-        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        if not values['data_form'].get('is_corpor'):
+            sheet.write(row_data, incr.generate_number(), total_all_agent_nta, sty_amount)
+            sheet.write(row_data, incr.generate_number(), total_all_agent_commission, sty_amount)
+            sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+            sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         if values['data_form']['is_ho']:
             sheet.write(row_data, incr.generate_number(), total_all_ho_nta, sty_amount)
             sheet.write(row_data, incr.generate_number(), total_all_total_commission, sty_amount)
@@ -1210,10 +1222,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data_center)
-        sheet.write(row_data, incr.generate_number(), '', sty_amount)
-        sheet.write(row_data, incr.generate_number(), '', sty_amount)
-        sheet.write(row_data, incr.generate_number(), '', sty_amount)
-        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+        if not values['data_form'].get('is_corpor'):
+            sheet.write(row_data, incr.generate_number(), '', sty_amount)
+            sheet.write(row_data, incr.generate_number(), '', sty_amount)
+            sheet.write(row_data, incr.generate_number(), '', sty_amount)
+            sheet.write(row_data, incr.generate_number(), '', sty_amount)
         if values['data_form']['is_ho']:
             sheet.write(row_data, incr.generate_number(), '', sty_amount)
             sheet.write(row_data, incr.generate_number(), '', sty_amount)
