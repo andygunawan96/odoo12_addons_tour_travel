@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from ...tools import variables, util, ERR
 import json
 from ...tools.ERR import RequestException
@@ -213,6 +214,11 @@ class TtReservation(models.Model):
                         vals['hold_date'] = datetime.now() + timedelta(minutes=45)
         super(TtReservation, self).write(vals)
 
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Reservation data cannot be deleted. Please contact your system administrator if you need assistance on modifying or deleting this record.')
+        return super(TtReservation, self).unlink()
 
     @api.depends('adult', 'child', 'infant', 'student', 'labour', 'seaman')
     def _compute_total_pax(self):
@@ -232,7 +238,7 @@ class TtReservation(models.Model):
             update_value = {}
             if booker_rec:
                 if vals.get('mobile'):
-                    number_entered  = False
+                    number_entered = False
                     vals_phone_number = '%s%s' % (vals.get('calling_code', ''), vals['mobile'])
                     for phone in booker_rec.phone_ids:
                         if phone.phone_number == vals_phone_number:
