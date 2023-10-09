@@ -974,8 +974,8 @@ class TtSplitReservationWizard(models.TransientModel):
                 'co_agent_id': self.env.user.agent_id.id,
             }
 
-            book_obj.check_provider_state(context=provider_state_context)
-            new_book_obj.check_provider_state(context=provider_state_context)
+            book_obj.check_provider_state(context=provider_state_context, req={'is_split': True})
+            new_book_obj.check_provider_state(context=provider_state_context, req={'is_split': True})
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
