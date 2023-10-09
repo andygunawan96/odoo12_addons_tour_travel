@@ -62,6 +62,7 @@ class TtCustomerParent(models.Model):
     reject_uid = fields.Many2one('res.users', 'Rejected by', readonly=True)
     reject_date = fields.Datetime('Rejected Date', readonly=True)
     notes = fields.Text('Notes')
+    document_ids = fields.Many2many('tt.upload.center', 'customer_parent_attachment_rel', 'document_id', 'attachment_id', string='Attachments',domain=['|', ('active', '=', True), ('active', '=', False)])
 
     def _compute_unprocessed_amount(self):
         for rec in self:
@@ -412,6 +413,26 @@ class TtCustomerParent(models.Model):
                 'calling_number': calling_number
             })
             phone_ids.append(phone_obj.id)
+            data_img = {}
+            for rec in data:
+                if 'img_' in rec:
+
+                    res = self.env['tt.upload.center.wizard'].upload_file_api(
+                        {
+                            'filename': data[rec]['file_name'],
+                            'file_reference': rec,
+                            'file': data[rec]['file']
+                        },
+                        {
+                            'co_agent_id': context['co_agent_id'],
+                            'co_uid': context['co_uid'],
+                        }
+                    )
+                    data_img[rec] = {
+                        "url": res['response']['url'],
+                        "id": self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1).id
+                    }
+
 
             notes = 'Company Name: %s\n' % data['company_name']
             notes += 'Company Address: %s\n' % data['company_address']
@@ -422,6 +443,11 @@ class TtCustomerParent(models.Model):
             notes += 'Company Worker: %s\n' % data['company_worker']
             notes += 'Company Business Field: %s\n' % data['company_business_field']
             notes += 'Company Bank Data: %s\n' % data['company_bank_data']
+            # notes += 'Company Structure URL: %s\n' % data_img['img_company_structure']['url']
+            # notes += 'Company NPWP URL: %s\n' % data_img['img_company_npwp']['url']
+            # notes += 'Company SIUP/NIB URL: %s\n' % data_img['img_company_siup_nib']['url']
+            # notes += 'Company Akta Pendirian URL: %s\n' % data_img['img_company_akta_pendirian']['url']
+
             notes += 'How to know us: %s\n\n' % data['company_how_to_know_us']
 
             notes += 'Owner Name: %s\n' % data['owner_name']
@@ -429,6 +455,7 @@ class TtCustomerParent(models.Model):
             notes += 'Owner Birth Date: %s\n' % data['owner_birth_date']
             notes += 'Owner Phone Number: %s\n' % data['owner_phone_number']
             notes += 'Owner Email: %s\n\n' % data['owner_email']
+            # notes += 'Owner KTP URL: %s\n\n' % data_img['img_owner_ktp']['url']
 
             notes += 'Director Name: %s\n' % data['director_name']
             notes += 'Director Position: %s\n' % data['director_position']
@@ -441,12 +468,14 @@ class TtCustomerParent(models.Model):
             notes += 'Accounting Birth Date: %s\n' % data['accounting_birth_date']
             notes += 'Accounting Phone Number: %s\n' % data['accounting_phone_number']
             notes += 'Accounting Email: %s\n' % data['accounting_email']
+            # notes += 'Accounting KTP URL: %s\n' % data_img['img_accounting_ktp']['url']
 
             notes += 'PIC Name: %s %s %s\n' % (data['pic_title'], data['pic_first_name'], data['pic_last_name'])
             notes += 'PIC Position: %s\n' % data['pic_position']
             notes += 'PIC Birth Date: %s\n' % data['pic_birth_date']
             notes += 'PIC Phone Number: %s\n' % data['pic_phone_number']
             notes += 'PIC Email: %s\n' % data['pic_email']
+            # notes += 'PIC KTP URL: %s\n' % data_img['img_pic_ktp']['url']
 
             calling_code = data['pic_phone_number'][:1] if data['pic_phone_number'][:1] == '0' else data['pic_phone_number'][:2]
             calling_number = data['pic_phone_number'][1:] if data['pic_phone_number'][:1] == '0' else data['pic_phone_number'][2:]
@@ -477,7 +506,13 @@ class TtCustomerParent(models.Model):
             if data.get('pay_time_top'):
                 notes += 'Pay Time Top\n-%s' % ("\n- ".join(data['pay_time_top']))
 
-            notes += 'Want to have account in System: %s' % ('Yes' if data['account_web'] else 'No')
+            notes += 'Want to have account in System: %s\n' % ('Yes' if data['account_web'] else 'No')
+
+            # notes += 'Statement Letter: %s\n' % data_img['img_statement_letter']['url']
+
+            notes += 'Agree Term n Conditions: %s\n' % str(data['cor_tac'])
+
+            # notes += 'PIC Signature URL: %s' % data_img['img_signature']['url']
 
             billing_cycle_ids = []
             for day in data['pay_day']:
@@ -501,6 +536,8 @@ class TtCustomerParent(models.Model):
                 "billing_due_date_ids": [(6,0, billing_cycle_ids)],
                 "credit_limit": int(data['proposed_limit'])
             })
+            for rec in data_img:
+                customer_parent_obj.document_ids = [(4, data_img[rec]['id'])]
             self.env['tt.customer.parent.booker.rel'].create({
                 "customer_parent_id": customer_parent_obj.id,
                 "customer_id": customer_obj.id,

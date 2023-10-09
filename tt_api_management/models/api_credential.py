@@ -126,7 +126,7 @@ class ApiManagement(models.Model):
 
                 values.update(_co_user.get_credential(prefix='co_'))
             if data.get('co_uid'):
-                if response['api_role'] != 'admin':
+                if response['api_role'] not in ['admin', 'manager']:
                     raise Exception('User Role is not allowed.')
                 _co_user = self.env['res.users'].sudo().browse(int(data['co_uid']))
                 values.update(_co_user.get_credential(prefix='co_'))

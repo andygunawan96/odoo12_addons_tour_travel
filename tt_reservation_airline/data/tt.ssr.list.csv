@@ -1167,3 +1167,30 @@ tt_ssr_list_id_1165,Nasi Ayam Woku - DailyBox (Menu Chef Juna) (NAWU),NAWU,tt_ss
 tt_ssr_list_id_1166,Pandan Latte (FRPL),FRPL,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_citilink,tt_reservation_airline.tt_provider_type_airline,https://api-book.ipqgpx.co.id/Cache/Img/Meals/FRPL.jpg,1,1,1,1,1,1,1
 tt_ssr_list_id_1167,Classic Latte (FRCL),FRCL,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_citilink,tt_reservation_airline.tt_provider_type_airline,https://api-book.ipqgpx.co.id/Cache/Img/Meals/FRCL.jpg,1,1,1,1,1,1,1
 tt_ssr_list_id_1168,Aren Latte (FRAL),FRAL,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_citilink,tt_reservation_airline.tt_provider_type_airline,https://api-book.ipqgpx.co.id/Cache/Img/Meals/FRAL.jpg,1,1,1,1,1,1,1
+tt_ssr_list_id_1169,EXCESS SIZE (BULK),BULK,,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1170,EXCESS PIECE (PIEC),PIEC,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1171,EXCESS WEIGHT (HEAV),HEAV,,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1172,VEGETARIAN INDIAN MEAL (AVML),AVML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1173,BABY MEAL (BBML),BBML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1174,BLAND MEAL (BLML),BLML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1175,BLIND PASSENGER INFORMATION (BLND),BLND,,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1176,BASSINET/BABY COT REQUEST (BSCT),BSCT,,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1177,CHILD MEAL (CHML),CHML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1178,DIABETIC MEAL (DBML),DBML,,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1179,DEAF PASSENGER INFORMATION (DEAF),DEAF,,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1180,FRUIT PLATTER (FPML),FPML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1181,GLUTEN INTOLERENT MEAL (GFML),GFML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1182,HINDU NON-VEGETARIAN MEAL (HNML),HNML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1183,KOSHER MEAL (KSML),KSML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1184,LOW FAT MEAL (LFML),LFML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1185,LOW SALT MEAL (LSML),LSML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1186,MEET AND ASSIST REQUEST (MAAS),MAAS,,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1187,MUSLIM MEAL (MOML),MOML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1188,LOW LACTOSE MEAL (NLML),NLML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1189,SEAFOOD MEAL (SFML),SFML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1190,VEGETARIAN VEGAN MEAL (VGML),VGML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1191,VEGETARIAN JAIN MEAL (VJML),VJML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1192,VEGETARIAN LACTO-OVO MEAL (VLML),VLML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1193,VEGETARIAN ORIENTAL MEAL (VOML),VOML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1194,WHEELCHAIR TO AIRCRAFT DOOR REQUEST (WCHR),WCHR,tt_ssr_category_wheelchair,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1195,UNACCOMPANIED MINOR (PDUM),PDUM,,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1

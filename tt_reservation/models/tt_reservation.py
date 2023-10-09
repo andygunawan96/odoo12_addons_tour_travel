@@ -157,6 +157,7 @@ class TtReservation(models.Model):
     printout_ticket_id = fields.Many2one('tt.upload.center', 'Ticket', readonly=True)
     printout_ticket_price_id = fields.Many2one('tt.upload.center', 'Ticket (Price)', readonly=True)
     printout_itinerary_id = fields.Many2one('tt.upload.center', 'Itinerary', readonly=True)
+    printout_itinerary_price_id = fields.Many2one('tt.upload.center', 'Itinerary (Price)', readonly=True)
     printout_voucher_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
     printout_ho_invoice_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
     printout_vendor_invoice_id = fields.Many2one('tt.upload.center', 'Vendor Invoice', readonly=True)
@@ -213,10 +214,10 @@ class TtReservation(models.Model):
         super(TtReservation, self).write(vals)
 
 
-    @api.depends('adult', 'child', 'infant')
+    @api.depends('adult', 'child', 'infant', 'student', 'labour', 'seaman')
     def _compute_total_pax(self):
         for rec in self:
-            rec.total_pax = rec.adult + rec.child + rec.infant + rec.elder
+            rec.total_pax = rec.adult + rec.child + rec.infant + rec.elder + rec.student + rec.labour + rec.seaman
 
     def check_approve_refund_eligibility(self):
         return True
@@ -883,6 +884,7 @@ class TtReservation(models.Model):
             'is_force_issued': self.is_force_issued,
             'is_halt_process': self.is_halt_process,
             'agent_nta': self.agent_nta,
+            'create_date': self.create_date and self.create_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'booked_date': self.booked_date and self.booked_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'booked_by': self.user_id.name,
             'issued_by': self.issued_uid.name,
