@@ -219,6 +219,9 @@ class TtReservation(models.Model):
         for rec in self:
             rec.total_pax = rec.adult + rec.child + rec.infant + rec.elder + rec.student + rec.labour + rec.seaman
 
+    def check_approve_refund_eligibility(self):
+        return True
+
     def create_booker_api(self, vals, context):
         booker_obj = self.env['tt.customer'].sudo()
         get_booker_seq_id = util.get_without_empty(vals,'booker_seq_id')

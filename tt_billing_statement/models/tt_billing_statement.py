@@ -119,7 +119,7 @@ class TtBillingStatement(models.Model):
         last_billing_obj = self.search([('id','!=',self.id or -1),
                                         ('customer_parent_id','=',self.customer_parent_id.id),
                                         ('transaction_end_date','!=',False)],
-                                       order='transaction_end_date desc', limit =1)
+                                       order='transaction_end_date desc', limit=1)
 
         # cycle_list = [str(rec1.name) for rec1 in self.customer_parent_id.billing_cycle_ids]
 
