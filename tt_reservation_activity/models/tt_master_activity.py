@@ -382,22 +382,26 @@ class MasterActivity(models.Model):
             if filter_data.get('country_id'):
                 if provider_id:
                     provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('country_id', '=', int(filter_data['country_id']))], limit=1)
-            req_post = {
-                'query': filter_data.get('query') and filter_data['query'] or '',
-                'country': provider_code_objs and provider_code_objs[0] or '',
-                'provider': provider_code
-            }
-            res = self.env['tt.master.activity.api.con'].search_provider(req_post)
-            if res['error_code'] == 0:
-                temp = res['response']
-                if temp.get('product_detail'):
-                    batch_data = {
-                        'product_detail': []
-                    }
-                    page = starting_json_number
-                    for temp2 in temp['product_detail']:
-                        batch_data['product_detail'].append(temp2)
-                        if len(batch_data['product_detail']) >= per_page_amt:
+            page = starting_json_number
+            product_found = True
+            while product_found:
+                req_post = {
+                    'query': filter_data.get('query') and filter_data['query'] or '',
+                    'country': provider_code_objs and provider_code_objs[0] or '',
+                    'provider': provider_code,
+                    'limit': per_page_amt,
+                    'page': page
+                }
+                res = self.env['tt.master.activity.api.con'].search_provider(req_post)
+                if res['error_code'] == 0:
+                    temp = res['response']
+                    if temp.get('product_detail'):
+                        batch_data = {
+                            'product_detail': []
+                        }
+                        for temp2 in temp['product_detail']:
+                            batch_data['product_detail'].append(temp2)
+                        if len(batch_data['product_detail']) > 0:
                             file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(page)), 'w')
                             file.write(json.dumps(batch_data))
                             file.close()
@@ -407,16 +411,12 @@ class MasterActivity(models.Model):
                                     'last_json_number': page
                                 })
                                 self.env.cr.commit()
-                            batch_data = {
-                                'product_detail': []
-                            }
                             page += 1
-                    if len(batch_data['product_detail']) > 0:
-                        file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(page)), 'w')
-                        file.write(json.dumps(batch_data))
-                        file.close()
-            else:
-                _logger.error('ACTIVITY ERROR, Generate rodextrip_activity JSON: %s, %s' % (res['error_code'], res['error_msg']))
+                    else:
+                        product_found = False
+                else:
+                    _logger.error('ACTIVITY ERROR, Generate rodextrip_activity JSON: %s, %s' % (res['error_code'], res['error_msg']))
+                    product_found = False
         else:
             pass
         if progress_tracking_obj:
@@ -999,6 +999,18 @@ class MasterActivity(models.Model):
             if query:
                 sql_query += 'and themes.active = True '
             sql_query += 'group by themes.id '
+
+            if req.get('limit'):
+                per_page_limit = int(req['limit'])
+            else:
+                per_page_limit= 100
+
+            if req.get('page'):
+                offset = (int(req['page']) - 1) * per_page_limit
+            else:
+                offset = 0
+
+            sql_query += 'offset ' + str(offset) + ' limit ' + str(per_page_limit) + ';'
 
             self.env.cr.execute(sql_query)
             result_id_list = self.env.cr.dictfetchall()
@@ -2080,7 +2092,7 @@ class ActivitySyncProductsChildren(models.TransientModel):
                 for i in range(0, len(list_data), amt_per_list):
                     yield list_data[i:i + amt_per_list]
 
-            for rec in list(chunks(activity_data_list, 1000)):
+            for rec in list(chunks(activity_data_list, 500)):
                 vals = {
                     'provider_type': 'activity',
                     'action': 'sync_products_to_children',
