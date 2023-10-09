@@ -293,3 +293,12 @@ class ReservationActivity(models.Model):
         super(ReservationActivity, self).action_issued_activity(data)
         if not self.is_invoice_created:
             self.action_create_invoice(data, self.payment_method_to_ho)
+
+    def check_approve_refund_eligibility(self):
+        if self.customer_parent_id.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id] and self.payment_method == self.customer_parent_id.seq_id:
+            if all(rec.invoice_id.state == 'paid' for rec in self.invoice_line_ids):
+                return True
+            else:
+                return False
+        else:
+            return True

@@ -21,7 +21,6 @@ class ReservationAirline(models.Model):
     ho_invoice_line_ids = fields.One2many('tt.ho.invoice.line', 'res_id_resv', 'HO Invoice',
                                        domain=[('res_model_resv','=', 'tt.reservation.airline')])
 
-
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
 
@@ -321,3 +320,12 @@ class ReservationAirline(models.Model):
             for ho_inv_obj in updated_obj.ho_invoice_line_ids:
                 ho_inv_obj.pnr = updated_obj.pnr
         return resp
+
+    def check_approve_refund_eligibility(self):
+        if self.customer_parent_id.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id] and self.payment_method == self.customer_parent_id.seq_id:
+            if all(rec.invoice_id.state == 'paid' for rec in self.invoice_line_ids):
+                return True
+            else:
+                return False
+        else:
+            return True

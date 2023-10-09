@@ -89,6 +89,7 @@
                 <tree decoration-muted="active == False">
                     <field name="sequence" widget="handle"/>
                     <field name="accounting_provider"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                     <field name="cycle"/>
                     <field name="is_recon_only"/>
                     <field name="create_date"/>
