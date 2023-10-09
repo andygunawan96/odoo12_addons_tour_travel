@@ -63,7 +63,7 @@ class AgentResRate(models.Model):
     _description = 'Tour & Travel - Agent Rate'
 
     name = fields.Char(readonly=True, compute="_compute_name")
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', 'Agent') ## NANTI DIHAPUS PINDAH KE HO_ID
     base_currency_id = fields.Many2one('res.currency', 'Base Currency')
     to_currency_id = fields.Many2one('res.currency', 'To Currency', default=lambda self: self.env.ref('base.IDR'))

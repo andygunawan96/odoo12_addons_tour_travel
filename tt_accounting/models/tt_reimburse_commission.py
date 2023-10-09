@@ -157,7 +157,7 @@ class TtReimburseCommissionServiceCharge(models.Model):
     sequence = fields.Integer('Sequence')
     description = fields.Text('Description')
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     commission_agent_id = fields.Many2one('tt.agent', 'Agent ( Commission )', help='''Agent who get commission''')
 
     def to_dict(self):
