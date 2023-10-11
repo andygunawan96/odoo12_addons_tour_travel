@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Tour & Travel - Printout Ticket 2',
+    'name': 'Tour & Travel - Printout Ticket Haryono',
     'version': '2.0',
     'category': 'Report',
     'sequence': 80,
     'summary': 'Printout Template #2 Haryono',
     'description': """
-Tour & Travel - Printout Ticket 2
-=================================
+Tour & Travel - Printout Ticket Haryono
+========================================
 Key Features
 ------------
     """,
@@ -17,7 +17,7 @@ Key Features
 
     # always loaded
     'data': [
-        'report/printout_ticket_airline_template_2.xml',
+        'report/printout_ticket_airline_template_haryono.xml',
     ],
     'demo': [],
     'qweb': [],

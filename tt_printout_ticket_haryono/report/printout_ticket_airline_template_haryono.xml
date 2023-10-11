@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="printout_ticket_airline_2_template">
+    <template id="printout_ticket_airline_haryono_template">
         <div style="margin-top: 10px; margin-bottom: -10px;">
             <!-- No. Booking -->
             <div class="row" style="font-size: 18px; margin-bottom: 10px;">
@@ -478,15 +478,15 @@
     <template id="external_layout_2">
         <div class="container">
             <div class="article" style="margin: 0px !important; padding: 0px !important">
-                <t t-call="tt_printout_ticket2.external_layout_2_header"/>
+                <t t-call="tt_printout_ticket_haryono.external_layout_2_header"/>
                 <t t-raw="0"/>
-                <t t-call="tt_printout_ticket2.external_layout_color_footer"/>
+                <t t-call="tt_printout_ticket_haryono.external_layout_color_footer"/>
             </div>
         </div>
     </template>
 
     <!-- Printout Haryono -->
-    <template id="printout_ticket_airline_2" inherit_id="tt_report_common.printout_ticket">
+    <template id="printout_ticket_airline_haryono" inherit_id="tt_report_common.printout_ticket">
         <xpath expr="//div[@name='base_printout_airline']" position="replace">
             <div name="base_printout_airline" class="page">
                 <t t-foreach="doc.provider_booking_ids" t-as="length">
@@ -494,9 +494,9 @@
                         <t t-foreach="price_psg" t-as="psg">
                             <t t-if="psg['pnr'] == length.pnr">
                                 <!-- Type #2: Single Pax, Haryono -->
-                                <t t-call="tt_printout_ticket2.external_layout_2">
+                                <t t-call="tt_printout_ticket_haryono.external_layout_2">
                                     <div class="box" style="margin: 0px 20px; font-family: 'DejaVu Sans'">
-                                        <t t-call="tt_printout_ticket2.printout_ticket_airline_2_template"/>
+                                        <t t-call="tt_printout_ticket_haryono.printout_ticket_airline_haryono_template"/>
                                     </div>
                                 </t>
                             </t>
