@@ -3530,6 +3530,8 @@ class ReservationAirline(models.Model):
                 passengers = []
                 for psg in book_obj.passenger_ids:
                     psg_data = psg.to_dict()
+                    sequence = psg_data.get('sequence', 0)
+                    psg_data['passenger_number'] = sequence
                     passengers.append(psg_data)
 
                 provider_data = provider_data_obj.to_dict()
