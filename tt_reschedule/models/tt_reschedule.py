@@ -175,7 +175,7 @@ class TtRescheduleLine(models.Model):
         agent_type_adm_ids = self.reschedule_id.agent_id.agent_type_id.admin_fee_ids.ids
         agent_adm_ids = self.reschedule_id.agent_id.admin_fee_ids.ids
         return {'domain': {
-            'admin_fee_id': [('after_sales_type', '=', 'after_sales'), ('ho_id', '=', self.ho_id.id), '&', '|',
+            'admin_fee_id': [('after_sales_type', '=', 'after_sales'), ('ho_id', '=', self.reschedule_id.ho_id.id), '&', '|',
                  ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
                  ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
                  ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
@@ -528,6 +528,14 @@ class TtReschedule(models.Model):
                 temp_str += str(dict(rec2._fields['reschedule_type'].selection).get(rec2.reschedule_type)) + ', '
             rec.reschedule_type_str = temp_str and temp_str[:-2] or ''
 
+    def set_to_draft(self):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('tt_base.group_tt_agent_user').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 465')
+        self.write({
+            'state': 'draft',
+            'hold_date': False
+        })
+
     def set_to_confirm(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_5'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 78')
@@ -539,7 +547,7 @@ class TtReschedule(models.Model):
         })
 
     def confirm_reschedule_from_button(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 79')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
