@@ -75,6 +75,10 @@ class ApiManagement(models.Model):
     def get_credential_api(self, data, context):
         try:
             uid = _DB_CON.authenticate(data['user'], data['password'])
+            if data.get('ip'):
+                _logger.info("IP API %s" % data['ip'])
+            if data.get('unique_device'):
+                _logger.info("Unique Device API %s" % data['unique_device'])
             if not uid:
                 raise Exception('User and Password is not match')
             _user = self.env['res.users'].sudo().browse(uid)
