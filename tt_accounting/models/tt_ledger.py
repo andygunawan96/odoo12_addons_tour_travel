@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 from datetime import date, datetime
 from ...tools.ERR import RequestException
+from ...tools.db_connector import GatewayConnector
 from ...tools import ERR
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
@@ -144,6 +145,23 @@ class Ledger(models.Model):
             vals.update(kwargs)
         new_ledger = self.create(vals)
         return new_ledger
+
+    def reverse_ledger_from_button(self):
+        if not self.env.user.has_group('tt_base.group_ledger_level_5'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 1')
+        self.reverse_ledger()
+        try:
+            data = {
+                'code': 9901,
+                'title': 'REVERSE LEDGER',
+                'message': 'Ledger reversed from button: %s\nUser: %s\n' % (self.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "reverse ledger" telegram notification: ' + str(e))
 
     def reverse_ledger(self):
         if not self.env.user.has_group('tt_base.group_ledger_level_4'):

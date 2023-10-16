@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
+from ...tools.db_connector import GatewayConnector
 import logging
 import traceback
 
@@ -165,6 +166,20 @@ class TtProviderTour(models.Model):
 
         for rec in self.booking_id.installment_invoice_ids:
             rec.action_cancel()
+
+        try:
+            data = {
+                'code': 9901,
+                'title': 'PROVIDER TOUR REVERSE LEDGER',
+                'message': 'Provider Ledger reversed from button: %s (%s)\nUser: %s\n' % (
+                self.booking_id.name, self.pnr, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.booking_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "reverse provider ledger" telegram notification: ' + str(e))
 
         return {
             'type': 'ir.actions.client',

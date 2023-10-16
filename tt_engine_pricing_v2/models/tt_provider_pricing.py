@@ -1,6 +1,7 @@
 import copy
 
 from odoo import models, fields, api, _
+from ...tools.db_connector import GatewayConnector
 from ...tools import variables
 from ...tools.api import Response
 import traceback, logging
@@ -73,6 +74,40 @@ class ProviderPricing(models.Model):
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
+
+    @api.model
+    def create(self, vals):
+        res = super(ProviderPricing, self).create(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'PROVIDER PRICING',
+                'message': 'New provider pricing created: %s\nUser: %s\n' % (
+                res.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": res.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "provider pricing changes" telegram notification: ' + str(e))
+        return res
+
+    def write(self, vals):
+        super(ProviderPricing, self).write(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'PROVIDER PRICING',
+                'message': 'Provider pricing modified: %s\nUser: %s\n' % (
+                self.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "provider pricing changes" telegram notification: ' + str(e))
 
     def action_compute_all_name(self):
         objs = self.env['tt.provider.pricing'].sudo().search([])
@@ -425,6 +460,40 @@ class ProviderPricingLine(models.Model):
     total_is_greater_equal = fields.Boolean('Is Greater Equal to', default=False)
     total_greater_amount = fields.Float('Greater than amount', default=0.0)
     # END
+
+    @api.model
+    def create(self, vals):
+        res = super(ProviderPricingLine, self).create(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'PROVIDER PRICING LINE',
+                'message': 'New provider pricing line created: %s (%s)\nUser: %s\n' % (
+                    res.name, res.pricing_id.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": res.pricing_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "provider pricing line changes" telegram notification: ' + str(e))
+        return res
+
+    def write(self, vals):
+        super(ProviderPricingLine, self).write(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'PROVIDER PRICING LINE',
+                'message': 'Provider pricing line modified: %s (%s)\nUser: %s\n' % (
+                    self.name, self.pricing_id.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.pricing_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "provider pricing line changes" telegram notification: ' + str(e))
 
     def get_data(self):
         res = {
