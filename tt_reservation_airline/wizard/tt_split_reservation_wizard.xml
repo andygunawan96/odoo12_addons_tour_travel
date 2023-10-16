@@ -21,6 +21,7 @@
                     <field name="res_id"/>
                     <field name="referenced_document"/>
                     <field name="new_pnr" attrs="{'invisible': [('is_split_passenger', '!=', True),('is_split_journey', '!=', True)]}"/>
+                    <field name="new_pnr2" attrs="{'invisible': [('is_split_passenger', '!=', True),('is_split_journey', '!=', True)]}"/>
                     <field name="new_pnr_text" attrs="{'invisible': [('is_split_passenger', '!=', True),('is_split_journey', '!=', True)]}"/>
                     <field name="currency_id" attrs="{'invisible': [('is_split_journey', '!=', True)]}"/>
                     <field name="splitted_journey_price" attrs="{'invisible': [('is_split_journey', '!=', True)]}"/>

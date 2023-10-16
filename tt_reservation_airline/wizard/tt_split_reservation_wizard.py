@@ -17,6 +17,7 @@ class TtSplitReservationWizard(models.TransientModel):
     res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource', readonly=True)
     referenced_document = fields.Char('Ref. Document', required=True, readonly=True)
     new_pnr = fields.Char('New PNR(s) separated by comma')
+    new_pnr2 = fields.Char('New PNR2(s) separated by comma (only if necessary)')
     new_pnr_text = fields.Text('Information', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Splitted Journey Currency', default=lambda self: self.env.user.company_id.currency_id)
     splitted_journey_price = fields.Monetary('Splitted Journey Price')
@@ -133,19 +134,22 @@ class TtSplitReservationWizard(models.TransientModel):
                 is_journey_full = False
 
             new_pnr_list = self.new_pnr and self.new_pnr.strip().split(',') or []
+            new_pnr2_list = self.new_pnr2 and self.new_pnr2.strip().split(',') or []
             new_pnr_dict = {}
+            new_pnr2_dict = {}
             if len(provider_list) <= 0:
-                for idx, rec in enumerate(book_obj.provider_booking_ids):
-                    if idx < len(new_pnr_list):
-                        new_pnr_dict.update({
-                            str(rec.pnr): str(new_pnr_list[idx])
-                        })
+                used_prov_list = book_obj.provider_booking_ids
             else:
-                for idx, rec in enumerate(self.provider_ids):
-                    if idx < len(new_pnr_list):
-                        new_pnr_dict.update({
-                            str(rec.pnr): str(new_pnr_list[idx])
-                        })
+                used_prov_list = self.provider_ids
+            for idx, rec in enumerate(used_prov_list):
+                if idx < len(new_pnr_list):
+                    new_pnr_dict.update({
+                        str(rec.pnr): str(new_pnr_list[idx])
+                    })
+                if idx < len(new_pnr2_list):
+                    new_pnr2_dict.update({
+                        str(rec.pnr): str(new_pnr2_list[idx])
+                    })
 
             if not self.is_split_provider and not self.is_split_journey and not self.is_split_passenger:
                 raise UserError(_('Please select what split you want to perform (Provider/Journey/Passenger).'))
@@ -252,7 +256,7 @@ class TtSplitReservationWizard(models.TransientModel):
                             'ho_id': rec.ho_id and rec.ho_id.id or False,
                             'state': rec.state,
                             'pnr': new_pnr_dict[rec.pnr],
-                            'pnr2': new_pnr_dict[rec.pnr],
+                            'pnr2': new_pnr2_dict.get(rec.pnr) and new_pnr2_dict[rec.pnr] or new_pnr_dict[rec.pnr],
                             'provider_id': rec.provider_id and rec.provider_id.id or False,
                             'hold_date': rec.hold_date,
                             'expired_date': rec.expired_date,
@@ -511,7 +515,7 @@ class TtSplitReservationWizard(models.TransientModel):
                                 'ho_id': rec.ho_id and rec.ho_id.id or False,
                                 'state': rec.state,
                                 'pnr': new_pnr_dict[rec.pnr],
-                                'pnr2': new_pnr_dict[rec.pnr],
+                                'pnr2': new_pnr2_dict.get(rec.pnr) and new_pnr2_dict[rec.pnr] or new_pnr_dict[rec.pnr],
                                 'provider_id': rec.provider_id and rec.provider_id.id or False,
                                 'hold_date': rec.hold_date,
                                 'expired_date': rec.expired_date,
@@ -817,7 +821,7 @@ class TtSplitReservationWizard(models.TransientModel):
                             'ho_id': rec.ho_id and rec.ho_id.id or False,
                             'state': rec.state,
                             'pnr': new_pnr_dict[rec.pnr],
-                            'pnr2': new_pnr_dict[rec.pnr],
+                            'pnr2': new_pnr2_dict.get(rec.pnr) and new_pnr2_dict[rec.pnr] or new_pnr_dict[rec.pnr],
                             'provider_id': rec.provider_id and rec.provider_id.id or False,
                             'hold_date': rec.hold_date,
                             'expired_date': rec.expired_date,
