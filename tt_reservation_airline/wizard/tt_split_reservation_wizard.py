@@ -146,9 +146,9 @@ class TtSplitReservationWizard(models.TransientModel):
                     new_pnr_dict.update({
                         str(rec.pnr): str(new_pnr_list[idx])
                     })
-                if idx < len(new_pnr2_list):
+                if idx < len(new_pnr2_list) and rec.pnr2:
                     new_pnr2_dict.update({
-                        str(rec.pnr): str(new_pnr2_list[idx])
+                        str(rec.pnr2): str(new_pnr2_list[idx])
                     })
 
             if not self.is_split_provider and not self.is_split_journey and not self.is_split_passenger:
@@ -256,7 +256,7 @@ class TtSplitReservationWizard(models.TransientModel):
                             'ho_id': rec.ho_id and rec.ho_id.id or False,
                             'state': rec.state,
                             'pnr': new_pnr_dict[rec.pnr],
-                            'pnr2': new_pnr2_dict.get(rec.pnr) and new_pnr2_dict[rec.pnr] or new_pnr_dict[rec.pnr],
+                            'pnr2': new_pnr2_dict.get(rec.pnr2) and new_pnr2_dict[rec.pnr2] or new_pnr_dict[rec.pnr],
                             'provider_id': rec.provider_id and rec.provider_id.id or False,
                             'hold_date': rec.hold_date,
                             'expired_date': rec.expired_date,
@@ -515,7 +515,7 @@ class TtSplitReservationWizard(models.TransientModel):
                                 'ho_id': rec.ho_id and rec.ho_id.id or False,
                                 'state': rec.state,
                                 'pnr': new_pnr_dict[rec.pnr],
-                                'pnr2': new_pnr2_dict.get(rec.pnr) and new_pnr2_dict[rec.pnr] or new_pnr_dict[rec.pnr],
+                                'pnr2': new_pnr2_dict.get(rec.pnr2) and new_pnr2_dict[rec.pnr2] or new_pnr_dict[rec.pnr],
                                 'provider_id': rec.provider_id and rec.provider_id.id or False,
                                 'hold_date': rec.hold_date,
                                 'expired_date': rec.expired_date,
@@ -821,7 +821,7 @@ class TtSplitReservationWizard(models.TransientModel):
                             'ho_id': rec.ho_id and rec.ho_id.id or False,
                             'state': rec.state,
                             'pnr': new_pnr_dict[rec.pnr],
-                            'pnr2': new_pnr2_dict.get(rec.pnr) and new_pnr2_dict[rec.pnr] or new_pnr_dict[rec.pnr],
+                            'pnr2': new_pnr2_dict.get(rec.pnr2) and new_pnr2_dict[rec.pnr2] or new_pnr_dict[rec.pnr],
                             'provider_id': rec.provider_id and rec.provider_id.id or False,
                             'hold_date': rec.hold_date,
                             'expired_date': rec.expired_date,
