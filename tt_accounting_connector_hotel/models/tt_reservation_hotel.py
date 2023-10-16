@@ -66,9 +66,9 @@ class TtReservationHotel(models.Model):
         return res
 
     # def action_reverse_hotel
-    def action_reverse_ledger_from_button(self):
+    def action_reverse_hotel(self):
         old_state = self.state
-        res = super(TtReservationHotel, self).action_reverse_ledger_from_button()
+        res = super(TtReservationHotel, self).action_reverse_hotel()
         if self.agent_id.is_sync_to_acc:
             if old_state == 'issued':
                 temp_post = self.posted_acc_actions or ''

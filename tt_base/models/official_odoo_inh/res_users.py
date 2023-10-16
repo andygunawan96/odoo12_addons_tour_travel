@@ -1,6 +1,10 @@
 from odoo import api, fields, models, _
+from ....tools.db_connector import GatewayConnector
 from odoo.exceptions import UserError
 import time,re
+import logging
+
+_logger = logging.getLogger(__name__)
 
 LANGUAGE = [
     ('ID', 'Bahasa Indonesia'),
@@ -142,6 +146,20 @@ class ResUsers(models.Model):
         new_user = super(ResUsers, self).create(vals)
         # new_user.partner_id.parent_id = new_user.agent_id.id
         new_user.partner_id.parent_agent_id = False
+
+        try:
+            data = {
+                'code': 9901,
+                'title': 'USER CREATED',
+                'message': 'New User Created: %s\nBy: %s\n' % (
+                    new_user.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": new_user.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "create user" telegram notification: ' + str(e))
         return new_user
 
     @api.multi

@@ -1,7 +1,11 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+from ...tools.db_connector import GatewayConnector
 from ...tools import variables
 from datetime import datetime
+import logging
+
+_logger = logging.getLogger(__name__)
 
 STATE_PASSPORT = [
     ('fail_booked', 'Failed (Book)'),
@@ -203,6 +207,20 @@ class TtProviderPassport(models.Model):
         })
 
         self.booking_id.check_provider_state({'co_uid':self.env.user.id})
+
+        try:
+            data = {
+                'code': 9901,
+                'title': 'PROVIDER PASSPORT REVERSE LEDGER',
+                'message': 'Provider Ledger reversed from button: %s (%s)\nUser: %s\n' % (
+                self.booking_id.name, self.pnr, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.booking_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "reverse provider ledger" telegram notification: ' + str(e))
 
         return {
             'type': 'ir.actions.client',
