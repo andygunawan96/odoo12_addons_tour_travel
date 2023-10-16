@@ -568,6 +568,40 @@ class AgentCommissionUpline(models.Model):
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
+    @api.model
+    def create(self, vals):
+        res = super(AgentCommissionUpline, self).create(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'AGENT COMMISSION PRICING UPLINE',
+                'message': 'New agent commission pricing upline created: %s - %s (%s)\nUser: %s\n' % (
+                    res.name, res.pricing_line_id.name, res.pricing_line_id.pricing_id.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": res.pricing_line_id.pricing_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "agent commission pricing upline changes" telegram notification: ' + str(e))
+        return res
+
+    def write(self, vals):
+        super(AgentCommissionUpline, self).write(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'AGENT COMMISSION PRICING UPLINE',
+                'message': 'Agent commission pricing upline modified: %s - %s (%s)\nUser: %s\n' % (
+                    self.name, self.pricing_line_id.name, self.pricing_line_id.pricing_id.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.pricing_line_id.pricing_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "agent commission pricing upline changes" telegram notification: ' + str(e))
+
     @api.depends('agent_type_id')
     def _compute_name(self):
         for rec in self:
