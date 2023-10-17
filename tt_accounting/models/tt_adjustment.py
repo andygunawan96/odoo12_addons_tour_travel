@@ -2,6 +2,7 @@ from odoo import api,models,fields
 from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
+from ...tools.db_connector import GatewayConnector
 from ...tools import variables
 import logging,pytz
 
@@ -187,6 +188,20 @@ class TtAdjustment(models.Model):
             'approve_uid': self.env.user.id,
             'approve_date': datetime.now()
         })
+
+        try:
+            data = {
+                'code': 9901,
+                'title': 'ADJUSTMENT',
+                'message': 'Adjustment Approved: %s\nUser: %s\n' % (
+                self.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "adjustment" telegram notification: ' + str(e))
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         action_num = self.env.ref('tt_accounting.tt_adjustment_action').id

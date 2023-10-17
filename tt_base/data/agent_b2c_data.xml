@@ -30,7 +30,7 @@
                          (4, ref('tt_base.group_service_charge_level_3')),
                          (4, ref('tt_base.group_agent_invoice_level_3')),
                          (4, ref('tt_base.group_billing_statement_level_3')),
-                         (4, ref('tt_base.group_top_up_level_3')),
+                         (4, ref('tt_base.group_top_up_level_1')),
                          (4, ref('tt_base.group_refund_level_3')),
                          (4, ref('tt_base.group_after_sales_master_level_1')),
                          (4, ref('tt_base.group_after_sales_level_3')),

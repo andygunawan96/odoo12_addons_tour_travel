@@ -9,7 +9,7 @@
             <field name="is_reversed" position="before">
                 <field name="is_sent_to_acc"/>
             </field>
-            <button name="reverse_ledger" position="after">
+            <button name="reverse_ledger_from_button" position="after">
                 <button name="set_sent_to_acc_false" string="Set Sent to Accounting to False" type="object" groups="tt_base.group_ledger_level_3" attrs="{'invisible':[('is_sent_to_acc','!=',True)]}"/>
             </button>
         </field>

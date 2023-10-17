@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from ...tools.db_connector import GatewayConnector
 from ...tools import variables
 from ...tools.api import Response
 import traceback, logging
@@ -77,6 +78,40 @@ class CustomerPricing(models.Model):
 
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
+
+    @api.model
+    def create(self, vals):
+        res = super(CustomerPricing, self).create(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'CUSTOMER PRICING',
+                'message': 'New customer pricing created: %s\nUser: %s\n' % (
+                    res.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": res.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "customer pricing changes" telegram notification: ' + str(e))
+        return res
+
+    def write(self, vals):
+        super(CustomerPricing, self).write(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'CUSTOMER PRICING',
+                'message': 'Customer pricing modified: %s\nUser: %s\n' % (
+                    self.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "customer pricing changes" telegram notification: ' + str(e))
 
     @api.depends('agent_id', 'provider_type_name', 'provider_name', 'carrier_name', 'customer_parent_type_name', 'customer_parent_name')
     def _compute_name(self):
@@ -322,6 +357,40 @@ class CustomerPricingLine(models.Model):
     total_is_greater_equal = fields.Boolean('Is Greater Equal to', default=False)
     total_greater_amount = fields.Float('Greater than amount', default=0.0)
     # END
+
+    @api.model
+    def create(self, vals):
+        res = super(CustomerPricingLine, self).create(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'CUSTOMER PRICING LINE',
+                'message': 'New customer pricing line created: %s (%s)\nUser: %s\n' % (
+                    res.name, res.pricing_id.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": res.pricing_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "customer pricing line changes" telegram notification: ' + str(e))
+        return res
+
+    def write(self, vals):
+        super(CustomerPricingLine, self).write(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'CUSTOMER PRICING LINE',
+                'message': 'Customer pricing line modified: %s (%s)\nUser: %s\n' % (
+                    self.name, self.pricing_id.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.pricing_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "customer pricing line changes" telegram notification: ' + str(e))
 
     def get_data(self):
         res = {
