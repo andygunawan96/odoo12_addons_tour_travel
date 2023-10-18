@@ -105,12 +105,16 @@ class TtRescheduleLine(models.Model):
     def create(self, vals):
         if vals.get('admin_fee_dummy'):
             vals.pop('admin_fee_dummy')
+        if vals.get('reschedule_amount_ho') and vals['reschedule_amount_ho'] < 0:
+            vals['reschedule_amount_ho'] *= -1
         return super(TtRescheduleLine, self).create(vals)
 
     @api.multi
     def write(self, vals):
         if vals.get('admin_fee_dummy'):
             vals.pop('admin_fee_dummy')
+        if vals.get('reschedule_amount_ho') and vals['reschedule_amount_ho'] < 0:
+            vals['reschedule_amount_ho'] *= -1
         return super(TtRescheduleLine, self).write(vals)
 
     def to_dict(self):
@@ -588,6 +592,9 @@ class TtReschedule(models.Model):
             'sent_date': datetime.now(),
         })
 
+    def validate_reschedule_from_btn(self):
+        self.validate_reschedule_from_button()
+
     def validate_reschedule_from_button(self, agent_payment_method='balance'):
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_after_sales_master_level_3').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 82')
@@ -760,7 +767,8 @@ class TtReschedule(models.Model):
             if not self.cancel_message:
                 raise UserError("Please fill the cancellation message!")
             for rec in self.ledger_ids:
-                rec.reverse_ledger()
+                if not rec.is_reversed:
+                    rec.reverse_ledger()
 
         self.write({
             'state': 'cancel',
@@ -830,6 +838,7 @@ class TtReschedule(models.Model):
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
             'res_model_resv': self._name,
             'res_id_resv': self.id,
+            'ho_id': self.ho_id.id,
             'invoice_id': invoice_id.id,
             'desc': desc_str
         })
@@ -839,6 +848,7 @@ class TtReschedule(models.Model):
         ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
             'res_model_resv': self._name,
             'res_id_resv': self.id,
+            'ho_id': self.ho_id.id,
             'invoice_id': ho_invoice_id.id,
             'desc': desc_str
         })
