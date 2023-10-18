@@ -838,6 +838,7 @@ class TtReschedule(models.Model):
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
             'res_model_resv': self._name,
             'res_id_resv': self.id,
+            'ho_id': self.ho_id.id,
             'invoice_id': invoice_id.id,
             'desc': desc_str
         })
@@ -847,6 +848,7 @@ class TtReschedule(models.Model):
         ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
             'res_model_resv': self._name,
             'res_id_resv': self.id,
+            'ho_id': self.ho_id.id,
             'invoice_id': ho_invoice_id.id,
             'desc': desc_str
         })
