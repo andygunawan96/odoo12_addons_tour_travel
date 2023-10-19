@@ -38,7 +38,7 @@
                          (4, ref('tt_base.group_payment_acquirer_level_1')),
                          (4, ref('tt_base.group_adjustment_level_1')),
                          (4, ref('tt_base.group_lg_po_level_1')),
-                         (4, ref('tt_base.group_ledger_level_2')),
+                         (4, ref('tt_base.group_ledger_level_1')),
                          (4, ref('tt_base.group_agent_registration_master_level_1')),
                          (4, ref('tt_base.group_agent_registration_level_3')),
                          (4, ref('tt_base.group_agent_level_3')),

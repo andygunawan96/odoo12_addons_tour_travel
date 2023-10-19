@@ -156,6 +156,9 @@ class TtTopUp(models.Model):
     def action_approve_top_up(self):
         if self.state != 'validated':
             raise UserError('Can only approve [validate] state Top Up.')
+        if self.total_with_fees != self.validated_amount and not self.env.user.has_group('tt_base.group_payment_level_4'):
+            _logger.info('Insufficient permission to approve Top Up with modified validated amount. Top Up: %s, User: %s' % (self.name, self.env.user.name))
+            raise UserError('Insufficient permission to approve Top Up with modified validated amount.')
 
         ledger_obj = self.env['tt.ledger']
         vals = ledger_obj.prepare_vals(self._name,
@@ -193,6 +196,9 @@ class TtTopUp(models.Model):
         top_up.state = 'request'
         top_up.fees = data['fee']
         # top_up.fees = 6666
+        if top_up.total != top_up.payment_id.real_total_amount:
+            _logger.info("Error: Payment 'Adjusting Amount' has been modified. Top Up: %s" % self.name)
+            raise RequestException(1011)
         top_up.payment_id.reference = data['payment_ref']
         if payment_acq_number_id:
             top_up.payment_id.payment_acq_number_id = payment_acq_number_id
