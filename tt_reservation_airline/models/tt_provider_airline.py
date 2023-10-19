@@ -103,6 +103,10 @@ class TtProviderAirline(models.Model):
     duplicates = fields.Char('Duplicates', default='')
     # END
 
+    # October 19, 2023 - SAM
+    notes = fields.Text('Notes')
+    # END
+
     @api.depends('ticket_ids', 'ticket_ids.ticket_number')
     def _compute_ticket_numbers(self):
         for rec in self:
@@ -263,7 +267,7 @@ class TtProviderAirline(models.Model):
         values = {}
         # todo ini buat ngambil semua key data dari response yang dikirim
         provider_data_keys = [key for key in provider_data.keys()]
-        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency', 'is_hold_date_sync', 'is_advance_purchase']:
+        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency', 'is_hold_date_sync', 'is_advance_purchase', 'notes']:
             # if not provider_data.get(key):
             # todo ini buat ngecek klo key nya ada baru di update value nya
             if key not in provider_data_keys:
