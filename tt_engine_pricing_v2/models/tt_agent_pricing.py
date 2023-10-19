@@ -476,6 +476,19 @@ class AgentPricingLine(models.Model):
 
     # END
 
+    # October 17, 2023 - SAM
+    rsv_ho_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    rsv_ho_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    rsv_ho_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    tkt_ho_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    tkt_ho_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    tkt_ho_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    anc_ho_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    anc_ho_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    anc_ho_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+
+    # END
+
     # @api.depends('upline_ids')
     # def _compute_upline_name(self):
     #     for rec in self:
@@ -694,6 +707,11 @@ class AgentPricingLine(models.Model):
                     'tax_amount': self.tkt_com_tax_amount,
                     'tax_percentage': self.tkt_com_tax_percentage,
                     'rounding': self.tkt_com_rounding_places,
+                },
+                'ho_commission': {
+                    'tax_amount': self.tkt_ho_com_tax_amount,
+                    'tax_percentage': self.tkt_ho_com_tax_percentage,
+                    'rounding': self.tkt_ho_com_rounding_places,
                 }
             },
             'ancillary': {
@@ -749,6 +767,11 @@ class AgentPricingLine(models.Model):
                     'tax_amount': self.anc_com_tax_amount,
                     'tax_percentage': self.anc_com_tax_percentage,
                     'rounding': self.anc_com_rounding_places,
+                },
+                'ho_commission': {
+                    'tax_amount': self.anc_ho_com_tax_amount,
+                    'tax_percentage': self.anc_ho_com_tax_percentage,
+                    'rounding': self.anc_ho_com_rounding_places,
                 }
             },
             'reservation': {
@@ -784,6 +807,11 @@ class AgentPricingLine(models.Model):
                     'tax_amount': self.rsv_com_tax_amount,
                     'tax_percentage': self.rsv_com_tax_percentage,
                     'rounding': self.rsv_com_rounding_places,
+                },
+                'ho_commission': {
+                    'tax_amount': self.rsv_ho_com_tax_amount,
+                    'tax_percentage': self.rsv_ho_com_tax_percentage,
+                    'rounding': self.rsv_ho_com_rounding_places,
                 }
             },
             'state': self.state,

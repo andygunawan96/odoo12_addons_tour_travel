@@ -403,7 +403,7 @@ Amadeus cryptic sample request will be : FM5
                                     </group>
                                 </page>
                                 <page string="Commission Tax" name="reservation_commission">
-                                    <group>
+                                    <group string="Vendor Tax Commission">
                                         <group string="Commission Tax">
                                             <field name="rsv_com_tax_percentage"/>
                                             <field name="rsv_com_tax_amount"/>
@@ -412,6 +412,44 @@ Amadeus cryptic sample request will be : FM5
                                             <field name="rsv_com_rounding_places"/>
                                         </group>
                                     </group>
+                                    <div>
+                                        <pre>[ Vendor Tax Commission ]
+Commission Tax : Input value &lt; 0 or will be ignored.
+
+Example :
+Tax Percentage : -10%
+Agent Commission : 50,000
+
+Result :
+50,000 - 5,000 = 45,000
+
+*) Commission for the agent will be 45,000</pre>
+                                    </div>
+                                    <group string="HO Tax Commission">
+                                        <group string="Commission Tax">
+                                            <field name="rsv_ho_com_tax_percentage"/>
+                                            <field name="rsv_ho_com_tax_amount"/>
+                                        </group>
+                                        <group string="Rounding">
+                                            <field name="rsv_ho_com_rounding_places"/>
+                                        </group>
+                                    </group>
+                                    <div>
+                                        <pre>[ HO Tax Commission ]
+Commission Tax : Input value &gt; 0 or will be ignored.
+
+Example :
+Tax Percentage : 10%
+HO Commission : 10,000
+Agent Commission : 50,000
+
+Result :
+10,000 + 1,000 = 11,000
+
+*) HO will receive 10,000 + 1,000 commission fee
+*) 1,000 will be charged from Commission for the agent
+*) Commission for the agent will be 50,000 - 1,000 = 49,000</pre>
+                                    </div>
                                 </page>
                             </notebook>
                         </page>
@@ -529,7 +567,7 @@ Amadeus cryptic sample request will be : FM5
                                     </group>
                                 </page>
                                 <page string="Commission Tax" name="ticketing_commission">
-                                    <group>
+                                    <group string="Vendor Tax Commission">
                                         <group string="Commission Tax">
                                             <field name="tkt_com_tax_percentage"/>
                                             <field name="tkt_com_tax_amount"/>
@@ -538,6 +576,44 @@ Amadeus cryptic sample request will be : FM5
                                             <field name="tkt_com_rounding_places"/>
                                         </group>
                                     </group>
+                                    <div>
+                                        <pre>[ Vendor Tax Commission ]
+Commission Tax : Input value &lt; 0 or will be ignored.
+
+Example :
+Tax Percentage : -10%
+Agent Commission : 50,000
+
+Result :
+50,000 - 5,000 = 45,000
+
+*) Commission for the agent will be 45,000</pre>
+                                    </div>
+                                    <group string="HO Tax Commission">
+                                        <group string="Commission Tax">
+                                            <field name="tkt_ho_com_tax_percentage"/>
+                                            <field name="tkt_ho_com_tax_amount"/>
+                                        </group>
+                                        <group string="Rounding">
+                                            <field name="tkt_ho_com_rounding_places"/>
+                                        </group>
+                                    </group>
+                                    <div>
+                                        <pre>[ HO Tax Commission ]
+Commission Tax : Input value &gt; 0 or will be ignored.
+
+Example :
+Tax Percentage : 10%
+HO Commission : 10,000
+Agent Commission : 50,000
+
+Result :
+10,000 + 1,000 = 11,000
+
+*) HO will receive 10,000 + 1,000 commission fee
+*) 1,000 will be charged from Commission for the agent
+*) Commission for the agent will be 50,000 - 1,000 = 49,000</pre>
+                                    </div>
                                 </page>
                             </notebook>
                         </page>
@@ -637,13 +713,22 @@ Amadeus cryptic sample request will be : FM5
                                     </group>
                                 </page>
                                 <page string="Commission" name="ancillary_commission">
-                                    <group>
+                                    <group string="Agent">
                                         <group string="Commission Tax">
                                             <field name="anc_com_tax_percentage"/>
                                             <field name="anc_com_tax_amount"/>
                                         </group>
                                         <group string="Rounding">
                                             <field name="anc_com_rounding_places"/>
+                                        </group>
+                                    </group>
+                                    <group string="HO">
+                                        <group string="Commission Tax">
+                                            <field name="anc_ho_com_tax_percentage"/>
+                                            <field name="anc_ho_com_tax_amount"/>
+                                        </group>
+                                        <group string="Rounding">
+                                            <field name="anc_ho_com_rounding_places"/>
                                         </group>
                                     </group>
                                 </page>
