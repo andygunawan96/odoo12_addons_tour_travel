@@ -211,7 +211,8 @@ class TtAccountingQueue(models.Model):
                             for sale in tick.passenger_id.channel_service_charge_ids:
                                 if sale.charge_code == 'csc':
                                     temp_tick_price_dict['total_channel_upsell'] += abs(sale.amount)
-                            temp_tick_price_dict['parent_agent_commission'] -= temp_tick_price_dict['total_channel_upsell']
+                            if trans_obj.agent_id.is_ho_agent:
+                                temp_tick_price_dict['parent_agent_commission'] -= temp_tick_price_dict['total_channel_upsell']
                             if temp_tick_price_dict['ho_commission'] > 0:
                                 temp_tick_price_dict['ho_commission'] += temp_tick_price_dict['total_channel_upsell']
                             else:
@@ -271,7 +272,8 @@ class TtAccountingQueue(models.Model):
                             for sale in tick.channel_service_charge_ids:
                                 if sale.charge_code == 'csc':
                                     temp_tick_price_dict['total_channel_upsell'] += abs(sale.amount)
-                            temp_tick_price_dict['parent_agent_commission'] -= temp_tick_price_dict['total_channel_upsell']
+                            if trans_obj.agent_id.is_ho_agent:
+                                temp_tick_price_dict['parent_agent_commission'] -= temp_tick_price_dict['total_channel_upsell']
                             if temp_tick_price_dict['ho_commission'] > 0:
                                 temp_tick_price_dict['ho_commission'] += temp_tick_price_dict['total_channel_upsell']
                             else:
