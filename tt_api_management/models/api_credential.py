@@ -117,6 +117,19 @@ class ApiManagement(models.Model):
                     raise Exception('Co User and Co Password is not match')
                 _co_user = self.env['res.users'].sudo().browse(co_uid)
 
+                ### CHECK OTP #####
+                expired_time = _co_user.check_need_otp_user_api(data)
+                if expired_time:
+                    if data.get('otp'):
+                        raise RequestException(1041)
+                    else:
+                        raise RequestException(1040,additional_message=expired_time)
+
+                values.update({
+                    "is_use_otp": _co_user.is_use_otp
+                })
+
+
                 if _co_user.is_banned:
                     additional_msg = ""
                     try:
