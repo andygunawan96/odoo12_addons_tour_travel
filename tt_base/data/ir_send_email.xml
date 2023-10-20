@@ -31,6 +31,35 @@
 			</field>
 		</record>
 
+		<record model="mail.template" id="template_mail_otp">
+			<field name="name">Template OTP</field>
+			<field name="email_from">${object.user_id.ho_id.email_server_id.smtp_user}</field>
+			<field name="subject">${object.user_id.name} OTP</field>
+			<field name="email_to">${object.user_id.login}</field>
+			<field name="model_id" ref="tt_base.model_tt_otp"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>To: ${object.user_id.name}</p>
+<br/>
+<p>Dear Sir/Madam,</p>
+<br/>
+<p>We've received an OTP request from your ${object.get_company_name()} Account</p>
+<p>Please input the 6 digit authentification code below to login</p>
+<br/>
+<p>${object.otp}</p>
+<br/>
+<p>This OTP code will expire in 5 minutes.</p>
+<p>If you didn't make this request, please ignore or contact our CS</p>
+
+<br/>
+<p>Regards,</p>
+<p>${object.get_company_name()}</p>
+]]>
+			</field>
+		</record>
 
 
     </data>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_users_otp_form_view_inherit" model="ir.ui.view">
+        <field name="name">res.users.otp.form.view.inherit</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="tt_base.res_user_form_view_inh"/>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside" attrs="{'invisible': ['|', ('ho_id.email_server_id','=',False), ('ho_id','=',False)]}">
+                <page string="OTP">
+                    <group>
+                        <field name="is_use_otp"/>
+                    </group>
+                    <field name="otp_ids"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="tt_agent_otp_form_view_inherit" model="ir.ui.view">
+        <field name="name">tt.agent.otp.form.view.inherit</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
+        <field name="arch" type="xml">
+
+            <field name="email_server_id" position="after">
+                <field name="otp_expired_time"  attrs="{'invisible': [('is_ho_agent','=',False)]}" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="tt_machine_form_view" model="ir.ui.view">
+        <field name="name">tt.machine.form.view</field>
+        <field name="model">tt.machine</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_machine_tree_view" model="ir.ui.view">
+        <field name="name">tt.machine.tree.view</field>
+        <field name="model">tt.machine</field>
+        <field name="arch" type="xml">
+            <tree string="TT Machine">
+                <field name="code"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_otp_form_view" model="ir.ui.view">
+        <field name="name">tt.otp.form.view</field>
+        <field name="model">tt.otp</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="machine_id"/>
+                        <field name="otp" groups="base.group_erp_manager"/>
+                        <field name="is_connect"/>
+                        <field name="platform"/>
+                        <field name="browser"/>
+                        <field name="create_date"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_otp_tree_view" model="ir.ui.view">
+        <field name="name">tt.otp.tree.view</field>
+        <field name="model">tt.otp</field>
+        <field name="arch" type="xml">
+            <tree string="TT OTP">
+                <field name="machine_id"/>
+                <field name="otp" groups="base.group_erp_manager"/>
+                <field name="is_connect"/>
+                <field name="platform"/>
+                <field name="browser"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
