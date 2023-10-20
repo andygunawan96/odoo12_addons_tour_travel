@@ -2,16 +2,16 @@
 <odoo>
 
     <record id="res_users_otp_form_view_inherit" model="ir.ui.view">
-        <field name="name">res.users.form.view.inherit</field>
+        <field name="name">res.users.otp.form.view.inherit</field>
         <field name="model">res.users</field>
         <field name="inherit_id" ref="tt_base.res_user_form_view_inh"/>
-        <!--<field name="groups" eval="[(4, ref('base.group_system'))]"/>-->
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]" />
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside" attrs="{'invisible': ['|', ('ho_id.email_server_id','=',False), ('ho_id','=',False)]}">
-                <page string="OTP" groups="base.group_system">
-                    <page string="Is Use OTP">
+                <page string="OTP">
+                    <group>
                         <field name="is_use_otp"/>
-                    </page>
+                    </group>
                     <field name="otp_ids"/>
                 </page>
             </xpath>
@@ -19,7 +19,7 @@
     </record>
 
     <record id="tt_agent_otp_form_view_inherit" model="ir.ui.view">
-        <field name="name">tt.agent.form.view.inherit</field>
+        <field name="name">tt.agent.otp.form.view.inherit</field>
         <field name="model">tt.agent</field>
         <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
         <field name="arch" type="xml">
