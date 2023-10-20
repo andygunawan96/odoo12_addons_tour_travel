@@ -103,6 +103,10 @@ class TtProviderAirline(models.Model):
     duplicates = fields.Char('Duplicates', default='')
     # END
 
+    # October 19, 2023 - SAM
+    notes = fields.Text('Notes')
+    # END
+
     @api.depends('ticket_ids', 'ticket_ids.ticket_number')
     def _compute_ticket_numbers(self):
         for rec in self:
@@ -210,6 +214,19 @@ class TtProviderAirline(models.Model):
 
         self.booking_id.check_provider_state({'co_uid':self.env.user.id})
 
+        try:
+            data = {
+                'code': 9901,
+                'title': 'PROVIDER AIRLINE REVERSE LEDGER',
+                'message': 'Provider Ledger reversed from button: %s (%s)\nUser: %s\n' % (self.booking_id.name, self.pnr, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.booking_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "reverse provider ledger" telegram notification: ' + str(e))
+
         return {
             'type': 'ir.actions.client',
             'tag': 'reload',
@@ -250,7 +267,7 @@ class TtProviderAirline(models.Model):
         values = {}
         # todo ini buat ngambil semua key data dari response yang dikirim
         provider_data_keys = [key for key in provider_data.keys()]
-        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency', 'is_hold_date_sync', 'is_advance_purchase']:
+        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency', 'is_hold_date_sync', 'is_advance_purchase', 'notes']:
             # if not provider_data.get(key):
             # todo ini buat ngecek klo key nya ada baru di update value nya
             if key not in provider_data_keys:
@@ -1779,6 +1796,15 @@ class TtProviderAirlinePricing(models.Model):
     provider_anc_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
     provider_anc_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
     provider_anc_com_rounding = fields.Char('Commission Rounding', readonly=1)
+    provider_rsv_ho_com_tax_amount = fields.Char('HO Commission Tax Amount', readonly=1)
+    provider_rsv_ho_com_tax_percentage = fields.Char('HO Commission Tax Percentage', readonly=1)
+    provider_rsv_ho_com_rounding = fields.Char('HO Commission Rounding', readonly=1)
+    provider_tkt_ho_com_tax_amount = fields.Char('HO Commission Tax Amount', readonly=1)
+    provider_tkt_ho_com_tax_percentage = fields.Char('HO Commission Tax Percentage', readonly=1)
+    provider_tkt_ho_com_rounding = fields.Char('HO Commission Rounding', readonly=1)
+    provider_anc_ho_com_tax_amount = fields.Char('HO Commission Tax Amount', readonly=1)
+    provider_anc_ho_com_tax_percentage = fields.Char('HO Commission Tax Percentage', readonly=1)
+    provider_anc_ho_com_rounding = fields.Char('HO Commission Rounding', readonly=1)
 
     agent_pricing_id = fields.Many2one('tt.agent.pricing', 'Agent Pricing', readonly=1, ondelete='set null')
     agent_pricing_sequence = fields.Char('Pricing Sequence', readonly=1)
@@ -1939,6 +1965,15 @@ class TtProviderAirlinePricing(models.Model):
     agent_anc_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
     agent_anc_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
     agent_anc_com_rounding = fields.Char('Commission Rounding', readonly=1)
+    agent_rsv_ho_com_tax_amount = fields.Char('HO Commission Tax Amount', readonly=1)
+    agent_rsv_ho_com_tax_percentage = fields.Char('HO Commission Tax Percentage', readonly=1)
+    agent_rsv_ho_com_rounding = fields.Char('HO Commission Rounding', readonly=1)
+    agent_tkt_ho_com_tax_amount = fields.Char('HO Commission Tax Amount', readonly=1)
+    agent_tkt_ho_com_tax_percentage = fields.Char('HO Commission Tax Percentage', readonly=1)
+    agent_tkt_ho_com_rounding = fields.Char('HO Commission Rounding', readonly=1)
+    agent_anc_ho_com_tax_amount = fields.Char('HO Commission Tax Amount', readonly=1)
+    agent_anc_ho_com_tax_percentage = fields.Char('HO Commission Tax Percentage', readonly=1)
+    agent_anc_ho_com_rounding = fields.Char('HO Commission Rounding', readonly=1)
 
     customer_pricing_id = fields.Many2one('tt.customer.pricing', 'Customer Pricing', readonly=1, ondelete='set null')
     customer_pricing_sequence = fields.Char('Pricing Sequence', readonly=1)
@@ -2015,6 +2050,15 @@ class TtProviderAirlinePricing(models.Model):
     customer_anc_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
     customer_anc_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
     customer_anc_com_rounding = fields.Char('Commission Rounding', readonly=1)
+    customer_rsv_ho_com_tax_amount = fields.Char('HO Commission Tax Amount', readonly=1)
+    customer_rsv_ho_com_tax_percentage = fields.Char('HO Commission Tax Percentage', readonly=1)
+    customer_rsv_ho_com_rounding = fields.Char('HO Commission Rounding', readonly=1)
+    customer_tkt_ho_com_tax_amount = fields.Char('HO Commission Tax Amount', readonly=1)
+    customer_tkt_ho_com_tax_percentage = fields.Char('HO Commission Tax Percentage', readonly=1)
+    customer_tkt_ho_com_rounding = fields.Char('HO Commission Rounding', readonly=1)
+    customer_anc_ho_com_tax_amount = fields.Char('HO Commission Tax Amount', readonly=1)
+    customer_anc_ho_com_tax_percentage = fields.Char('HO Commission Tax Percentage', readonly=1)
+    customer_anc_ho_com_rounding = fields.Char('HO Commission Rounding', readonly=1)
 
     agent_commission_id = fields.Many2one('tt.agent.commission', 'Agent Pricing', readonly=1, ondelete='set null')
     agent_commission_sequence = fields.Char('Pricing Sequence', readonly=1)
@@ -2367,6 +2411,24 @@ class TtProviderAirlinePricing(models.Model):
                         'provider_anc_com_tax_percentage': provider_data['ancillary']['commission'].get('tax_percentage', ''),
                         'provider_anc_com_rounding': provider_data['ancillary']['commission'].get('rounding', ''),
                     })
+                if provider_data['reservation'].get('ho_commission'):
+                    values.update({
+                        'provider_rsv_ho_com_tax_amount': provider_data['reservation']['ho_commission'].get('tax_amount', ''),
+                        'provider_rsv_ho_com_tax_percentage': provider_data['reservation']['ho_commission'].get('tax_percentage', ''),
+                        'provider_rsv_ho_com_rounding': provider_data['reservation']['ho_commission'].get('rounding', ''),
+                    })
+                if provider_data['ticketing'].get('ho_commission'):
+                    values.update({
+                        'provider_tkt_ho_com_tax_amount': provider_data['ticketing']['ho_commission'].get('tax_amount', ''),
+                        'provider_tkt_ho_com_tax_percentage': provider_data['ticketing']['ho_commission'].get('tax_percentage', ''),
+                        'provider_tkt_ho_com_rounding': provider_data['ticketing']['ho_commission'].get('rounding', ''),
+                    })
+                if provider_data['ancillary'].get('ho_commission'):
+                    values.update({
+                        'provider_anc_ho_com_tax_amount': provider_data['ancillary']['ho_commission'].get('tax_amount', ''),
+                        'provider_anc_ho_com_tax_percentage': provider_data['ancillary']['ho_commission'].get('tax_percentage', ''),
+                        'provider_anc_ho_com_rounding': provider_data['ancillary']['ho_commission'].get('rounding', ''),
+                    })
 
                 if provider_data['route'].get('total', {}):
                     values.update({
@@ -2547,6 +2609,24 @@ class TtProviderAirlinePricing(models.Model):
                         'agent_anc_com_tax_percentage': agent_data['ancillary']['commission'].get('tax_percentage', ''),
                         'agent_anc_com_rounding': agent_data['ancillary']['commission'].get('rounding', ''),
                     })
+                if agent_data['reservation'].get('ho_commission'):
+                    values.update({
+                        'agent_rsv_ho_com_tax_amount': agent_data['reservation']['ho_commission'].get('tax_amount', ''),
+                        'agent_rsv_ho_com_tax_percentage': agent_data['reservation']['ho_commission'].get('tax_percentage', ''),
+                        'agent_rsv_ho_com_rounding': agent_data['reservation']['ho_commission'].get('rounding', ''),
+                    })
+                if agent_data['ticketing'].get('ho_commission'):
+                    values.update({
+                        'agent_tkt_ho_com_tax_amount': agent_data['ticketing']['ho_commission'].get('tax_amount', ''),
+                        'agent_tkt_ho_com_tax_percentage': agent_data['ticketing']['ho_commission'].get('tax_percentage', ''),
+                        'agent_tkt_ho_com_rounding': agent_data['ticketing']['ho_commission'].get('rounding', ''),
+                    })
+                if agent_data['ancillary'].get('ho_commission'):
+                    values.update({
+                        'agent_anc_ho_com_tax_amount': agent_data['ancillary']['ho_commission'].get('tax_amount', ''),
+                        'agent_anc_ho_com_tax_percentage': agent_data['ancillary']['ho_commission'].get('tax_percentage', ''),
+                        'agent_anc_ho_com_rounding': agent_data['ancillary']['ho_commission'].get('rounding', ''),
+                    })
 
                 if agent_data['route'].get('total', {}):
                     values.update({
@@ -2641,6 +2721,24 @@ class TtProviderAirlinePricing(models.Model):
                         'customer_anc_com_tax_amount': customer_data['ancillary']['commission'].get('tax_amount', ''),
                         'customer_anc_com_tax_percentage': customer_data['ancillary']['commission'].get('tax_percentage', ''),
                         'customer_anc_com_rounding': customer_data['ancillary']['commission'].get('rounding', ''),
+                    })
+                if customer_data['reservation'].get('ho_commission'):
+                    values.update({
+                        'customer_rsv_ho_com_tax_amount': customer_data['reservation']['ho_commission'].get('tax_amount', ''),
+                        'customer_rsv_ho_com_tax_percentage': customer_data['reservation']['ho_commission'].get('tax_percentage', ''),
+                        'customer_rsv_ho_com_rounding': customer_data['reservation']['ho_commission'].get('rounding', ''),
+                    })
+                if customer_data['ticketing'].get('ho_commission'):
+                    values.update({
+                        'customer_tkt_ho_com_tax_amount': customer_data['ticketing']['ho_commission'].get('tax_amount', ''),
+                        'customer_tkt_ho_com_tax_percentage': customer_data['ticketing']['ho_commission'].get('tax_percentage', ''),
+                        'customer_tkt_ho_com_rounding': customer_data['ticketing']['ho_commission'].get('rounding', ''),
+                    })
+                if customer_data['ancillary'].get('ho_commission'):
+                    values.update({
+                        'customer_anc_ho_com_tax_amount': customer_data['ancillary']['ho_commission'].get('tax_amount', ''),
+                        'customer_anc_ho_com_tax_percentage': customer_data['ancillary']['ho_commission'].get('tax_percentage', ''),
+                        'customer_anc_ho_com_rounding': customer_data['ancillary']['ho_commission'].get('rounding', ''),
                     })
 
                 if customer_data['route'].get('total', {}):

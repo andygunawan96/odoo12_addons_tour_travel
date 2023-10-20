@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from ...tools.db_connector import GatewayConnector
 from ...tools import variables
 from ...tools.api import Response
 import traceback, logging
@@ -76,6 +77,40 @@ class AgentPricing(models.Model):
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
+
+    @api.model
+    def create(self, vals):
+        res = super(AgentPricing, self).create(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'AGENT PRICING',
+                'message': 'New agent pricing created: %s\nUser: %s\n' % (
+                    res.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": res.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "agent pricing changes" telegram notification: ' + str(e))
+        return res
+
+    def write(self, vals):
+        super(AgentPricing, self).write(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'AGENT PRICING',
+                'message': 'Agent pricing modified: %s\nUser: %s\n' % (
+                    self.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "agent pricing changes" telegram notification: ' + str(e))
 
     def action_compute_all_name(self):
         objs = self.env['tt.agent.pricing'].sudo().search([])
@@ -441,6 +476,19 @@ class AgentPricingLine(models.Model):
 
     # END
 
+    # October 17, 2023 - SAM
+    rsv_ho_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    rsv_ho_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    rsv_ho_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    tkt_ho_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    tkt_ho_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    tkt_ho_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    anc_ho_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    anc_ho_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    anc_ho_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+
+    # END
+
     # @api.depends('upline_ids')
     # def _compute_upline_name(self):
     #     for rec in self:
@@ -458,6 +506,40 @@ class AgentPricingLine(models.Model):
     #                 'name': name
     #             })
     #         rec.upline_name = ''
+
+    @api.model
+    def create(self, vals):
+        res = super(AgentPricingLine, self).create(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'AGENT PRICING LINE',
+                'message': 'New agent pricing line created: %s (%s)\nUser: %s\n' % (
+                    res.name, res.pricing_id.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": res.pricing_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "agent pricing line changes" telegram notification: ' + str(e))
+        return res
+
+    def write(self, vals):
+        super(AgentPricingLine, self).write(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'AGENT PRICING LINE',
+                'message': 'Agent pricing line modified: %s (%s)\nUser: %s\n' % (
+                    self.name, self.pricing_id.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.pricing_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "agent pricing line changes" telegram notification: ' + str(e))
 
     def get_data(self):
         res = {
@@ -625,6 +707,11 @@ class AgentPricingLine(models.Model):
                     'tax_amount': self.tkt_com_tax_amount,
                     'tax_percentage': self.tkt_com_tax_percentage,
                     'rounding': self.tkt_com_rounding_places,
+                },
+                'ho_commission': {
+                    'tax_amount': self.tkt_ho_com_tax_amount,
+                    'tax_percentage': self.tkt_ho_com_tax_percentage,
+                    'rounding': self.tkt_ho_com_rounding_places,
                 }
             },
             'ancillary': {
@@ -680,6 +767,11 @@ class AgentPricingLine(models.Model):
                     'tax_amount': self.anc_com_tax_amount,
                     'tax_percentage': self.anc_com_tax_percentage,
                     'rounding': self.anc_com_rounding_places,
+                },
+                'ho_commission': {
+                    'tax_amount': self.anc_ho_com_tax_amount,
+                    'tax_percentage': self.anc_ho_com_tax_percentage,
+                    'rounding': self.anc_ho_com_rounding_places,
                 }
             },
             'reservation': {
@@ -715,6 +807,11 @@ class AgentPricingLine(models.Model):
                     'tax_amount': self.rsv_com_tax_amount,
                     'tax_percentage': self.rsv_com_tax_percentage,
                     'rounding': self.rsv_com_rounding_places,
+                },
+                'ho_commission': {
+                    'tax_amount': self.rsv_ho_com_tax_amount,
+                    'tax_percentage': self.rsv_ho_com_tax_percentage,
+                    'rounding': self.rsv_ho_com_rounding_places,
                 }
             },
             'state': self.state,

@@ -188,13 +188,24 @@
                                 <group>
                                 </group>
                             </group>
-                            <group string="Reservation Commission" col="3" colspan="3">
+                            <group string="Reservation Vendor Tax Commission" col="3" colspan="3">
                                 <group string="Commission Tax">
                                     <field name="provider_rsv_com_tax_amount"/>
                                     <field name="provider_rsv_com_tax_percentage"/>
                                 </group>
                                 <group string="Commission Rounding">
                                     <field name="provider_rsv_com_rounding"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Reservation HO Tax Commission" col="3" colspan="3">
+                                <group string="Commission Tax">
+                                    <field name="provider_rsv_ho_com_tax_amount"/>
+                                    <field name="provider_rsv_ho_com_tax_percentage"/>
+                                </group>
+                                <group string="Commission Rounding">
+                                    <field name="provider_rsv_ho_com_rounding"/>
                                 </group>
                                 <group>
                                 </group>
@@ -306,13 +317,24 @@
                                 <group>
                                 </group>
                             </group>
-                            <group string="Ticketing Commission" col="3" colspan="3">
+                            <group string="Ticketing Vendor Tax Commission" col="3" colspan="3">
                                 <group string="Commission Tax">
                                     <field name="provider_tkt_com_tax_amount"/>
                                     <field name="provider_tkt_com_tax_percentage"/>
                                 </group>
                                 <group string="Commission Rounding">
                                     <field name="provider_tkt_com_rounding"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Ticketing HO Tax Commission" col="3" colspan="3">
+                                <group string="Commission Tax">
+                                    <field name="provider_tkt_ho_com_tax_amount"/>
+                                    <field name="provider_tkt_ho_com_tax_percentage"/>
+                                </group>
+                                <group string="Commission Rounding">
+                                    <field name="provider_tkt_ho_com_rounding"/>
                                 </group>
                                 <group>
                                 </group>
@@ -435,13 +457,24 @@
                                 <group>
                                 </group>
                             </group>
-                            <group string="Reservation Commission" col="3" colspan="3">
+                            <group string="Reservation Agent Tax Commission" col="3" colspan="3">
                                 <group string="Commission Tax">
                                     <field name="agent_rsv_com_tax_amount"/>
                                     <field name="agent_rsv_com_tax_percentage"/>
                                 </group>
                                 <group string="Commission Rounding">
                                     <field name="agent_rsv_com_rounding"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Reservation HO Tax Commission" col="3" colspan="3">
+                                <group string="Commission Tax">
+                                    <field name="agent_rsv_ho_com_tax_amount"/>
+                                    <field name="agent_rsv_ho_com_tax_percentage"/>
+                                </group>
+                                <group string="Commission Rounding">
+                                    <field name="agent_rsv_ho_com_rounding"/>
                                 </group>
                                 <group>
                                 </group>
@@ -518,13 +551,24 @@
                                 <group>
                                 </group>
                             </group>
-                            <group string="Ticketing Commission" col="3" colspan="3">
+                            <group string="Ticketing Agent Tax Commission" col="3" colspan="3">
                                 <group string="Commission Tax">
                                     <field name="agent_tkt_com_tax_amount"/>
                                     <field name="agent_tkt_com_tax_percentage"/>
                                 </group>
                                 <group string="Commission Rounding">
                                     <field name="agent_tkt_com_rounding"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Ticketing HO Tax Commission" col="3" colspan="3">
+                                <group string="Commission Tax">
+                                    <field name="agent_tkt_ho_com_tax_amount"/>
+                                    <field name="agent_tkt_ho_com_tax_percentage"/>
+                                </group>
+                                <group string="Commission Rounding">
+                                    <field name="agent_tkt_ho_com_rounding"/>
                                 </group>
                                 <group>
                                 </group>
@@ -630,7 +674,7 @@
                                 <group>
                                 </group>
                             </group>
-                            <group string="Reservation Commission" col="3" colspan="3">
+                            <group string="Reservation Agent Tax Commission" col="3" colspan="3">
                                 <group string="Commission Tax">
                                     <field name="customer_rsv_com_tax_amount"/>
                                     <field name="customer_rsv_com_tax_percentage"/>
@@ -661,7 +705,7 @@
                                 <group>
                                 </group>
                             </group>
-                            <group string="Ticketing Commission" col="3" colspan="3">
+                            <group string="Ticketing Agent Tax Commission" col="3" colspan="3">
                                 <group string="Commission Tax">
                                     <field name="customer_tkt_com_tax_amount"/>
                                     <field name="customer_tkt_com_tax_percentage"/>

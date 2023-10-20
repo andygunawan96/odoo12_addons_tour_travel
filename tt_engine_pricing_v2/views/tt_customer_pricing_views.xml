@@ -350,7 +350,7 @@ QQ1KTFITVALUEB,QQ3KFVITVALUEA</pre>
                                     </group>
                                 </page>
                                 <page string="Commission Tax" name="reservation_commission">
-                                    <group>
+                                    <group string="Agent Tax Commission to HO">
                                         <group string="Commission Tax">
                                             <field name="rsv_com_tax_percentage"/>
                                             <field name="rsv_com_tax_amount"/>
@@ -359,6 +359,29 @@ QQ1KTFITVALUEB,QQ3KFVITVALUEA</pre>
                                             <field name="rsv_com_rounding_places"/>
                                         </group>
                                     </group>
+                                    <div>
+                                        <pre>[ Agent Tax Commission to HO ]
+Commission Tax : Input value &lt; 0 or will be ignored.
+
+Example :
+Tax Percentage : -10%
+Agent Commission : 50,000
+
+Result :
+50,000 - 5,000 = 45,000
+
+*) Commission for the agent will be 45,000
+*) 5,000 fee will be added to HO</pre>
+                                    </div>
+<!--                                    <group string="HO">-->
+<!--                                        <group string="Commission Tax">-->
+<!--                                            <field name="rsv_ho_com_tax_percentage"/>-->
+<!--                                            <field name="rsv_ho_com_tax_amount"/>-->
+<!--                                        </group>-->
+<!--                                        <group string="Rounding">-->
+<!--                                            <field name="rsv_ho_com_rounding_places"/>-->
+<!--                                        </group>-->
+<!--                                    </group>-->
                                 </page>
                             </notebook>
                         </page>
@@ -384,7 +407,7 @@ QQ1KTFITVALUEB,QQ3KFVITVALUEA</pre>
                                     </group>
                                 </page>
                                 <page string="Commission Tax" name="ticketing_commission">
-                                    <group>
+                                    <group string="Agent Tax Commission to HO">
                                         <group string="Commission Tax">
                                             <field name="tkt_com_tax_percentage"/>
                                             <field name="tkt_com_tax_amount"/>
@@ -393,6 +416,29 @@ QQ1KTFITVALUEB,QQ3KFVITVALUEA</pre>
                                             <field name="tkt_com_rounding_places"/>
                                         </group>
                                     </group>
+                                    <div>
+                                        <pre>[ Agent Tax Commission to HO ]
+Commission Tax : Input value &lt; 0 or will be ignored.
+
+Example :
+Tax Percentage : -10%
+Agent Commission : 50,000
+
+Result :
+50,000 - 5,000 = 45,000
+
+*) Commission for the agent will be 45,000
+*) 5,000 fee will be added to HO</pre>
+                                    </div>
+<!--                                    <group string="HO">-->
+<!--                                        <group string="Commission Tax">-->
+<!--                                            <field name="tkt_ho_com_tax_percentage"/>-->
+<!--                                            <field name="tkt_ho_com_tax_amount"/>-->
+<!--                                        </group>-->
+<!--                                        <group string="Rounding">-->
+<!--                                            <field name="tkt_ho_com_rounding_places"/>-->
+<!--                                        </group>-->
+<!--                                    </group>-->
                                 </page>
                             </notebook>
                         </page>

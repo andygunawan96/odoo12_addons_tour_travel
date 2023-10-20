@@ -111,7 +111,7 @@
 <!--                                        'default_referenced_document': name,-->
 <!--                                        'default_currency_id': currency_id,-->
 <!--                                   }"/>-->
-                        <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="base.group_system,tt_base.group_tt_agent_user"
+                        <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="base.group_erp_manager,tt_base.group_tt_agent_user"
                                 context="{
                         'default_res_model': res_model,
                         'default_res_id': id,

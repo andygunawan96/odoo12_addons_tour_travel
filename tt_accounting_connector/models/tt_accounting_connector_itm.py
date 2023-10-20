@@ -221,9 +221,9 @@ class AccountingConnectorITM(models.Model):
                 sup_search_param = [('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('provider_id.code', '=', prov['provider'])]
                 if request.get('sector_type'):
                     if request['sector_type'] == 'Domestic':
-                        temp_product_search = ('variable_name', '=', 'domestic_product')
+                        temp_product_search = ('variable_name', '=', '%s_domestic_prod' % prov['provider'])
                     else:
-                        temp_product_search = ('variable_name', '=', 'international_product')
+                        temp_product_search = ('variable_name', '=', '%s_international_prod' % prov['provider'])
                     sector_based_product = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), temp_product_search], limit=1)
                     if sector_based_product:
                         sup_search_param.append(('product_code', '=', sector_based_product[0].variable_value))
@@ -575,9 +575,9 @@ class AccountingConnectorITM(models.Model):
                                     ('provider_id.code', '=', prov['provider'])]
                 if request['reservation_data'].get('sector_type'):
                     if request['reservation_data']['sector_type'] == 'Domestic':
-                        temp_product_search = ('variable_name', '=', 'domestic_product')
+                        temp_product_search = ('variable_name', '=', '%s_domestic_prod' % prov['provider'])
                     else:
-                        temp_product_search = ('variable_name', '=', 'international_product')
+                        temp_product_search = ('variable_name', '=', '%s_international_prod' % prov['provider'])
                     sector_based_product = self.env['tt.accounting.setup.variables'].search(
                         [('accounting_setup_id.accounting_provider', '=', 'itm'),
                          ('accounting_setup_id.active', '=', True),

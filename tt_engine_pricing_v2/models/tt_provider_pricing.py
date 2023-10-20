@@ -1,6 +1,7 @@
 import copy
 
 from odoo import models, fields, api, _
+from ...tools.db_connector import GatewayConnector
 from ...tools import variables
 from ...tools.api import Response
 import traceback, logging
@@ -73,6 +74,40 @@ class ProviderPricing(models.Model):
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
+
+    @api.model
+    def create(self, vals):
+        res = super(ProviderPricing, self).create(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'PROVIDER PRICING',
+                'message': 'New provider pricing created: %s\nUser: %s\n' % (
+                res.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": res.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "provider pricing changes" telegram notification: ' + str(e))
+        return res
+
+    def write(self, vals):
+        super(ProviderPricing, self).write(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'PROVIDER PRICING',
+                'message': 'Provider pricing modified: %s\nUser: %s\n' % (
+                self.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "provider pricing changes" telegram notification: ' + str(e))
 
     def action_compute_all_name(self):
         objs = self.env['tt.provider.pricing'].sudo().search([])
@@ -426,6 +461,52 @@ class ProviderPricingLine(models.Model):
     total_greater_amount = fields.Float('Greater than amount', default=0.0)
     # END
 
+    # October 17, 2023 - SAM
+    rsv_ho_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    rsv_ho_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    rsv_ho_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    tkt_ho_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    tkt_ho_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    tkt_ho_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    anc_ho_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    anc_ho_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    anc_ho_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    # END
+
+    @api.model
+    def create(self, vals):
+        res = super(ProviderPricingLine, self).create(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'PROVIDER PRICING LINE',
+                'message': 'New provider pricing line created: %s (%s)\nUser: %s\n' % (
+                    res.name, res.pricing_id.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": res.pricing_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "provider pricing line changes" telegram notification: ' + str(e))
+        return res
+
+    def write(self, vals):
+        super(ProviderPricingLine, self).write(vals)
+        try:
+            data = {
+                'code': 9901,
+                'title': 'PROVIDER PRICING LINE',
+                'message': 'Provider pricing line modified: %s (%s)\nUser: %s\n' % (
+                    self.name, self.pricing_id.name, self.env.user.name)
+            }
+            context = {
+                "co_ho_id": self.pricing_id.ho_id.id
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+        except Exception as e:
+            _logger.info('Failed to send "provider pricing line changes" telegram notification: ' + str(e))
+
     def get_data(self):
         res = {
             'id': self.id,
@@ -580,6 +661,11 @@ class ProviderPricingLine(models.Model):
                     'tax_amount': self.tkt_com_tax_amount,
                     'tax_percentage': self.tkt_com_tax_percentage,
                     'rounding': self.tkt_com_rounding_places,
+                },
+                'ho_commission': {
+                    'tax_amount': self.tkt_ho_com_tax_amount,
+                    'tax_percentage': self.tkt_ho_com_tax_percentage,
+                    'rounding': self.tkt_ho_com_rounding_places,
                 }
             },
             'ancillary': {
@@ -659,6 +745,11 @@ class ProviderPricingLine(models.Model):
                     'tax_amount': self.anc_com_tax_amount,
                     'tax_percentage': self.anc_com_tax_percentage,
                     'rounding': self.anc_com_rounding_places,
+                },
+                'ho_commission': {
+                    'tax_amount': self.anc_ho_com_tax_amount,
+                    'tax_percentage': self.anc_ho_com_tax_percentage,
+                    'rounding': self.anc_ho_com_rounding_places,
                 }
             },
             'reservation': {
@@ -708,6 +799,11 @@ class ProviderPricingLine(models.Model):
                     'tax_amount': self.rsv_com_tax_amount,
                     'tax_percentage': self.rsv_com_tax_percentage,
                     'rounding': self.rsv_com_rounding_places,
+                },
+                'ho_commission': {
+                    'tax_amount': self.rsv_ho_com_tax_amount,
+                    'tax_percentage': self.rsv_ho_com_tax_percentage,
+                    'rounding': self.rsv_ho_com_rounding_places,
                 }
             },
             'state': self.state,

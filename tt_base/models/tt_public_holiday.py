@@ -24,7 +24,6 @@ class TtPublicHoliday(models.Model):
         if context:
             if context.get('co_ho_seq_id'):
                 res = [{'date': rec.date, 'name': rec.name} for rec in self.sudo().search([('date', '>=', start_date), ('date', '<=', end_date),
-                                                                    ('country_id', '=', int(data['country_id'])),
                                                                     ('active', '=', True), ('ho_id.id', '=', context['co_ho_id'])])]
         else: ## DARI CRON MEDICAL
             # ho_list = self.env['tt.agent'].search([('is_ho_agent', '=', True)])
@@ -36,7 +35,6 @@ class TtPublicHoliday(models.Model):
             if ho_obj:
                 res = [{'date': rec.date, 'name': rec.name} for rec in
                    self.sudo().search([('date', '>=', start_date), ('date', '<=', end_date),
-                                       ('country_id', '=', int(data['country_id'])),
                                        ('active', '=', True), ('ho_id.id', '=', ho_obj.id)])]
 
         return {
@@ -44,4 +42,3 @@ class TtPublicHoliday(models.Model):
             'error_msg': '',
             'response': res,
         }
-

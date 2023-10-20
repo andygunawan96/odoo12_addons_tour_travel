@@ -255,8 +255,20 @@ class TtRefund(models.Model):
         vals_list['name'] = self.env['ir.sequence'].next_by_code(self._name)
         if 'service_type' in vals_list:
             vals_list['service_type'] = self.parse_service_type(vals_list['service_type'])
+        if not self.env.user.has_group('tt_base.group_after_sales_master_level_3') and vals_list.get('state') == 'final':
+            vals_list.pop('state')
+        if not self.env.user.has_group('tt_base.group_after_sales_master_level_5') and vals_list.get('is_vendor_received'):
+            vals_list.pop('is_vendor_received')
 
         return super(TtRefund, self).create(vals_list)
+
+    @api.multi
+    def write(self, vals_list):
+        if not self.env.user.has_group('tt_base.group_after_sales_master_level_3') and vals_list.get('state') == 'final':
+            vals_list.pop('state')
+        if not self.env.user.has_group('tt_base.group_after_sales_master_level_5') and vals_list.get('is_vendor_received'):
+            vals_list.pop('is_vendor_received')
+        return super(TtRefund, self).write(vals_list)
 
     def to_dict(self):
         return {
@@ -1196,7 +1208,7 @@ class TtRefund(models.Model):
             credit = tot_citra_fee
             debit = 0
             ledger_type = 4
-            self.env['tt.ledger'].create_ledger_vanilla(
+            self.env['tt.ledger'].sudo().create_ledger_vanilla(
                 self.res_model,
                 self.res_id,
                 'Refund Agent Additional Fee : %s' % (self.name),
@@ -1216,7 +1228,7 @@ class TtRefund(models.Model):
             credit = 0
             debit = tot_citra_fee
             ledger_type = 3
-            self.env['tt.ledger'].create_ledger_vanilla(
+            self.env['tt.ledger'].sudo().create_ledger_vanilla(
                 self.res_model,
                 self.res_id,
                 'Refund Agent Additional Fee : %s' % (self.name),

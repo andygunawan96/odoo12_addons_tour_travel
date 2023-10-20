@@ -1885,7 +1885,7 @@ class ReservationAirline(models.Model):
                     'passenger_ids': [(6, 0, passenger_list)],
                     'res_model': airline_obj._name,
                     'res_id': airline_obj.id,
-                    'notes': vals.get('notes') and vals['notes'] or '',
+                    'notes': commit_data.get('notes') and commit_data['notes'] or '',
                     'old_fee_notes': '\n'.join(old_ssr_notes) if old_ssr_notes else '',
                     'new_fee_notes': '\n'.join(new_ssr_notes) if new_ssr_notes else '',
                     'payment_acquirer_id': payment_acquirer_obj.id,
