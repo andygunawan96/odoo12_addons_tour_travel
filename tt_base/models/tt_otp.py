@@ -121,6 +121,7 @@ class TtOtp(models.Model):
     is_connect = fields.Boolean('Connect', default=False)
     platform = fields.Char('Platform')
     browser = fields.Char('Browser')
+    timezone = fields.Char('Timezone')
     active = fields.Boolean('Active', default=True)
 
     def create_otp_api(self, req):
@@ -130,7 +131,8 @@ class TtOtp(models.Model):
             "machine_id": machine_obj.id,
             "otp": self.generate_otp(),
             "platform": req['platform'],
-            "browser": req['browser']
+            "browser": req['browser'],
+            "timezone": req.get('timezone', '')
         })
 
     def generate_otp(self):
@@ -147,6 +149,9 @@ class TtOtp(models.Model):
     def get_company_name(self):
         company_obj = self.env['res.company'].search([],limit=1)
         return company_obj.name
+
+    def get_expired_time(self):
+        return (self.create_date + timedelta(minutes=self.user_id.ho_id.otp_expired_time)).strftime("%a, %d %b %Y %H:%M:%S")
 
     @api.multi
     def send_email_otp(self):

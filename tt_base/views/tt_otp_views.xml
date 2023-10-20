@@ -66,6 +66,7 @@
                         <field name="is_connect"/>
                         <field name="platform"/>
                         <field name="browser"/>
+                        <field name="timezone"/>
                         <field name="create_date"/>
                     </group>
                 </sheet>
@@ -83,6 +84,7 @@
                 <field name="is_connect"/>
                 <field name="platform"/>
                 <field name="browser"/>
+                <field name="timezone"/>
                 <field name="create_date"/>
             </tree>
         </field>
