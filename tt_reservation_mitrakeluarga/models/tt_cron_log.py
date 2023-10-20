@@ -81,8 +81,7 @@ class TtCronLogInhMitraKeluarga(models.Model):
                 #DRIVE THRU
                 public_holiday_res = self.env['tt.public.holiday'].get_public_holiday_api({
                     'start_date': datetime.now(),
-                    'end_date': datetime.now() + timedelta(days=8),
-                    'country_id': self.env.ref('base.id').id
+                    'end_date': datetime.now() + timedelta(days=8)
                 }, False)
                 public_holiday_list = [str(rec['date']) for rec in public_holiday_res['response']]
                 # drive thru
