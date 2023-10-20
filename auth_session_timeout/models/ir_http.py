@@ -13,10 +13,10 @@ class IrHttp(models.AbstractModel):
     def _authenticate(cls, auth_method='user'):
         res = super(IrHttp, cls)._authenticate(auth_method=auth_method)
         if request and request.session and request.session.uid:
-            try:
-                request.env.user._auth_timeout_check()
-            except:
-                # TODO Pop UP + f5
-                raise Warning('Your Odoo session expired. Please refresh the current web page.')
-            # request.env.user._auth_timeout_check()
+            # try:
+            #     request.env.user._auth_timeout_check()
+            # except:
+            #     # TODO Pop UP + f5
+            #     raise Warning('Your Odoo session expired. Please refresh the current web page.')
+            request.env.user._auth_timeout_check()
         return res
