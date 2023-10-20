@@ -148,6 +148,9 @@ class TtOtp(models.Model):
         company_obj = self.env['res.company'].search([],limit=1)
         return company_obj.name
 
+    def get_expired_time(self):
+        return (self.create_date + timedelta(minutes=self.user_id.ho_id.otp_expired_time)).strftime("%a, %d %b %Y %H:%M:%S")
+
     @api.multi
     def send_email_otp(self):
         template = self.env.ref('tt_base.template_mail_otp', raise_if_not_found=False)

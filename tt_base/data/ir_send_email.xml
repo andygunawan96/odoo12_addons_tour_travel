@@ -42,17 +42,19 @@
 			<field name="copyvalue"/>
 			<field name="body_html">
 <![CDATA[
-<p>To: ${object.user_id.name}</p>
+<p>Dear ${object.user_id.name}</p>
 <br/>
-<p>Dear Sir/Madam,</p>
-<br/>
-<p>We've received an OTP request from your ${object.get_company_name()} Account</p>
+<p>We have received a login attempt in our system</p>
+<p>Machine ID: ${object.machine_id.code}</p>
+<p>Platform: ${object.platform}</p>
+<p>Browser: ${object.browser}</p>
 <p>Please input the 6 digit authentification code below to login</p>
 <br/>
 <p>${object.otp}</p>
 <br/>
-<p>This OTP code will expire in 5 minutes.</p>
-<p>If you didn't make this request, please ignore or contact our CS</p>
+
+<p>This OTP code will expire on ${object.get_expired_time()}.</p>
+<p>If you didn't make this request, please contact helpdesk or change your password</p>
 
 <br/>
 <p>Regards,</p>
