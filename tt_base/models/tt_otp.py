@@ -132,7 +132,7 @@ class TtOtp(models.Model):
             "otp": self.generate_otp(),
             "platform": req['platform'],
             "browser": req['browser'],
-            "timezone": req['timezone']
+            "timezone": req.get('timezone', '')
         })
 
     def generate_otp(self):
