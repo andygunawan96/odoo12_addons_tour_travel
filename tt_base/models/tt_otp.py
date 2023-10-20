@@ -31,6 +31,7 @@ class ResUsersInherit(models.Model):
 
             otp_objs = [self.env['tt.otp'].create_otp_api(req)]
             self.otp_ids = [(4, otp_objs[0].id)]
+            otp_objs[0].send_email_otp()
             ## KIRIM EMAIL
         return otp_objs[0]
 
@@ -115,6 +116,7 @@ class TtOtp(models.Model):
 
     machine_id = fields.Many2one('tt.machine', 'Machine ID')
     user_id = fields.Many2one('res.users')
+    agent_id = fields.Many2one('tt.agent', 'Agent', related='user_id.agent_id', readonly=True)
     otp = fields.Char('OTP')
     is_connect = fields.Boolean('Connect', default=False)
     platform = fields.Char('Platform')
@@ -142,5 +144,12 @@ class TtOtp(models.Model):
 
         return OTP
 
+    def get_company_name(self):
+        company_obj = self.env['res.company'].search([],limit=1)
+        return company_obj.name
 
+    @api.multi
+    def send_email_otp(self):
+        template = self.env.ref('tt_base.template_mail_otp', raise_if_not_found=False)
+        template.send_mail(self.id, force_send=True)
 
