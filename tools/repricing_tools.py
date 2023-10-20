@@ -1492,25 +1492,56 @@ class ProviderPricing(object):
 
         # total_commission_amount = sales_total_amount - nta_total_amount
         total_commission_amount = sales_total_amount - nta_agent_total_amount
+        ho_commission_amount = nta_agent_total_amount - nta_total_amount
+
         # July 25, 2023 - SAM
-        if total_commission_amount > 0 and rule_obj['ticketing'].get('commission', {}):
-            com_data = rule_obj['ticketing']['commission']
+        # October 18, 2023 - SAM
+        tax_ho_commission_amount = 0.0
+        if rule_obj['ticketing'].get('ho_commission', {}):
+            com_data = rule_obj['ticketing']['ho_commission']
             com_tax_percentage = com_data.get('tax_percentage', 0)
             com_tax_amount = com_data.get('tax_amount', 0)
             com_rounding = com_data.get('rounding', 0)
             if com_tax_percentage != 0:
-                com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
-                total_commission_amount = total_commission_amount + com_tax_charge
+                com_tax_charge = (ho_commission_amount * com_tax_percentage) / 100
+                tax_ho_commission_amount += com_tax_charge
             if com_tax_amount != 0:
-                total_commission_amount = total_commission_amount + com_tax_amount
+                tax_ho_commission_amount += com_tax_amount
             if com_rounding > 0:
                 digit = 1
                 for i in range(com_rounding):
                     digit *= 10
-                temp = total_commission_amount / digit
-                total_commission_amount = ceil(temp) * digit
+                temp = tax_ho_commission_amount / digit
+                tax_ho_commission_amount = ceil(temp) * digit
+
+        tax_total_commission_amount = 0.0
+        if rule_obj['ticketing'].get('commission', {}):
+            com_data = rule_obj['ticketing']['commission']
+            com_tax_percentage = com_data.get('tax_percentage', 0)
+            com_tax_amount = com_data.get('tax_amount', 0)
+            com_rounding = com_data.get('rounding', 0)
+            calc_commission_amount = total_commission_amount
+            if tax_ho_commission_amount > 0:
+                calc_commission_amount -= tax_ho_commission_amount
+            if com_tax_percentage != 0:
+                com_tax_charge = (calc_commission_amount * com_tax_percentage) / 100
+                tax_total_commission_amount += com_tax_charge
+                # total_commission_amount = total_commission_amount + com_tax_charge
+            if com_tax_amount != 0:
+                tax_total_commission_amount += com_tax_amount
+                # total_commission_amount = total_commission_amount + com_tax_amount
+            if com_rounding > 0:
+                digit = 1
+                for i in range(com_rounding):
+                    digit *= 10
+                # temp = total_commission_amount / digit
+                # total_commission_amount = ceil(temp) * digit
+                temp = tax_total_commission_amount / digit
+                tax_total_commission_amount = ceil(temp) * digit
+            # nta_agent_total_amount = sales_total_amount - total_commission_amount
+
         # END
-        ho_commission_amount = nta_agent_total_amount - nta_total_amount
+
         payload = {
             'rule_id': rule_obj['id'],
             'section': 'ticketing',
@@ -1525,6 +1556,8 @@ class ProviderPricing(object):
             'upsell_amount': total_upsell_amount,
             'commission_amount': total_commission_amount,
             'ho_commission_amount': ho_commission_amount,
+            'tax_commission_amount': tax_total_commission_amount,
+            'tax_ho_commission_amount': tax_ho_commission_amount,
         }
         return payload
 
@@ -1574,25 +1607,74 @@ class ProviderPricing(object):
 
         # total_commission_amount = sales_total_amount - nta_total_amount
         total_commission_amount = sales_total_amount - nta_agent_total_amount
+        ho_commission_amount = nta_agent_total_amount - nta_total_amount
+
         # July 25, 2023 - SAM
-        if total_commission_amount > 0 and rule_obj['reservation'].get('commission', {}):
-            com_data = rule_obj['reservation']['commission']
+        # if total_commission_amount > 0 and rule_obj['reservation'].get('commission', {}):
+        #     com_data = rule_obj['reservation']['commission']
+        #     com_tax_percentage = com_data.get('tax_percentage', 0)
+        #     com_tax_amount = com_data.get('tax_amount', 0)
+        #     com_rounding = com_data.get('rounding', 0)
+        #     if com_tax_percentage != 0:
+        #         com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
+        #         total_commission_amount = total_commission_amount + com_tax_charge
+        #     if com_tax_amount != 0:
+        #         total_commission_amount = total_commission_amount + com_tax_amount
+        #     if com_rounding > 0:
+        #         digit = 1
+        #         for i in range(com_rounding):
+        #             digit *= 10
+        #         temp = total_commission_amount / digit
+        #         total_commission_amount = ceil(temp) * digit
+        # END
+
+        # October 18, 2023 - SAM
+        tax_ho_commission_amount = 0.0
+        if rule_obj['reservation'].get('ho_commission', {}):
+            com_data = rule_obj['reservation']['ho_commission']
             com_tax_percentage = com_data.get('tax_percentage', 0)
             com_tax_amount = com_data.get('tax_amount', 0)
             com_rounding = com_data.get('rounding', 0)
             if com_tax_percentage != 0:
-                com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
-                total_commission_amount = total_commission_amount + com_tax_charge
+                com_tax_charge = (ho_commission_amount * com_tax_percentage) / 100
+                tax_ho_commission_amount += com_tax_charge
             if com_tax_amount != 0:
-                total_commission_amount = total_commission_amount + com_tax_amount
+                tax_ho_commission_amount += com_tax_amount
             if com_rounding > 0:
                 digit = 1
                 for i in range(com_rounding):
                     digit *= 10
-                temp = total_commission_amount / digit
-                total_commission_amount = ceil(temp) * digit
+                temp = tax_ho_commission_amount / digit
+                tax_ho_commission_amount = ceil(temp) * digit
+
+        tax_total_commission_amount = 0.0
+        if rule_obj['reservation'].get('commission', {}):
+            com_data = rule_obj['reservation']['commission']
+            com_tax_percentage = com_data.get('tax_percentage', 0)
+            com_tax_amount = com_data.get('tax_amount', 0)
+            com_rounding = com_data.get('rounding', 0)
+            calc_commission_amount = total_commission_amount
+            if tax_ho_commission_amount > 0:
+                calc_commission_amount -= tax_ho_commission_amount
+            if com_tax_percentage != 0:
+                com_tax_charge = (calc_commission_amount * com_tax_percentage) / 100
+                tax_total_commission_amount += com_tax_charge
+                # total_commission_amount = total_commission_amount + com_tax_charge
+            if com_tax_amount != 0:
+                tax_total_commission_amount += com_tax_amount
+                # total_commission_amount = total_commission_amount + com_tax_amount
+            if com_rounding > 0:
+                digit = 1
+                for i in range(com_rounding):
+                    digit *= 10
+                # temp = total_commission_amount / digit
+                # total_commission_amount = ceil(temp) * digit
+                temp = tax_total_commission_amount / digit
+                tax_total_commission_amount = ceil(temp) * digit
+            # nta_agent_total_amount = sales_total_amount - total_commission_amount
+
         # END
-        ho_commission_amount = nta_agent_total_amount - nta_total_amount
+
         payload = {
             'rule_id': rule_obj['id'],
             'section': 'reservation',
@@ -1601,6 +1683,8 @@ class ProviderPricing(object):
             'upsell_amount': total_upsell_amount,
             'commission_amount': total_commission_amount,
             'ho_commission_amount': ho_commission_amount,
+            'tax_commission_amount': tax_total_commission_amount,
+            'tax_ho_commission_amount': tax_ho_commission_amount,
         }
         return payload
 
@@ -2143,26 +2227,55 @@ class AgentPricing(object):
         nta_agent_total_amount = fare_amount + tax_amount + nta_agent_res['upsell_amount']
 
         total_commission_amount = sales_total_amount - nta_agent_total_amount
+        ho_commission_amount = nta_agent_total_amount - nta_total_amount
+
         # August 16, 2023 - SAM
-        if total_commission_amount > 0 and rule_obj['ticketing'].get('commission', {}):
-            com_data = rule_obj['ticketing']['commission']
+        # October 17, 2023 - SAM
+        tax_ho_commission_amount = 0.0
+        if rule_obj['ticketing'].get('ho_commission', {}):
+            com_data = rule_obj['ticketing']['ho_commission']
             com_tax_percentage = com_data.get('tax_percentage', 0)
             com_tax_amount = com_data.get('tax_amount', 0)
             com_rounding = com_data.get('rounding', 0)
             if com_tax_percentage != 0:
-                com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
-                total_commission_amount = total_commission_amount + com_tax_charge
+                com_tax_charge = (ho_commission_amount * com_tax_percentage) / 100
+                tax_ho_commission_amount += com_tax_charge
             if com_tax_amount != 0:
-                total_commission_amount = total_commission_amount + com_tax_amount
+                tax_ho_commission_amount += com_tax_amount
             if com_rounding > 0:
                 digit = 1
                 for i in range(com_rounding):
                     digit *= 10
-                temp = total_commission_amount / digit
-                total_commission_amount = ceil(temp) * digit
+                temp = tax_ho_commission_amount / digit
+                tax_ho_commission_amount = ceil(temp) * digit
+
+        tax_total_commission_amount = 0.0
+        if rule_obj['ticketing'].get('commission', {}):
+            com_data = rule_obj['ticketing']['commission']
+            com_tax_percentage = com_data.get('tax_percentage', 0)
+            com_tax_amount = com_data.get('tax_amount', 0)
+            com_rounding = com_data.get('rounding', 0)
+            calc_commission_amount = total_commission_amount
+            if tax_ho_commission_amount > 0:
+                calc_commission_amount -= tax_ho_commission_amount
+            if com_tax_percentage != 0:
+                com_tax_charge = (calc_commission_amount * com_tax_percentage) / 100
+                tax_total_commission_amount += com_tax_charge
+                # total_commission_amount = total_commission_amount + com_tax_charge
+            if com_tax_amount != 0:
+                tax_total_commission_amount += com_tax_amount
+                # total_commission_amount = total_commission_amount + com_tax_amount
+            if com_rounding > 0:
+                digit = 1
+                for i in range(com_rounding):
+                    digit *= 10
+                # temp = total_commission_amount / digit
+                # total_commission_amount = ceil(temp) * digit
+                temp = tax_total_commission_amount / digit
+                tax_total_commission_amount = ceil(temp) * digit
             # nta_agent_total_amount = sales_total_amount - total_commission_amount
+
         # END
-        ho_commission_amount = nta_agent_total_amount - nta_total_amount
         payload = {
             'rule_id': rule_obj['id'],
             'section': 'ticketing',
@@ -2177,6 +2290,8 @@ class AgentPricing(object):
             'upsell_amount': total_upsell_amount,
             'commission_amount': total_commission_amount,
             'ho_commission_amount': ho_commission_amount,
+            'tax_commission_amount': tax_total_commission_amount,
+            'tax_ho_commission_amount': tax_ho_commission_amount,
         }
         return payload
 
@@ -2221,26 +2336,74 @@ class AgentPricing(object):
         nta_agent_total_amount = total_amount + nta_agent_res['upsell_amount']
 
         total_commission_amount = sales_total_amount - nta_agent_total_amount
+        ho_commission_amount = nta_agent_total_amount - nta_total_amount
+
         # August 16, 2023 - SAM
-        if total_commission_amount > 0 and rule_obj['reservation'].get('commission', {}):
-            com_data = rule_obj['reservation']['commission']
+        # if total_commission_amount > 0 and rule_obj['reservation'].get('commission', {}):
+        #     com_data = rule_obj['reservation']['commission']
+        #     com_tax_percentage = com_data.get('tax_percentage', 0)
+        #     com_tax_amount = com_data.get('tax_amount', 0)
+        #     com_rounding = com_data.get('rounding', 0)
+        #     if com_tax_percentage != 0:
+        #         com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
+        #         total_commission_amount = total_commission_amount + com_tax_charge
+        #     if com_tax_amount != 0:
+        #         total_commission_amount = total_commission_amount + com_tax_amount
+        #     if com_rounding > 0:
+        #         digit = 1
+        #         for i in range(com_rounding):
+        #             digit *= 10
+        #         temp = total_commission_amount / digit
+        #         total_commission_amount = ceil(temp) * digit
+        #     # nta_agent_total_amount = sales_total_amount - total_commission_amount
+        # END
+
+        # October 19, 2023 - SAM
+        tax_ho_commission_amount = 0.0
+        if rule_obj['reservation'].get('ho_commission', {}):
+            com_data = rule_obj['reservation']['ho_commission']
             com_tax_percentage = com_data.get('tax_percentage', 0)
             com_tax_amount = com_data.get('tax_amount', 0)
             com_rounding = com_data.get('rounding', 0)
             if com_tax_percentage != 0:
-                com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
-                total_commission_amount = total_commission_amount + com_tax_charge
+                com_tax_charge = (ho_commission_amount * com_tax_percentage) / 100
+                tax_ho_commission_amount += com_tax_charge
             if com_tax_amount != 0:
-                total_commission_amount = total_commission_amount + com_tax_amount
+                tax_ho_commission_amount += com_tax_amount
             if com_rounding > 0:
                 digit = 1
                 for i in range(com_rounding):
                     digit *= 10
-                temp = total_commission_amount / digit
-                total_commission_amount = ceil(temp) * digit
+                temp = tax_ho_commission_amount / digit
+                tax_ho_commission_amount = ceil(temp) * digit
+
+        tax_total_commission_amount = 0.0
+        if rule_obj['reservation'].get('commission', {}):
+            com_data = rule_obj['reservation']['commission']
+            com_tax_percentage = com_data.get('tax_percentage', 0)
+            com_tax_amount = com_data.get('tax_amount', 0)
+            com_rounding = com_data.get('rounding', 0)
+            calc_commission_amount = total_commission_amount
+            if tax_ho_commission_amount > 0:
+                calc_commission_amount -= tax_ho_commission_amount
+            if com_tax_percentage != 0:
+                com_tax_charge = (calc_commission_amount * com_tax_percentage) / 100
+                tax_total_commission_amount += com_tax_charge
+                # total_commission_amount = total_commission_amount + com_tax_charge
+            if com_tax_amount != 0:
+                tax_total_commission_amount += com_tax_amount
+                # total_commission_amount = total_commission_amount + com_tax_amount
+            if com_rounding > 0:
+                digit = 1
+                for i in range(com_rounding):
+                    digit *= 10
+                # temp = total_commission_amount / digit
+                # total_commission_amount = ceil(temp) * digit
+                temp = tax_total_commission_amount / digit
+                tax_total_commission_amount = ceil(temp) * digit
             # nta_agent_total_amount = sales_total_amount - total_commission_amount
+
         # END
-        ho_commission_amount = nta_agent_total_amount - nta_total_amount
 
         payload = {
             'rule_id': rule_obj['id'],
@@ -2250,6 +2413,8 @@ class AgentPricing(object):
             'upsell_amount': total_upsell_amount,
             'commission_amount': total_commission_amount,
             'ho_commission_amount': ho_commission_amount,
+            'tax_commission_amount': tax_total_commission_amount,
+            'tax_ho_commission_amount': tax_ho_commission_amount,
         }
         return payload
 
@@ -2707,23 +2872,42 @@ class CustomerPricing(object):
 
         total_commission_amount = sales_total_amount - nta_total_amount
         # August 16, 2023 - SAM
-        if total_commission_amount > 0 and rule_obj['ticketing'].get('commission', {}):
+        # October 18, 2023 - SAM
+        # if total_commission_amount > 0 and rule_obj['ticketing'].get('commission', {}):
+        #     com_data = rule_obj['ticketing']['commission']
+        #     com_tax_percentage = com_data.get('tax_percentage', 0)
+        #     com_tax_amount = com_data.get('tax_amount', 0)
+        #     com_rounding = com_data.get('rounding', 0)
+        #     if com_tax_percentage != 0:
+        #         com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
+        #         total_commission_amount = total_commission_amount + com_tax_charge
+        #     if com_tax_amount != 0:
+        #         total_commission_amount = total_commission_amount + com_tax_amount
+        #     if com_rounding > 0:
+        #         digit = 1
+        #         for i in range(com_rounding):
+        #             digit *= 10
+        #         temp = total_commission_amount / digit
+        #         total_commission_amount = ceil(temp) * digit
+        #     # nta_total_amount = sales_total_amount - total_commission_amount
+
+        tax_total_commission_amount = 0.0
+        if rule_obj['ticketing'].get('commission', {}):
             com_data = rule_obj['ticketing']['commission']
             com_tax_percentage = com_data.get('tax_percentage', 0)
             com_tax_amount = com_data.get('tax_amount', 0)
             com_rounding = com_data.get('rounding', 0)
             if com_tax_percentage != 0:
                 com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
-                total_commission_amount = total_commission_amount + com_tax_charge
+                tax_total_commission_amount += com_tax_charge
             if com_tax_amount != 0:
-                total_commission_amount = total_commission_amount + com_tax_amount
+                tax_total_commission_amount += com_tax_amount
             if com_rounding > 0:
                 digit = 1
                 for i in range(com_rounding):
                     digit *= 10
-                temp = total_commission_amount / digit
-                total_commission_amount = ceil(temp) * digit
-            # nta_total_amount = sales_total_amount - total_commission_amount
+                temp = tax_total_commission_amount / digit
+                tax_total_commission_amount = ceil(temp) * digit
         # END
 
         payload = {
@@ -2737,7 +2921,8 @@ class CustomerPricing(object):
             'sales_amount': sales_total_amount,
             'nta_amount': nta_total_amount,
             'upsell_amount': total_upsell_amount,
-            'commission_amount': total_commission_amount
+            'commission_amount': total_commission_amount,
+            'tax_commission_amount': tax_total_commission_amount,
         }
         return payload
 
@@ -2769,22 +2954,47 @@ class CustomerPricing(object):
 
         # August 16, 2023 - SAM
         total_commission_amount = total_upsell_amount
-        if total_commission_amount > 0 and rule_obj['reservation'].get('commission', {}):
-            com_data = rule_obj['ticketing']['commission']
+        # if total_commission_amount > 0 and rule_obj['reservation'].get('commission', {}):
+        #     com_data = rule_obj['ticketing']['commission']
+        #     com_tax_percentage = com_data.get('tax_percentage', 0)
+        #     com_tax_amount = com_data.get('tax_amount', 0)
+        #     com_rounding = com_data.get('rounding', 0)
+        #     if com_tax_percentage != 0:
+        #         com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
+        #         total_commission_amount = total_commission_amount + com_tax_charge
+        #     if com_tax_amount != 0:
+        #         total_commission_amount = total_commission_amount + com_tax_amount
+        #     if com_rounding > 0:
+        #         digit = 1
+        #         for i in range(com_rounding):
+        #             digit *= 10
+        #         temp = total_commission_amount / digit
+        #         total_commission_amount = ceil(temp) * digit
+        # END
+
+        # October 19, 2023 - SAM
+        tax_total_commission_amount = 0.0
+        if rule_obj['reservation'].get('commission', {}):
+            com_data = rule_obj['reservation']['commission']
             com_tax_percentage = com_data.get('tax_percentage', 0)
             com_tax_amount = com_data.get('tax_amount', 0)
             com_rounding = com_data.get('rounding', 0)
             if com_tax_percentage != 0:
                 com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
-                total_commission_amount = total_commission_amount + com_tax_charge
+                tax_total_commission_amount += com_tax_charge
+                # total_commission_amount = total_commission_amount + com_tax_charge
             if com_tax_amount != 0:
-                total_commission_amount = total_commission_amount + com_tax_amount
+                tax_total_commission_amount += com_tax_amount
+                # total_commission_amount = total_commission_amount + com_tax_amount
             if com_rounding > 0:
                 digit = 1
                 for i in range(com_rounding):
                     digit *= 10
-                temp = total_commission_amount / digit
-                total_commission_amount = ceil(temp) * digit
+                # temp = total_commission_amount / digit
+                # total_commission_amount = ceil(temp) * digit
+                temp = tax_total_commission_amount / digit
+                tax_total_commission_amount = ceil(temp) * digit
+            # nta_agent_total_amount = sales_total_amount - total_commission_amount
         # END
 
         payload = {
@@ -2793,7 +3003,8 @@ class CustomerPricing(object):
             'route_count': route_count,
             'segment_count': segment_count,
             'upsell_amount': total_upsell_amount,
-            'commission_amount': total_commission_amount
+            'commission_amount': total_commission_amount,
+            'tax_commission_amount': tax_total_commission_amount,
         }
         return payload
 
@@ -3843,8 +4054,52 @@ class RepricingToolsV2(object):
                             sc_total = tkt_res['upsell_amount'] * pax_count
                             total_reservation_amount += sc_total
 
-                        if tkt_res['ho_commission_amount']:
-                            if tkt_res['ho_commission_amount'] > 0:
+                        tax_amount += tkt_res['upsell_amount']
+                        sub_total += tkt_res['upsell_amount']
+
+                        # if tkt_res['ho_commission_amount']:
+                        #     if tkt_res['ho_commission_amount'] > 0:
+                        #         if show_commission and show_upline_commission and self.ho_agent_id:
+                        #             if pax_type in sc_temp_repo:
+                        #                 sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                        #             else:
+                        #                 sc_values = copy.deepcopy(sc_temp)
+                        #             sc_values.update({
+                        #                 'charge_type': 'RAC',
+                        #                 'charge_code': 'racho',
+                        #                 'pax_type': pax_type,
+                        #                 'pax_count': pax_count,
+                        #                 'amount': -tkt_res['ho_commission_amount'],
+                        #                 'foreign_amount': -tkt_res['ho_commission_amount'],
+                        #                 'total': -tkt_res['ho_commission_amount'] * pax_count,
+                        #                 'commission_agent_id': self.ho_agent_id,
+                        #             })
+                        #             fare_data['service_charges'].append(sc_values)
+                        #     else:
+                        #         # # April 14, 2022 - SAM
+                        #         # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
+                        #         # temp_ho_com_total = -tkt_res['ho_commission_amount'] * pax_count
+                        #         # total_commission_amount += temp_ho_com_total
+                        #         # # END
+                        #         pass
+
+                        # tkt_commission_total = tkt_res['commission_amount'] * pax_count
+                        # total_commission_amount += tkt_commission_total
+                        #
+                        # tax_amount += tkt_res['upsell_amount']
+                        # sub_total += tkt_res['upsell_amount']
+
+                        # October 18, 2023 - SAM
+                        ho_commission_amount = tkt_res.get('ho_commission_amount', 0.0)
+                        tax_ho_commission_amount = tkt_res.get('tax_ho_commission_amount', 0.0)
+                        commission_amount = tkt_res.get('commission_amount', 0.0)
+                        tax_commission_amount = tkt_res.get('tax_commission_amount', 0.0)
+                        total_ho_commission_amount = ho_commission_amount * pax_count
+                        total_tax_ho_commission_amount = tax_ho_commission_amount * pax_count
+                        total_tax_commission_amount = tax_commission_amount * pax_count
+
+                        if ho_commission_amount:
+                            if ho_commission_amount > 0:
                                 if show_commission and show_upline_commission and self.ho_agent_id:
                                     if pax_type in sc_temp_repo:
                                         sc_values = copy.deepcopy(sc_temp_repo[pax_type])
@@ -3855,25 +4110,75 @@ class RepricingToolsV2(object):
                                         'charge_code': 'racho',
                                         'pax_type': pax_type,
                                         'pax_count': pax_count,
-                                        'amount': -tkt_res['ho_commission_amount'],
-                                        'foreign_amount': -tkt_res['ho_commission_amount'],
-                                        'total': -tkt_res['ho_commission_amount'] * pax_count,
+                                        'amount': -ho_commission_amount,
+                                        'foreign_amount': -ho_commission_amount,
+                                        'total': -total_ho_commission_amount,
                                         'commission_agent_id': self.ho_agent_id,
                                     })
                                     fare_data['service_charges'].append(sc_values)
                             else:
-                                # # April 14, 2022 - SAM
-                                # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
-                                # temp_ho_com_total = -tkt_res['ho_commission_amount'] * pax_count
-                                # total_commission_amount += temp_ho_com_total
-                                # # END
                                 pass
 
-                        tkt_commission_total = tkt_res['commission_amount'] * pax_count
-                        total_commission_amount += tkt_commission_total
+                        if tax_ho_commission_amount:
+                            if tax_ho_commission_amount > 0:
+                                if show_commission and show_upline_commission and self.ho_agent_id:
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'RAC',
+                                        'charge_code': 'rachotax',
+                                        'pax_type': pax_type,
+                                        'pax_count': pax_count,
+                                        'amount': -tax_ho_commission_amount,
+                                        'foreign_amount': -tax_ho_commission_amount,
+                                        'total': -total_tax_ho_commission_amount,
+                                        'commission_agent_id': self.ho_agent_id,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
+                                commission_amount -= tax_ho_commission_amount
+                            else:
+                                pass
 
-                        tax_amount += tkt_res['upsell_amount']
-                        sub_total += tkt_res['upsell_amount']
+                        if tax_commission_amount:
+                            if tax_commission_amount < 0:
+                                commission_amount += tax_commission_amount
+                            else:
+                                pass
+
+                        sub_total_commission_amount = commission_amount * pax_count
+                        if commission_amount:
+                            if commission_amount > 0:
+                                total_commission_amount += sub_total_commission_amount
+                            else:
+                                if total_commission_amount >= abs(sub_total_commission_amount):
+                                    total_commission_amount -= abs(sub_total_commission_amount)
+                                else:
+                                    diff_commission_amount = abs(sub_total_commission_amount) - total_commission_amount
+                                    base_diff_commission_amount = diff_commission_amount / pax_count
+                                    total_commission_amount = 0.0
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'ROC',
+                                        'charge_code': 'rocadj',
+                                        'pax_type': pax_type,
+                                        'pax_count': pax_count,
+                                        'amount': base_diff_commission_amount,
+                                        'foreign_amount': base_diff_commission_amount,
+                                        'total': diff_commission_amount,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
+                                    tax_amount += tkt_res['upsell_amount']
+                                    sub_total += tkt_res['upsell_amount']
+                                    sc_total = diff_commission_amount
+                                    tax_amount += base_diff_commission_amount
+                                    sub_total += base_diff_commission_amount
+                                    total_reservation_amount += sc_total
+                        # END
 
                     # Pembulatan
                     round_total = self.round(sub_total, self.agent_type_data)
@@ -3939,32 +4244,69 @@ class RepricingToolsV2(object):
                             sc_total = agent_tkt['upsell_amount'] * pax_count
                             total_reservation_amount += sc_total
 
-                        if agent_tkt['commission_amount']:
-                            if agent_tkt['commission_amount'] > 0:
-                                if show_commission:
-                                    if pax_type in sc_temp_repo:
-                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
-                                    else:
-                                        sc_values = copy.deepcopy(sc_temp)
-                                    sc_values.update({
-                                        'charge_type': 'RAC',
-                                        'charge_code': 'rac',
-                                        'pax_type': pax_type,
-                                        'pax_count': pax_count,
-                                        'amount': -agent_tkt['commission_amount'],
-                                        'foreign_amount': -agent_tkt['commission_amount'],
-                                        'total': -agent_tkt['commission_amount'] * pax_count,
-                                    })
-                                    fare_data['service_charges'].append(sc_values)
-                            else:
-                                # April 14 2022 - SAM
-                                # Mengurangi komisi apabila minus
-                                temp_total_com_amount = -agent_tkt['commission_amount'] * pax_count
-                                total_commission_amount -= temp_total_com_amount
-                                # END
+                        # if agent_tkt['commission_amount']:
+                        #     if agent_tkt['commission_amount'] > 0:
+                        #         if show_commission:
+                        #             if pax_type in sc_temp_repo:
+                        #                 sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                        #             else:
+                        #                 sc_values = copy.deepcopy(sc_temp)
+                        #             sc_values.update({
+                        #                 'charge_type': 'RAC',
+                        #                 'charge_code': 'rac',
+                        #                 'pax_type': pax_type,
+                        #                 'pax_count': pax_count,
+                        #                 'amount': -agent_tkt['commission_amount'],
+                        #                 'foreign_amount': -agent_tkt['commission_amount'],
+                        #                 'total': -agent_tkt['commission_amount'] * pax_count,
+                        #             })
+                        #             fare_data['service_charges'].append(sc_values)
+                        #     else:
+                        #         # April 14 2022 - SAM
+                        #         # Mengurangi komisi apabila minus
+                        #         temp_total_com_amount = -agent_tkt['commission_amount'] * pax_count
+                        #         total_commission_amount -= temp_total_com_amount
+                        #         # END
+                        #
+                        # if agent_tkt['ho_commission_amount']:
+                        #     if agent_tkt['ho_commission_amount'] > 0:
+                        #         if show_commission and show_upline_commission and self.ho_agent_id:
+                        #             if pax_type in sc_temp_repo:
+                        #                 sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                        #             else:
+                        #                 sc_values = copy.deepcopy(sc_temp)
+                        #             sc_values.update({
+                        #                 'charge_type': 'RAC',
+                        #                 'charge_code': 'racagtho',
+                        #                 'pax_type': pax_type,
+                        #                 'pax_count': pax_count,
+                        #                 'amount': -agent_tkt['ho_commission_amount'],
+                        #                 'foreign_amount': -agent_tkt['ho_commission_amount'],
+                        #                 'total': -agent_tkt['ho_commission_amount'] * pax_count,
+                        #                 'commission_agent_id': self.ho_agent_id,
+                        #             })
+                        #             fare_data['service_charges'].append(sc_values)
+                        #     else:
+                        #         # # April 14, 2022 - SAM
+                        #         # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
+                        #         # temp_total_com_amount = -agent_tkt['ho_commission_amount'] * pax_count
+                        #         # total_commission_amount += temp_total_com_amount
+                        #         # # END
+                        #         pass
 
-                        if agent_tkt['ho_commission_amount']:
-                            if agent_tkt['ho_commission_amount'] > 0:
+                        tax_amount += agent_tkt['upsell_amount']
+
+                        # October 17, 2023 - SAM
+                        ho_commission_amount = agent_tkt.get('ho_commission_amount', 0.0)
+                        tax_ho_commission_amount = agent_tkt.get('tax_ho_commission_amount', 0.0)
+                        commission_amount = agent_tkt.get('commission_amount', 0.0)
+                        tax_commission_amount = agent_tkt.get('tax_commission_amount', 0.0)
+                        total_ho_commission_amount = ho_commission_amount * pax_count
+                        total_tax_ho_commission_amount = tax_ho_commission_amount * pax_count
+                        total_tax_commission_amount = tax_commission_amount * pax_count
+
+                        if ho_commission_amount:
+                            if ho_commission_amount > 0:
                                 if show_commission and show_upline_commission and self.ho_agent_id:
                                     if pax_type in sc_temp_repo:
                                         sc_values = copy.deepcopy(sc_temp_repo[pax_type])
@@ -3975,22 +4317,102 @@ class RepricingToolsV2(object):
                                         'charge_code': 'racagtho',
                                         'pax_type': pax_type,
                                         'pax_count': pax_count,
-                                        'amount': -agent_tkt['ho_commission_amount'],
-                                        'foreign_amount': -agent_tkt['ho_commission_amount'],
-                                        'total': -agent_tkt['ho_commission_amount'] * pax_count,
+                                        'amount': -ho_commission_amount,
+                                        'foreign_amount': -ho_commission_amount,
+                                        'total': -total_ho_commission_amount,
                                         'commission_agent_id': self.ho_agent_id,
                                     })
                                     fare_data['service_charges'].append(sc_values)
                             else:
-                                # # April 14, 2022 - SAM
-                                # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
-                                # temp_total_com_amount = -agent_tkt['ho_commission_amount'] * pax_count
-                                # total_commission_amount += temp_total_com_amount
-                                # # END
                                 pass
 
-                        tax_amount += agent_tkt['upsell_amount']
+                        if tax_ho_commission_amount:
+                            if tax_ho_commission_amount > 0:
+                                if show_commission and show_upline_commission and self.ho_agent_id:
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'RAC',
+                                        'charge_code': 'racagthotax',
+                                        'pax_type': pax_type,
+                                        'pax_count': pax_count,
+                                        'amount': -tax_ho_commission_amount,
+                                        'foreign_amount': -tax_ho_commission_amount,
+                                        'total': -total_tax_ho_commission_amount,
+                                        'commission_agent_id': self.ho_agent_id,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
+                                commission_amount -= tax_ho_commission_amount
+                            else:
+                                pass
 
+                        if tax_commission_amount:
+                            if tax_commission_amount < 0:
+                                if show_commission and show_upline_commission and self.ho_agent_id:
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'RAC',
+                                        'charge_code': 'racagttax',
+                                        'pax_type': pax_type,
+                                        'pax_count': pax_count,
+                                        'amount': tax_commission_amount,
+                                        'foreign_amount': tax_commission_amount,
+                                        'total': total_tax_commission_amount,
+                                        'commission_agent_id': self.ho_agent_id,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
+                                commission_amount += tax_commission_amount
+                            else:
+                                pass
+
+                        sub_total_commission_amount = commission_amount * pax_count
+                        if commission_amount:
+                            if commission_amount > 0:
+                                if show_commission:
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'RAC',
+                                        'charge_code': 'rac',
+                                        'pax_type': pax_type,
+                                        'pax_count': pax_count,
+                                        'amount': -commission_amount,
+                                        'foreign_amount': -commission_amount,
+                                        'total': -sub_total_commission_amount,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
+                            else:
+                                if total_commission_amount >= abs(sub_total_commission_amount):
+                                    total_commission_amount -= abs(sub_total_commission_amount)
+                                else:
+                                    diff_commission_amount = abs(sub_total_commission_amount) - total_commission_amount
+                                    base_diff_commission_amount = diff_commission_amount / pax_count
+                                    total_commission_amount = 0.0
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'ROC',
+                                        'charge_code': 'rocagtadj',
+                                        'pax_type': pax_type,
+                                        'pax_count': pax_count,
+                                        'amount': base_diff_commission_amount,
+                                        'foreign_amount': base_diff_commission_amount,
+                                        'total': diff_commission_amount,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
+                                    sc_total = diff_commission_amount
+                                    total_reservation_amount += sc_total
+                                    tax_amount += base_diff_commission_amount
+                        # END
                 if pricing_idx == 2:
                     if cust_obj:
                         cust_tkt = self.customer_pricing.get_ticketing_calculation(cust_obj, tax_amount=tax_amount, **calc_param)
@@ -4013,8 +4435,36 @@ class RepricingToolsV2(object):
                             sc_total = cust_tkt['upsell_amount'] * pax_count
                             total_reservation_amount += sc_total
 
-                        if cust_tkt['commission_amount']:
-                            if cust_tkt['commission_amount'] > 0:
+                        tax_amount += cust_tkt['upsell_amount']
+
+                        commission_amount = cust_tkt.get('commission_amount', 0.0)
+                        tax_commission_amount = cust_tkt.get('tax_commission_amount', 0.0)
+                        total_tax_commission_amount = tax_commission_amount * pax_count
+
+                        if tax_commission_amount:
+                            if tax_commission_amount < 0:
+                                if show_commission and show_upline_commission and self.ho_agent_id:
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'RAC',
+                                        'charge_code': 'raccusttax',
+                                        'pax_type': pax_type,
+                                        'pax_count': pax_count,
+                                        'amount': tax_commission_amount,
+                                        'foreign_amount': tax_commission_amount,
+                                        'total': total_tax_commission_amount,
+                                        'commission_agent_id': self.ho_agent_id,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
+                                commission_amount += tax_commission_amount
+                            else:
+                                pass
+
+                        if commission_amount:
+                            if commission_amount > 0:
                                 if show_commission:
                                     if pax_type in sc_temp_repo:
                                         sc_values = copy.deepcopy(sc_temp_repo[pax_type])
@@ -4025,19 +4475,44 @@ class RepricingToolsV2(object):
                                         'charge_code': 'rac',
                                         'pax_type': pax_type,
                                         'pax_count': pax_count,
-                                        'amount': -cust_tkt['commission_amount'],
-                                        'foreign_amount': -cust_tkt['commission_amount'],
-                                        'total': -cust_tkt['commission_amount'] * pax_count,
+                                        'amount': -commission_amount,
+                                        'foreign_amount': -commission_amount,
+                                        'total': -commission_amount * pax_count,
                                     })
                                     fare_data['service_charges'].append(sc_values)
                             else:
                                 # April 14, 2022 - SAM
                                 # Mengurangi komisi agent
-                                temp_total_com_amount = -cust_tkt['commission_amount'] * pax_count
-                                total_commission_amount -= temp_total_com_amount
+                                # temp_total_com_amount = -cust_tkt['commission_amount'] * pax_count
+                                # total_commission_amount -= temp_total_com_amount
                                 # END
-
-                        tax_amount += cust_tkt['upsell_amount']
+                                # October 18, 2023 - SAM
+                                # Update mekanisme
+                                sub_total_commission_amount = commission_amount * pax_count
+                                if total_commission_amount >= abs(sub_total_commission_amount):
+                                    total_commission_amount -= abs(sub_total_commission_amount)
+                                else:
+                                    diff_commission_amount = abs(sub_total_commission_amount) - total_commission_amount
+                                    base_diff_commission_amount = diff_commission_amount / pax_count
+                                    total_commission_amount = 0.0
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'ROC',
+                                        'charge_code': 'roccustadj',
+                                        'pax_type': pax_type,
+                                        'pax_count': pax_count,
+                                        'amount': base_diff_commission_amount,
+                                        'foreign_amount': base_diff_commission_amount,
+                                        'total': diff_commission_amount,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
+                                    sc_total = diff_commission_amount
+                                    total_reservation_amount += sc_total
+                                    tax_amount += base_diff_commission_amount
+                                # END
 
             ## 3
             for fare in self.ancillary_fare_list:
@@ -4246,24 +4721,63 @@ class RepricingToolsV2(object):
                                 })
                                 fare_data['service_charges'].append(sc_values)
 
-                    if tkt_rsv_res['ho_commission_amount']:
-                        if tkt_rsv_res['ho_commission_amount'] > 0:
-                            if show_commission and show_upline_commission and self.ho_agent_id:
-                                # # June 16, 2022 - SAM
-                                # sc_values = copy.deepcopy(sc_temp)
-                                # sc_values.update({
-                                #     'charge_type': 'RAC',
-                                #     'charge_code': 'rachorsv',
-                                #     'pax_type': 'ADT',
-                                #     'pax_count': 1,
-                                #     'amount': -tkt_rsv_res['ho_commission_amount'],
-                                #     'foreign_amount': -tkt_rsv_res['ho_commission_amount'],
-                                #     'total': -tkt_rsv_res['ho_commission_amount'],
-                                #     'commission_agent_id': self.ho_agent_id
-                                # })
-                                # fare_data['service_charges'].append(sc_values)
+                    # if tkt_rsv_res['ho_commission_amount']:
+                    #     if tkt_rsv_res['ho_commission_amount'] > 0:
+                    #         if show_commission and show_upline_commission and self.ho_agent_id:
+                    #             # # June 16, 2022 - SAM
+                    #             # sc_values = copy.deepcopy(sc_temp)
+                    #             # sc_values.update({
+                    #             #     'charge_type': 'RAC',
+                    #             #     'charge_code': 'rachorsv',
+                    #             #     'pax_type': 'ADT',
+                    #             #     'pax_count': 1,
+                    #             #     'amount': -tkt_rsv_res['ho_commission_amount'],
+                    #             #     'foreign_amount': -tkt_rsv_res['ho_commission_amount'],
+                    #             #     'total': -tkt_rsv_res['ho_commission_amount'],
+                    #             #     'commission_agent_id': self.ho_agent_id
+                    #             # })
+                    #             # fare_data['service_charges'].append(sc_values)
+                    #
+                    #             calc_amount = tkt_rsv_res['ho_commission_amount'] / total_all_pax_count
+                    #             calc_amount = self.ceil(calc_amount, 0)
+                    #             for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                    #                 if pcd_pax_count > 0:
+                    #                     total_calc_amount = calc_amount * pcd_pax_count
+                    #                     if pcd_pax_type in sc_temp_repo:
+                    #                         sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                    #                     else:
+                    #                         sc_values = copy.deepcopy(sc_temp)
+                    #                     sc_values.update({
+                    #                         'charge_type': 'RAC',
+                    #                         'charge_code': 'rachorsv',
+                    #                         'pax_type': pcd_pax_type,
+                    #                         'pax_count': pcd_pax_count,
+                    #                         'amount': -calc_amount,
+                    #                         'foreign_amount': -calc_amount,
+                    #                         'total': -total_calc_amount,
+                    #                         'commission_agent_id': self.ho_agent_id
+                    #                     })
+                    #                     fare_data['service_charges'].append(sc_values)
+                    #     else:
+                    #         # # April 14, 2022 - SAM
+                    #         # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
+                    #         # temp_ho_com_total = -tkt_rsv_res['ho_commission_amount']
+                    #         # total_commission_amount += temp_ho_com_total
+                    #         # # END
+                    #         pass
+                    #
+                    # total_commission_amount += tkt_rsv_res['commission_amount']
 
-                                calc_amount = tkt_rsv_res['ho_commission_amount'] / total_all_pax_count
+                    # October 18, 2023 - SAM
+                    ho_commission_amount = tkt_rsv_res.get('ho_commission_amount', 0.0)
+                    tax_ho_commission_amount = tkt_rsv_res.get('tax_ho_commission_amount', 0.0)
+                    commission_amount = tkt_rsv_res.get('commission_amount', 0.0)
+                    tax_commission_amount = tkt_rsv_res.get('tax_commission_amount', 0.0)
+
+                    if ho_commission_amount:
+                        if ho_commission_amount > 0:
+                            if show_commission and show_upline_commission and self.ho_agent_id:
+                                calc_amount = ho_commission_amount / total_all_pax_count
                                 calc_amount = self.ceil(calc_amount, 0)
                                 for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
                                     if pcd_pax_count > 0:
@@ -4284,14 +4798,71 @@ class RepricingToolsV2(object):
                                         })
                                         fare_data['service_charges'].append(sc_values)
                         else:
-                            # # April 14, 2022 - SAM
-                            # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
-                            # temp_ho_com_total = -tkt_rsv_res['ho_commission_amount']
-                            # total_commission_amount += temp_ho_com_total
-                            # # END
                             pass
 
-                    total_commission_amount += tkt_rsv_res['commission_amount']
+                    if tax_ho_commission_amount:
+                        if tax_ho_commission_amount > 0:
+                            if show_commission and show_upline_commission and self.ho_agent_id:
+                                calc_amount = tax_ho_commission_amount / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'rachorsvtax',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                            'commission_agent_id': self.ho_agent_id
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                            commission_amount -= tax_ho_commission_amount
+                        else:
+                            pass
+
+                    if tax_commission_amount:
+                        if tax_commission_amount < 0:
+                            commission_amount += tax_commission_amount
+                        else:
+                            pass
+
+                    if commission_amount:
+                        if commission_amount > 0:
+                            total_commission_amount += commission_amount
+                        else:
+                            if total_commission_amount >= abs(commission_amount):
+                                total_commission_amount -= abs(commission_amount)
+                            else:
+                                diff_commission_amount = abs(commission_amount) - total_commission_amount
+                                total_commission_amount = 0.0
+                                calc_amount = diff_commission_amount / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        total_reservation_amount += total_calc_amount
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'ROC',
+                                            'charge_code': 'rocrsvadj',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': calc_amount,
+                                            'foreign_amount': calc_amount,
+                                            'total': total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                    # END
 
             if pricing_idx == 1:
                 if agent_obj:
@@ -4331,62 +4902,99 @@ class RepricingToolsV2(object):
                                 })
                                 fare_data['service_charges'].append(sc_values)
 
-                    if agent_rsv_res['commission_amount']:
-                        if agent_rsv_res['commission_amount'] > 0:
-                            if show_commission:
-                                # # June 16, 2022 - SAM
-                                # sc_values = copy.deepcopy(sc_temp)
-                                # sc_values.update({
-                                #     'charge_type': 'RAC',
-                                #     'charge_code': 'rac',
-                                #     'pax_type': 'ADT',
-                                #     'pax_count': 1,
-                                #     'amount': -agent_rsv_res['commission_amount'],
-                                #     'foreign_amount': -agent_rsv_res['commission_amount'],
-                                #     'total': -agent_rsv_res['commission_amount'],
-                                # })
-                                # fare_data['service_charges'].append(sc_values)
+                    # if agent_rsv_res['commission_amount']:
+                    #     if agent_rsv_res['commission_amount'] > 0:
+                    #         if show_commission:
+                    #             # # June 16, 2022 - SAM
+                    #             # sc_values = copy.deepcopy(sc_temp)
+                    #             # sc_values.update({
+                    #             #     'charge_type': 'RAC',
+                    #             #     'charge_code': 'rac',
+                    #             #     'pax_type': 'ADT',
+                    #             #     'pax_count': 1,
+                    #             #     'amount': -agent_rsv_res['commission_amount'],
+                    #             #     'foreign_amount': -agent_rsv_res['commission_amount'],
+                    #             #     'total': -agent_rsv_res['commission_amount'],
+                    #             # })
+                    #             # fare_data['service_charges'].append(sc_values)
+                    #
+                    #             if default_pax_type in sc_temp_repo:
+                    #                 sc_values = copy.deepcopy(sc_temp_repo[default_pax_type])
+                    #             else:
+                    #                 sc_values = copy.deepcopy(sc_temp)
+                    #             sc_values.update({
+                    #                 'charge_type': 'RAC',
+                    #                 'charge_code': 'rac',
+                    #                 # 'pax_type': 'ADT',
+                    #                 'pax_type': default_pax_type,
+                    #                 'pax_count': 1,
+                    #                 'amount': -agent_rsv_res['commission_amount'],
+                    #                 'foreign_amount': -agent_rsv_res['commission_amount'],
+                    #                 'total': -agent_rsv_res['commission_amount'],
+                    #             })
+                    #             fare_data['service_charges'].append(sc_values)
+                    #     else:
+                    #         # April 14 2022 - SAM
+                    #         # Mengurangi komisi apabila minus
+                    #         temp_total_com_amount = -agent_rsv_res['commission_amount']
+                    #         total_commission_amount -= temp_total_com_amount
+                    #         # END
+                    #
+                    # if agent_rsv_res['ho_commission_amount']:
+                    #     if agent_rsv_res['ho_commission_amount'] > 0:
+                    #         if show_commission and show_upline_commission and self.ho_agent_id:
+                    #             # # June 16, 2022 - SAM
+                    #             # sc_values = copy.deepcopy(sc_temp)
+                    #             # sc_values.update({
+                    #             #     'charge_type': 'RAC',
+                    #             #     'charge_code': 'racagthorsv',
+                    #             #     'pax_type': 'ADT',
+                    #             #     'pax_count': 1,
+                    #             #     'amount': -agent_rsv_res['ho_commission_amount'],
+                    #             #     'foreign_amount': -agent_rsv_res['ho_commission_amount'],
+                    #             #     'total': -agent_rsv_res['ho_commission_amount'],
+                    #             #     'commission_agent_id': self.ho_agent_id
+                    #             # })
+                    #             # fare_data['service_charges'].append(sc_values)
+                    #
+                    #             calc_amount = agent_rsv_res['ho_commission_amount'] / total_all_pax_count
+                    #             calc_amount = self.ceil(calc_amount, 0)
+                    #             for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                    #                 if pcd_pax_count > 0:
+                    #                     total_calc_amount = calc_amount * pcd_pax_count
+                    #                     if pcd_pax_type in sc_temp_repo:
+                    #                         sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                    #                     else:
+                    #                         sc_values = copy.deepcopy(sc_temp)
+                    #                     sc_values.update({
+                    #                         'charge_type': 'RAC',
+                    #                         'charge_code': 'racagthorsv',
+                    #                         'pax_type': pcd_pax_type,
+                    #                         'pax_count': pcd_pax_count,
+                    #                         'amount': -calc_amount,
+                    #                         'foreign_amount': -calc_amount,
+                    #                         'total': -total_calc_amount,
+                    #                         'commission_agent_id': self.ho_agent_id
+                    #                     })
+                    #                     fare_data['service_charges'].append(sc_values)
+                    #     else:
+                    #         # # April 14, 2022 - SAM
+                    #         # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
+                    #         # temp_ho_com_total = -agent_rsv_res['ho_commission_amount']
+                    #         # total_commission_amount += temp_ho_com_total
+                    #         # # END
+                    #         pass
 
-                                if default_pax_type in sc_temp_repo:
-                                    sc_values = copy.deepcopy(sc_temp_repo[default_pax_type])
-                                else:
-                                    sc_values = copy.deepcopy(sc_temp)
-                                sc_values.update({
-                                    'charge_type': 'RAC',
-                                    'charge_code': 'rac',
-                                    # 'pax_type': 'ADT',
-                                    'pax_type': default_pax_type,
-                                    'pax_count': 1,
-                                    'amount': -agent_rsv_res['commission_amount'],
-                                    'foreign_amount': -agent_rsv_res['commission_amount'],
-                                    'total': -agent_rsv_res['commission_amount'],
-                                })
-                                fare_data['service_charges'].append(sc_values)
-                        else:
-                            # April 14 2022 - SAM
-                            # Mengurangi komisi apabila minus
-                            temp_total_com_amount = -agent_rsv_res['commission_amount']
-                            total_commission_amount -= temp_total_com_amount
-                            # END
+                    # October 19, 2023 - SAM
+                    ho_commission_amount = agent_rsv_res.get('ho_commission_amount', 0.0)
+                    tax_ho_commission_amount = agent_rsv_res.get('tax_ho_commission_amount', 0.0)
+                    commission_amount = agent_rsv_res.get('commission_amount', 0.0)
+                    tax_commission_amount = agent_rsv_res.get('tax_commission_amount', 0.0)
 
-                    if agent_rsv_res['ho_commission_amount']:
-                        if agent_rsv_res['ho_commission_amount'] > 0:
+                    if ho_commission_amount:
+                        if ho_commission_amount > 0:
                             if show_commission and show_upline_commission and self.ho_agent_id:
-                                # # June 16, 2022 - SAM
-                                # sc_values = copy.deepcopy(sc_temp)
-                                # sc_values.update({
-                                #     'charge_type': 'RAC',
-                                #     'charge_code': 'racagthorsv',
-                                #     'pax_type': 'ADT',
-                                #     'pax_count': 1,
-                                #     'amount': -agent_rsv_res['ho_commission_amount'],
-                                #     'foreign_amount': -agent_rsv_res['ho_commission_amount'],
-                                #     'total': -agent_rsv_res['ho_commission_amount'],
-                                #     'commission_agent_id': self.ho_agent_id
-                                # })
-                                # fare_data['service_charges'].append(sc_values)
-
-                                calc_amount = agent_rsv_res['ho_commission_amount'] / total_all_pax_count
+                                calc_amount = ho_commission_amount / total_all_pax_count
                                 calc_amount = self.ceil(calc_amount, 0)
                                 for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
                                     if pcd_pax_count > 0:
@@ -4407,12 +5015,111 @@ class RepricingToolsV2(object):
                                         })
                                         fare_data['service_charges'].append(sc_values)
                         else:
-                            # # April 14, 2022 - SAM
-                            # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
-                            # temp_ho_com_total = -agent_rsv_res['ho_commission_amount']
-                            # total_commission_amount += temp_ho_com_total
-                            # # END
                             pass
+
+                    if tax_ho_commission_amount:
+                        if tax_ho_commission_amount > 0:
+                            if show_commission and show_upline_commission and self.ho_agent_id:
+                                calc_amount = tax_ho_commission_amount / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagthorsvtax',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                            'commission_agent_id': self.ho_agent_id
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                            commission_amount -= tax_ho_commission_amount
+                        else:
+                            pass
+
+                    if tax_commission_amount:
+                        if tax_commission_amount < 0:
+                            if show_commission and show_upline_commission and self.ho_agent_id:
+                                calc_amount = tax_commission_amount / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagtrsvtax',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': calc_amount,
+                                            'foreign_amount': calc_amount,
+                                            'total': total_calc_amount,
+                                            'commission_agent_id': self.ho_agent_id
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                            commission_amount += tax_commission_amount
+                        else:
+                            pass
+
+                    if commission_amount:
+                        if commission_amount > 0:
+                            if show_commission:
+                                calc_amount = commission_amount / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'rac',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                        else:
+                            if total_commission_amount >= abs(commission_amount):
+                                total_commission_amount -= abs(commission_amount)
+                            else:
+                                diff_commission_amount = abs(commission_amount) - total_commission_amount
+                                total_commission_amount = 0.0
+                                calc_amount = diff_commission_amount / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        total_reservation_amount += total_calc_amount
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'ROC',
+                                            'charge_code': 'rocagtrsvadj',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': calc_amount,
+                                            'foreign_amount': calc_amount,
+                                            'total': total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                    # END
 
                 if agent_com_obj:
                     is_agent_commission_applied = True
@@ -4793,23 +5500,83 @@ class RepricingToolsV2(object):
                                 })
                                 fare_data['service_charges'].append(sc_values)
 
-                    if cust_rsv_res['commission_amount']:
-                        if cust_rsv_res['commission_amount'] > 0:
-                            if show_commission:
-                                # # June 16, 2022 - SAM
-                                # sc_values = copy.deepcopy(sc_temp)
-                                # sc_values.update({
-                                #     'charge_type': 'RAC',
-                                #     'charge_code': 'rac',
-                                #     'pax_type': 'ADT',
-                                #     'pax_count': 1,
-                                #     'amount': -cust_rsv_res['commission_amount'],
-                                #     'foreign_amount': -cust_rsv_res['commission_amount'],
-                                #     'total': -cust_rsv_res['commission_amount'],
-                                # })
-                                # fare_data['service_charges'].append(sc_values)
+                    # if cust_rsv_res['commission_amount']:
+                    #     if cust_rsv_res['commission_amount'] > 0:
+                    #         if show_commission:
+                    #             # # June 16, 2022 - SAM
+                    #             # sc_values = copy.deepcopy(sc_temp)
+                    #             # sc_values.update({
+                    #             #     'charge_type': 'RAC',
+                    #             #     'charge_code': 'rac',
+                    #             #     'pax_type': 'ADT',
+                    #             #     'pax_count': 1,
+                    #             #     'amount': -cust_rsv_res['commission_amount'],
+                    #             #     'foreign_amount': -cust_rsv_res['commission_amount'],
+                    #             #     'total': -cust_rsv_res['commission_amount'],
+                    #             # })
+                    #             # fare_data['service_charges'].append(sc_values)
+                    #
+                    #             calc_amount = cust_rsv_res['commission_amount'] / total_all_pax_count
+                    #             calc_amount = self.ceil(calc_amount, 0)
+                    #             for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                    #                 if pcd_pax_count > 0:
+                    #                     total_calc_amount = calc_amount * pcd_pax_count
+                    #                     if pcd_pax_type in sc_temp_repo:
+                    #                         sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                    #                     else:
+                    #                         sc_values = copy.deepcopy(sc_temp)
+                    #                     sc_values.update({
+                    #                         'charge_type': 'RAC',
+                    #                         'charge_code': 'rac',
+                    #                         'pax_type': pcd_pax_type,
+                    #                         'pax_count': pcd_pax_count,
+                    #                         'amount': -calc_amount,
+                    #                         'foreign_amount': -calc_amount,
+                    #                         'total': -total_calc_amount,
+                    #                     })
+                    #                     fare_data['service_charges'].append(sc_values)
+                    #     else:
+                    #         # April 14 2022 - SAM
+                    #         # Mengurangi komisi apabila minus
+                    #         temp_total_com_amount = -cust_rsv_res['commission_amount']
+                    #         total_commission_amount -= temp_total_com_amount
+                    #         # END
 
-                                calc_amount = cust_rsv_res['commission_amount'] / total_all_pax_count
+                    # October 19, 2023 - SAM
+                    commission_amount = cust_rsv_res.get('commission_amount', 0.0)
+                    tax_commission_amount = cust_rsv_res.get('tax_commission_amount', 0.0)
+
+                    if tax_commission_amount:
+                        if tax_commission_amount < 0:
+                            if show_commission and show_upline_commission and self.ho_agent_id:
+                                calc_amount = tax_commission_amount / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'raccustrsvtax',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': calc_amount,
+                                            'foreign_amount': calc_amount,
+                                            'total': total_calc_amount,
+                                            'commission_agent_id': self.ho_agent_id
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                            commission_amount += tax_commission_amount
+                        else:
+                            pass
+
+                    if commission_amount:
+                        if commission_amount > 0:
+                            if show_commission:
+                                calc_amount = commission_amount / total_all_pax_count
                                 calc_amount = self.ceil(calc_amount, 0)
                                 for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
                                     if pcd_pax_count > 0:
@@ -4829,11 +5596,32 @@ class RepricingToolsV2(object):
                                         })
                                         fare_data['service_charges'].append(sc_values)
                         else:
-                            # April 14 2022 - SAM
-                            # Mengurangi komisi apabila minus
-                            temp_total_com_amount = -cust_rsv_res['commission_amount']
-                            total_commission_amount -= temp_total_com_amount
-                            # END
+                            if total_commission_amount >= abs(commission_amount):
+                                total_commission_amount -= abs(commission_amount)
+                            else:
+                                diff_commission_amount = abs(commission_amount) - total_commission_amount
+                                total_commission_amount = 0.0
+                                calc_amount = diff_commission_amount / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        total_reservation_amount += total_calc_amount
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'ROC',
+                                            'charge_code': 'roccustrsvadj',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': calc_amount,
+                                            'foreign_amount': calc_amount,
+                                            'total': total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                    # END
 
         # May 30, 2022 - SAM
         if not is_agent_commission_applied and total_commission_amount > 0:
