@@ -121,6 +121,7 @@ class TtOtp(models.Model):
     is_connect = fields.Boolean('Connect', default=False)
     platform = fields.Char('Platform')
     browser = fields.Char('Browser')
+    timezone = fields.Char('Timezone')
     active = fields.Boolean('Active', default=True)
 
     def create_otp_api(self, req):
@@ -130,7 +131,8 @@ class TtOtp(models.Model):
             "machine_id": machine_obj.id,
             "otp": self.generate_otp(),
             "platform": req['platform'],
-            "browser": req['browser']
+            "browser": req['browser'],
+            "timezone": req['timezone']
         })
 
     def generate_otp(self):
