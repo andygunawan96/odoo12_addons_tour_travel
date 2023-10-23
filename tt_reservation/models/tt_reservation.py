@@ -155,6 +155,7 @@ class TtReservation(models.Model):
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type', related='customer_parent_id.customer_parent_type_id',
                                               store=True, readonly=True)
 
+    # Jngn lup tmbhkn untuk delete printout
     printout_ticket_id = fields.Many2one('tt.upload.center', 'Ticket', readonly=True)
     printout_ticket_price_id = fields.Many2one('tt.upload.center', 'Ticket (Price)', readonly=True)
     printout_itinerary_id = fields.Many2one('tt.upload.center', 'Itinerary', readonly=True)
@@ -1815,6 +1816,7 @@ class TtReservation(models.Model):
             rec.printout_ticket_id.sudo().unlink()
             rec.printout_ticket_price_id.sudo().unlink()
             rec.printout_itinerary_id.sudo().unlink()
+            rec.printout_itinerary_price_id.sudo().unlink()
             rec.printout_ho_invoice_id.sudo().unlink()
             # rec.printout_voucher_id.unlink()
             # rec.printout_vendor_invoice_id.unlink()
