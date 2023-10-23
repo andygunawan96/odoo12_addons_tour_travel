@@ -67,6 +67,7 @@
                         <field name="platform"/>
                         <field name="browser"/>
                         <field name="timezone"/>
+                        <field name="turn_off_date"/>
                         <field name="create_date"/>
                     </group>
                 </sheet>
@@ -85,6 +86,7 @@
                 <field name="platform"/>
                 <field name="browser"/>
                 <field name="timezone"/>
+                <field name="turn_off_date"/>
                 <field name="create_date"/>
             </tree>
         </field>
