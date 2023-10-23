@@ -225,6 +225,7 @@ class TtSplitReservationWizard(models.TransientModel):
                 'is_using_point_reward': book_obj.is_using_point_reward,
                 'payment_method_to_ho': book_obj.payment_method_to_ho,
                 'is_invoice_created': book_obj.is_invoice_created,
+                'sync_reservation': book_obj.sync_reservation,
                 'state': book_obj.state
             }
 
