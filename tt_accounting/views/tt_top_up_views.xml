@@ -184,21 +184,21 @@
         </field>
     </record>
 
-    <menuitem id="top_top_up"
-              parent="tt_base.main_transaction"
+    <menuitem id="menu_transaction_requests_top_up"
+              parent="tt_base.top_transaction_requests"
               name="Top Up"
-              sequence="5" groups="tt_base.group_top_up_level_1"/>
+              sequence="10" groups="tt_base.group_top_up_level_1"/>
 
-    <menuitem id="menu_top_up_all" parent="tt_accounting.top_top_up"
+    <menuitem id="menu_top_up_all" parent="tt_accounting.menu_transaction_requests_top_up"
               name="All" action="tt_top_up_action" sequence="1" groups="tt_base.group_top_up_level_1"/>
 
-    <menuitem id="menu_top_up_request" parent="tt_accounting.top_top_up"
+    <menuitem id="menu_top_up_request" parent="tt_accounting.menu_transaction_requests_top_up"
               name="Request" action="tt_top_up_action_request" sequence="2" groups="tt_base.group_top_up_level_1"/>
 
-    <menuitem id="menu_top_up_validated" parent="tt_accounting.top_top_up"
+    <menuitem id="menu_top_up_validated" parent="tt_accounting.menu_transaction_requests_top_up"
               name="On Progress" action="tt_top_up_action_validated" sequence="3" groups="tt_base.group_top_up_level_1"/>
 
-    <menuitem id="menu_top_up_approved" parent="tt_accounting.top_top_up"
+    <menuitem id="menu_top_up_approved" parent="tt_accounting.menu_transaction_requests_top_up"
               name="Done" action="tt_top_up_action_approved" sequence="4" groups="tt_base.group_top_up_level_1"/>
 
 </odoo>

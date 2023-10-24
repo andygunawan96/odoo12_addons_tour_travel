@@ -10,7 +10,7 @@
                     <field name="name"/>
                     <field name="customer_parent_type_id"/>
                     <field name="ho_id" groups="base.group_erp_manager"/>
-                    <field name="parent_agent_id"/>
+                    <field name="parent_agent_id" readonly="1"/>
                     <field name="email"/>
                     <field name="currency_id"/>
                 </group>
@@ -20,6 +20,19 @@
                     <button string="Cancel" class="oe_link" special="cancel" />
                 </footer>
             </form>
+        </field>
+    </record>
+
+    <record id="create_customer_parent_wizard_form_view_ho" model="ir.ui.view">
+        <field name="name">Create Customer Parent Wizard HO</field>
+        <field name="model">create.customer.parent.wizard</field>
+        <field name="inherit_id" ref="tt_base.create_customer_parent_wizard_form_view"/>
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel'),ref('base.group_erp_manager')])]" />
+        <field name="priority">40</field>
+        <field name="arch" type="xml">
+            <field name="parent_agent_id" position="replace">
+                <field name="parent_agent_id" readonly="0"/>
+            </field>
         </field>
     </record>
 
@@ -35,7 +48,14 @@
               parent="tt_base.top_customers_customers"
               groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"
               name="Create Customer Parent"
-              sequence="2"
+              sequence="40"
+              action="create_customer_parent_wizard_action_view"/>
+
+    <menuitem id="menu_create_customer_parent_wizard"
+              parent="tt_base.top_tour_travel_customers"
+              groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
+              name="Create Customer Parent"
+              sequence="40"
               action="create_customer_parent_wizard_action_view"/>
 
 </odoo>

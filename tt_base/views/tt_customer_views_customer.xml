@@ -150,7 +150,7 @@
               parent="tt_base.top_customers_customers"
               groups="tt_base.group_customer_level_1"
               name="Customer List"
-              sequence="1"
+              sequence="10"
               action="tt_customer_action_view_customer"/>
 
     <record id="tt_customer_form_view_customer_agent" model="ir.ui.view">

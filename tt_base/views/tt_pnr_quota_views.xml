@@ -125,7 +125,7 @@
                   parent="tt_base.top_tour_travel_customers"
                   groups="tt_base.group_pnr_quota_level_1"
                   name="PNR Quota"
-                  sequence="40"/>
+                  sequence="60"/>
 
         <menuitem id="menu_customer_pnr_quota_pnr_quota"
                   parent="tt_base.menu_customer_pnr_quota"

@@ -3168,14 +3168,15 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({
-                'DISC': {
-                    'pax_type': 'DISC',
-                    'price_per_pax': discount_value,
-                    'price_total': discount_value,
-                    'qty': 1,
-                }
-            })
+            if discount_value:
+                a.update({
+                    'DISC': {
+                        'pax_type': 'DISC',
+                        'price_per_pax': discount_value,
+                        'price_total': discount_value,
+                        'qty': 1,
+                    }
+                })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3279,14 +3280,15 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({
-                'DISC': {
-                    'pax_type': 'DISC',
-                    'price_per_pax': discount_value,
-                    'price_total': discount_value,
-                    'qty': 1,
-                }
-            })
+            if discount_value:
+                a.update({
+                    'DISC': {
+                        'pax_type': 'DISC',
+                        'price_per_pax': discount_value,
+                        'price_total': discount_value,
+                        'qty': 1,
+                    }
+                })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3391,14 +3393,15 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({
-                'DISC': {
-                    'pax_type': 'DISC',
-                    'price_per_pax': discount_value,
-                    'price_total': discount_value,
-                    'qty': 1,
-                }
-            })
+            if discount_value:
+                a.update({
+                    'DISC': {
+                        'pax_type': 'DISC',
+                        'price_per_pax': discount_value,
+                        'price_total': discount_value,
+                        'qty': 1,
+                    }
+                })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3503,14 +3506,15 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({
-                'DISC': {
-                    'pax_type': 'DISC',
-                    'price_per_pax': discount_value,
-                    'price_total': discount_value,
-                    'qty': 1,
-                }
-            })
+            if discount_value:
+                a.update({
+                    'DISC': {
+                        'pax_type': 'DISC',
+                        'price_per_pax': discount_value,
+                        'price_total': discount_value,
+                        'qty': 1,
+                    }
+                })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3615,14 +3619,15 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({
-                'DISC': {
-                    'pax_type': 'DISC',
-                    'price_per_pax': discount_value,
-                    'price_total': discount_value,
-                    'qty': 1,
-                }
-            })
+            if discount_value:
+                a.update({
+                    'DISC': {
+                        'pax_type': 'DISC',
+                        'price_per_pax': discount_value,
+                        'price_total': discount_value,
+                        'qty': 1,
+                    }
+                })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3730,14 +3735,15 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({
-                'DISC': {
-                    'pax_type': 'DISC',
-                    'price_per_pax': discount_value,
-                    'price_total': discount_value,
-                    'qty': 1,
-                }
-            })
+            if discount_value:
+                a.update({
+                    'DISC': {
+                        'pax_type': 'DISC',
+                        'price_per_pax': discount_value,
+                        'price_total': discount_value,
+                        'qty': 1,
+                    }
+                })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3838,14 +3844,15 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({
-                'DISC': {
-                    'pax_type': 'DISC',
-                    'price_per_pax': discount_value,
-                    'price_total': discount_value,
-                    'qty': 1,
-                }
-            })
+            if discount_value:
+                a.update({
+                    'DISC': {
+                        'pax_type': 'DISC',
+                        'price_per_pax': discount_value,
+                        'price_total': discount_value,
+                        'qty': 1,
+                    }
+                })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3952,14 +3959,15 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({
-                'DISC': {
-                    'pax_type': 'DISC',
-                    'price_per_pax': discount_value,
-                    'price_total': discount_value,
-                    'qty': 1,
-                }
-            })
+            if discount_value:
+                a.update({
+                    'DISC': {
+                        'pax_type': 'DISC',
+                        'price_per_pax': discount_value,
+                        'price_total': discount_value,
+                        'qty': 1,
+                    }
+                })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -4068,14 +4076,15 @@ class PrintoutBusItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({
-                'DISC': {
-                    'pax_type': 'DISC',
-                    'price_per_pax': discount_value,
-                    'price_total': discount_value,
-                    'qty': 1,
-                }
-            })
+            if discount_value:
+                a.update({
+                    'DISC': {
+                        'pax_type': 'DISC',
+                        'price_per_pax': discount_value,
+                        'price_total': discount_value,
+                        'qty': 1,
+                    }
+                })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -4186,14 +4195,15 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({
-                'DISC': {
-                    'pax_type': 'DISC',
-                    'price_per_pax': discount_value,
-                    'price_total': discount_value,
-                    'qty': 1,
-                }
-            })
+            if discount_value:
+                a.update({
+                    'DISC': {
+                        'pax_type': 'DISC',
+                        'price_per_pax': discount_value,
+                        'price_total': discount_value,
+                        'qty': 1,
+                    }
+                })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -4236,6 +4246,118 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
                 'with_price': data['data'].get('is_with_price') or False,
             })
 
+        return vals
+
+
+class PrintoutOfflineIteneraryForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_offline_itinerary'
+    _description = 'Report Common Printout Offline Itinerary'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            else:
+                data['context']['active_model'] = 'tt.agent.invoice'
+
+            data['context']['active_ids'] = docids
+        values = {}
+        pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
+        header_width = 90
+        price_breakdown = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
+            values[rec.id] = []
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
+                    }
+
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.total
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.total
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
+
+            if discount_value:
+                a.update({
+                    'DISC': {
+                        'pax_type': 'DISC',
+                        'price_per_pax': discount_value,
+                        'price_total': discount_value,
+                        'qty': 1,
+                    }
+                })
+
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
+                # for csc in psg.channel_service_charge_ids:
+                #     if pax_type not in csc_found:
+                #         a[pax_type]['price_per_pax'] += csc.amount
+                #         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                #         csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
+
+            values[rec.id] = [a[new_a] for new_a in a]
+            pnr_length = len(rec.pnr)
+            if pnr_length > 27:
+                header_width += 3 * (abs(27 - pnr_length))
+                if header_width > 105:
+                    header_width = 105
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#CDCDCD'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
+
+        vals = {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'itin',
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
+            'header_width': str(header_width),
+            'price_lines': values,
+            'price_breakdown': price_breakdown,
+            'customer_grand_total': customer_grand_total,
+            'date_now': fields.Datetime.now(),
+            'base_color': base_color,
+            'static_url': static_url,
+            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
+        }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
         return vals
 
 

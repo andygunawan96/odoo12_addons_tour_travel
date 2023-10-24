@@ -1631,6 +1631,185 @@
         </div>
     </template>
 
+    <template id="offline_itinerary_view">
+        <!-- Main Params -->
+        <div class="row">
+            <div class="col-12">
+                <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
+                <table class="table table-sm" style="text-align:center;">
+                    <t t-if="doc.offline_provider_type in ['airline', 'train']">
+                        <thead>
+                            <tr>
+                                <th>PNR</th>
+                                <th>Origin</th>
+                                <th>Destination</th>
+                                <th>Departure</th>
+                                <th>Arrival</th>
+                                <th>Carrier</th>
+                                <th>Class</th>
+                                <th>Sub-Class</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.line_ids" t-as="offline_line">
+                                <tr>
+                                    <td><span t-field="offline_line.pnr"/></td>
+                                    <td><span t-field="offline_line.origin_id.name"/></td>
+                                    <td><span t-field="offline_line.destination_id.name"/></td>
+                                    <td><span t-field="offline_line.departure_date"/> <span t-field="offline_line.departure_hour"/>:<span t-field="offline_line.departure_minute"/></td>
+                                    <td><span t-field="offline_line.arrival_date"/> <span t-field="offline_line.return_hour"/>:<span t-field="offline_line.return_minute"/></td>
+                                    <td><span t-field="offline_line.carrier_id.name"/> <t t-if="doc.offline_provider_type == 'airline'">(<span t-field="offline_line.carrier_code"/> <span t-field="offline_line.carrier_number"/>)</t></td>
+                                    <td><t t-if="offline_line.class_of_service"><span t-field="offline_line.class_of_service"/></t><t t-else="">-</t></td>
+                                    <td><t t-if="offline_line.subclass"><span t-field="offline_line.subclass"/></t><t t-else="">-</t></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                    <t t-elif="doc.offline_provider_type == 'hotel'">
+                        <thead>
+                            <tr>
+                                <th>PNR</th>
+                                <th>Hotel</th>
+                                <th>Room</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.line_ids" t-as="offline_line">
+                                <tr>
+                                    <td><span t-field="offline_line.pnr"/></td>
+                                    <td><span t-field="offline_line.hotel_name"/></td>
+                                    <td><span t-field="offline_line.room"/></td>
+                                    <td><span t-field="offline_line.check_in"/></td>
+                                    <td><span t-field="offline_line.check_out"/></td>
+                                    <td><t t-if="offline_line.description"><span t-field="offline_line.description"/></t><t t-else="">-</t></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                    <t t-elif="doc.offline_provider_type == 'activity'">
+                        <thead>
+                            <tr>
+                                <th>PNR</th>
+                                <th>Activity</th>
+                                <th>Visit Date</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.line_ids" t-as="offline_line">
+                                <tr>
+                                    <td><span t-field="offline_line.pnr"/></td>
+                                    <td><span t-field="offline_line.activity_name"/> (<span t-field="offline_line.activity_package"/>)</td>
+                                    <td><span t-field="offline_line.visit_date"/></td>
+                                    <td><t t-if="offline_line.description"><span t-field="offline_line.description"/></t><t t-else="">-</t></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                    <t t-else="">
+                        <thead>
+                            <tr>
+                                <th>PNR</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.line_ids" t-as="offline_line">
+                                <tr>
+                                    <td><span t-field="offline_line.pnr"/></td>
+                                    <td><t t-if="offline_line.description"><span t-field="offline_line.description"/></t><t t-else="">-</t></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                </table>
+                <span style="font-size: 28px; font-weight: 730">Passenger Detail(s)</span><br/>
+                <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                    <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                        <t t-if="doc.offline_provider_type in ['airline', 'train']">
+                            <div class="col-1" style="text-align: center; font-size:17px;">
+                                No.
+                            </div>
+                            <div class="col-4" style="text-align: center; font-size:17px;">
+                                Name
+                            </div>
+                            <div class="col-2" style="text-align: right; font-size:17px; padding-right: 30px;">
+                                Birth Date
+                            </div>
+                            <div class="col-2" style="text-align: right; font-size:17px;">
+                                Pax Type
+                            </div>
+                            <div class="col-1" style="text-align: right; font-size:17px;">
+                                Seat
+                            </div>
+                            <div class="col-2" style="text-align: right; font-size:17px;">
+                                Ticket Number
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="col-1" style="text-align: center; font-size:17px;">
+                                No.
+                            </div>
+                            <div class="col-6" style="text-align: center; font-size:17px;">
+                                Name
+                            </div>
+                            <div class="col-2" style="text-align: right; font-size:17px; padding-right: 30px;">
+                                Birth Date
+                            </div>
+                            <div class="col-3" style="text-align: right; font-size:17px;">
+                                Pax Type
+                            </div>
+                        </t>
+                    </div>
+                    <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                    <t t-set="psg_index" t-value="0"/>
+                    <t t-foreach="doc.passenger_ids" t-as="psg">
+                        <div class="row" style="margin-left: 0px; margin-right: 0px">
+                            <t t-if="doc.offline_provider_type in ['airline', 'train']">
+                                <div class="col-1" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
+                                </div>
+                                <div class="col-4" style="text-align: left">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.title"/> <span t-field="psg.first_name"/> <span t-field="psg.last_name"/></label>
+                                </div>
+                                <div class="col-2" style="text-align: right">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                </div>
+                                <div class="col-2" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.pax_type"/></label>
+                                </div>
+                                <div class="col-1" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><t t-if="psg.seat"><span t-field="psg.seat"/></t><t t-else="">-</t></label>
+                                </div>
+                                <div class="col-2" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><t t-if="psg.seat"><span t-field="psg.ticket_number"/></t><t t-else="">-</t></label>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="col-1" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
+                                </div>
+                                <div class="col-6" style="text-align: left">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.title"/> <span t-field="psg.first_name"/> <span t-field="psg.last_name"/></label>
+                                </div>
+                                <div class="col-2" style="text-align: right">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                </div>
+                                <div class="col-3" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.pax_type"/></label>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                    <div style="margin-bottom: 5px"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <template id="json_itinerary_content_view">
         <div class="row">
             <div class="col-12">
@@ -2072,6 +2251,30 @@
                             </div>
 
                             <t t-call="tt_report_common.insurance_itinerary_view"/>
+                            <t t-call="tt_report_common.itinerary_price_detail"/>
+                            <br/>
+                            <t t-call="tt_report_common.itinerary_signature"/>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="printout_offline_itinerary">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="10"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.external_layout">
+                        <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
+                            <div style="margin-bottom: 10px; margin-top: 10px;">
+                                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                                <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                            </div>
+
+                            <t t-call="tt_report_common.offline_itinerary_view"/>
                             <t t-call="tt_report_common.itinerary_price_detail"/>
                             <br/>
                             <t t-call="tt_report_common.itinerary_signature"/>

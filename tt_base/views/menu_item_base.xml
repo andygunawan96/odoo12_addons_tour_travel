@@ -57,7 +57,7 @@
         <!--Customers (Menu Customers)-->
         <menuitem id="top_tour_travel_customers"
                   parent="tt_base.main_tour_travel"
-                  name="Customers"
+                  name="Agents and Customers"
                   sequence="10"
                   groups="base.group_user"/>
 
@@ -83,7 +83,6 @@
         <!--Upload-->
         <menuitem id="top_tour_travel_upload"
                   parent="tt_base.main_tour_travel"
-
                   name="Upload Center"
                   sequence="70"
                   groups="base.group_user"/>
@@ -96,12 +95,18 @@
                   groups="base.group_user"
         />
 
+        <!-- Requests -->
+        <menuitem id="top_transaction_requests"
+              parent="tt_base.main_transaction"
+              name="Requests"
+              sequence="20"/>
+
         <!-- Accounting -->
         <menuitem id="top_menu_accounting"
                   parent="tt_base.main_transaction"
                   groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,tt_base.group_tt_corpor_user,base.group_erp_manager"
                   name="Accounting"
-                  sequence="10"/>
+                  sequence="30"/>
         <!-- Users -->
         <!--        <menuitem id="top_tour_travel_user"-->
         <!--                  parent="tt_base.main_tour_travel"-->
@@ -135,14 +140,14 @@
         <menuitem id="top_transaction_aftersales"
                   parent="tt_base.main_transaction"
                   name="Refund and After Sales"
-                  sequence="25"
+                  sequence="40"
                   groups="base.group_user"/>
 
         <!--Transaction Configurations-->
         <menuitem id="top_transaction_configuration"
                   parent="tt_base.main_transaction"
                   name="Configuration"
-                  sequence="85"
+                  sequence="90"
                   groups="base.group_user"/>
 
         <!--External Vendor Login-->

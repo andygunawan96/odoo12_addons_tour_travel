@@ -225,7 +225,7 @@
               parent="tt_base.top_customers_customers"
               groups="tt_base.group_customer_parent_level_1"
               name="Customer Parent"
-              sequence="2"/>
+              sequence="30"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_all"
               parent="tt_base.menu_customers_customer_customer_parent"
