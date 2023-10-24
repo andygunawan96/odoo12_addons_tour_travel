@@ -23,7 +23,8 @@ class ResUsersInherit(models.Model):
             ('machine_id.code', '=', req['machine_code']),
             ('user_id.id', '=', self.id),
             ('is_connect','=', False),
-            ('create_date', '>', datetime.now() - timedelta(minutes=agent_obj.otp_expired_time))
+            ('create_date', '>', datetime.now() - timedelta(minutes=agent_obj.otp_expired_time)),
+            ('turn_off_date','=', False)
         ])
         if not otp_objs or req.get('is_resend_otp'):
             ## close active otp
@@ -34,6 +35,10 @@ class ResUsersInherit(models.Model):
             self.otp_ids = [(4, otp_objs[0].id)]
             if req.get('turn_off_otp'):
                 otp_objs[0].send_email_turn_off_otp()
+            elif req.get('turn_off_machine_id') and req.get('is_turn_off_other_machine'):
+                otp_objs[0].send_email_turn_off_other_machine()
+            elif req.get('turn_off_machine_id'):
+                otp_objs[0].send_email_turn_off_machine()
             else:
                 otp_objs[0].send_email_otp()
             ## KIRIM EMAIL
@@ -118,6 +123,61 @@ class ResUsersInherit(models.Model):
         else:
             return ERR.get_error(500, additional_message='Invalid OTP')
 
+
+    def turn_off_machine_otp_user_api(self, req, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+
+        otp_objs = self.env['tt.otp'].search([
+            ('machine_id.code', '=', req['machine_code']),
+            ('otp', '=', req['otp']),
+            ('user_id.id', '=', user_obj.id),
+            ('create_date', '>', datetime.now() - timedelta(minutes=user_obj.ho_id.otp_expired_time))
+        ])
+        if otp_objs:
+            otp_objs = self.env['tt.otp'].search([
+                ('is_connect', '=', True),
+                ('machine_id.code', '=', req['machine_code']),
+                ('user_id.id', '=', user_obj.id)
+            ])
+            for otp_obj in otp_objs:
+                otp_obj.is_connect = False
+                otp_obj.turn_off_date = datetime.now()
+
+            return ERR.get_no_error()
+        else:
+            return ERR.get_error(500, additional_message='Invalid OTP')
+
+    def turn_off_other_machine_otp_user_api(self, req, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+
+        otp_objs = self.env['tt.otp'].search([
+            ('machine_id.code', '=', req['machine_code']),
+            ('otp', '=', req['otp']),
+            ('user_id.id', '=', user_obj.id),
+            ('create_date', '>', datetime.now() - timedelta(minutes=user_obj.ho_id.otp_expired_time))
+        ])
+        if otp_objs:
+            otp_objs = self.env['tt.otp'].search([
+                ('is_connect', '=', True),
+                ('machine_id.code', '!=', req['machine_code']),
+                ('user_id.id', '=', user_obj.id)
+            ])
+            for otp_obj in otp_objs:
+                otp_obj.is_connect = False
+                otp_obj.turn_off_date = datetime.now()
+
+            return ERR.get_no_error()
+        else:
+            return ERR.get_error(500, additional_message='Invalid OTP')
+
 class TtAgent(models.Model):
     _inherit = 'tt.agent'
     otp_expired_time = fields.Integer('OTP Expired Time in Minutes', default=5)
@@ -183,6 +243,15 @@ class TtOtp(models.Model):
         company_obj = self.env['res.company'].search([],limit=1)
         return company_obj.name
 
+    def get_other_machine(self):
+        other_machine = ''
+        otp_objs = self.search([('user_id', '=', self.user_id.id), ('is_connect','=', True), ('machine_id.id','!=',self.machine_id.id)])
+        for otp_obj in otp_objs:
+            if other_machine:
+                other_machine += ', '
+            other_machine += otp_obj.machine_id.code
+        return other_machine
+
     def get_expired_time(self):
         return (self.create_date + timedelta(minutes=self.user_id.ho_id.otp_expired_time)).strftime("%a, %d %b %Y %H:%M:%S")
 
@@ -194,5 +263,15 @@ class TtOtp(models.Model):
     @api.multi
     def send_email_turn_off_otp(self):
         template = self.env.ref('tt_base.template_mail_turn_off_otp', raise_if_not_found=False)
+        template.send_mail(self.id, force_send=True)
+
+    @api.multi
+    def send_email_turn_off_machine(self):
+        template = self.env.ref('tt_base.template_mail_turn_off_machine_otp', raise_if_not_found=False)
+        template.send_mail(self.id, force_send=True)
+
+    @api.multi
+    def send_email_turn_off_other_machine(self):
+        template = self.env.ref('tt_base.template_mail_turn_off_other_machine_otp', raise_if_not_found=False)
         template.send_mail(self.id, force_send=True)
 
