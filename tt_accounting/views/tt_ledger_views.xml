@@ -243,7 +243,7 @@
 
 
     <menuitem id="top_transaction_ledger" parent="tt_base.main_transaction"
-              name="Ledger" sequence="50"
+              name="Ledger" sequence="40"
               groups="tt_base.group_ledger_level_1"
     />
 

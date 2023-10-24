@@ -140,7 +140,7 @@
         <menuitem id="top_transaction_aftersales"
                   parent="tt_base.main_transaction"
                   name="Refund and After Sales"
-                  sequence="40"
+                  sequence="50"
                   groups="base.group_user"/>
 
         <!--Transaction Configurations-->
