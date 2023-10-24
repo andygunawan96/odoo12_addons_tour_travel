@@ -377,8 +377,9 @@
                     </div>
                     <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
                     <t t-set="psg_index" t-value="0"/>
-                    <t t-set="psg_line" t-value="0"/>
+                    <t t-set="psg_line" t-value="1"/>
                     <t t-foreach="price_lines[doc.id]" t-as="psg">
+                        <t t-set="curr_psg_line" t-value="1"/>
                         <div class="row" style="margin-left: 0px; margin-right: 0px">
                             <div class="col-1" style="text-align: center">
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
@@ -401,16 +402,18 @@
                                         <t t-if="data_pax.frequent_flyer_ids">
                                           <t t-foreach="data_pax.frequent_flyer_ids" t-as="ff_id">
                                             - <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="ff_id.loyalty_program_id.name"/>: <span t-field="ff_id.ff_number"/></label><br/>
+                                            <t t-set="curr_psg_line" t-value="curr_psg_line+1"/>
                                           </t>
                                         </t>
                                     </t>
                                 </div>
                             </div>
                             <div class="col-3" style="text-align: center; overflow-wrap: break-word;">
+                                <t t-set="ssr_line" t-value="0"/>
                                 <t t-if="psg['add_ssr'] or psg['inc_ssr']">
                                     <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
                                     <t t-foreach="psg['inc_ssr']" t-as="add_ssr">
-                                        <t t-set="psg_line" t-value="psg_line+1"/>
+                                        <t t-set="ssr_line" t-value="ssr_line+1"/>
                                         <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-esc="add_ssr['name']"/></i><br/>
                                     </t>
                                     <t t-foreach="psg['add_ssr']" t-as="add_ssr">
@@ -418,12 +421,15 @@
                                                 <!--<i style="margin-right:3px;" t-class="add_ssr['category_icon']"> <span t-esc="add_ssr['name']"/></i><br/>-->
                                             <!--</t>-->
                                             <!--<t t-else="">-->
-                                        <t t-set="psg_line" t-value="psg_line+1"/>
+                                        <t t-set="ssr_line" t-value="ssr_line+1"/>
                                         <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-esc="add_ssr['name']"/></i><br/>
                                             <!--</t>-->
                                     </t>
                                 </t>
                                 <t t-else="">-</t>
+                                <t t-if="ssr_line > curr_psg_line">
+                                    <t t-set="curr_psg_line" t-value="ssr_line"/>
+                                </t>
                             </div>
                             <t t-if="with_price">
                                 <div class="col-2" style="text-align: right; overflow-wrap: break-word;">
@@ -431,6 +437,7 @@
                                 </div>
                             </t>
                         </div>
+                        <t t-set="psg_line" t-value="curr_psg_line+psg_line"/>
                         <t t-if="psg_line%20==0">
                             <div style="page-break-after: always;"/>
                             <t t-set="psg_line" t-value="0"/>
@@ -1893,56 +1900,40 @@
                 </t>
 
                 <span style="font-size: 28px; font-weight: 730">Guest Detail(s)</span><br/>
-                <div class="box" style="margin: 20px; border: 1px solid #BBB; border-radius: 20px">
-                    <div class="row" style="margin: 5px 0; font-size:17px;">
-                        <div class="col-1" style="text-align: center;">
-                            No.
-                        </div>
-                        <div class="col-3" style="text-align: center;">
-                            Name
-                        </div>
-                        <div class="col-2" style="text-align: center;">
-                            Pax
-                        </div>
-                        <div class="col-3" style="text-align: center;">
-                            Birth Date
-                        </div>
-                        <div class="col-3" style="text-align: center; padding-right: 30px;">
-                            Additional Info
-                        </div>
-                    </div>
-                    <div style="border: 1px solid #BBB; margin: 0 15px 5px;"/>
-                    <t t-set="psg_index" t-value="0"/>
-                    <t t-foreach="doc['passenger']" t-as="psg">
-                        <div class="row" style="text-align: center; margin-left: 0px; margin-right: 0px; font-weight:450; font-size:17px; margin-bottom: 0px; ">
-                            <div class="col-1">
-                                <label style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
-                            </div>
-                            <div class="col-3">
-                                <label style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['name']"/></label>
-                            </div>
-                            <div class="col-2">
-                                <label style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['pax_type']"/></label>
-                            </div>
-                            <div class="col-3">
-                                <label style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['birth_date']"/></label>
-                            </div>
-                            <div class="col-3" style="text-align: left;">
-                                <t t-if="psg['additional_info']">
+                <table class="table table-sm" style="text-align:center; font-size:17px;">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Name</th>
+                            <th>Pax</th>
+                            <th>Birth Date</th>
+                            <th>Additional Info</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="psg_index" t-value="0"/>
+                        <t t-foreach="doc['passenger']" t-as="psg">
+                            <tr>
+                                <td><span t-esc="psg_index+1"/>.</td>
+                                <td><span t-esc="psg['name']"/></td>
+                                <td><span t-esc="psg['pax_type']"/></td>
+                                <td><span t-esc="psg['birth_date']"/></td>
+                                <td>
+                                    <t t-if="psg['additional_info']">
                                     <ul style="padding: 3px;">
                                         <t t-foreach="psg['additional_info']" t-as="info_id">
                                             <li><span t-esc="info_id"/></li>
                                         </t>
                                     </ul>
                                 </t>
-                                <t t-else="">
+                                    <t t-else="">
                                     <span style="text-align: center;">-</span>
                                 </t>
-                            </div>
-                        </div>
-                    </t>
-                    <div style="margin-bottom: 5px"/>
-                </div>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
             </div>
         </div>
     </template>
@@ -1977,7 +1968,7 @@
             <tr>
                 <td width="70%"/>
                 <td width="25%" style="text-align:center">
-                    <t t-esc="date_now.strftime('%d %b %Y')"/><br/>
+                    <t t-esc="date_now.strftime('%d %B %Y')"/><br/>
                     <p>Buyer</p>
                     <p style="color: white;">.</p>
                     <p style="color: white;">.</p>
@@ -1996,9 +1987,15 @@
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
                         <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
-                            <div style="margin-bottom: 10px; margin-top: 10px;">
-                                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
-                                <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                            <div class="row" style="margin-bottom: 10px; margin-top: 10px; font-size: 18px; font-weight: 730;">
+                                <div class="col-6">
+                                    <span>No. Booking : </span>
+                                    <span t-field="doc.name"/><br/>
+                                </div>
+                                <div class="col-6">
+                                    <span>Print Date  : </span>
+                                    <span t-esc="date_now.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M:%S')" /> (<t t-esc="printout_tz"/>)<br/>
+                                </div>
                             </div>
 
                             <t t-if="doc_model == 'tt.reservation.airline'">

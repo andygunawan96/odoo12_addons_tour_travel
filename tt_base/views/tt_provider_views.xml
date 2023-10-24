@@ -27,6 +27,7 @@
                                 <field name="provider_type_id"/>
                                 <field name="currency_id"/>
                                 <field name="is_reconcile"/>
+                                <field name="required_last_name_on_retrieve" widget="boolean_toggle"/>
                             </group>
                             <group>
                                 <label for="create_uid" string="Created By"/>

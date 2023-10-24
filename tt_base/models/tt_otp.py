@@ -22,6 +22,7 @@ class ResUsersInherit(models.Model):
         otp_objs = self.env['tt.otp'].search([
             ('machine_id.code', '=', req['machine_code']),
             ('user_id.id', '=', self.id),
+            ('is_connect','=', False),
             ('create_date', '>', datetime.now() - timedelta(minutes=agent_obj.otp_expired_time))
         ])
         if not otp_objs or req.get('is_resend_otp'):
@@ -31,7 +32,10 @@ class ResUsersInherit(models.Model):
 
             otp_objs = [self.env['tt.otp'].create_otp_api(req)]
             self.otp_ids = [(4, otp_objs[0].id)]
-            otp_objs[0].send_email_otp()
+            if req.get('turn_off_otp'):
+                otp_objs[0].send_email_turn_off_otp()
+            else:
+                otp_objs[0].send_email_otp()
             ## KIRIM EMAIL
         return otp_objs[0]
 
@@ -61,7 +65,6 @@ class ResUsersInherit(models.Model):
             user_obj.create_date
         except:
             raise RequestException(1008)
-        ## ASUMSI SEBELUM SET OTP DARI FRONTEND, OTP TIDAK AKTIF ##
         otp_obj = user_obj.create_or_get_otp_user_api(req)
         return ERR.get_no_error((otp_obj.create_date + timedelta(minutes=user_obj.ho_id.otp_expired_time)).strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -82,6 +85,35 @@ class ResUsersInherit(models.Model):
             for otp_obj in otp_objs:
                 otp_obj.is_connect = True
             user_obj.is_use_otp = True
+            return ERR.get_no_error()
+        else:
+            return ERR.get_error(500, additional_message='Invalid OTP')
+
+    def turn_off_otp_user_api(self, req, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+
+        otp_objs = self.env['tt.otp'].search([
+            ('machine_id.code', '=', req['machine_code']),
+            ('otp', '=', req['otp']),
+            ('user_id.id', '=', user_obj.id),
+            ('create_date', '>', datetime.now() - timedelta(minutes=user_obj.ho_id.otp_expired_time))
+        ])
+        if otp_objs:
+            for otp_obj in otp_objs:
+                otp_obj.is_connect = False
+            otp_objs = self.env['tt.otp'].search([
+                ('is_connect', '=', True),
+                ('user_id.id', '=', user_obj.id)
+            ])
+            for otp_obj in otp_objs:
+                otp_obj.is_connect = False
+                otp_obj.turn_off_date = datetime.now()
+
+            user_obj.is_use_otp = False
             return ERR.get_no_error()
         else:
             return ERR.get_error(500, additional_message='Invalid OTP')
@@ -122,6 +154,7 @@ class TtOtp(models.Model):
     platform = fields.Char('Platform')
     browser = fields.Char('Browser')
     timezone = fields.Char('Timezone')
+    turn_off_date = fields.Datetime('Turn Off Date', readonly=True)
     active = fields.Boolean('Active', default=True)
 
     def create_otp_api(self, req):
@@ -156,5 +189,10 @@ class TtOtp(models.Model):
     @api.multi
     def send_email_otp(self):
         template = self.env.ref('tt_base.template_mail_otp', raise_if_not_found=False)
+        template.send_mail(self.id, force_send=True)
+
+    @api.multi
+    def send_email_turn_off_otp(self):
+        template = self.env.ref('tt_base.template_mail_turn_off_otp', raise_if_not_found=False)
         template.send_mail(self.id, force_send=True)
 
