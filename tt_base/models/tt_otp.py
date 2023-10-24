@@ -32,10 +32,10 @@ class ResUsersInherit(models.Model):
 
             otp_objs = [self.env['tt.otp'].create_otp_api(req)]
             self.otp_ids = [(4, otp_objs[0].id)]
-            if not self.is_use_otp:
-                otp_objs[0].send_email_otp()
-            else:
+            if req.get('turn_off_otp'):
                 otp_objs[0].send_email_turn_off_otp()
+            else:
+                otp_objs[0].send_email_otp()
             ## KIRIM EMAIL
         return otp_objs[0]
 
@@ -65,7 +65,6 @@ class ResUsersInherit(models.Model):
             user_obj.create_date
         except:
             raise RequestException(1008)
-        ## ASUMSI SEBELUM SET OTP DARI FRONTEND, OTP TIDAK AKTIF ##
         otp_obj = user_obj.create_or_get_otp_user_api(req)
         return ERR.get_no_error((otp_obj.create_date + timedelta(minutes=user_obj.ho_id.otp_expired_time)).strftime('%Y-%m-%d %H:%M:%S'))
 
