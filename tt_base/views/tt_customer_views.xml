@@ -195,11 +195,16 @@
         </field>
     </record>
 
-    <menuitem id="menu_customer_customer"
+    <menuitem id="menu_tour_travel_customer"
               parent="tt_base.top_tour_travel_customers"
+              name="Customer"
+              sequence="20"/>
+
+    <menuitem id="sub_menu_tour_travel_customer_list"
+              parent="tt_base.menu_tour_travel_customer"
               groups="tt_base.group_customer_level_1"
               name="Customer List"
-              sequence="1"
+              sequence="10"
               action="tt_customer_action_view"/>
 
 

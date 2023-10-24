@@ -192,7 +192,7 @@
     <menuitem id="menu_billing_statement_billing_statement"
               parent="tt_payment.top_billing"
               name="Billing"
-              sequence="10"/>
+              sequence="3"/>
     <menuitem id="sub_menu_rodex_billing_billing_statement"
               parent="tt_billing_statement.menu_billing_statement_billing_statement"
               action="tt_billing_statement_action"

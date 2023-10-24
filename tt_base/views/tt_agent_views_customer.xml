@@ -251,17 +251,11 @@
         </field>
     </record>
 
-    <menuitem id="menu_customers_agent"
+    <menuitem id="submenu_customers_all_agent"
               parent="tt_base.top_customers_agent"
               groups="tt_base.group_agent_level_1"
-              name="Agent"
-              sequence="2"/>
-
-    <menuitem id="submenu_customers_all_agent"
-              parent="tt_base.menu_customers_agent"
-              groups="tt_base.group_agent_level_1"
               name="My Agent"
-              sequence="2"
+              sequence="1"
               action="tt_agent_customer_action_view"/>
 
 </odoo>

@@ -39,9 +39,9 @@
     <menuitem
         id="sub_menu_customer_birthday_report_HO"
         name="Customer Birthday Report"
-        parent="tt_base.top_tour_travel_customers"
+        parent="tt_base.menu_tour_travel_customer"
         action="action_customer_report_birthday_menu"
-        sequence="2"
+        sequence="20"
     />
 
     <menuitem
@@ -49,7 +49,7 @@
         name="Customer Birthday Report"
         parent="tt_base.top_customers_customers"
         action="action_customer_report_birthday_menu"
-        sequence="2"
+        sequence="20"
     />
 
 </odoo>

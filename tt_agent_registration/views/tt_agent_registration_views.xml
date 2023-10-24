@@ -196,14 +196,11 @@
             </field>
         </record>
 
-        <menuitem id="top_transaction_registration" parent="tt_base.main_transaction"
+        <menuitem id="menu_transaction_requests_registration" parent="tt_base.top_transaction_requests"
               name="Registration" sequence="20"/>
 
-        <menuitem id="menu_transaction_agent" parent="top_transaction_registration"
-              name="Agent" sequence="2"/>
-
-        <menuitem id="submenu_transaction_request" parent="menu_transaction_agent"
-              name="Request" groups="tt_base.group_agent_registration_level_1" action="tt_agent_registration_action_view" sequence="1"/>
+        <menuitem id="submenu_transaction_requests_agent_reg" parent="menu_transaction_requests_registration"
+              name="Agent Registration" groups="tt_base.group_agent_registration_level_1" action="tt_agent_registration_action_view" sequence="1"/>
 
     </data>
 </odoo>

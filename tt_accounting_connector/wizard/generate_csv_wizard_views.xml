@@ -39,8 +39,8 @@
         <menuitem
                 id="menu_tour_travel_accounting_report"
                 name="Report"
-                parent="tt_accounting_connector.menu_tour_travel_accounting"
-                sequence="2"
+                parent="tt_accounting_setup.menu_tour_travel_accounting"
+                sequence="10"
                 groups="tt_base.group_after_sales_master_level_4"
         />
 
