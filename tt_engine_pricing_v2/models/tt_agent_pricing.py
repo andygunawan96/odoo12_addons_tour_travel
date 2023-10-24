@@ -541,6 +541,102 @@ class AgentPricingLine(models.Model):
         except Exception as e:
             _logger.info('Failed to send "agent pricing line changes" telegram notification: ' + str(e))
 
+    @api.onchange('tkt_ho_com_tax_percentage')
+    def _onchange_tkt_ho_com_tax_percentage(self):
+        if self.tkt_ho_com_tax_percentage < 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value >= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('tkt_ho_com_tax_amount')
+    def _onchange_tkt_ho_com_tax_amount(self):
+        if self.tkt_ho_com_tax_amount < 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value >= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('rsv_ho_com_tax_percentage')
+    def _onchange_rsv_ho_com_tax_percentage(self):
+        if self.rsv_ho_com_tax_percentage < 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value >= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('rsv_ho_com_tax_amount')
+    def _onchange_rsv_ho_com_tax_amount(self):
+        if self.rsv_ho_com_tax_amount < 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value >= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('tkt_com_tax_percentage')
+    def _onchange_tkt_com_tax_percentage(self):
+        if self.tkt_com_tax_percentage > 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value <= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('tkt_com_tax_amount')
+    def _onchange_tkt_com_tax_amount(self):
+        if self.tkt_com_tax_amount > 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value <= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('rsv_com_tax_percentage')
+    def _onchange_rsv_com_tax_percentage(self):
+        if self.rsv_com_tax_percentage > 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value <= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('rsv_com_tax_amount')
+    def _onchange_rsv_com_tax_amount(self):
+        if self.rsv_com_tax_amount > 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value <= 0",
+                }
+            }
+        else:
+            return {}
+
     def get_data(self):
         res = {
             'id': self.id,

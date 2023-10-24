@@ -1502,10 +1502,10 @@ class ProviderPricing(object):
             com_tax_percentage = com_data.get('tax_percentage', 0)
             com_tax_amount = com_data.get('tax_amount', 0)
             com_rounding = com_data.get('rounding', 0)
-            if com_tax_percentage != 0:
+            if com_tax_percentage != 0 and ho_commission_amount > 0 and com_tax_percentage > 0:
                 com_tax_charge = (ho_commission_amount * com_tax_percentage) / 100
                 tax_ho_commission_amount += com_tax_charge
-            if com_tax_amount != 0:
+            if com_tax_amount != 0 and com_tax_amount > 0:
                 tax_ho_commission_amount += com_tax_amount
             if com_rounding > 0:
                 digit = 1
@@ -1523,11 +1523,11 @@ class ProviderPricing(object):
             calc_commission_amount = total_commission_amount
             if tax_ho_commission_amount > 0:
                 calc_commission_amount -= tax_ho_commission_amount
-            if com_tax_percentage != 0:
+            if com_tax_percentage != 0 and calc_commission_amount > 0 and com_tax_percentage < 0:
                 com_tax_charge = (calc_commission_amount * com_tax_percentage) / 100
                 tax_total_commission_amount += com_tax_charge
                 # total_commission_amount = total_commission_amount + com_tax_charge
-            if com_tax_amount != 0:
+            if com_tax_amount != 0 and com_tax_amount < 0:
                 tax_total_commission_amount += com_tax_amount
                 # total_commission_amount = total_commission_amount + com_tax_amount
             if com_rounding > 0:
@@ -1635,10 +1635,10 @@ class ProviderPricing(object):
             com_tax_percentage = com_data.get('tax_percentage', 0)
             com_tax_amount = com_data.get('tax_amount', 0)
             com_rounding = com_data.get('rounding', 0)
-            if com_tax_percentage != 0:
+            if com_tax_percentage != 0 and ho_commission_amount > 0 and com_tax_percentage > 0:
                 com_tax_charge = (ho_commission_amount * com_tax_percentage) / 100
                 tax_ho_commission_amount += com_tax_charge
-            if com_tax_amount != 0:
+            if com_tax_amount != 0 and com_tax_amount > 0:
                 tax_ho_commission_amount += com_tax_amount
             if com_rounding > 0:
                 digit = 1
@@ -1656,11 +1656,11 @@ class ProviderPricing(object):
             calc_commission_amount = total_commission_amount
             if tax_ho_commission_amount > 0:
                 calc_commission_amount -= tax_ho_commission_amount
-            if com_tax_percentage != 0:
+            if com_tax_percentage != 0 and calc_commission_amount > 0 and com_tax_percentage < 0:
                 com_tax_charge = (calc_commission_amount * com_tax_percentage) / 100
                 tax_total_commission_amount += com_tax_charge
                 # total_commission_amount = total_commission_amount + com_tax_charge
-            if com_tax_amount != 0:
+            if com_tax_amount != 0 and com_tax_amount < 0:
                 tax_total_commission_amount += com_tax_amount
                 # total_commission_amount = total_commission_amount + com_tax_amount
             if com_rounding > 0:
@@ -2237,10 +2237,10 @@ class AgentPricing(object):
             com_tax_percentage = com_data.get('tax_percentage', 0)
             com_tax_amount = com_data.get('tax_amount', 0)
             com_rounding = com_data.get('rounding', 0)
-            if com_tax_percentage != 0:
+            if com_tax_percentage != 0 and ho_commission_amount > 0 and com_tax_percentage > 0:
                 com_tax_charge = (ho_commission_amount * com_tax_percentage) / 100
                 tax_ho_commission_amount += com_tax_charge
-            if com_tax_amount != 0:
+            if com_tax_amount != 0 and com_tax_amount > 0:
                 tax_ho_commission_amount += com_tax_amount
             if com_rounding > 0:
                 digit = 1
@@ -2258,11 +2258,11 @@ class AgentPricing(object):
             calc_commission_amount = total_commission_amount
             if tax_ho_commission_amount > 0:
                 calc_commission_amount -= tax_ho_commission_amount
-            if com_tax_percentage != 0:
+            if com_tax_percentage != 0 and calc_commission_amount > 0 and com_tax_percentage < 0:
                 com_tax_charge = (calc_commission_amount * com_tax_percentage) / 100
                 tax_total_commission_amount += com_tax_charge
                 # total_commission_amount = total_commission_amount + com_tax_charge
-            if com_tax_amount != 0:
+            if com_tax_amount != 0 and com_tax_amount < 0:
                 tax_total_commission_amount += com_tax_amount
                 # total_commission_amount = total_commission_amount + com_tax_amount
             if com_rounding > 0:
@@ -2365,10 +2365,10 @@ class AgentPricing(object):
             com_tax_percentage = com_data.get('tax_percentage', 0)
             com_tax_amount = com_data.get('tax_amount', 0)
             com_rounding = com_data.get('rounding', 0)
-            if com_tax_percentage != 0:
+            if com_tax_percentage != 0 and ho_commission_amount > 0 and com_tax_percentage > 0:
                 com_tax_charge = (ho_commission_amount * com_tax_percentage) / 100
                 tax_ho_commission_amount += com_tax_charge
-            if com_tax_amount != 0:
+            if com_tax_amount != 0 and com_tax_amount > 0:
                 tax_ho_commission_amount += com_tax_amount
             if com_rounding > 0:
                 digit = 1
@@ -2386,11 +2386,11 @@ class AgentPricing(object):
             calc_commission_amount = total_commission_amount
             if tax_ho_commission_amount > 0:
                 calc_commission_amount -= tax_ho_commission_amount
-            if com_tax_percentage != 0:
+            if com_tax_percentage != 0 and calc_commission_amount > 0 and com_tax_percentage < 0:
                 com_tax_charge = (calc_commission_amount * com_tax_percentage) / 100
                 tax_total_commission_amount += com_tax_charge
                 # total_commission_amount = total_commission_amount + com_tax_charge
-            if com_tax_amount != 0:
+            if com_tax_amount != 0 and com_tax_amount < 0:
                 tax_total_commission_amount += com_tax_amount
                 # total_commission_amount = total_commission_amount + com_tax_amount
             if com_rounding > 0:
@@ -2897,10 +2897,10 @@ class CustomerPricing(object):
             com_tax_percentage = com_data.get('tax_percentage', 0)
             com_tax_amount = com_data.get('tax_amount', 0)
             com_rounding = com_data.get('rounding', 0)
-            if com_tax_percentage != 0:
+            if com_tax_percentage != 0 and total_commission_amount > 0 and com_tax_percentage < 0:
                 com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
                 tax_total_commission_amount += com_tax_charge
-            if com_tax_amount != 0:
+            if com_tax_amount != 0 and com_tax_amount < 0:
                 tax_total_commission_amount += com_tax_amount
             if com_rounding > 0:
                 digit = 1
