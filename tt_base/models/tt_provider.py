@@ -24,6 +24,7 @@ class TtProvider(models.Model):
     active = fields.Boolean('Active', default=True)
     track_balance = fields.Boolean('Do balance tracking')
     is_reconcile = fields.Boolean('Can be Reconciled')
+    required_last_name_on_retrieve = fields.Boolean('Required LastName on Retrieve', default=False)
 
 
     #kasus concurrent update

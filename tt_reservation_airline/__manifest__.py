@@ -20,6 +20,7 @@ Key Features
 
         'wizard/tt_split_reservation_wizard.xml',
         'wizard/tt_get_booking_from_vendor.xml',
+        'wizard/retrieve_vendor_pnr_log_views.xml',
         'wizard/tt_reservation_passenger_edit_wizard_views.xml',
 
         'data/ir_cron_data.xml',
