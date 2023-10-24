@@ -80,6 +80,7 @@
                 </tree>
             </field>
         </record>
+
         <record id="tt_provider_search_view" model="ir.ui.view">
             <field name="name">tt.provider.search.view</field>
             <field name="model">tt.provider</field>
@@ -140,8 +141,6 @@
                   name="Provider"
                   sequence="2"
                   action="tt_provider_action_view"/>
-
-
 
         <record id="tt_provider_ho_data_form_view" model="ir.ui.view">
             <field name="name">tt.provider.ho.data.form.view</field>
@@ -258,10 +257,11 @@
                     <field name="is_using_balance"/>
                     <field name="is_using_lg"/>
                     <field name="is_using_po"/>
-                    <field name="ho_id"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                 </tree>
             </field>
         </record>
+
         <record id="tt_provider_ho_data_search_view" model="ir.ui.view">
             <field name="name">tt.provider.ho.data.search.view</field>
             <field name="model">tt.provider.ho.data</field>
@@ -274,18 +274,6 @@
                     <filter string="Using Balance" name="using_balance" domain="[('is_using_balance', '=', True)]"/>
                     <separator/>
                 </search>
-            </field>
-        </record>
-
-        <record id="tt_provider_ho_data_tree_with_balance_view" model="ir.ui.view">
-            <field name="name">tt.provider.ho.data.tree.view</field>
-            <field name="model">tt.provider.ho.data</field>
-            <field name="arch" type="xml">
-                <tree string="Provider">
-                    <field name="provider_id"/>
-                    <field name="currency_id"/>
-                    <field name="active"/>
-                </tree>
             </field>
         </record>
 

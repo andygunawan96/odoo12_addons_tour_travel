@@ -307,6 +307,7 @@
                 <field name="agent_type_id"/>
                 <field name="parent_agent_id"/>
                 <field name="reference"/>
+                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
                 <field name="ho_id" groups="base.group_erp_manager"/>
             </tree>
         </field>
