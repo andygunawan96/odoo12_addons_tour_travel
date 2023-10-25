@@ -76,6 +76,7 @@ class AgentCommission(models.Model):
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
+    pricing_breakdown = fields.Boolean('Pricing Breakdown', related='ho_id.pricing_breakdown', store=True)
 
     @api.model
     def create(self, vals):
@@ -273,6 +274,7 @@ class AgentCommissionLine(models.Model):
     set_expiration_date = fields.Boolean('Set Expiration Date', default=False)
     date_from = fields.Datetime('Date From')
     date_to = fields.Datetime('Date To')
+    pricing_breakdown = fields.Boolean('Pricing Breakdown', related='pricing_id.pricing_breakdown', store=True)
 
     origin_name = fields.Char('Origin Name')
     origin_access_type = fields.Selection(ACCESS_TYPE, 'Origin Access Type', default='all', required=True)
@@ -537,6 +539,7 @@ class AgentCommissionLine(models.Model):
                 'residual_amount_to': self.residual_amount_to,
                 'upline_list': [rec.get_data() for rec in self.upline_ids if rec.active],
             },
+            'pricing_breakdown': self.pricing_breakdown,
             'state': self.state,
         }
         return res

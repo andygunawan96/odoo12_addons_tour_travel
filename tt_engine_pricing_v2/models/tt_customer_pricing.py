@@ -50,6 +50,7 @@ class CustomerPricing(models.Model):
 
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, default=lambda self: self.env.user.agent_id)
+    pricing_breakdown = fields.Boolean('Pricing Breakdown', related='ho_id.pricing_breakdown', store=True)
 
     customer_parent_type_name = fields.Char('Customer Parent Type Name', compute='_compute_customer_parent_type_name', store=True)
     customer_parent_type_access_type = fields.Selection(ACCESS_TYPE, 'Customer Parent Type Access Type', default='allow', required=True)
@@ -272,6 +273,7 @@ class CustomerPricingLine(models.Model):
     set_expiration_date = fields.Boolean('Set Expiration Date', default=False)
     date_from = fields.Datetime('Date From')
     date_to = fields.Datetime('Date To')
+    pricing_breakdown = fields.Boolean('Pricing Breakdown', related='pricing_id.pricing_breakdown', store=True)
 
     origin_name = fields.Char('Origin Name')
     origin_access_type = fields.Selection(ACCESS_TYPE, 'Origin Access Type', default='all', required=True)
@@ -627,6 +629,7 @@ class CustomerPricingLine(models.Model):
                     'rounding': self.rsv_ho_com_rounding_places,
                 }
             },
+            'pricing_breakdown': self.pricing_breakdown,
             'state': self.state,
         }
         return res
