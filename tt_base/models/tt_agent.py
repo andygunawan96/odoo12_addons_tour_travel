@@ -103,6 +103,13 @@ class TtAgent(models.Model):
 
     state = fields.Selection([("draft", "Draft"), ("done", "Done")],'State', default='done')
 
+    pricing_breakdown = fields.Boolean('Pricing Breakdown', default=False)
+
+    def get_ho_pricing_breakdown(self):
+        if not self.ho_id:
+            return False
+        return self.ho_id.pricing_breakdown
+
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)
     # 2. Credit limit buat agent di kasih ta? jika enggak actual balance di hapus ckup balance sja

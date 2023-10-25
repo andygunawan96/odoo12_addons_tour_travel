@@ -30,6 +30,7 @@
                         </group>
                         <group>
                             <field name="ho_id" groups="base.group_erp_manager"/>
+                            <field name="pricing_breakdown" groups="base.group_erp_manager"/>
                             <field name="state" widget="radio"/>
                         </group>
                     </group>

@@ -74,6 +74,7 @@ class ProviderPricing(models.Model):
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
+    pricing_breakdown = fields.Boolean('Pricing Breakdown', related='ho_id.pricing_breakdown', store=True)
 
     @api.model
     def create(self, vals):
@@ -260,6 +261,7 @@ class ProviderPricingLine(models.Model):
     set_expiration_date = fields.Boolean('Set Expiration Date', default=False)
     date_from = fields.Datetime('Date From')
     date_to = fields.Datetime('Date To')
+    pricing_breakdown = fields.Boolean('Pricing Breakdown', related='pricing_id.pricing_breakdown', store=True)
     pricing_type = fields.Selection([
         ('standard', 'Standard'),
         ('from_nta', 'From NTA'),
@@ -902,6 +904,7 @@ class ProviderPricingLine(models.Model):
                     'rounding': self.rsv_ho_com_rounding_places,
                 }
             },
+            'pricing_breakdown': self.pricing_breakdown,
             'state': self.state,
         }
         if self.rsv_nta_agent_same_as_nta:
