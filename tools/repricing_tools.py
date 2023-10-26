@@ -4097,6 +4097,7 @@ class RepricingToolsV2(object):
                         total_ho_commission_amount = ho_commission_amount * pax_count
                         total_tax_ho_commission_amount = tax_ho_commission_amount * pax_count
                         total_tax_commission_amount = tax_commission_amount * pax_count
+                        pricing_breakdown = rule_obj.get('pricing_breakdown', False)
 
                         if ho_commission_amount:
                             if ho_commission_amount > 0:
@@ -5423,7 +5424,7 @@ class RepricingToolsV2(object):
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
                                                 'charge_type': 'RAC',
-                                                'charge_code': 'racagthorsvsvc',
+                                                'charge_code': 'racagthorsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': calc_amount,
