@@ -104,6 +104,35 @@ class TtReservationCustomer(models.Model):
 
         return sc_value
 
+    def get_service_charge_details(self):
+        sc_value = {}
+        for p_sc in self.cost_service_charge_ids:
+            p_charge_type = p_sc.charge_type
+            pnr = p_sc.description
+            commission_agent_id = p_sc.commission_agent_id
+
+            # if p_charge_type == 'RAC' and p_sc.charge_code != 'rac':
+            #     if p_charge_type == 'RAC' and 'csc' not in p_sc.charge_code:
+            #         continue
+
+            if p_charge_type == 'RAC' and commission_agent_id:
+                continue
+
+            if not sc_value.get(pnr):
+                sc_value[pnr] = {}
+            if not sc_value[pnr].get(p_charge_type):
+                sc_value[pnr][p_charge_type] = []
+
+            sc_value[pnr][p_charge_type].append({
+                'charge_code': p_sc.charge_code,
+                'currency': p_sc.currency_id.name,
+                'foreign_currency': p_sc.foreign_currency_id.name,
+                'amount': p_sc.amount,
+                'pax_type': p_sc.pax_type,
+                'foreign_amount': p_sc.foreign_amount,
+            })
+        return sc_value
+
     #butuh field channel_service_charge_ids
     def get_channel_service_charges(self):
         total = 0
