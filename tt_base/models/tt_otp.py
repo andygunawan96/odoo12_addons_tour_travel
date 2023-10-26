@@ -198,9 +198,7 @@ class TtMachine(models.Model):
         if machine_obj:
             return machine_obj
         else:
-            return self.create({
-                "code": machine_code
-            })
+            return self.create({"code": machine_code})
 
 class TtOtp(models.Model):
 
