@@ -4100,50 +4100,143 @@ class RepricingToolsV2(object):
 
                         if ho_commission_amount:
                             if ho_commission_amount > 0:
-                                if show_commission and show_upline_commission and self.ho_agent_id:
-                                    if pax_type in sc_temp_repo:
-                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
-                                    else:
-                                        sc_values = copy.deepcopy(sc_temp)
-                                    sc_values.update({
-                                        'charge_type': 'RAC',
-                                        'charge_code': 'racho',
-                                        'pax_type': pax_type,
-                                        'pax_count': pax_count,
-                                        'amount': -ho_commission_amount,
-                                        'foreign_amount': -ho_commission_amount,
-                                        'total': -total_ho_commission_amount,
-                                        'commission_agent_id': self.ho_agent_id,
-                                    })
-                                    fare_data['service_charges'].append(sc_values)
+                                if show_commission:
+                                    if show_upline_commission and self.ho_agent_id:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racho',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -ho_commission_amount,
+                                            'foreign_amount': -ho_commission_amount,
+                                            'total': -total_ho_commission_amount,
+                                            'commission_agent_id': self.ho_agent_id,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                    if pricing_breakdown:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racprv',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -ho_commission_amount,
+                                            'foreign_amount': -ho_commission_amount,
+                                            'total': -total_ho_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'rachosvc',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': ho_commission_amount,
+                                            'foreign_amount': ho_commission_amount,
+                                            'total': total_ho_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                             else:
                                 pass
 
                         if tax_ho_commission_amount:
                             if tax_ho_commission_amount > 0:
-                                if show_commission and show_upline_commission and self.ho_agent_id:
-                                    if pax_type in sc_temp_repo:
-                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
-                                    else:
-                                        sc_values = copy.deepcopy(sc_temp)
-                                    sc_values.update({
-                                        'charge_type': 'RAC',
-                                        'charge_code': 'rachotax',
-                                        'pax_type': pax_type,
-                                        'pax_count': pax_count,
-                                        'amount': -tax_ho_commission_amount,
-                                        'foreign_amount': -tax_ho_commission_amount,
-                                        'total': -total_tax_ho_commission_amount,
-                                        'commission_agent_id': self.ho_agent_id,
-                                    })
-                                    fare_data['service_charges'].append(sc_values)
                                 commission_amount -= tax_ho_commission_amount
+                                if show_commission:
+                                    if show_upline_commission and self.ho_agent_id:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'rachotax',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -tax_ho_commission_amount,
+                                            'foreign_amount': -tax_ho_commission_amount,
+                                            'total': -total_tax_ho_commission_amount,
+                                            'commission_agent_id': self.ho_agent_id,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                    if pricing_breakdown:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racprv',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -tax_ho_commission_amount,
+                                            'foreign_amount': -tax_ho_commission_amount,
+                                            'total': -total_tax_ho_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'rachovat',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': tax_ho_commission_amount,
+                                            'foreign_amount': tax_ho_commission_amount,
+                                            'total': total_tax_ho_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                             else:
                                 pass
 
                         if tax_commission_amount:
                             if tax_commission_amount < 0:
                                 commission_amount += tax_commission_amount
+                                if show_commission:
+                                    if pricing_breakdown:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racprv',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': tax_commission_amount,
+                                            'foreign_amount': tax_commission_amount,
+                                            'total': total_tax_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racvat',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -tax_commission_amount,
+                                            'foreign_amount': -tax_commission_amount,
+                                            'total': -total_tax_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                             else:
                                 pass
 
@@ -4304,69 +4397,160 @@ class RepricingToolsV2(object):
                         total_ho_commission_amount = ho_commission_amount * pax_count
                         total_tax_ho_commission_amount = tax_ho_commission_amount * pax_count
                         total_tax_commission_amount = tax_commission_amount * pax_count
+                        pricing_breakdown = agent_obj.get('pricing_breakdown', False)
 
                         if ho_commission_amount:
                             if ho_commission_amount > 0:
-                                if show_commission and show_upline_commission and self.ho_agent_id:
-                                    if pax_type in sc_temp_repo:
-                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
-                                    else:
-                                        sc_values = copy.deepcopy(sc_temp)
-                                    sc_values.update({
-                                        'charge_type': 'RAC',
-                                        'charge_code': 'racagtho',
-                                        'pax_type': pax_type,
-                                        'pax_count': pax_count,
-                                        'amount': -ho_commission_amount,
-                                        'foreign_amount': -ho_commission_amount,
-                                        'total': -total_ho_commission_amount,
-                                        'commission_agent_id': self.ho_agent_id,
-                                    })
-                                    fare_data['service_charges'].append(sc_values)
+                                if show_commission:
+                                    if show_upline_commission and self.ho_agent_id:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagtho',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -ho_commission_amount,
+                                            'foreign_amount': -ho_commission_amount,
+                                            'total': -total_ho_commission_amount,
+                                            'commission_agent_id': self.ho_agent_id,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                    if pricing_breakdown:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagt',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -ho_commission_amount,
+                                            'foreign_amount': -ho_commission_amount,
+                                            'total': -total_ho_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagthosvc',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': ho_commission_amount,
+                                            'foreign_amount': ho_commission_amount,
+                                            'total': total_ho_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                             else:
                                 pass
 
                         if tax_ho_commission_amount:
                             if tax_ho_commission_amount > 0:
-                                if show_commission and show_upline_commission and self.ho_agent_id:
-                                    if pax_type in sc_temp_repo:
-                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
-                                    else:
-                                        sc_values = copy.deepcopy(sc_temp)
-                                    sc_values.update({
-                                        'charge_type': 'RAC',
-                                        'charge_code': 'racagthotax',
-                                        'pax_type': pax_type,
-                                        'pax_count': pax_count,
-                                        'amount': -tax_ho_commission_amount,
-                                        'foreign_amount': -tax_ho_commission_amount,
-                                        'total': -total_tax_ho_commission_amount,
-                                        'commission_agent_id': self.ho_agent_id,
-                                    })
-                                    fare_data['service_charges'].append(sc_values)
                                 commission_amount -= tax_ho_commission_amount
+                                if show_commission:
+                                    if show_upline_commission and self.ho_agent_id:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagthotax',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -tax_ho_commission_amount,
+                                            'foreign_amount': -tax_ho_commission_amount,
+                                            'total': -total_tax_ho_commission_amount,
+                                            'commission_agent_id': self.ho_agent_id,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                    if pricing_breakdown:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagt',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -tax_ho_commission_amount,
+                                            'foreign_amount': -tax_ho_commission_amount,
+                                            'total': -total_tax_ho_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagthovat',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': tax_ho_commission_amount,
+                                            'foreign_amount': tax_ho_commission_amount,
+                                            'total': total_tax_ho_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                             else:
                                 pass
 
                         if tax_commission_amount:
                             if tax_commission_amount < 0:
-                                if show_commission and show_upline_commission and self.ho_agent_id:
-                                    if pax_type in sc_temp_repo:
-                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
-                                    else:
-                                        sc_values = copy.deepcopy(sc_temp)
-                                    sc_values.update({
-                                        'charge_type': 'RAC',
-                                        'charge_code': 'racagttax',
-                                        'pax_type': pax_type,
-                                        'pax_count': pax_count,
-                                        'amount': tax_commission_amount,
-                                        'foreign_amount': tax_commission_amount,
-                                        'total': total_tax_commission_amount,
-                                        'commission_agent_id': self.ho_agent_id,
-                                    })
-                                    fare_data['service_charges'].append(sc_values)
                                 commission_amount += tax_commission_amount
+                                if show_commission:
+                                    if show_upline_commission and self.ho_agent_id:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagttax',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': tax_commission_amount,
+                                            'foreign_amount': tax_commission_amount,
+                                            'total': total_tax_commission_amount,
+                                            'commission_agent_id': self.ho_agent_id,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                    if pricing_breakdown:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagt',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': tax_commission_amount,
+                                            'foreign_amount': tax_commission_amount,
+                                            'total': total_tax_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagtvat',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -tax_commission_amount,
+                                            'foreign_amount': -tax_commission_amount,
+                                            'total': -total_tax_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                             else:
                                 pass
 
@@ -4440,26 +4624,58 @@ class RepricingToolsV2(object):
                         commission_amount = cust_tkt.get('commission_amount', 0.0)
                         tax_commission_amount = cust_tkt.get('tax_commission_amount', 0.0)
                         total_tax_commission_amount = tax_commission_amount * pax_count
+                        pricing_breakdown = cust_obj.get('pricing_breakdown', False)
 
                         if tax_commission_amount:
                             if tax_commission_amount < 0:
-                                if show_commission and show_upline_commission and self.ho_agent_id:
-                                    if pax_type in sc_temp_repo:
-                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
-                                    else:
-                                        sc_values = copy.deepcopy(sc_temp)
-                                    sc_values.update({
-                                        'charge_type': 'RAC',
-                                        'charge_code': 'raccusttax',
-                                        'pax_type': pax_type,
-                                        'pax_count': pax_count,
-                                        'amount': tax_commission_amount,
-                                        'foreign_amount': tax_commission_amount,
-                                        'total': total_tax_commission_amount,
-                                        'commission_agent_id': self.ho_agent_id,
-                                    })
-                                    fare_data['service_charges'].append(sc_values)
                                 commission_amount += tax_commission_amount
+                                if show_commission:
+                                    if show_upline_commission and self.ho_agent_id:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'raccusttax',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': tax_commission_amount,
+                                            'foreign_amount': tax_commission_amount,
+                                            'total': total_tax_commission_amount,
+                                            'commission_agent_id': self.ho_agent_id,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                    if pricing_breakdown:
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'raccust',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': tax_commission_amount,
+                                            'foreign_amount': tax_commission_amount,
+                                            'total': total_tax_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'raccustvat',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -tax_commission_amount,
+                                            'foreign_amount': -tax_commission_amount,
+                                            'total': -total_tax_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                             else:
                                 pass
 
@@ -4773,63 +4989,168 @@ class RepricingToolsV2(object):
                     tax_ho_commission_amount = tkt_rsv_res.get('tax_ho_commission_amount', 0.0)
                     commission_amount = tkt_rsv_res.get('commission_amount', 0.0)
                     tax_commission_amount = tkt_rsv_res.get('tax_commission_amount', 0.0)
+                    pricing_breakdown = rule_obj.get('pricing_breakdown', False)
 
                     if ho_commission_amount:
                         if ho_commission_amount > 0:
-                            if show_commission and show_upline_commission and self.ho_agent_id:
+                            if show_commission:
                                 calc_amount = ho_commission_amount / total_all_pax_count
                                 calc_amount = self.ceil(calc_amount, 0)
-                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
-                                    if pcd_pax_count > 0:
-                                        total_calc_amount = calc_amount * pcd_pax_count
-                                        if pcd_pax_type in sc_temp_repo:
-                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
-                                        else:
-                                            sc_values = copy.deepcopy(sc_temp)
-                                        sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'rachorsv',
-                                            'pax_type': pcd_pax_type,
-                                            'pax_count': pcd_pax_count,
-                                            'amount': -calc_amount,
-                                            'foreign_amount': -calc_amount,
-                                            'total': -total_calc_amount,
-                                            'commission_agent_id': self.ho_agent_id
-                                        })
-                                        fare_data['service_charges'].append(sc_values)
+                                if show_upline_commission and self.ho_agent_id:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'rachorsv',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                                'commission_agent_id': self.ho_agent_id
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+                                if pricing_breakdown:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racrsvprv',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'rachorsvsvc',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': calc_amount,
+                                                'foreign_amount': calc_amount,
+                                                'total': total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
                         else:
                             pass
 
                     if tax_ho_commission_amount:
                         if tax_ho_commission_amount > 0:
-                            if show_commission and show_upline_commission and self.ho_agent_id:
+                            commission_amount -= tax_ho_commission_amount
+                            if show_commission:
                                 calc_amount = tax_ho_commission_amount / total_all_pax_count
                                 calc_amount = self.ceil(calc_amount, 0)
-                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
-                                    if pcd_pax_count > 0:
-                                        total_calc_amount = calc_amount * pcd_pax_count
-                                        if pcd_pax_type in sc_temp_repo:
-                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
-                                        else:
-                                            sc_values = copy.deepcopy(sc_temp)
-                                        sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'rachorsvtax',
-                                            'pax_type': pcd_pax_type,
-                                            'pax_count': pcd_pax_count,
-                                            'amount': -calc_amount,
-                                            'foreign_amount': -calc_amount,
-                                            'total': -total_calc_amount,
-                                            'commission_agent_id': self.ho_agent_id
-                                        })
-                                        fare_data['service_charges'].append(sc_values)
-                            commission_amount -= tax_ho_commission_amount
+                                if show_upline_commission and self.ho_agent_id:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'rachorsvtax',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                                'commission_agent_id': self.ho_agent_id
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+                                if pricing_breakdown:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racrsvprv',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'rachorsvvat',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': calc_amount,
+                                                'foreign_amount': calc_amount,
+                                                'total': total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
                         else:
                             pass
 
                     if tax_commission_amount:
                         if tax_commission_amount < 0:
                             commission_amount += tax_commission_amount
+                            calc_amount = tax_commission_amount / total_all_pax_count
+                            calc_amount = self.ceil(calc_amount, 0)
+                            if show_commission:
+                                if pricing_breakdown:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racrsvprv',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': calc_amount,
+                                                'foreign_amount': calc_amount,
+                                                'total': total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racrsvvat',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
                         else:
                             pass
 
@@ -4990,84 +5311,187 @@ class RepricingToolsV2(object):
                     tax_ho_commission_amount = agent_rsv_res.get('tax_ho_commission_amount', 0.0)
                     commission_amount = agent_rsv_res.get('commission_amount', 0.0)
                     tax_commission_amount = agent_rsv_res.get('tax_commission_amount', 0.0)
+                    pricing_breakdown = agent_obj.get('pricing_breakdown', False)
 
                     if ho_commission_amount:
                         if ho_commission_amount > 0:
-                            if show_commission and show_upline_commission and self.ho_agent_id:
+                            if show_commission:
                                 calc_amount = ho_commission_amount / total_all_pax_count
                                 calc_amount = self.ceil(calc_amount, 0)
-                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
-                                    if pcd_pax_count > 0:
-                                        total_calc_amount = calc_amount * pcd_pax_count
-                                        if pcd_pax_type in sc_temp_repo:
-                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
-                                        else:
-                                            sc_values = copy.deepcopy(sc_temp)
-                                        sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racagthorsv',
-                                            'pax_type': pcd_pax_type,
-                                            'pax_count': pcd_pax_count,
-                                            'amount': -calc_amount,
-                                            'foreign_amount': -calc_amount,
-                                            'total': -total_calc_amount,
-                                            'commission_agent_id': self.ho_agent_id
-                                        })
-                                        fare_data['service_charges'].append(sc_values)
+                                if show_upline_commission and self.ho_agent_id:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racagthorsv',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                                'commission_agent_id': self.ho_agent_id
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+                                if pricing_breakdown:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racagtrsv',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racagthorsvsvc',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': calc_amount,
+                                                'foreign_amount': calc_amount,
+                                                'total': total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
                         else:
                             pass
 
                     if tax_ho_commission_amount:
                         if tax_ho_commission_amount > 0:
-                            if show_commission and show_upline_commission and self.ho_agent_id:
-                                calc_amount = tax_ho_commission_amount / total_all_pax_count
-                                calc_amount = self.ceil(calc_amount, 0)
-                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
-                                    if pcd_pax_count > 0:
-                                        total_calc_amount = calc_amount * pcd_pax_count
-                                        if pcd_pax_type in sc_temp_repo:
-                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
-                                        else:
-                                            sc_values = copy.deepcopy(sc_temp)
-                                        sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racagthorsvtax',
-                                            'pax_type': pcd_pax_type,
-                                            'pax_count': pcd_pax_count,
-                                            'amount': -calc_amount,
-                                            'foreign_amount': -calc_amount,
-                                            'total': -total_calc_amount,
-                                            'commission_agent_id': self.ho_agent_id
-                                        })
-                                        fare_data['service_charges'].append(sc_values)
                             commission_amount -= tax_ho_commission_amount
+                            calc_amount = tax_ho_commission_amount / total_all_pax_count
+                            calc_amount = self.ceil(calc_amount, 0)
+                            if show_commission:
+                                if show_upline_commission and self.ho_agent_id:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racagthorsvtax',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                                'commission_agent_id': self.ho_agent_id
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+                                if pricing_breakdown:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racagtrsv',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racagthorsvsvc',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': calc_amount,
+                                                'foreign_amount': calc_amount,
+                                                'total': total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
                         else:
                             pass
 
                     if tax_commission_amount:
                         if tax_commission_amount < 0:
-                            if show_commission and show_upline_commission and self.ho_agent_id:
-                                calc_amount = tax_commission_amount / total_all_pax_count
-                                calc_amount = self.ceil(calc_amount, 0)
-                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
-                                    if pcd_pax_count > 0:
-                                        total_calc_amount = calc_amount * pcd_pax_count
-                                        if pcd_pax_type in sc_temp_repo:
-                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
-                                        else:
-                                            sc_values = copy.deepcopy(sc_temp)
-                                        sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racagtrsvtax',
-                                            'pax_type': pcd_pax_type,
-                                            'pax_count': pcd_pax_count,
-                                            'amount': calc_amount,
-                                            'foreign_amount': calc_amount,
-                                            'total': total_calc_amount,
-                                            'commission_agent_id': self.ho_agent_id
-                                        })
-                                        fare_data['service_charges'].append(sc_values)
                             commission_amount += tax_commission_amount
+                            calc_amount = tax_commission_amount / total_all_pax_count
+                            calc_amount = self.ceil(calc_amount, 0)
+                            if show_commission:
+                                if show_upline_commission and self.ho_agent_id:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racagtrsvtax',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': calc_amount,
+                                                'foreign_amount': calc_amount,
+                                                'total': total_calc_amount,
+                                                'commission_agent_id': self.ho_agent_id
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+                                if pricing_breakdown:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racagtrsv',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': calc_amount,
+                                                'foreign_amount': calc_amount,
+                                                'total': total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'racagtrsvvat',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
                         else:
                             pass
 
@@ -5545,31 +5969,66 @@ class RepricingToolsV2(object):
                     # October 19, 2023 - SAM
                     commission_amount = cust_rsv_res.get('commission_amount', 0.0)
                     tax_commission_amount = cust_rsv_res.get('tax_commission_amount', 0.0)
+                    pricing_breakdown = cust_obj.get('pricing_breakdown', False)
 
                     if tax_commission_amount:
                         if tax_commission_amount < 0:
-                            if show_commission and show_upline_commission and self.ho_agent_id:
+                            commission_amount += tax_commission_amount
+                            if show_commission:
                                 calc_amount = tax_commission_amount / total_all_pax_count
                                 calc_amount = self.ceil(calc_amount, 0)
-                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
-                                    if pcd_pax_count > 0:
-                                        total_calc_amount = calc_amount * pcd_pax_count
-                                        if pcd_pax_type in sc_temp_repo:
-                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
-                                        else:
-                                            sc_values = copy.deepcopy(sc_temp)
-                                        sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'raccustrsvtax',
-                                            'pax_type': pcd_pax_type,
-                                            'pax_count': pcd_pax_count,
-                                            'amount': calc_amount,
-                                            'foreign_amount': calc_amount,
-                                            'total': total_calc_amount,
-                                            'commission_agent_id': self.ho_agent_id
-                                        })
-                                        fare_data['service_charges'].append(sc_values)
-                            commission_amount += tax_commission_amount
+                                if show_upline_commission and self.ho_agent_id:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'raccustrsvtax',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': calc_amount,
+                                                'foreign_amount': calc_amount,
+                                                'total': total_calc_amount,
+                                                'commission_agent_id': self.ho_agent_id
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+                                if pricing_breakdown:
+                                    for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                        if pcd_pax_count > 0:
+                                            total_calc_amount = calc_amount * pcd_pax_count
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'raccustrsv',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': calc_amount,
+                                                'foreign_amount': calc_amount,
+                                                'total': total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'raccustrsvvat',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
                         else:
                             pass
 

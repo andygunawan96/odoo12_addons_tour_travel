@@ -2233,13 +2233,51 @@ class ReservationAirline(models.Model):
                     'arrival_date': prov_obj.journey_ids[-1].arrival_date,
                 })
 
+            # October 25, 2023 - SAM
+            # Compute destination baru
+            is_valid = True
+            new_origin_id = None
+            new_destination_id = None
+            last_destination_id = None
+            route_list = []
+            if airline_obj.journey_ids and airline_obj.journey_ids[0].origin_id:
+                route_list = [airline_obj.journey_ids[0].origin_id.code]
+                new_origin_id = airline_obj.journey_ids[0].origin_id.id
+            for journey_obj in airline_obj.journey_ids:
+                if not journey_obj.origin_id or not journey_obj.destination_id:
+                    is_valid = False
+                    break
+
+                origin_code = journey_obj.origin_id.code
+                if origin_code not in route_list:
+                    new_destination_id = last_destination_id
+                    break
+                destination_code = journey_obj.destination_id.code
+                if destination_code in route_list:
+                    new_destination_id = last_destination_id
+                    break
+                route_list.append(destination_code)
+                last_destination_id = journey_obj.destination_id.id
+
+            if not is_valid:
+                new_origin_id = None
+                new_destination_id = None
+                if airline_obj.journey_ids:
+                    if airline_obj.journey_ids[0].origin_id:
+                        new_origin_id = airline_obj.journey_ids[0].origin_id.id
+                    if airline_obj.journey_ids[0].destination_id:
+                        new_destination_id = airline_obj.journey_ids[0].destination_id.id
+            else:
+                if not new_destination_id:
+                    new_destination_id = last_destination_id
+
             airline_obj.write({
                 'adult': adult,
                 'child': child,
                 'infant': infant,
-                'departure_date': airline_obj.journey_ids[0].departure_date[:10],
-                'origin_id': airline_obj.journey_ids[0].origin_id.id if airline_obj.journey_ids[0].origin_id else None,
-                'destination_id': airline_obj.journey_ids[-1].destination_id.id if airline_obj.journey_ids[-1].destination_id else None,
+                'departure_date': airline_obj.journey_ids[0].departure_date[:10] if airline_obj.journey_ids else '',
+                'origin_id': new_origin_id,
+                'destination_id': new_destination_id,
             })
             airline_obj.calculate_service_charge()
 
