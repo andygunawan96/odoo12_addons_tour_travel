@@ -32,6 +32,7 @@
                     <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_master_data_tour_level_3" attrs="{'invisible':[('state','!=', 'draft')]}"/>
                     <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_master_data_tour_level_3" attrs="{'invisible':[('state','=', 'draft')]}"/>
                     <button name="action_closed" string="Close" type="object" groups="tt_base.group_master_data_tour_level_3" attrs="{'invisible':[('state','=', 'closed')]}"/>
+                    <button name="generate_slug_all_tours" string="Generate Slug All Tours" type="object" groups="base.group_system"/>
                     <!--                    <button string="Update Tour Code" name="update_tour_code_temp" type="object" groups="base.group_system"/>-->
                     <!--                    <button string="Generate Room Codes" name="generate_all_room_codes" type="object" groups="base.group_system"/>-->
 <!--                    <button string="Convert to New Pricing" name="convert_to_new_pricing" type="object" groups="base.group_system"/>-->
@@ -94,6 +95,7 @@
                         </group>
                         <group>
                             <field name="tour_code" readonly="1"/>
+                            <field name="tour_slug" readonly="1" groups="base.group_erp_manager"/>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="carrier_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="currency_id" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>

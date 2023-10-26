@@ -50,6 +50,7 @@ class CustomerPricing(models.Model):
 
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, default=lambda self: self.env.user.agent_id)
+    pricing_breakdown = fields.Boolean('Pricing Breakdown', related='ho_id.pricing_breakdown', store=True)
 
     customer_parent_type_name = fields.Char('Customer Parent Type Name', compute='_compute_customer_parent_type_name', store=True)
     customer_parent_type_access_type = fields.Selection(ACCESS_TYPE, 'Customer Parent Type Access Type', default='allow', required=True)
@@ -272,6 +273,7 @@ class CustomerPricingLine(models.Model):
     set_expiration_date = fields.Boolean('Set Expiration Date', default=False)
     date_from = fields.Datetime('Date From')
     date_to = fields.Datetime('Date To')
+    pricing_breakdown = fields.Boolean('Pricing Breakdown', related='pricing_id.pricing_breakdown', store=True)
 
     origin_name = fields.Char('Origin Name')
     origin_access_type = fields.Selection(ACCESS_TYPE, 'Origin Access Type', default='all', required=True)
@@ -405,6 +407,102 @@ class CustomerPricingLine(models.Model):
         except Exception as e:
             _logger.info('Failed to send "customer pricing line changes" telegram notification: ' + str(e))
 
+    @api.onchange('tkt_ho_com_tax_percentage')
+    def _onchange_tkt_ho_com_tax_percentage(self):
+        if self.tkt_ho_com_tax_percentage < 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value >= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('tkt_ho_com_tax_amount')
+    def _onchange_tkt_ho_com_tax_amount(self):
+        if self.tkt_ho_com_tax_amount < 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value >= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('rsv_ho_com_tax_percentage')
+    def _onchange_rsv_ho_com_tax_percentage(self):
+        if self.rsv_ho_com_tax_percentage < 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value >= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('rsv_ho_com_tax_amount')
+    def _onchange_rsv_ho_com_tax_amount(self):
+        if self.rsv_ho_com_tax_amount < 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value >= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('tkt_com_tax_percentage')
+    def _onchange_tkt_com_tax_percentage(self):
+        if self.tkt_com_tax_percentage > 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value <= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('tkt_com_tax_amount')
+    def _onchange_tkt_com_tax_amount(self):
+        if self.tkt_com_tax_amount > 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value <= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('rsv_com_tax_percentage')
+    def _onchange_rsv_com_tax_percentage(self):
+        if self.rsv_com_tax_percentage > 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value <= 0",
+                }
+            }
+        else:
+            return {}
+
+    @api.onchange('rsv_com_tax_amount')
+    def _onchange_rsv_com_tax_amount(self):
+        if self.rsv_com_tax_amount > 0:
+            return {
+                'warning': {
+                    'title': "Value will be ignored",
+                    'message': "Please use value <= 0",
+                }
+            }
+        else:
+            return {}
+
     def get_data(self):
         res = {
             'id': self.id,
@@ -531,6 +629,7 @@ class CustomerPricingLine(models.Model):
                     'rounding': self.rsv_ho_com_rounding_places,
                 }
             },
+            'pricing_breakdown': self.pricing_breakdown,
             'state': self.state,
         }
         return res

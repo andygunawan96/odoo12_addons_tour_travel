@@ -29,6 +29,7 @@
                         </group>
                         <group>
                             <field name="ho_id" groups="base.group_erp_manager"/>
+                            <field name="pricing_breakdown" groups="base.group_erp_manager"/>
                             <field name="state" widget="radio"/>
                         </group>
                     </group>
@@ -416,14 +417,18 @@ Amadeus cryptic sample request will be : FM5
                                         <pre>[ Vendor Tax Commission ]
 Commission Tax : Input value &lt; 0 or will be ignored.
 
+Provider Commission -> Sales - NTA Agent
+HO Commission -> NTA Agent - NTA
+
 Example :
-Tax Percentage : -10%
-Agent Commission : 50,000
+Tax Percentage : -10
+Provider Commission : 50,000
 
 Result :
-50,000 - 5,000 = 45,000
+Tax amount : 50,000 x -10% = -5,000
+New Provider Commission : 50,000 - 5,000 = 45,000
 
-*) Commission for the agent will be 45,000</pre>
+*) Provider Commission for the agent will be 45,000</pre>
                                     </div>
                                     <group string="HO Tax Commission">
                                         <group string="Commission Tax">
@@ -438,17 +443,22 @@ Result :
                                         <pre>[ HO Tax Commission ]
 Commission Tax : Input value &gt; 0 or will be ignored.
 
+Provider Commission -> Sales - NTA Agent
+HO Commission -> NTA Agent - NTA
+
 Example :
-Tax Percentage : 10%
+Tax Percentage : 10
 HO Commission : 10,000
-Agent Commission : 50,000
+Provider Commission : 50,000
 
 Result :
-10,000 + 1,000 = 11,000
+Tax amount : 10,000 x 10% = 1,000
+New HO Commission : 10,000 + 1,000 = 11,000
+New Provider Commission : 50,000 - 1,000 = 49,000
 
 *) HO will receive 10,000 + 1,000 commission fee
 *) 1,000 will be charged from Commission for the agent
-*) Commission for the agent will be 50,000 - 1,000 = 49,000</pre>
+*) Provider Commission for the agent will be 50,000 - 1,000 = 49,000</pre>
                                     </div>
                                 </page>
                             </notebook>
@@ -580,14 +590,18 @@ Result :
                                         <pre>[ Vendor Tax Commission ]
 Commission Tax : Input value &lt; 0 or will be ignored.
 
+Provider Commission -> Sales - NTA Agent
+HO Commission -> NTA Agent - NTA
+
 Example :
-Tax Percentage : -10%
-Agent Commission : 50,000
+Tax Percentage : -10
+Provider Commission : 50,000
 
 Result :
-50,000 - 5,000 = 45,000
+Tax amount : 50,000 x -10% = -5,000
+New Provider Commission : 50,000 - 5,000 = 45,000
 
-*) Commission for the agent will be 45,000</pre>
+*) Provider Commission for the agent will be 45,000</pre>
                                     </div>
                                     <group string="HO Tax Commission">
                                         <group string="Commission Tax">
@@ -602,17 +616,22 @@ Result :
                                         <pre>[ HO Tax Commission ]
 Commission Tax : Input value &gt; 0 or will be ignored.
 
+Provider Commission -> Sales - NTA Agent
+HO Commission -> NTA Agent - NTA
+
 Example :
-Tax Percentage : 10%
+Tax Percentage : 10
 HO Commission : 10,000
-Agent Commission : 50,000
+Provider Commission : 50,000
 
 Result :
-10,000 + 1,000 = 11,000
+Tax amount : 10,000 x 10% = 1,000
+New HO Commission : 10,000 + 1,000 = 11,000
+New Provider Commission : 50,000 - 1,000 = 49,000
 
 *) HO will receive 10,000 + 1,000 commission fee
 *) 1,000 will be charged from Commission for the agent
-*) Commission for the agent will be 50,000 - 1,000 = 49,000</pre>
+*) Provider Commission for the agent will be 50,000 - 1,000 = 49,000</pre>
                                     </div>
                                 </page>
                             </notebook>

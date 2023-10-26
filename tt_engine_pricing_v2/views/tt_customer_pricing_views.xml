@@ -28,6 +28,7 @@
                         </group>
                         <group>
                             <field name="ho_id" groups="base.group_erp_manager"/>
+                            <field name="pricing_breakdown" groups="base.group_erp_manager"/>
                             <field name="state" widget="radio"/>
                         </group>
                     </group>
@@ -363,15 +364,23 @@ QQ1KTFITVALUEB,QQ3KFVITVALUEA</pre>
                                         <pre>[ Agent Tax Commission to HO ]
 Commission Tax : Input value &lt; 0 or will be ignored.
 
+Provider Commission -> from Provider Pricing
+Agent Commission -> Sales - NTA Agent
+HO Commission -> NTA Agent - NTA
+
 Example :
-Tax Percentage : -10%
+Tax Percentage : -10
 Agent Commission : 50,000
+Provider Commission : 35,000
 
 Result :
-50,000 - 5,000 = 45,000
+Tax : 50,000 x -10% = -5,000
+New Agent Commission : 50,000 - 5,000 = 45,000
+New Provider Commission : 35,000
 
-*) Commission for the agent will be 45,000
-*) 5,000 fee will be added to HO</pre>
+*) Agent Commission for the agent will be 45,000
+*) 5,000 fee will be added to HO
+*) There will be no change with the Provider Commission 35,000</pre>
                                     </div>
 <!--                                    <group string="HO">-->
 <!--                                        <group string="Commission Tax">-->
@@ -420,15 +429,23 @@ Result :
                                         <pre>[ Agent Tax Commission to HO ]
 Commission Tax : Input value &lt; 0 or will be ignored.
 
+Provider Commission -> from Provider Pricing
+Agent Commission -> Sales - NTA Agent
+HO Commission -> NTA Agent - NTA
+
 Example :
-Tax Percentage : -10%
+Tax Percentage : -10
 Agent Commission : 50,000
+Provider Commission : 35,000
 
 Result :
-50,000 - 5,000 = 45,000
+Tax : 50,000 x -10% = -5,000
+New Agent Commission : 50,000 - 5,000 = 45,000
+New Provider Commission : 35,000
 
-*) Commission for the agent will be 45,000
-*) 5,000 fee will be added to HO</pre>
+*) Agent Commission for the agent will be 45,000
+*) 5,000 fee will be added to HO
+*) There will be no change with the Provider Commission 35,000</pre>
                                     </div>
 <!--                                    <group string="HO">-->
 <!--                                        <group string="Commission Tax">-->

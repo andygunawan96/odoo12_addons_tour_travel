@@ -6,7 +6,7 @@
         <menuitem id="top_tour_travel_agent_registration"
               parent="tt_base.main_tour_travel"
               name="Agent Registration"
-              sequence="5"
+              sequence="20"
               groups="base.group_user"/>
 
             <!--Menu Visa-->

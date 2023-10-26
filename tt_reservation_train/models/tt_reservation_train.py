@@ -545,8 +545,6 @@ class TtReservationTrain(models.Model):
                 'refund_uid': context['co_uid'],
                 'refund_date': datetime.now()
             })
-        elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
-            self.action_reverse_train(context)
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
@@ -555,6 +553,8 @@ class TtReservationTrain(models.Model):
             # partial booked
             self.calculate_service_charge()
             self.action_partial_booked_api_train(context, pnr_list, hold_date)
+        elif any(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
+            self.action_reverse_train(context)
         elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
             # failed issue
             self.action_cancel()

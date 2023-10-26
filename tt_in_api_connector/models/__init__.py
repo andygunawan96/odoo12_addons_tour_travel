@@ -42,3 +42,4 @@ from . import tt_accounting_connector_api
 from . import tt_email_credential
 from . import tt_hotel_api
 from . import res_company_api
+from . import res_user_api

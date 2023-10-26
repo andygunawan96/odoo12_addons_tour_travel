@@ -30,6 +30,7 @@
                         </group>
                         <group>
                             <field name="ho_id" groups="base.group_erp_manager"/>
+                            <field name="pricing_breakdown" groups="base.group_erp_manager"/>
                             <field name="state" widget="radio"/>
                         </group>
                     </group>
@@ -449,15 +450,23 @@ Uplines sequence order from parent to HO (Up to Down)</pre>
                                         <pre>[ Agent Tax Commission to HO ]
 Commission Tax : Input value &lt; 0 or will be ignored.
 
+Provider Commission -> from Provider Pricing
+Agent Commission -> Sales - NTA Agent
+HO Commission -> NTA Agent - NTA
+
 Example :
-Tax Percentage : -10%
+Tax Percentage : -10
 Agent Commission : 50,000
+Provider Commission : 35,000
 
 Result :
-50,000 - 5,000 = 45,000
+Tax : 50,000 x -10% = -5,000
+New Agent Commission : 50,000 - 5,000 = 45,000
+New Provider Commission : 35,000
 
-*) Commission for the agent will be 45,000
-*) 5,000 fee will be added to HO</pre>
+*) Agent Commission for the agent will be 45,000
+*) 5,000 fee will be added to HO
+*) There will be no change with the Provider Commission 35,000</pre>
                                     </div>
                                     <group string="HO Tax Commission">
                                         <group string="Commission Tax">
@@ -472,17 +481,32 @@ Result :
                                         <pre>[ HO Tax Commission ]
 Commission Tax : Input value &gt; 0 or will be ignored.
 
+Provider Commission -> from Provider Pricing
+Agent Commission -> Sales - NTA Agent
+HO Commission -> NTA Agent - NTA
+
 Example :
-Tax Percentage : 10%
-HO Commission : 10,000
-Agent Commission : 50,000
+Tax Percentage : 10
+HO Commission : 70,000
+Agent Commission : 5,000
+Provider Commission : 1,000
 
 Result :
-10,000 + 1,000 = 11,000
+Tax amount : 70,000 x 10% = 7,000
+New HO Commission : 70,000 + 7,000 = 77,000
+New Agent Commission : 5,000 - 7,000 = -2,000
+New Provider Commission : 1,000 - 2,000 = -1,000
+Auto Upsell : 1,000
 
-*) HO will receive 10,000 + 1,000 commission fee
-*) 1,000 will be charged from Commission for the agent
-*) Commission for the agent will be 50,000 - 1,000 = 49,000</pre>
+*) HO will receive 70,000 + 7,000 commission fee
+*) 7,000 will be charged from Agent Commission for the agent
+*) Agent Commission will be 5,000 - 7,000 = -2,000
+*) If there are due amount from the Agent Commission,
+   Due amount will be charge from Provider Commission
+   1,000 - 2,000 = -1,000
+*) If there are due amount from the Provider Commission
+   System will be auto upsell the ticket price as the due amount
+   Ticket will be upsell 1,000</pre>
                                     </div>
                                 </page>
                             </notebook>
@@ -579,15 +603,23 @@ Result :
                                         <pre>[ Agent Tax Commission to HO ]
 Commission Tax : Input value &lt; 0 or will be ignored.
 
+Provider Commission -> from Provider Pricing
+Agent Commission -> Sales - NTA Agent
+HO Commission -> NTA Agent - NTA
+
 Example :
-Tax Percentage : -10%
+Tax Percentage : -10
 Agent Commission : 50,000
+Provider Commission : 35,000
 
 Result :
-50,000 - 5,000 = 45,000
+Tax : 50,000 x -10% = -5,000
+New Agent Commission : 50,000 - 5,000 = 45,000
+New Provider Commission : 35,000
 
-*) Commission for the agent will be 45,000
-*) 5,000 fee will be added to HO</pre>
+*) Agent Commission for the agent will be 45,000
+*) 5,000 fee will be added to HO
+*) There will be no change with the Provider Commission 35,000</pre>
                                     </div>
                                     <group string="HO Tax Commission">
                                         <group string="Commission Tax">
@@ -602,17 +634,32 @@ Result :
                                         <pre>[ HO Tax Commission ]
 Commission Tax : Input value &gt; 0 or will be ignored.
 
+Provider Commission -> from Provider Pricing
+Agent Commission -> Sales - NTA Agent
+HO Commission -> NTA Agent - NTA
+
 Example :
-Tax Percentage : 10%
-HO Commission : 10,000
-Agent Commission : 50,000
+Tax Percentage : 10
+HO Commission : 70,000
+Agent Commission : 5,000
+Provider Commission : 1,000
 
 Result :
-10,000 + 1,000 = 11,000
+Tax amount : 70,000 x 10% = 7,000
+New HO Commission : 70,000 + 7,000 = 77,000
+New Agent Commission : 5,000 - 7,000 = -2,000
+New Provider Commission : 1,000 - 2,000 = -1,000
+Auto Upsell : 1,000
 
-*) HO will receive 10,000 + 1,000 commission fee
-*) 1,000 will be charged from Commission for the agent
-*) Commission for the agent will be 50,000 - 1,000 = 49,000</pre>
+*) HO will receive 70,000 + 7,000 commission fee
+*) 7,000 will be charged from Agent Commission for the agent
+*) Agent Commission will be 5,000 - 7,000 = -2,000
+*) If there are due amount from the Agent Commission,
+   Due amount will be charge from Provider Commission
+   1,000 - 2,000 = -1,000
+*) If there are due amount from the Provider Commission
+   System will be auto upsell the ticket price as the due amount
+   Ticket will be upsell 1,000</pre>
                                     </div>
                                 </page>
                             </notebook>

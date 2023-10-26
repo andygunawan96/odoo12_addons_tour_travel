@@ -85,6 +85,7 @@
                             <!--                            <field name="actual_balance"/>-->
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
+                            <field name="pricing_breakdown" widget="boolean_toggle"/>
                         </group>
                         <group>
                             <field name="credit_limit" attrs="{'readonly': [('is_ho_agent', '=', True)]}" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
@@ -118,10 +119,10 @@
                             <field name="npwp" readonly="1"/>
                             <separator/>
                             <field name="min_topup_amount" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
-                            <field name="topup_increment_amount" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
-                            <field name="default_unique_number" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
-                            <field name="unique_amount_pool_min" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
-                            <field name="unique_amount_pool_limit" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
+                            <field name="topup_increment_amount" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}" groups="base.group_erp_manager"/>
+                            <field name="default_unique_number" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}" groups="base.group_erp_manager"/>
+                            <field name="unique_amount_pool_min" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}" groups="base.group_erp_manager"/>
+                            <field name="unique_amount_pool_limit" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}" groups="base.group_erp_manager"/>
                         </group>
                     </group>
                     <group name="Ledger">
@@ -307,6 +308,7 @@
                 <field name="agent_type_id"/>
                 <field name="parent_agent_id"/>
                 <field name="reference"/>
+                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
                 <field name="ho_id" groups="base.group_erp_manager"/>
             </tree>
         </field>
@@ -386,9 +388,14 @@
 
     <menuitem id="menu_tour_travel_agent"
               parent="tt_base.top_tour_travel_customers"
+              name="Agent"
+              sequence="10"/>
+
+    <menuitem id="sub_menu_tour_travel_agent_list"
+              parent="tt_base.menu_tour_travel_agent"
               groups="tt_base.group_agent_level_1"
               name="Agent List"
-              sequence="13"
+              sequence="10"
               action="tt_agent_all_action_view"/>
 
     <record id="view_agent_target_form" model="ir.ui.view">

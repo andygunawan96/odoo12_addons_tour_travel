@@ -602,11 +602,32 @@ class TtReschedule(models.Model):
             raise UserError("Cannot Validate because state is not 'Sent'.")
 
         if agent_payment_method == 'balance':
+            total_check_amount = 0
+            ledger_breakdown_list = []
             for rec in self.reschedule_line_ids:
-                credit = rec.reschedule_amount + rec.admin_fee_ho + rec.admin_fee_agent
+                total_check_amount += rec.reschedule_amount + rec.admin_fee_ho + rec.admin_fee_agent
+                ledger_breakdown_list.append({
+                    'rs_amount': rec.reschedule_amount + rec.admin_fee_ho + rec.admin_fee_agent,
+                    'ho_adm_amount': rec.admin_fee_ho,
+                    'agent_adm_amount': rec.admin_fee_agent,
+                    'rs_ledger_type': rec.reschedule_type == 'addons' and 8 or 7,
+                    'desc': str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)) + '\n'
+                })
+            balance_res = self.env['tt.agent'].check_balance_limit_api(self.agent_id.id, total_check_amount, agent_payment_method)
+            if balance_res['error_code'] != 0:
+                if agent_payment_method == 'credit_limit':
+                    _logger.error('Agent Credit Limit not enough')
+                    add_message = "agent credit limit %s" % (self.agent_id.name)
+                else:
+                    _logger.error('Agent Balance not enough')
+                    add_message = "agent balance %s" % (self.agent_id.name)
+                raise RequestException(1007, additional_message=add_message)
+
+            for rec in ledger_breakdown_list:
+                credit = rec['rs_amount']
                 debit = 0
-                ledger_type = rec.reschedule_type == 'addons' and 8 or 7
-                temp_desc = str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)) + '\n'
+                ledger_type = rec['rs_ledger_type']
+                temp_desc = rec['desc']
                 self.env['tt.ledger'].create_ledger_vanilla(
                     self.res_model,
                     self.res_id,
@@ -628,10 +649,10 @@ class TtReschedule(models.Model):
                     }
                 )
 
-                if rec.admin_fee_ho:
+                if rec.get('ho_adm_amount'):
                     ho_agent = self.agent_id.ho_id
                     credit = 0
-                    debit = rec.admin_fee_ho
+                    debit = rec['ho_adm_amount']
                     ledger_type = 6
                     self.env['tt.ledger'].sudo().create_ledger_vanilla(
                         self.res_model,
@@ -654,9 +675,9 @@ class TtReschedule(models.Model):
                         }
                     )
 
-                if rec.admin_fee_agent:
+                if rec.get('agent_adm_amount'):
                     credit = 0
-                    debit = rec.admin_fee_agent
+                    debit = rec['agent_adm_amount']
                     ledger_type = 3
                     self.env['tt.ledger'].sudo().create_ledger_vanilla(
                         self.res_model,

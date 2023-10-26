@@ -98,6 +98,27 @@ class TtAirlineApiCon(models.Model):
                                             'retrieve_booking',
                                             timeout=120, ho_id=req['ho_id'])
 
+    def send_retrieve_vendor_pnr_log(self, req):
+        request = {
+            'proxy_co_uid': req.get('user_id',False),
+            'pnr': req.get('pnr'),
+            'provider': req.get('provider'),
+            'is_retrieved': req.get('is_retrieved',False),
+            'pricing_date': req.get('pricing_date',False)
+        }
+        if req.get('last_name'):
+            request.update({
+                'booking_data': {
+                    'passengers': [{
+                        'last_name': req['last_name']
+                    }]
+                }
+            })
+        return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
+                                            request,
+                                            'retrieve_pnr_log',
+                                            timeout=120, ho_id=req['ho_id'])
+
     # June 2, 2021 - SAM
     def send_reprice_booking_vendor(self, req):
         request = {

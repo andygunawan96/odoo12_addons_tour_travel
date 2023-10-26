@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="retrieve_vendor_pnr_log_form_view" model="ir.ui.view">
+        <field name="name">Retrieve Vendor PNR Log Wizard</field>
+        <field name="model">retrieve.vendor.pnr.log</field>
+        <field name="arch" type="xml">
+            <form string="Retrieve Vendor PNR API Wizard">
+                <group>
+                    <group>
+                        <field name="agent_id"/>
+                        <field name="provider_ho_data_id" attrs="{'invisible': [('agent_id','=',False)]}" />
+                        <field name="provider_id" invisible="1"/>
+                        <field name="provider_required_last_name" invisible="1"/>
+                    </group>
+                    <group attrs="{'invisible': [('provider_ho_data_id','=',False)]}">
+                        <field name="ho_id" groups="base.group_erp_manager"/>
+                        <field name="parent_agent_id"/>
+                    </group>
+                </group>
+                <group attrs="{'invisible': [('provider_ho_data_id', '=', False)]}">
+                    <group>
+                        <field name="pnr"/>
+                        <field name="last_name" attrs="{'required': [('provider_required_last_name', '=', True)], 'invisible': [('provider_required_last_name', '=', False)]}"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="send_get_booking" string="Get Booking" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="retrieve_vendor_pnr_log_review_form_view" model="ir.ui.view">
+        <field name="name">Retrieve Vendor PNR Log Review</field>
+        <field name="model">retrieve.vendor.pnr.log.review</field>
+        <field name="arch" type="xml">
+            <form string="Retrieve Vendor PNR API Review">
+                <group>
+                    <group>
+                        <field name="pnr" readonly="1"/>
+                        <field name="last_name" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="ho_id" readonly="1" groups="base.group_erp_manager"/>
+                        <field name="agent_id" readonly="1"/>
+                        <field name="provider_ho_data_id" readonly="1"/>
+                    </group>
+                </group>
+                <hr/>
+                <notebook>
+                    <page string="Full Logs" name="full_logs">
+                        <field name="data" nolabel="1"/>
+                    </page>
+                    <page string="Tickets" name="tickets">
+                        <field name="tickets" nolabel="1"/>
+                    </page>
+                    <page string="Payments" name="payments">
+                        <field name="payments" nolabel="1"/>
+                    </page>
+                    <page string="Prices" name="prices">
+                        <field name="prices" nolabel="1"/>
+                    </page>
+                    <page string="Journeys" name="journeys">
+                        <field name="journeys" nolabel="1"/>
+                    </page>
+                    <page string="Segments" name="segments">
+                        <field name="segments" nolabel="1"/>
+                    </page>
+                    <page string="Paxs" name="paxs">
+                        <field name="paxs" nolabel="1"/>
+                    </page>
+                    <page string="Contacts" name="contacts">
+                        <field name="contacts" nolabel="1"/>
+                    </page>
+                    <page string="After Sales" name="after_sales">
+                        <field name="after_sales" nolabel="1"/>
+                    </page>
+                </notebook>
+                <footer>
+                    <button string="Done" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="retrieve_vendor_pnr_log_wizard_action" model="ir.actions.act_window">
+        <field name="name">Retrieve Vendor PNR Log Wizard</field>
+        <field name="res_model">retrieve.vendor.pnr.log</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="submenu_reservations_airline_retrieve_vendor_pnr_log"
+              parent="tt_reservation_airline.menu_reservations_airline_get_booking"
+              name="Retrieve Vendor PNR API Data"
+              action="tt_reservation_airline.retrieve_vendor_pnr_log_wizard_action"
+              groups="tt_base.group_reservation_level_4"
+              sequence="12"/>
+
+</odoo>

@@ -137,12 +137,8 @@
         </field>
     </record>
 
-    <menuitem id="menu_tour_travel_accounting" parent="tt_base.main_tour_travel"
-              name="Accounting" sequence="490"
-              groups="tt_base.group_after_sales_master_level_4"/>
-
-    <menuitem id="submenu_tour_travel_accounting_log" name="Vendor Sync Log" sequence="1"
-              parent="tt_accounting_connector.menu_tour_travel_accounting" action="tt_accounting_queue_action"
+    <menuitem id="submenu_tour_travel_accounting_log" name="Vendor Sync Log" sequence="5"
+              parent="tt_accounting_setup.menu_tour_travel_accounting" action="tt_accounting_queue_action"
               groups="tt_base.group_after_sales_master_level_4"/>
 
 </odoo>

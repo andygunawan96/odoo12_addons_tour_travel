@@ -16,7 +16,7 @@ class TtBankAccount(models.Model):
     _rec_name = 'bank_account_owner'
 
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
-    agent_id = fields.Many2one('tt.agent', 'Agent')
+    agent_id = fields.Many2one('tt.agent', 'Agent', default=lambda self: self.env.user.agent_id.id)
     bank_account_owner = fields.Char('Owner Name')
     bank_account_number = fields.Char('Bank Number')
     bank_account_number_without_dot = fields.Char("Bank Number Modified")

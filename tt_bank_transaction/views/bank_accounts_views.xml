@@ -4,7 +4,7 @@
         <field name="name">bank.accounts.tree.view</field>
         <field name="model">tt.bank.accounts</field>
         <field name="arch" type="xml">
-            <tree create="false">
+            <tree>
                 <field name="bank_account_owner"/>
                 <field name="bank_account_number"/>
                 <field name="currency_id"/>
@@ -17,17 +17,17 @@
         <field name="name">bank.accounts.form.view</field>
         <field name="model">tt.bank.accounts</field>
         <field name="arch" type="xml">
-            <form create="false">
+            <form>
                 <sheet>
                     <group>
 			            <field name="ho_id" groups="base.group_erp_manager"/>
-                        <field name="agent_id" readonly="1"/>
-                        <field name="bank_id" readonly="1"/>
-                        <field name="currency_id" readonly="1"/>
-                        <field name="bank_account_owner" readonly="1"/>
-                        <field name="bank_account_number" readonly="1"/>
-                        <field name="bank_account_number_without_dot" readonly="1"/>
-                        <field name="is_get_transaction" readonly="1"/>
+                        <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                        <field name="bank_id"/>
+                        <field name="currency_id"/>
+                        <field name="bank_account_owner"/>
+                        <field name="bank_account_number"/>
+                        <field name="bank_account_number_without_dot"/>
+                        <field name="is_get_transaction"/>
                     </group>
                     <notebook string="Transactions List">
                         <page string="Date list">

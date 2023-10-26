@@ -75,6 +75,10 @@ class ApiManagement(models.Model):
     def get_credential_api(self, data, context):
         try:
             uid = _DB_CON.authenticate(data['user'], data['password'])
+            if data.get('ip'):
+                _logger.info("IP API %s" % data['ip'])
+            if data.get('unique_device'):
+                _logger.info("Unique Device API %s" % data['unique_device'])
             if not uid:
                 raise Exception('User and Password is not match')
             _user = self.env['res.users'].sudo().browse(uid)
@@ -112,6 +116,31 @@ class ApiManagement(models.Model):
                 if not co_uid:
                     raise Exception('Co User and Co Password is not match')
                 _co_user = self.env['res.users'].sudo().browse(co_uid)
+
+                ### CHECK OTP #####
+                expired_time = _co_user.check_need_otp_user_api(data)
+                if expired_time:
+                    if data.get('otp'):
+                        raise RequestException(1041)
+                    else:
+                        raise RequestException(1040,additional_message=expired_time)
+
+                values.update({
+                    "co_is_use_otp": _co_user.is_use_otp,
+                    'co_otp_list_machine': []
+                })
+                if _co_user.is_use_otp:
+                    otp_objs = self.env['tt.otp'].search([
+                        ('user_id.id', '=', _co_user.id),
+                        ('is_connect','=', True)
+                    ])
+                    for otp_obj in otp_objs:
+                        values['co_otp_list_machine'].append({
+                            "machine_id": otp_obj.machine_id.code,
+                            "platform": otp_obj.platform,
+                            "browser": otp_obj.browser,
+                            "timezone": otp_obj.timezone
+                        })
 
                 if _co_user.is_banned:
                     additional_msg = ""

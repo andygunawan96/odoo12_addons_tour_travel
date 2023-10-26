@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_frontend_fingerprint" inherit_id="web.assets_frontend" name="Assets Frontend Fingerprint">
+        <xpath expr="." position="inside">
+<!--            <script type="text/javascript" src="/tt_base/static/tt_custom/fingerprint.js"></script>-->
+            <script type="text/javascript" src="/tt_base/static/tt_custom/run_fingerprint.js"></script>
+        </xpath>
+    </template>
+
+    <template id="web_login_fingerprint" inherit_id="web.login">
+        <xpath expr="//div[@class='form-group field-password']" position="after">
+            <t t-if="is_need_otp">
+                <div class="form-group field-otp">
+                    <label for="otp_data">OTP Data</label>
+                    <input type="text" name="otp_data" id="otp_data" class="form-control"/>
+                </div>
+            </t>
+            <div class="input-group">
+                <input type="hidden" name="platform" id="platform" class="form-control"/>
+                <input type="hidden" name="web_vendor" id="web_vendor" class="form-control"/>
+            </div>
+            <div class="input-group">
+                <input type="hidden" name="machine_id" id="machine_id" class="form-control"/>
+            </div>
+            <div class="input-group">
+                <input type="hidden" name="tz" id="tz" class="form-control"/>
+                <div class="input-group-append">
+                    <button id="kentng" class="btn btn-secondary" type="button">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
