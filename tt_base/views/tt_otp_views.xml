@@ -82,6 +82,7 @@
             <tree string="TT OTP">
                 <field name="machine_id"/>
                 <field name="otp" groups="base.group_erp_manager"/>
+                <field name="is_turn_off_request"/>
                 <field name="is_connect"/>
                 <field name="platform"/>
                 <field name="browser"/>
