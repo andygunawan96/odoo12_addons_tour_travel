@@ -8,7 +8,7 @@ class ResUsersInherit(models.Model):
     _inherit = 'res.users'
 
     is_use_otp = fields.Boolean('Use OTP', default=False)
-    otp_ids = fields.One2many('tt.otp', 'user_id', 'OTPs')
+    otp_ids = fields.One2many('tt.otp', 'user_id', 'OTPs', readonly=True)
 
     def check_need_otp_user_api(self, req):
         if not self.is_use_otp or self.otp_ids.filtered(lambda x: x.machine_id.code == req['machine_code'] and x.is_connect):
@@ -45,13 +45,13 @@ class ResUsersInherit(models.Model):
         return otp_objs[0]
 
     def check_otp_user_api(self, req):
-        agent_obj = self.ho_id
+        ho_obj = self.ho_id
         if req.get('otp'):
             otp_objs = self.env['tt.otp'].search([
                 ('machine_id.code','=', req['machine_code']),
                 ('otp','=', req['otp']),
                 ('user_id.id','=', self.id),
-                ('create_date','>', datetime.now() - timedelta(minutes=agent_obj.otp_expired_time))
+                ('create_date','>', datetime.now() - timedelta(minutes=ho_obj.otp_expired_time))
             ])
             if otp_objs:
                 for otp_obj in otp_objs:
@@ -62,7 +62,7 @@ class ResUsersInherit(models.Model):
         else:
             ## NO OTP CODE CREATE
             otp_obj = self.create_or_get_otp_user_api(req)
-            return (otp_obj.create_date + timedelta(minutes=agent_obj.otp_expired_time)).strftime('%Y-%m-%d %H:%M:%S')
+            return (otp_obj.create_date + timedelta(minutes=ho_obj.otp_expired_time)).strftime('%Y-%m-%d %H:%M:%S')
 
     def set_otp_user_api(self, req, context):
         user_obj = self.browse(context['co_uid'])
@@ -108,15 +108,17 @@ class ResUsersInherit(models.Model):
             ('create_date', '>', datetime.now() - timedelta(minutes=user_obj.ho_id.otp_expired_time))
         ])
         if otp_objs:
+            turn_off_date = datetime.now()
             for otp_obj in otp_objs:
                 otp_obj.is_connect = False
+                otp_obj.turn_off_date = turn_off_date
             otp_objs = self.env['tt.otp'].search([
                 ('is_connect', '=', True),
                 ('user_id.id', '=', user_obj.id)
             ])
             for otp_obj in otp_objs:
                 otp_obj.is_connect = False
-                otp_obj.turn_off_date = datetime.now()
+                otp_obj.turn_off_date = turn_off_date
 
             user_obj.is_use_otp = False
             return ERR.get_no_error()
@@ -211,6 +213,7 @@ class TtOtp(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent', related='user_id.agent_id', readonly=True)
     otp = fields.Char('OTP')
     is_connect = fields.Boolean('Connect', default=False)
+    is_turn_off_request = fields.Boolean('Turn Off Request', default=False)
     platform = fields.Char('Platform')
     browser = fields.Char('Browser')
     timezone = fields.Char('Timezone')
@@ -225,7 +228,8 @@ class TtOtp(models.Model):
             "otp": self.generate_otp(),
             "platform": req['platform'],
             "browser": req['browser'],
-            "timezone": req.get('timezone', '')
+            "timezone": req.get('timezone', ''),
+            "is_turn_off_request": req.get('turn_off_otp', False)
         })
 
     def generate_otp(self):
