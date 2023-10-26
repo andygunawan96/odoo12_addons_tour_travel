@@ -16,14 +16,14 @@
                 </div>
             </t>
             <div class="input-group">
-                <input type="text" name="platform" id="platform" invisible="1" class="form-control"/>
-                <input type="text" name="web_vendor" id="web_vendor" invisible="1" class="form-control"/>
+                <input type="hidden" name="platform" id="platform" class="form-control"/>
+                <input type="hidden" name="web_vendor" id="web_vendor" class="form-control"/>
             </div>
             <div class="input-group">
-                <input type="text" name="machine_id" id="machine_id" invisible="1" class="form-control"/>
+                <input type="hidden" name="machine_id" id="machine_id" class="form-control"/>
             </div>
             <div class="input-group">
-                <input type="text" name="tz" id="tz" invisible="1" class="form-control"/>
+                <input type="hidden" name="tz" id="tz" class="form-control"/>
                 <div class="input-group-append">
                     <button id="kentng" class="btn btn-secondary" type="button">
                         <i class="fa fa-eye"></i>
