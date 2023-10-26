@@ -901,8 +901,9 @@ class PaymentUniqueAmount(models.Model):
             used_unique_number.append(rec['unique_number'])
         used_unique_number = set(used_unique_number)
         try:
-            cut_off_min = self.env.user.ho_id.unique_amount_pool_min
-            cut_off_amt = self.env.user.ho_id.unique_amount_pool_limit
+            ho_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
+            cut_off_min = ho_obj.unique_amount_pool_min
+            cut_off_amt = ho_obj.unique_amount_pool_limit
             unique_amt_pool = variables.UNIQUE_AMOUNT_POOL
             if 0 < cut_off_min < cut_off_amt < 999:
                 unique_amt_pool = set(list(unique_amt_pool)[cut_off_min:cut_off_amt])
@@ -910,7 +911,7 @@ class PaymentUniqueAmount(models.Model):
                 unique_amt_pool = set(list(unique_amt_pool)[cut_off_min:])
             elif cut_off_amt < 999:
                 unique_amt_pool = set(list(unique_amt_pool)[:cut_off_amt])
-            unique_number = self.env.user.ho_id.default_unique_number + random.sample(unique_amt_pool - used_unique_number, 1).pop()
+            unique_number = ho_obj.default_unique_number + random.sample(unique_amt_pool - used_unique_number, 1).pop()
         except:
             unique_number = 0
         vals.update({
