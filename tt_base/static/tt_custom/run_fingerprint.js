@@ -26,11 +26,11 @@ odoo.define('tt.fingerprint', function (require) {
                         else if(result.components.webGlBasics.value.vendor)
                             web_vendor = result.components.webGlBasics.value.vendor;
                         timezone = result.components.timezone.value;
+                        localStorage.platform = platform;
+                        localStorage.unique_id = unique_id;
+                        localStorage.web_vendor = web_vendor;
+                        localStorage.timezone = timezone;
                     });
-                    localStorage.platform = platform;
-                    localStorage.unique_id = unique_id;
-                    localStorage.web_vendor = web_vendor;
-                    localStorage.timezone = timezone;
                 }catch(err){
                     localStorage.platform = 'Block by adblock';
                     localStorage.unique_id = crypto.randomUUID();
