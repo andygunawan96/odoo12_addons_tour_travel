@@ -119,10 +119,10 @@
                             <field name="npwp" readonly="1"/>
                             <separator/>
                             <field name="min_topup_amount" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
-                            <field name="topup_increment_amount" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
-                            <field name="default_unique_number" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
-                            <field name="unique_amount_pool_min" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
-                            <field name="unique_amount_pool_limit" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
+                            <field name="topup_increment_amount" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}" groups="base.group_erp_manager"/>
+                            <field name="default_unique_number" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}" groups="base.group_erp_manager"/>
+                            <field name="unique_amount_pool_min" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}" groups="base.group_erp_manager"/>
+                            <field name="unique_amount_pool_limit" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}" groups="base.group_erp_manager"/>
                         </group>
                     </group>
                     <group name="Ledger">

@@ -100,6 +100,7 @@ class MasterTour(models.Model):
     description = fields.Text('Description')
 
     tour_code = fields.Char('Tour Code', readonly=True, copy=False)
+    tour_slug = fields.Char('Tour Slug', readonly=True, copy=False)
     tour_route = fields.Selection([('international', 'International'), ('domestic', 'Domestic')],
                                   'Route', required=True, default='international')
     tour_category = fields.Selection([('group', 'For All Agents'), ('private', 'For Selected Agent')],
@@ -245,6 +246,18 @@ class MasterTour(models.Model):
             vals.update({
                 'ho_ids': [(4, self.env.user.ho_id.id)]
             })
+        if vals.get('name'):
+            inc_value = 0
+            temp_slug = util.slugify_str(vals['name'])
+            existing_tours = self.env['tt.master.tour'].search([('name', '=ilike', vals['name']), '|', ('active', '=', False), ('active', '=', True)])
+            # loop untuk cek kasus anomali dimana ada name yang manual diisi pake angka (1, 2, dll)
+            while existing_tours:
+                inc_value += len(existing_tours)
+                temp_slug = '%s-%s' % (util.slugify_str(vals['name']), str(inc_value))
+                existing_tours = self.env['tt.master.tour'].search([('tour_slug', '=ilike', temp_slug), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+            vals.update({
+                'tour_slug': temp_slug
+            })
         res = super(MasterTour, self).create(vals)
         return res
 
@@ -254,7 +267,35 @@ class MasterTour(models.Model):
         root_obj_id = self.env.ref('base.user_root').id
         if not self.env.user.has_group('base.group_erp_manager') and not self.env.user.id in [admin_obj_id, root_obj_id] and self.env.user.ho_id.id != self.owner_ho_id.id:
             raise UserError('You do not have permission to edit this record.')
+        if vals.get('name'):
+            inc_value = 0
+            temp_slug = util.slugify_str(vals['name'])
+            existing_tours = self.env['tt.master.tour'].search([('name', '=ilike', vals['name']), '|', ('active', '=', False), ('active', '=', True)])
+            # loop untuk cek kasus anomali dimana ada name yang manual diisi pake angka (1, 2, dll)
+            while existing_tours:
+                inc_value += len(existing_tours)
+                temp_slug = '%s-%s' % (util.slugify_str(vals['name']), str(inc_value))
+                existing_tours = self.env['tt.master.tour'].search([('tour_slug', '=ilike', temp_slug), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+            vals.update({
+                'tour_slug': temp_slug
+            })
         return super(MasterTour, self).write(vals)
+
+    def generate_slug_all_tours(self):
+        all_tours = self.env['tt.master.tour'].search([('tour_slug', '=', False)])
+        for rec in all_tours:
+            if rec.name:
+                inc_value = 0
+                temp_slug = util.slugify_str(rec.name)
+                existing_tours = self.env['tt.master.tour'].search([('name', '=ilike', rec.name), ('tour_slug', '!=', False), '|', ('active', '=', False), ('active', '=', True)])
+                # loop untuk cek kasus anomali dimana ada name yang manual diisi pake angka (1, 2, dll)
+                while existing_tours:
+                    inc_value += len(existing_tours)
+                    temp_slug = '%s-%s' % (util.slugify_str(rec.name), str(inc_value))
+                    existing_tours = self.env['tt.master.tour'].search([('tour_slug', '=ilike', temp_slug), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                rec.write({
+                    'tour_slug': temp_slug
+                })
 
     def action_get_internal_tour_json(self):
         raise UserError(_("This Provider does not support Sync Products."))
@@ -1008,6 +1049,7 @@ class MasterTour(models.Model):
                         result.append({
                             'name': rec.name,
                             'tour_code': rec.tour_code,
+                            'tour_slug': rec.tour_slug,
                             'tour_lines': tour_line_list,
                             'tour_line_amount': rec.tour_line_amount,
                             'tour_category': rec.tour_category,
@@ -1210,13 +1252,17 @@ class MasterTour(models.Model):
         try:
             search_request = {
                 'tour_code': data.get('tour_code') and data['tour_code'] or '',
+                'tour_slug': data.get('tour_slug') and data['tour_slug'] or '',
                 'provider': data.get('provider') and data['provider'] or ''
             }
-            provider_obj = self.env['tt.provider'].sudo().search([('alias', '=', search_request['provider'])], limit=1)
-            if not provider_obj:
-                raise RequestException(1002)
-            provider_obj = provider_obj[0]
-            search_params = [('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)]
+            if search_request.get('tour_code'):
+                provider_obj = self.env['tt.provider'].sudo().search([('alias', '=', search_request['provider'])], limit=1)
+                if not provider_obj:
+                    raise RequestException(1002)
+                provider_obj = provider_obj[0]
+                search_params = [('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)]
+            else:
+                search_params = [('tour_slug', '=', search_request['tour_slug'])]
             if context and context.get('co_ho_id'):
                 search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
             else:
