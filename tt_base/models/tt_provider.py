@@ -212,6 +212,72 @@ class TtProviderCode(models.Model):
         elif rec.res_model == 'tt.hotel.type':
             rec.type_id = rec.res_id
 
+    def find_city_country(self):
+        list_name = [self.name.replace(')',''),]
+        for params in [';', '(', ',']:
+            new_list_name = []
+            for part_name in list_name:
+                new_list_name += part_name.split(params)
+            list_name = new_list_name
+
+        dest_name = list_name[0].strip()
+        state_name = ""
+        other_name = ""
+        country_name = ""
+        if len(list_name) > 1:
+            country_name = list_name[-1].strip()
+
+        # Example [100 Mile House, Bc, Canada]
+        # Part tengah bisa berarti State bisa jdi country Code
+        if len(list_name) > 2:
+            state_name = list_name[1].strip()
+        if len(list_name) == 4:
+            other_name = list_name[2].strip()
+
+        # Cek City
+        country_obj = self.env['res.country'].find_country_by_name(country_name, 1)
+        city_objs = self.env['res.city'].find_city_by_name(dest_name, country_id=country_obj.id, limit=100)
+
+        # Jika result city by country lebih dri 1 cek ulng by state / other
+        if len(city_objs.ids) == 1:
+            self.city_id = city_objs.ids[0]
+            self.format_new()
+            return True
+        elif len(city_objs.ids):
+            state_strs = [state_name, other_name]
+            state_ids = []
+            state_obj = self.env['res.country.state'].find_state_by_name(state_name, country_id=country_obj.id, limit=1)
+            if state_obj:
+                state_strs += [state_obj.name, state_obj.code]
+                state_ids.append(state_obj.id)
+            other_obj = self.env['res.country.state'].find_state_by_name(other_name, country_id=country_obj.id, limit=1)
+            if other_obj:
+                state_strs += [other_obj.name, other_obj.code]
+                state_ids.append(other_obj.id)
+            for city_obj in city_objs:
+                if city_obj.state_id and city_obj.state_id.id in state_ids or city_obj.state_id.code in state_strs:
+                    self.city_id = city_obj.id
+                    self.format_new()
+                    return True
+
+        # Cek tt_hotel_Destinasi => Inherit
+        return {
+            'id': False,
+            'name': self.name,
+            'city_str': dest_name,
+            'state_str': state_name,
+            'country_id': country_obj.id,
+            'country_str': country_name,
+        }
+
+    def clear_all(self):
+        for rec in self:
+            rec.country_id = False
+            rec.state_id = False
+            rec.city_id = False
+            rec.res_model = False
+            rec.res_id = False
+
 
 class TtProviderDestination(models.Model):
     _name = 'tt.provider.destination'

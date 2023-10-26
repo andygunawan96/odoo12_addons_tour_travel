@@ -136,5 +136,12 @@
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
+        <record id="tt_hotel_provider_hotelinx" model="tt.provider">
+            <field name="name">Hotelinx</field>
+            <field name="alias">A15</field>
+            <field name="code">hotelinx</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
     </data>
 </odoo>

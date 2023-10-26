@@ -127,6 +127,13 @@
             <field name="is_adult_birth_date_required" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
+        <record id="tt_transport_carrier_hotel_hotelinx" model="tt.transport.carrier">
+            <field name="name">Hotelinx</field>
+            <field name="code">hotelinx</field>
+            <field name="active" eval="True"/>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
     </data>
 </odoo>
     
