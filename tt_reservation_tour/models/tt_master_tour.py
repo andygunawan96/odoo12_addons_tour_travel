@@ -1216,7 +1216,7 @@ class MasterTour(models.Model):
                 'arrival_date_fmt': segment.arrival_date and utc_tz.localize(segment.arrival_date).astimezone(user_tz).strftime('%d-%b-%Y %H:%M') or '',
                 'delay': 'None',
             }
-            if old_vals and old_vals['journey_type'] == segment.journey_type:
+            if old_vals and old_vals.get('journey_type') == segment.journey_type and old_vals.get('arrival_date') and segment.departure_date:
                 time_delta = utc_tz.localize(segment.departure_date).astimezone(user_tz) - old_vals['arrival_date']
                 day = int(time_delta.days)
                 hours = int(time_delta.seconds / 3600)
