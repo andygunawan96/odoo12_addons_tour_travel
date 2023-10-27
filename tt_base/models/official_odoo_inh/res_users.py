@@ -52,11 +52,11 @@ DEVICE_TYPE = [
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    signup_token = fields.Char(copy=False, groups="base.group_erp_manager, tt_base.group_tt_agent_management_operator, tt_base.group_user_data_level_3")
+    signup_token = fields.Char(copy=False, groups="base.group_erp_manager, tt_base.group_user_data_level_3")
     signup_type = fields.Char(string='Signup Token Type', copy=False,
-                              groups="base.group_erp_manager, tt_base.group_tt_agent_management_operator, tt_base.group_user_data_level_3")
+                              groups="base.group_erp_manager, tt_base.group_user_data_level_3")
     signup_expiration = fields.Datetime(copy=False,
-                                        groups="base.group_erp_manager, tt_base.group_tt_agent_management_operator, tt_base.group_user_data_level_3")
+                                        groups="base.group_erp_manager, tt_base.group_user_data_level_3")
 
 
 class ResUsers(models.Model):

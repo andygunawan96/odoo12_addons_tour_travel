@@ -1,7 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 tt_agent_registration,tt.agent.registration,model_tt_agent_registration,,1,0,0,0
-tt_agent_registration_for_tour_travel_operator,tt.agent.registration.for.tour.travel.operator,model_tt_agent_registration,tt_base.group_tt_tour_travel_operator,1,1,1,0
-tt_agent_registration_for_agent_user_operator,tt.agent.registration.for.agent.user.operator,model_tt_agent_registration,tt_base.group_tt_agent_user_operator,1,1,1,0
 
 tt_agent_registration_for_agent_registration_level_1,tt.agent.registration.for.agent.registration.level.1,model_tt_agent_registration,tt_base.group_agent_registration_level_1,1,0,0,0
 tt_agent_registration_for_agent_registration_level_2,tt.agent.registration.for.agent.registration.level.2,model_tt_agent_registration,tt_base.group_agent_registration_level_2,1,0,1,0
@@ -10,8 +8,6 @@ tt_agent_registration_for_agent_registration_level_4,tt.agent.registration.for.a
 tt_agent_registration_for_agent_registration_level_5,tt.agent.registration.for.agent.registration.level.5,model_tt_agent_registration,tt_base.group_agent_registration_level_5,1,1,1,1
 
 tt_agent_registration_customer,tt.agent.registration.customer,model_tt_agent_registration_customer,,1,0,0,0
-tt_agent_registration_customer_tour_travel_operator,tt.agent.registration.customer.for.tour.travel.operator,model_tt_agent_registration_customer,tt_base.group_tt_tour_travel_operator,1,1,1,0
-tt_agent_registration_customer_for_agent_user_operator,tt.agent.registration.customer.for.agent.user.operator,model_tt_agent_registration_customer,tt_base.group_tt_agent_user_operator,1,1,1,0
 
 tt_agent_registration_customer_for_agent_registration_level_1,tt.agent.registration.customer.for.agent.registration.level.1,model_tt_agent_registration_customer,tt_base.group_agent_registration_level_1,1,0,0,0
 tt_agent_registration_customer_for_agent_registration_level_2,tt.agent.registration.customer.for.agent.registration.level.2,model_tt_agent_registration_customer,tt_base.group_agent_registration_level_2,1,0,1,0
@@ -20,8 +16,6 @@ tt_agent_registration_customer_for_agent_registration_level_4,tt.agent.registrat
 tt_agent_registration_customer_for_agent_registration_level_5,tt.agent.registration.customer.for.agent.registration.level.5,model_tt_agent_registration_customer,tt_base.group_agent_registration_level_5,1,1,1,1
 
 tt_agent_registration_address,tt.agent.registration.address,model_tt_agent_registration_customer,,1,0,0,0
-tt_agent_registration_address_tour_travel_operator,tt.agent.registration.address.for.tour.travel.operator,model_tt_agent_registration_address,tt_base.group_tt_tour_travel_operator,1,1,1,0
-tt_agent_registration_address_for_agent_user_operator,tt.agent.registration.address.for.agent.user.operator,model_tt_agent_registration_address,tt_base.group_tt_agent_user_operator,1,1,1,0
 
 tt_agent_registration_address_for_agent_registration_level_1,tt.agent.registration.address.for.agent.registration.level.1,model_tt_agent_registration_address,tt_base.group_agent_registration_level_1,1,0,0,0
 tt_agent_registration_address_for_agent_registration_level_2,tt.agent.registration.address.for.agent.registration.level.2,model_tt_agent_registration_address,tt_base.group_agent_registration_level_2,1,0,1,0
@@ -30,8 +24,6 @@ tt_agent_registration_address_for_agent_registration_level_4,tt.agent.registrati
 tt_agent_registration_address_for_agent_registration_level_5,tt.agent.registration.address.for.agent.registration.level.5,model_tt_agent_registration_address,tt_base.group_agent_registration_level_5,1,1,1,1
 
 tt_agent_registration_document,tt.agent.registration.document,model_tt_agent_registration_document,,1,0,0,0
-tt_agent_registration_document_for_tour_travel_operator,tt.agent.registration.document.for.tour.travel.operator,model_tt_agent_registration_document,tt_base.group_tt_tour_travel_operator,1,1,1,0
-tt_agent_registration_document_for_agent_user_operator,tt.agent.registration.document.for.agent.user.operator,model_tt_agent_registration_document,tt_base.group_tt_agent_user_operator,1,1,1,0
 
 tt_agent_registration_document_for_agent_registration_level_1,tt.agent.registration.document.for.agent.registration.level.1,model_tt_agent_registration_document,tt_base.group_agent_registration_level_1,1,0,0,0
 tt_agent_registration_document_for_agent_registration_level_2,tt.agent.registration.document.for.agent.registration.level.2,model_tt_agent_registration_document,tt_base.group_agent_registration_level_2,1,0,1,0
@@ -40,8 +32,6 @@ tt_agent_registration_document_for_agent_registration_level_4,tt.agent.registrat
 tt_agent_registration_document_for_agent_registration_level_5,tt.agent.registration.document.for.agent.registration.level.5,model_tt_agent_registration_document,tt_base.group_agent_registration_level_5,1,1,1,1
 
 tt_agent_registration_promotion,tt.agent.registration.promotion,model_tt_agent_registration_promotion,,1,0,0,0
-tt_agent_registration_promotion_for_agent_management_operator,tt.agent.registration.promotion.for.agent.management.operator,model_tt_agent_registration_promotion,tt_base.group_tt_agent_management_operator,1,1,1,0
-tt_agent_registration_promotion_for_agent_management_manager,tt.agent.registration.promotion.for.agent.management.manager,model_tt_agent_registration_promotion,tt_base.group_tt_agent_management_manager,1,1,1,1
 
 tt_agent_registration_promotion_for_agent_registration_level_1,tt.agent.registration.promotion.for.agent.registration.level.1,model_tt_agent_registration_promotion,tt_base.group_agent_registration_level_1,1,0,0,0
 tt_agent_registration_promotion_for_agent_registration_master_level_1,tt.agent.registration.promotion.for.agent.registration.master.level.1,model_tt_agent_registration_promotion,tt_base.group_agent_registration_master_level_1,1,0,0,0
@@ -51,8 +41,6 @@ tt_agent_registration_promotion_for_agent_registration_master_level_4,tt.agent.r
 tt_agent_registration_promotion_for_agent_registration_master_level_5,tt.agent.registration.promotion.for.agent.registration.master.level.5,model_tt_agent_registration_promotion,tt_base.group_agent_registration_master_level_5,1,1,1,1
 
 tt_agent_registration_payment,tt.agent.registration.payment,model_tt_agent_registration_payment,,1,0,0,0
-tt_agent_registration_payment_tour_travel_operator,tt.agent.registration.payment.for.tour.travel.operator,model_tt_agent_registration_payment,tt_base.group_tt_tour_travel_operator,1,1,1,0
-tt_agent_registration_payment_for_agent_user_operator,tt.agent.registration.payment.for.agent.user.operator,model_tt_agent_registration_payment,tt_base.group_tt_agent_user_operator,1,0,0,0
 
 tt_agent_registration_payment_for_agent_registration_level_1,tt.agent.registration.payment.for.agent.registration.level.1,model_tt_agent_registration_payment,tt_base.group_agent_registration_level_1,1,0,0,0
 tt_agent_registration_payment_for_agent_registration_master_level_1,tt.agent.registration.payment.for.agent.registration.master.level.1,model_tt_agent_registration_payment,tt_base.group_agent_registration_master_level_1,1,0,0,0
@@ -62,8 +50,6 @@ tt_agent_registration_payment_for_agent_registration_master_level_4,tt.agent.reg
 tt_agent_registration_payment_for_agent_registration_master_level_5,tt.agent.registration.payment.for.agent.registration.master.level.5,model_tt_agent_registration_payment,tt_base.group_agent_registration_master_level_5,1,1,1,1
 
 tt_document_type,tt.document.type,model_tt_document_type,,1,0,0,0
-tt_document_type_agent_management_operator,tt.document.type.for.agent.management.operator,model_tt_document_type,tt_base.group_tt_agent_management_operator,1,1,1,0
-tt_document_type_agent_management_manager,tt.document.type.for.agent.management.manager,model_tt_document_type,tt_base.group_tt_agent_management_manager,1,1,1,1
 
 tt_document_type_for_agent_registration_level_1,tt.document.type.for.agent.registration.level.1,model_tt_document_type,tt_base.group_agent_registration_level_1,1,0,0,0
 tt_document_type_for_agent_registration_master_level_1,tt.document.type.for.agent.registration.master.level.1,model_tt_document_type,tt_base.group_agent_registration_master_level_1,1,0,0,0

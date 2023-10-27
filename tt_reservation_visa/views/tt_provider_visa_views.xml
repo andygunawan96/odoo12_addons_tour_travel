@@ -46,7 +46,7 @@
                     </group>
                     <group string="Expenses">
                         <field name="use_vendor"/>
-                        <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','done'])]}" groups="account.group_account_user,tt_base.group_tt_tour_travel,base.group_erp_manager">
+                        <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','done'])]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                             <tree editable="bottom">
                                 <field name="visa_id" invisible="1"/>
                                 <field name="provider_id" invisible="1"/>

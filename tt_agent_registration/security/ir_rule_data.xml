@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <record id="tt_agent_registration_for_ho" model="ir.rule">
-            <field name="name">Agent Registration for HO</field>
-            <field ref="model_tt_agent_registration" name="model_id"/>
-            <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
-            <field name="perm_write" eval="1"/>
-            <field name="perm_create" eval="1"/>
-            <field name="perm_read" eval="1"/>
-            <!-- You can attach this rule to a specific group, Or make it Global -->
-            <field name="groups" eval="[(4, ref('tt_base.group_tt_tour_travel_operator'))]"/>
-            <!--<field name="global" eval="1"/> -->
-        </record>
-
         <record id="tt_agent_registration_for_ho_user" model="ir.rule">
             <field name="name">Agent Registration for HO User</field>
             <field ref="model_tt_agent_registration" name="model_id"/>
@@ -22,18 +10,6 @@
             <field name="perm_read" eval="1"/>
             <!-- You can attach this rule to a specific group, Or make it Global -->
             <field name="groups" eval="[(4, ref('tt_base.group_tt_tour_travel'))]"/>
-            <!--<field name="global" eval="1"/> -->
-        </record>
-
-        <record id="tt_agent_registration_for_agent" model="ir.rule">
-            <field name="name">Agent Registration for Agent</field>
-            <field ref="model_tt_agent_registration" name="model_id"/>
-            <field name="domain_force">[('reference_id','=',user.agent_id.id)]</field>
-            <field name="perm_write" eval="1"/>
-            <field name="perm_create" eval="1"/>
-            <field name="perm_read" eval="1"/>
-            <!-- You can attach this rule to a specific group, Or make it Global -->
-            <field name="groups" eval="[(4, ref('tt_base.group_tt_agent_user_operator'))]"/>
             <!--<field name="global" eval="1"/> -->
         </record>
 

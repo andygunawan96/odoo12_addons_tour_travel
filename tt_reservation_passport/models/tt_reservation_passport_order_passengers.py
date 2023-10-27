@@ -252,7 +252,7 @@ class PassportOrderPassengers(models.Model):
             rec.passport_id.action_payment_passport()
 
     def action_confirm_payment(self):
-        if not self.env.user.has_group('account.group_account_invoice'):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 225')
         for rec in self:
             rec.sudo().write({

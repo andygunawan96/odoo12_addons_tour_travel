@@ -14,7 +14,7 @@
                     <button string="Re Validate Document" name="action_re_validate" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <button string="Re Confirm Document" name="action_re_confirm" type="object" attrs="{'invisible': [('state', '!=', 're_validate')]}" groups="tt_base.group_tt_agent_user"/>
                     <button string="Payment" name="action_add_payment" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
-                    <button string="Confirm Payment" name="action_confirm_payment" type="object" attrs="{'invisible': [('state', 'not in', ['add_payment',])]}" groups="account.group_account_invoice,tt_base.group_reservation_level_4"/>
+                    <button string="Confirm Payment" name="action_confirm_payment" type="object" attrs="{'invisible': [('state', 'not in', ['add_payment',])]}" groups="tt_base.group_reservation_level_4"/>
                     <button string="Proceed" name="action_proceed" type="object" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <button string="Accept" name="action_accept" type="object" attrs="{'invisible': [('state', '!=', 'proceed')]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <button string="Waiting Call" name="action_waiting" type="object" attrs="{'invisible': [('state', 'not in', ['in_process2','proceed'])]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
