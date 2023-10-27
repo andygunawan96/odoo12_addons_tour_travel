@@ -1,7 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 tt_pricing_provider_all,tt.pricing.provider.all,model_tt_pricing_provider,,1,0,0,0
-tt_pricing_provider_tour_travel_supervisor,tt.pricing.provider.tour.travel.supervisor,model_tt_pricing_provider,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
-tt_pricing_provider_tour_travel_manager,tt.pricing.provider.tour.travel.manager,model_tt_pricing_provider,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
 tt_pricing_provider_for_pricing_provider_level_1,tt.pricing.provider.for.pricing.provider.level.1,model_tt_pricing_provider,tt_base.group_pricing_provider_level_1,1,0,0,0
 tt_pricing_provider_for_pricing_provider_level_2,tt.pricing.provider.for.pricing.provider.level.2,model_tt_pricing_provider,tt_base.group_pricing_provider_level_2,1,0,1,0
@@ -10,8 +8,6 @@ tt_pricing_provider_for_pricing_provider_level_4,tt.pricing.provider.for.pricing
 tt_pricing_provider_for_pricing_provider_level_5,tt.pricing.provider.for.pricing.provider.level.5,model_tt_pricing_provider,tt_base.group_pricing_provider_level_5,1,1,1,1
 
 tt_pricing_provider_line_all,tt.pricing.provider.line.all,model_tt_pricing_provider_line,,1,0,0,0
-tt_pricing_provider_line_tour_travel_supervisor,tt.pricing.provider.line.tour.travel.supervisor,model_tt_pricing_provider_line,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
-tt_pricing_provider_line_tour_travel_manager,tt.pricing.provider.line.tour.travel.manager,model_tt_pricing_provider_line,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
 tt_pricing_provider_line_for_pricing_provider_level_1,tt.pricing.provider.line.for.pricing.provider.level.1,model_tt_pricing_provider_line,tt_base.group_pricing_provider_level_1,1,0,0,0
 tt_pricing_provider_line_for_pricing_provider_level_2,tt.pricing.provider.line.for.pricing.provider.level.2,model_tt_pricing_provider_line,tt_base.group_pricing_provider_level_2,1,0,1,0
@@ -20,8 +16,6 @@ tt_pricing_provider_line_for_pricing_provider_level_4,tt.pricing.provider.line.f
 tt_pricing_provider_line_for_pricing_provider_level_5,tt.pricing.provider.line.for.pricing.provider.level.5,model_tt_pricing_provider_line,tt_base.group_pricing_provider_level_5,1,1,1,1
 
 tt_pricing_agent_all,tt.pricing.agent.all,model_tt_pricing_agent,,1,0,0,0
-tt_pricing_agent_tour_travel_supervisor,tt.pricing.agent.tour.travel.supervisor,model_tt_pricing_agent,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
-tt_pricing_agent_tour_travel_manager,tt.pricing.agent.tour.travel.manager,model_tt_pricing_agent,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
 tt_pricing_agent_for_pricing_agent_level_1,tt.pricing.agent.for.pricing.agent.level.1,model_tt_pricing_agent,tt_base.group_pricing_agent_level_1,1,0,0,0
 tt_pricing_agent_for_pricing_agent_level_2,tt.pricing.agent.for.pricing.agent.level.2,model_tt_pricing_agent,tt_base.group_pricing_agent_level_2,1,0,1,0
@@ -30,8 +24,6 @@ tt_pricing_agent_for_pricing_agent_level_4,tt.pricing.agent.for.pricing.agent.le
 tt_pricing_agent_for_pricing_agent_level_5,tt.pricing.agent.for.pricing.agent.level.5,model_tt_pricing_agent,tt_base.group_pricing_agent_level_5,1,1,1,1
 
 tt_pricing_agent_line_all,tt.pricing.agent.line.all,model_tt_pricing_agent_line,,1,0,0,0
-tt_pricing_agent_line_tour_travel_supervisor,tt.pricing.agent.line.tour.travel.supervisor,model_tt_pricing_agent_line,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
-tt_pricing_agent_line_tour_travel_manager,tt.pricing.agent.line.tour.travel.manager,model_tt_pricing_agent_line,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
 tt_pricing_agent_line_for_pricing_agent_level_1,tt.pricing.agent.line.for.pricing.agent.level.1,model_tt_pricing_agent_line,tt_base.group_pricing_agent_level_1,1,0,0,0
 tt_pricing_agent_line_for_pricing_agent_level_2,tt.pricing.agent.line.for.pricing.agent.level.2,model_tt_pricing_agent_line,tt_base.group_pricing_agent_level_2,1,0,1,0
@@ -52,8 +44,6 @@ tt_pricing_customer_line_for_pricing_customer_level_4,tt.pricing.customer.line.f
 tt_pricing_customer_line_for_pricing_customer_level_5,tt.pricing.customer.line.for.pricing.customer.level.5,model_tt_pricing_customer_line,tt_base.group_pricing_customer_level_5,1,1,1,1
 
 tt_pricing_charge_code_all,tt.pricing.charge.code.all,model_tt_pricing_charge_code,,1,0,0,0
-tt_pricing_charge_code_tour_travel_supervisor,tt.pricing.charge.code.tour.travel.supervisor,model_tt_pricing_charge_code,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
-tt_pricing_charge_code_tour_travel_manager,tt.pricing.charge.code.tour.travel.manager,model_tt_pricing_charge_code,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
 tt_pricing_charge_code_for_pricing_provider_level_1,tt.pricing.charge.code.for.pricing.provider.level.1,model_tt_pricing_charge_code,tt_base.group_pricing_provider_level_1,1,0,0,0
 tt_pricing_charge_code_for_pricing_provider_level_2,tt.pricing.charge.code.for.pricing.provider.level.2,model_tt_pricing_charge_code,tt_base.group_pricing_provider_level_2,1,0,1,0
@@ -68,8 +58,6 @@ tt_pricing_charge_code_for_pricing_agent_level_4,tt.pricing.charge.code.for.pric
 tt_pricing_charge_code_for_pricing_agent_level_5,tt.pricing.charge.code.for.pricing.agent.level.5,model_tt_pricing_charge_code,tt_base.group_pricing_agent_level_5,1,1,1,1
 
 tt_pricing_class_of_service_all,tt.pricing.class.of.service.all,model_tt_pricing_class_of_service,,1,0,0,0
-tt_pricing_class_of_service_tour_travel_supervisor,tt.pricing.class.of.service.tour.travel.supervisor,model_tt_pricing_class_of_service,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
-tt_pricing_class_of_service_tour_travel_manager,tt.pricing.class.of.service.tour.travel.manager,model_tt_pricing_class_of_service,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
 tt_pricing_class_of_service_for_pricing_provider_level_1,tt.pricing.class.of.service.for.pricing.provider.level.1,model_tt_pricing_class_of_service,tt_base.group_pricing_provider_level_1,1,0,0,0
 tt_pricing_class_of_service_for_pricing_provider_level_2,tt.pricing.class.of.service.for.pricing.provider.level.2,model_tt_pricing_class_of_service,tt_base.group_pricing_provider_level_2,1,0,1,0

@@ -1,18 +1,4 @@
 <odoo>
-    <record id="tt_agent_invoice_for_ho" model="ir.rule">
-        <field name="name">Agent Invoice For HO</field>
-        <field name="model_id" ref="model_tt_agent_invoice"/>
-        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
-        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
-    </record>
-
-    <record id="tt_agent_invoice_line_for_ho" model="ir.rule">
-        <field name="name">Agent Invoice Line For HO</field>
-        <field name="model_id" ref="model_tt_agent_invoice_line"/>
-        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
-        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
-    </record>
-
     <record id="tt_agent_invoice_for_ho_user" model="ir.rule">
         <field name="name">Agent Invoice For HO User</field>
         <field name="model_id" ref="model_tt_agent_invoice"/>
@@ -25,20 +11,6 @@
         <field name="model_id" ref="model_tt_agent_invoice_line"/>
         <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
         <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
-    </record>
-
-    <record id="tt_agent_invoice_for_agent" model="ir.rule">
-        <field name="name">Agent Invoice For Agent</field>
-        <field name="model_id" ref="model_tt_agent_invoice"/>
-        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
-        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
-    </record>
-
-    <record id="tt_agent_invoice_line_for_agent" model="ir.rule">
-        <field name="name">Agent Invoice Line For Agent</field>
-        <field name="model_id" ref="model_tt_agent_invoice_line"/>
-        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
-        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
     <record id="tt_agent_invoice_for_agent_user" model="ir.rule">
@@ -69,20 +41,6 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
-    <record id="tt_ho_invoice_for_ho" model="ir.rule">
-        <field name="name">HO Invoice For HO</field>
-        <field name="model_id" ref="model_tt_ho_invoice"/>
-        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
-        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
-    </record>
-
-    <record id="tt_ho_invoice_line_for_ho" model="ir.rule">
-        <field name="name">HO Invoice Line For HO</field>
-        <field name="model_id" ref="model_tt_ho_invoice_line"/>
-        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
-        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
-    </record>
-
     <record id="tt_ho_invoice_for_ho_user" model="ir.rule">
         <field name="name">HO Invoice For HO User</field>
         <field name="model_id" ref="model_tt_ho_invoice"/>
@@ -109,13 +67,6 @@
         <field name="model_id" ref="model_tt_ho_invoice_line"/>
         <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
-    </record>
-
-    <record id="tt_ho_invoice_line_detail_for_ho" model="ir.rule">
-        <field name="name">HO Invoice Line Detail For HO</field>
-        <field name="model_id" ref="model_tt_ho_invoice_line_detail"/>
-        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
-        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
     </record>
 
     <record id="tt_ho_invoice_line_detail_for_ho_user" model="ir.rule">

@@ -47,7 +47,7 @@
         <field name="name">bank.accounts.form.view.tt.manager</field>
         <field name="model">tt.bank.accounts</field>
         <field name="inherit_id" ref="bank_accounts_form_view" />
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel_manager'),ref('tt_base.group_bank_level_4')])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_bank_level_4')])]" />
         <field name="arch" type="xml">
             <field name="is_get_transaction" position="attributes">
                <attribute name="readonly">0</attribute>

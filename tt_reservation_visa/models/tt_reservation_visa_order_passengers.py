@@ -313,7 +313,7 @@ class VisaOrderPassengers(models.Model):
             rec.visa_id.action_payment_visa()
 
     def action_confirm_payment(self):
-        if not ({self.env.ref('account.group_account_invoice').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 342')
         for rec in self:
             rec.sudo().write({

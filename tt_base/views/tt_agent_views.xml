@@ -190,7 +190,7 @@
         <field name="name">tt.agent.form.view.agent.management</field>
         <field name="model">tt.agent</field>
         <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_management_operator'),ref('tt_base.group_agent_level_4')])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_agent_level_4')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="name" position="replace">
@@ -281,7 +281,7 @@
         <field name="name">tt.agent.form.view.agent.user</field>
         <field name="model">tt.agent</field>
         <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator'),ref('tt_base.group_tt_agent_user')])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="payment_acquirer_ids" position="replace">

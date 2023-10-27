@@ -548,56 +548,5 @@
             <field name="description">To manage Vendor Report</field>
             <field name="sequence">214</field>
         </record>
-
-    <!--    old categories start from here-->
-
-        <record model="ir.module.category" id="module_category_sub_agent_user">
-            <field name="name">Sub-Agent</field>
-            <field name="description">For manage Sub-agent User security</field>
-            <field name="sequence">3</field>
-        </record>
-
-        <record model="ir.module.category" id="module_category_agent_management">
-            <field name="name">Agent Management</field>
-            <field name="description">Help you to manage your Agent and customer</field>
-            <field name="sequence">6</field>
-        </record>
-
-        <record model="ir.module.category" id="module_category_ticketing_system">
-            <field name="name">Ticketing System</field>
-            <field name="description">Help you to manage ticketing</field>
-            <field name="sequence">7</field>
-        </record>
-
-        <record model="ir.module.category" id="module_category_admin_system">
-            <field name="name">Admin</field>
-            <field name="description">Admin of Orbisway App</field>
-            <field name="sequence">0</field>
-        </record>
-
-        <record model="ir.module.category" id="module_category_accounting_system">
-            <field name="name">Accounting</field>
-            <field name="description">Accounting Top Up management</field>
-            <field name="sequence">8</field>
-        </record>
-
-        <record model="ir.module.category" id="module_category_tour_division_system">
-            <field name="name">Tour Management</field>
-            <field name="description">For Tour Division</field>
-            <field name="sequence">8</field>
-        </record>
-
-        <record model="ir.module.category" id="module_category_external_vendor_system">
-            <field name="name">External Vendor</field>
-            <field name="description">For External Vendor to maintenance their product in This System(s)</field>
-            <field name="sequence">20</field>
-        </record>
-
-        <record model="ir.module.category" id="module_category_agent_finance">
-            <field name="name">Agent Finance</field>
-            <field name="description">Agent Financial Management</field>
-            <field name="sequence">2</field>
-        </record>
-
     </data>
 </odoo>
