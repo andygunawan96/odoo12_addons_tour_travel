@@ -8,11 +8,11 @@
         <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]" />
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside" attrs="{'invisible': ['|', ('ho_id.email_server_id','=',False), ('ho_id','=',False)]}">
-                <page string="OTP">
+                <page string="Machine">
                     <group>
                         <field name="is_use_otp"/>
                     </group>
-                    <field name="otp_ids"/>
+                    <field name="machine_ids"/>
                 </page>
             </xpath>
         </field>
@@ -38,6 +38,10 @@
                 <sheet>
                     <group>
                         <field name="code"/>
+                        <field name="platform"/>
+                        <field name="browser"/>
+                        <field name="timezone"/>
+                        <field name="otp_ids"/>
                     </group>
                 </sheet>
             </form>
@@ -50,6 +54,9 @@
         <field name="arch" type="xml">
             <tree string="TT Machine">
                 <field name="code"/>
+                <field name="platform"/>
+                <field name="browser"/>
+                <field name="timezone"/>
             </tree>
         </field>
     </record>
@@ -64,6 +71,7 @@
                         <field name="machine_id"/>
                         <field name="otp" groups="base.group_erp_manager"/>
                         <field name="is_connect"/>
+                        <field name="need_otp_type"/>
                         <field name="platform"/>
                         <field name="browser"/>
                         <field name="timezone"/>
@@ -84,6 +92,7 @@
                 <field name="otp" groups="base.group_erp_manager"/>
                 <field name="is_turn_off_request"/>
                 <field name="is_connect"/>
+                <field name="need_otp_type"/>
                 <field name="platform"/>
                 <field name="browser"/>
                 <field name="timezone"/>

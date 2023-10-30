@@ -3,6 +3,8 @@ from ....tools.db_connector import GatewayConnector
 from odoo.exceptions import UserError
 import time,re
 import logging
+from ....tools.ERR import RequestException
+from ....tools import ERR
 
 _logger = logging.getLogger(__name__)
 
@@ -339,3 +341,45 @@ class ResUsers(models.Model):
     #         # 'user_ip_add': request.httprequest.headers.environ.get('HTTP_X_REAL_IP'),
     #         'user_ip_add': request.httprequest.environ['REMOTE_ADDR'],
     #     })
+
+    def delete_user_api(self, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+        ## HANYA DI OPEN UNTUK AGENT BTC
+        if user_obj.ho_id.btc_agent_type_id == user_obj.agent_id.agent_type_id:
+            ### DELETE USER
+            user_seq_id = self.env['ir.sequence'].next_by_code('deleted.res.users.seq')
+            notif_string = 'From %s to %s by user request' % (user_obj.name, user_seq_id)
+            user_obj.login = user_seq_id
+            user_obj.name = user_seq_id
+            ### DELETE AGENT JIKA USER HANYA ADA YG AKAN DI INACTIVE SAJA
+            if len(user_obj.user_ids.ids) == 1:
+                user_obj.agent_id.name = self.env['ir.sequence'].next_by_code('deleted.tt.agent.seq')
+            user_obj.active = False
+
+            data = {
+                'code': 9909,
+                'title': 'Inactive User',
+                'message': notif_string
+            }
+            context = {
+                "co_ho_id": context['co_ho_id']
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+
+            return ERR.get_no_error()
+        else:
+            data = {
+                'code': 9909,
+                'title': 'Inactive User',
+                'message': '%s is trying to delete account by user request' % user_obj.name
+            }
+            context = {
+                "co_ho_id": context['co_ho_id']
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+
+            return ERR.get_error(500, additional_message='Please contact Admin to delete account!')
