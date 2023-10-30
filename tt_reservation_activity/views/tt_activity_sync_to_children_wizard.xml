@@ -7,7 +7,7 @@
 			<field name="arch" type="xml">
 				<form string="Message">
 					<group>
-
+						<field name="ho_id" groups="base.group_erp_manager"/>
 					</group>
 					<footer>
 						<button string="Sync Data to Children" name="sync_data_to_children" type="object" class="btn-primary" confirm="Sync all Activity data to children?" />
