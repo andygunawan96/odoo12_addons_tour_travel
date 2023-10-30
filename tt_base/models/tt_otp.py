@@ -399,6 +399,19 @@ class TtMachine(models.Model):
     def create_or_get_machine_api(self, req):
         machine_obj = self.search([('code','=', req['machine_code'])])
         if machine_obj:
+            data_update = {}
+            if machine_obj.platform == '' and req.get('platform'):
+                data_update.update({
+                    "platform": req['platform']
+                })
+            if machine_obj.browser == '' and req.get('browser'):
+                data_update.update({
+                    "browser": req['browser']
+                })
+            if machine_obj.timezone == '' and req.get('timezone'):
+                data_update.update({
+                    "timezone": req['timezone']
+                })
             return machine_obj
         else:
             return self.create({
@@ -426,7 +439,7 @@ class TtOtp(models.Model):
     turn_off_date = fields.Datetime('Turn Off Date', readonly=True)
     need_otp_type = fields.Selection([
         ('always', 'Always'), ('1', '1 Days'), ('3', '3 Days'),
-        ('7', '7 Days'), ('never', 'First time only')])
+        ('7', '7 Days'), ('never', 'First time only')], string='OTP Type')
     active = fields.Boolean('Active', default=True)
 
 
