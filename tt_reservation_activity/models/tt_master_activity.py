@@ -1507,7 +1507,7 @@ class MasterActivity(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
 
-    def product_update_webhook(self, req, context):
+    def product_update_webhook(self, req, context={}):
         provider = req.get('provider') and req['provider'] or ''
         self.sync_products(provider, req)
         response = {
@@ -1515,13 +1515,20 @@ class MasterActivity(models.Model):
         }
         return ERR.get_no_error(response)
 
-    def product_type_new_webhook(self, req, context):
+    def product_type_new_webhook(self, req, context={}):
+        ho_obj = False
+        if context.get('co_ho_id'):
+            ho_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
+        elif context.get('co_ho_seq_id'):
+            ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+        if not ho_obj:
+            raise RequestException(1022, additional_message='Invalid context, cannot sync activity data.')
         provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
         if not provider_id:
             raise RequestException(1002)
         provider_id = provider_id[0]
         activity_id = self.env['tt.master.activity'].sudo().search(
-            [('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id)],
+            [('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id), ('owner_ho_id', '=', ho_obj.id)],
             limit=1)
         activity_id = activity_id[0]
         product_data_list = [{
@@ -1538,14 +1545,21 @@ class MasterActivity(models.Model):
         }
         return ERR.get_no_error(response)
 
-    def product_type_update_webhook(self, req, context):
+    def product_type_update_webhook(self, req, context={}):
+        ho_obj = False
+        if context.get('co_ho_id'):
+            ho_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
+        elif context.get('co_ho_seq_id'):
+            ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+        if not ho_obj:
+            raise RequestException(1022, additional_message='Invalid context, cannot sync activity data.')
         provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
         if not provider_id:
             raise RequestException(1002)
         provider_id = provider_id[0]
         if req.get('productUuid'):
             activity_id = self.env['tt.master.activity'].sudo().search(
-                [('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
+                [('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id), ('owner_ho_id', '=', ho_obj.id)], limit=1)
             product_id = activity_id and activity_id[0].id or False
         else:
             product_id = False
@@ -1663,12 +1677,19 @@ class MasterActivity(models.Model):
         }
         return ERR.get_no_error(response)
 
-    def product_type_inactive_webhook(self, req, context):
+    def product_type_inactive_webhook(self, req, context={}):
+        ho_obj = False
+        if context.get('co_ho_id'):
+            ho_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
+        elif context.get('co_ho_seq_id'):
+            ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+        if not ho_obj:
+            raise RequestException(1022, additional_message='Invalid context, cannot sync activity data.')
         provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
         if not provider_id:
             raise RequestException(1002)
         provider_id = provider_id[0]
-        activity_id = self.env['tt.master.activity'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
+        activity_id = self.env['tt.master.activity'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id), ('owner_ho_id', '=', ho_obj.id)], limit=1)
         activity_id = activity_id[0]
         product_type_obj = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + req['productTypeUuid']), ('activity_id', '=', activity_id.id)], limit=1)
         for rec in product_type_obj:
@@ -1680,8 +1701,15 @@ class MasterActivity(models.Model):
         }
         return ERR.get_no_error(response)
 
-    def product_sync_webhook_nosend(self, req, context):
+    def product_sync_webhook_nosend(self, req, context={}):
         try:
+            ho_obj = False
+            if context.get('co_ho_id'):
+                ho_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
+            elif context.get('co_ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+            if not ho_obj:
+                raise RequestException(1022, additional_message='Invalid context, cannot sync activity data.')
             _logger.info("Receiving activity data from webhook...")
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
             if not provider_id:
@@ -1714,7 +1742,7 @@ class MasterActivity(models.Model):
                     'safety': rec['safety'],
                     'can_hold_booking': rec['can_hold_booking'],
                 }
-                activity_obj = self.env['tt.master.activity'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + rec['uuid']), ('provider_id', '=', provider_id[0].id)], limit=1)
+                activity_obj = self.env['tt.master.activity'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + rec['uuid']), ('provider_id', '=', provider_id[0].id), ('owner_ho_id', '=', ho_obj.id)], limit=1)
                 if activity_obj:
                     activity_obj = activity_obj[0]
                     activity_obj.sudo().write(vals)
@@ -1727,6 +1755,9 @@ class MasterActivity(models.Model):
                             'active': False
                         })
                 else:
+                    vals.update({
+                        'owner_ho_id': ho_obj.id
+                    })
                     activity_obj = self.env['tt.master.activity'].sudo().create(vals)
                 self.env.cr.commit()
 
@@ -1916,13 +1947,15 @@ class ActivitySyncProductsChildren(models.TransientModel):
     _name = "activity.sync.product.children.wizard"
     _description = 'Activity Sync Product Children Wizard'
 
+    ho_id = fields.Many2one('tt.agent', 'From Head Office', domain=[('is_ho_agent', '=', True)],
+                            default=lambda self: self.env.user.ho_id)
+
     def sync_data_to_children(self):
         try:
             activity_data_list = []
-            activity_datas = self.env['tt.master.activity'].sudo().search([])
+            activity_datas = self.env['tt.master.activity'].sudo().search([('owner_ho_id', '=', self.ho_id.id)])
             for rec in activity_datas:
-                ho_obj = self.env.ref('tt_base.rodex_ho')
-                new_currency = ho_obj.currency_id and ho_obj.currency_id.name or 'IDR'
+                new_currency = self.ho_id.currency_id and self.ho_id.currency_id.name or 'IDR'
                 new_base_amt = rec.reprice_currency({
                     'provider': rec.provider_id.code,
                     'from_currency': rec.currency_id.name,
