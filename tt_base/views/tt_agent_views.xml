@@ -85,7 +85,7 @@
                             <!--                            <field name="actual_balance"/>-->
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
-                            <field name="pricing_breakdown" widget="boolean_toggle"/>
+                            <field name="pricing_breakdown" widget="boolean_toggle" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
                         </group>
                         <group>
                             <field name="credit_limit" attrs="{'readonly': [('is_ho_agent', '=', True)]}" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
