@@ -128,6 +128,7 @@ class ApiManagement(models.Model):
                     otp_objs = self.env['tt.otp'].search([
                         ('user_id.id', '=', _co_user.id),
                         ('is_connect','=', True),
+                        ('is_disconnect','=', False),
                         ('purpose_type','=', 'turn_on')
                     ])
                     for otp_obj in otp_objs:

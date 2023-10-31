@@ -18,7 +18,8 @@ class ResUsersInherit(models.Model):
                 ('machine_id.code','=', req['machine_code']),
                 ('user_id.id','=', self.id),
                 ('purpose_type','=', 'turn_on'),
-                ('is_connect','=', True)
+                ('is_connect','=', True),
+                ('is_disconnect','=', False)
             ])
         else:
             otp_objs = []
@@ -170,7 +171,7 @@ class ResUsersInherit(models.Model):
         otp_objs = self.env['tt.otp'].search([
             ('machine_id.code', '=', req['machine_code']),
             ('otp', '=', req['otp']),
-            ('is_turn_off_request','=', True),
+            ('otp', '=', req['otp']),
             ('disconnect_date','=', False),
             ('purpose_type','=', 'turn_off'),
             ('is_connect','=', False),
@@ -182,18 +183,21 @@ class ResUsersInherit(models.Model):
             other_otp_objs = self.env['tt.otp'].search([
                 ('user_id.id', '=', user_obj.id),
                 ('purpose_type', '=', 'turn_on'),
-                ('is_connect', '=', True)
+                ('is_connect', '=', True),
+                ('is_disconnect', '=', False)
             ])
             for other_otp_obj in other_otp_objs:
                 other_otp_obj.update({
-                    'is_connect': False,
+                    'is_disconnect': True,
                     'disconnect_date': now
                 })
                 notes.append("%s %s" % (other_otp_obj.machine_id.code, other_otp_obj.otp))
             for otp_obj in otp_objs:
                 otp_obj.update({
                     "is_connect": True,
+                    "is_disconnect": True,
                     "connect_date": now,
+                    "disconnect_date": now,
                     'description': "\n".join(notes)
                 })
             user_obj.is_using_otp = False
@@ -221,18 +225,21 @@ class ResUsersInherit(models.Model):
             other_otp_objs = self.env['tt.otp'].search([
                 ('machine_id.code', '=', req['machine_code']),
                 ('purpose_type','=','turn_on'),
-                ('is_connect', '=', True)
+                ('is_connect', '=', True),
+                ('is_disconnect', '=', False)
             ])
             for other_otp_obj in other_otp_objs:
                 other_otp_obj.update({
-                    "is_connect": False,
+                    "is_disconnect": True,
                     "disconnect_date": now
                 })
                 notes.append("%s %s" % (other_otp_obj.machine_id.code, other_otp_obj.otp))
             for otp_obj in otp_objs:
                 otp_obj.update({
                     "is_connect": True,
+                    "is_disconnect": True,
                     "connect_date": now,
+                    "disconnect_date": now,
                     'description': "\n".join(notes)
                 })
             return ERR.get_no_error()
@@ -260,11 +267,12 @@ class ResUsersInherit(models.Model):
             other_otp_objs = self.env['tt.otp'].search([
                 ('machine_id.code', '!=', req['machine_code']),
                 ('is_connect', '=', True),
+                ('is_disconnect', '=', False),
                 ('purpose_type','=', 'turn_on')
             ])
             for other_otp_obj in other_otp_objs:
                 other_otp_obj.update({
-                    "is_connect": False,
+                    "is_disconnect": True,
                     "disconnect_date": now
                 })
                 notes.append("%s %s" % (other_otp_obj.machine_id.code, other_otp_obj.otp))
@@ -272,7 +280,9 @@ class ResUsersInherit(models.Model):
             for otp_obj in otp_objs:
                 otp_obj.update({
                     "is_connect": True,
+                    "is_disconnect": True,
                     "connect_date": now,
+                    "disconnect_date": now,
                     'description': "\n".join(notes)
                 })
             return ERR.get_no_error()
@@ -332,7 +342,7 @@ class TtOtp(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent', related='user_id.agent_id', readonly=True)
     otp = fields.Char('OTP')
     is_connect = fields.Boolean('Connect', default=False)
-    is_turn_off_request = fields.Boolean('Turn Off Request', default=False)
+    is_disconnect = fields.Boolean('Disconnect', default=False)
     platform = fields.Char('Platform', related='machine_id.platform', readonly=True)
     browser = fields.Char('Browser', related='machine_id.browser', readonly=True)
     timezone = fields.Char('Timezone', related='machine_id.timezone', readonly=True)
@@ -368,8 +378,7 @@ class TtOtp(models.Model):
             "machine_id": machine_obj.id,
             "otp": self.generate_otp(),
             "user_id": user_id,
-            "purpose_type": purpose_type,
-            "is_turn_off_request": False if purpose_type == 'turn_on' else True,
+            "purpose_type": purpose_type
         })
 
     def generate_otp(self):
