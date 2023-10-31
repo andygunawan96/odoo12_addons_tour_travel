@@ -50,7 +50,7 @@ class Home(main.Home):
 
             if request.params['login']:
                 user_rec = request.env['res.users'].sudo().search([('login', '=', request.params['login'])])
-                if user_rec.is_use_otp:
+                if user_rec.is_using_otp:
                     need_otp = user_rec.check_need_otp_user_api({
                         'machine_code': request.params['machine_id'],
                         'otp': request.params.get('otp_data'),
