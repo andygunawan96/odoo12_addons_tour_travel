@@ -111,21 +111,20 @@ class ResUsersInherit(models.Model):
         ho_obj = self.ho_id
         if req.get('otp'):
             ## NEED TEST
-            machine_objs = self.env['tt.machine'].search([
-                ('code', '=', req['machine_code']),
-                ('user_id.id', '=', self.id)
+
+            otp_objs = self.env['tt.otp'].search([
+                ('machine_id.code','=', req['machine_code']),
+                ('otp','=', req['otp']),
+                ('create_date','>', datetime.now() - timedelta(minutes=ho_obj.otp_expired_time))
             ])
 
-            if machine_objs:
-                for machine_obj in machine_objs:
-                    otp_objs = machine_obj.otp_ids.filtered(lambda x: x.otp == req['otp'] and x.create_date > datetime.now() - timedelta(minutes=ho_obj.otp_expired_time))
-                    if otp_objs:
-                        for otp_obj in otp_objs:
-                            otp_obj.is_connect = True
-                            otp_obj.need_otp_type = req['otp_type']
-                        return True
+            if otp_objs:
+                for otp_obj in otp_objs:
+                    otp_obj.is_connect = True
+                    otp_obj.need_otp_type = req['otp_type']
+                return True
             raise RequestException(1041)
-
+            
 
             # otp_objs = self.env['tt.otp'].search([
             #     ('code','=', req['machine_code']),
