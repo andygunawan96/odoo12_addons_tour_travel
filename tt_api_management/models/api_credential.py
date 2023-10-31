@@ -118,12 +118,7 @@ class ApiManagement(models.Model):
                 _co_user = self.env['res.users'].sudo().browse(co_uid)
 
                 ### CHECK OTP #####
-                expired_time = _co_user.check_need_otp_user_api(data)
-                if expired_time:
-                    if data.get('otp'):
-                        raise RequestException(1041)
-                    else:
-                        raise RequestException(1040,additional_message=expired_time)
+                _co_user.check_need_otp_user_api(data)
 
                 values.update({
                     "co_is_using_otp": _co_user.is_using_otp,

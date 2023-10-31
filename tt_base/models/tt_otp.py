@@ -36,11 +36,10 @@ class ResUsersInherit(models.Model):
             else:
                 is_machine_connect = True
 
-        if not self.is_using_otp or is_machine_connect:
-            return False
-        else:
-            expired_date = self.check_otp_user_api(req)
-            return expired_date
+        if self.is_using_otp and not is_machine_connect:
+            self.check_otp_user_api(req)
+            # expired_date = self.check_otp_user_api(req)
+            # return expired_date
 
     def create_or_get_otp_user_api(self, req):
         ho_obj = self.ho_id
@@ -124,10 +123,8 @@ class ResUsersInherit(models.Model):
                         for otp_obj in otp_objs:
                             otp_obj.is_connect = True
                             otp_obj.need_otp_type = req['otp_type']
-                        return False
-                    return True
-            else:
-                return True
+                        return True
+            raise RequestException(1041)
 
 
             # otp_objs = self.env['tt.otp'].search([
@@ -145,7 +142,8 @@ class ResUsersInherit(models.Model):
         else:
             ## NO OTP CODE CREATE
             otp_obj = self.create_or_get_otp_user_api(req)
-            return (otp_obj.create_date + timedelta(minutes=ho_obj.otp_expired_time)).strftime('%Y-%m-%d %H:%M:%S')
+            raise RequestException(1040, additional_message=(otp_obj.create_date + timedelta(minutes=ho_obj.otp_expired_time)).strftime('%Y-%m-%d %H:%M:%S'))
+            # return (otp_obj.create_date + timedelta(minutes=ho_obj.otp_expired_time)).strftime('%Y-%m-%d %H:%M:%S')
 
     def set_otp_user_api(self, req, context):
         user_obj = self.browse(context['co_uid'])
