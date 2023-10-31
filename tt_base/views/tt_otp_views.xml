@@ -10,7 +10,7 @@
             <xpath expr="//notebook" position="inside" attrs="{'invisible': ['|', ('ho_id.email_server_id','=',False), ('ho_id','=',False)]}">
                 <page string="Machine">
                     <group>
-                        <field name="is_use_otp"/>
+                        <field name="is_using_otp"/>
                     </group>
                     <field name="machine_ids"/>
                 </page>

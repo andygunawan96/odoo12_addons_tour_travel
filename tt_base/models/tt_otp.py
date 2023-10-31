@@ -7,7 +7,7 @@ from ...tools import ERR
 class ResUsersInherit(models.Model):
     _inherit = 'res.users'
 
-    is_use_otp = fields.Boolean('Use OTP', default=False)
+    is_using_otp = fields.Boolean('Use OTP', default=False)
     machine_ids = fields.One2many('tt.machine', 'user_id', 'Machine IDs', readonly=True)
 
     def check_need_otp_user_api(self, req):
@@ -36,7 +36,7 @@ class ResUsersInherit(models.Model):
             else:
                 is_machine_connect = True
 
-        if not self.is_use_otp or is_machine_connect:
+        if not self.is_using_otp or is_machine_connect:
             return False
         else:
             expired_date = self.check_otp_user_api(req)
@@ -184,7 +184,7 @@ class ResUsersInherit(models.Model):
                     for otp_obj in otp_objs:
                         otp_obj.is_connect = True
                         otp_obj.need_otp_type = req.get('otp_type', 'never')
-                    user_obj.is_use_otp = True
+                    user_obj.is_using_otp = True
                     return ERR.get_no_error()
                 return ERR.get_error(500, additional_message='Invalid OTP')
         else:
@@ -193,7 +193,7 @@ class ResUsersInherit(models.Model):
         # if otp_objs:
         #     for otp_obj in otp_objs:
         #         otp_obj.is_connect = True
-        #     user_obj.is_use_otp = True
+        #     user_obj.is_using_otp = True
         #     return ERR.get_no_error()
         # else:
         #     return ERR.get_error(500, additional_message='Invalid OTP')
@@ -234,7 +234,7 @@ class ResUsersInherit(models.Model):
                         for other_otp_obj in other_otp_objs:
                             other_otp_obj.is_connect = False
                             other_otp_obj.turn_off_date = turn_off_date
-                    user_obj.is_use_otp = False
+                    user_obj.is_using_otp = False
                     return ERR.get_no_error()
                 return ERR.get_error(500, additional_message='Invalid OTP')
         else:
@@ -261,7 +261,7 @@ class ResUsersInherit(models.Model):
         #         otp_obj.is_connect = False
         #         otp_obj.turn_off_date = turn_off_date
         #
-        #     user_obj.is_use_otp = False
+        #     user_obj.is_using_otp = False
         #     return ERR.get_no_error()
         # else:
         #     return ERR.get_error(500, additional_message='Invalid OTP')
