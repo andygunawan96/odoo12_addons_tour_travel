@@ -126,10 +126,10 @@ class ApiManagement(models.Model):
                         raise RequestException(1040,additional_message=expired_time)
 
                 values.update({
-                    "co_is_use_otp": _co_user.is_use_otp,
+                    "co_is_using_otp": _co_user.is_using_otp,
                     'co_otp_list_machine': []
                 })
-                if _co_user.is_use_otp:
+                if _co_user.is_using_otp:
                     otp_objs = self.env['tt.otp'].search([
                         ('user_id.id', '=', _co_user.id),
                         ('is_connect','=', True)
