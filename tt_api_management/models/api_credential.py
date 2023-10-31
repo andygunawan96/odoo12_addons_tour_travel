@@ -127,7 +127,8 @@ class ApiManagement(models.Model):
                 if _co_user.is_using_otp:
                     otp_objs = self.env['tt.otp'].search([
                         ('user_id.id', '=', _co_user.id),
-                        ('is_connect','=', True)
+                        ('is_connect','=', True),
+                        ('purpose_type','=', 'turn_on')
                     ])
                     for otp_obj in otp_objs:
                         values['co_otp_list_machine'].append({

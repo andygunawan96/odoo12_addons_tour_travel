@@ -17,19 +17,20 @@ class ResUsersInherit(models.Model):
             otp_objs = self.env['tt.otp'].search([
                 ('machine_id.code','=', req['machine_code']),
                 ('user_id.id','=', self.id),
+                ('purpose_type','=', 'turn_on'),
                 ('is_connect','=', True)
             ])
         else:
             otp_objs = []
         for otp_obj in otp_objs:
-            if otp_obj.need_otp_type:
+            if otp_obj.duration:
                 # if otp_obj.need_otp_type == 'always': ## ALWAYS SKIP KARENA SELALU MINTA OTP
                 #     is_machine_connect = False
                 #     otp_obj.active = False
-                if otp_obj.need_otp_type == 'never':
+                if otp_obj.duration == 'never':
                     is_machine_connect = True
-                elif len(otp_obj.need_otp_type) == 1: ## DAYS
-                    if otp_obj.create_date + timedelta(days=int(otp_obj.need_otp_type)) > datetime.now():
+                elif len(otp_obj.duration) == 1: ## DAYS
+                    if otp_obj.create_date + timedelta(days=int(otp_obj.duration)) > datetime.now():
                         is_machine_connect = True
                     else:
                         otp_obj.active = False
@@ -55,21 +56,28 @@ class ResUsersInherit(models.Model):
             self.machine_ids = [(4, machine_objs[0].id)]
 
         for machine_obj in machine_objs:
+            purpose_type = 'turn_on'
+            if req.get('turn_off_otp'):
+                purpose_type = 'turn_off'
+            if req.get('turn_off_machine_id'):
+                purpose_type = 'turn_off_this_machine'
+            if req.get('is_turn_off_other_machine'):
+                purpose_type = 'turn_off_other_machine'
             otp_objs = machine_obj.otp_ids.filtered(lambda x:
                         x.create_date > datetime.now() - timedelta(minutes=ho_obj.otp_expired_time) and
-                        x.turn_off_date == False and x.is_connect == False)
+                        x.purpose_type == purpose_type and x.is_connect == False)
             is_need_send_email = False
             if otp_objs:
                 if req.get('is_resend_otp'):
                     is_need_send_email = True
                     for otp_obj in otp_objs:
                         otp_obj.active = False
-                    otp_objs = [self.env['tt.otp'].create_otp_api(req, self.id)]
+                    otp_objs = [self.env['tt.otp'].create_otp_api(req, self.id, purpose_type)]
                 else:
                     return otp_objs[0]
             else:
                 is_need_send_email = True
-                otp_objs = [self.env['tt.otp'].create_otp_api(req, self.id)]
+                otp_objs = [self.env['tt.otp'].create_otp_api(req, self.id, purpose_type)]
             if is_need_send_email:
                 if req.get('turn_off_otp'):
                     otp_objs[0].send_email_turn_off_otp()
@@ -81,22 +89,27 @@ class ResUsersInherit(models.Model):
                     otp_objs[0].send_email_otp()
             return otp_objs[0]
 
-
     def check_otp_user_api(self, req):
         ho_obj = self.ho_id
+        now = datetime.now()
         if req.get('otp'):
             ## NEED TEST
 
             otp_objs = self.env['tt.otp'].search([
                 ('machine_id.code','=', req['machine_code']),
                 ('otp','=', req['otp']),
-                ('create_date','>', datetime.now() - timedelta(minutes=ho_obj.otp_expired_time))
+                ('create_date','>', now - timedelta(minutes=ho_obj.otp_expired_time)),
+                ('purpose_type','=', 'turn_on')
             ])
 
             if otp_objs:
                 for otp_obj in otp_objs:
-                    otp_obj.is_connect = True
-                    otp_obj.need_otp_type = req['otp_type']
+                    otp_obj.update({
+                        "is_connect": True,
+                        "duration": req.get('otp_type','never'),
+                        "connect_date": now,
+                        "description": 'Turn On'
+                    })
                 return True
             raise RequestException(1041)
 
@@ -124,22 +137,27 @@ class ResUsersInherit(models.Model):
             raise RequestException(1008)
 
         ## NEED TEST
-
+        now = datetime.now()
         otp_objs = self.env['tt.otp'].search([
             ('machine_id.code', '=', req['machine_code']),
             ('otp', '=', req['otp']),
-            ('create_date', '>', datetime.now() - timedelta(minutes=user_obj.ho_id.otp_expired_time))
+            ('create_date', '>', now - timedelta(minutes=user_obj.ho_id.otp_expired_time)),
+            ('purpose_type','=', 'turn_on'),
+            ('is_connect','=', False)
         ])
         if otp_objs:
             for otp_obj in otp_objs:
-                otp_obj.is_connect = True
-                otp_obj.need_otp_type = req.get('otp_type', 'never')
+                otp_obj.update({
+                    "is_connect": True,
+                    "duration": req.get('otp_type', 'never'),
+                    "connect_date": now,
+                    "description": 'Turn On'
+                })
             user_obj.is_using_otp = True
             return ERR.get_no_error()
         return ERR.get_error(500, additional_message='Invalid OTP')
 
     def turn_off_otp_user_api(self, req, context):
-        turn_off_date = datetime.now()
         user_obj = self.env['res.users'].browse(context['co_uid'])
         try:
             user_obj.create_date
@@ -148,30 +166,41 @@ class ResUsersInherit(models.Model):
 
         ## NEED TEST
 
+        now = datetime.now()
         otp_objs = self.env['tt.otp'].search([
             ('machine_id.code', '=', req['machine_code']),
             ('otp', '=', req['otp']),
+            ('is_turn_off_request','=', True),
+            ('disconnect_date','=', False),
+            ('purpose_type','=', 'turn_off'),
+            ('is_connect','=', False),
             ('create_date', '>', datetime.now() - timedelta(minutes=user_obj.ho_id.otp_expired_time))
         ])
         if otp_objs:
+            notes = ['Turn Off:']
+            ### TURN OFF ALL OTP
+            other_otp_objs = self.env['tt.otp'].search([
+                ('user_id.id', '=', user_obj.id),
+                ('purpose_type', '=', 'turn_on'),
+                ('is_connect', '=', True)
+            ])
+            for other_otp_obj in other_otp_objs:
+                other_otp_obj.update({
+                    'is_connect': False,
+                    'disconnect_date': now
+                })
+                notes.append("%s %s" % (other_otp_obj.machine_id.code, other_otp_obj.otp))
             for otp_obj in otp_objs:
-                otp_obj.is_connect = False
-                otp_obj.turn_off_date = turn_off_date
-
-                ### TURN OFF ALL OTP
-                other_otp_objs = self.env['tt.otp'].search([
-                    ('user_id.id', '=', user_obj.id),
-                    ('is_connect','=', True)
-                ])
-                for other_otp_obj in other_otp_objs:
-                    other_otp_obj.is_connect = False
-                    other_otp_obj.turn_off_date = turn_off_date
-                user_obj.is_using_otp = False
+                otp_obj.update({
+                    "is_connect": True,
+                    "connect_date": now,
+                    'description': "\n".join(notes)
+                })
+            user_obj.is_using_otp = False
             return ERR.get_no_error()
         return ERR.get_error(500, additional_message='Invalid OTP')
 
     def turn_off_machine_otp_user_api(self, req, context):
-        turn_off_date = datetime.now()
         user_obj = self.env['res.users'].browse(context['co_uid'])
         try:
             user_obj.create_date
@@ -179,27 +208,37 @@ class ResUsersInherit(models.Model):
             raise RequestException(1008)
 
         ## NEED TEST
+        now = datetime.now()
         otp_objs = self.env['tt.otp'].search([
             ('machine_id.code', '=', req['machine_code']),
             ('otp', '=', req['otp']),
-            ('create_date', '>', datetime.now() - timedelta(minutes=user_obj.ho_id.otp_expired_time))
+            ('purpose_type','=', 'turn_off_this_machine'),
+            ('is_connect','=', False),
+            ('create_date', '>', now - timedelta(minutes=user_obj.ho_id.otp_expired_time))
         ])
         if otp_objs:
-            for otp_obj in otp_objs:
-                otp_obj.is_connect = False
-                otp_obj.turn_off_date = turn_off_date
-            otp_objs = self.env['tt.otp'].search([
+            notes = ['Turn this machine:']
+            other_otp_objs = self.env['tt.otp'].search([
                 ('machine_id.code', '=', req['machine_code']),
+                ('purpose_type','=','turn_on'),
                 ('is_connect', '=', True)
             ])
+            for other_otp_obj in other_otp_objs:
+                other_otp_obj.update({
+                    "is_connect": False,
+                    "disconnect_date": now
+                })
+                notes.append("%s %s" % (other_otp_obj.machine_id.code, other_otp_obj.otp))
             for otp_obj in otp_objs:
-                otp_obj.is_connect = False
-                otp_obj.turn_off_date = turn_off_date
+                otp_obj.update({
+                    "is_connect": True,
+                    "connect_date": now,
+                    'description': "\n".join(notes)
+                })
             return ERR.get_no_error()
         return ERR.get_error(500, additional_message='Invalid OTP')
 
     def turn_off_other_machine_otp_user_api(self, req, context):
-        turn_off_date = datetime.now()
         user_obj = self.env['res.users'].browse(context['co_uid'])
         try:
             user_obj.create_date
@@ -207,25 +246,35 @@ class ResUsersInherit(models.Model):
             raise RequestException(1008)
 
         ## NEED TEST
-
+        now = datetime.now()
         otp_objs = self.env['tt.otp'].search([
             ('machine_id.code', '=', req['machine_code']),
             ('otp', '=', req['otp']),
-            ('create_date', '>', datetime.now() - timedelta(minutes=user_obj.ho_id.otp_expired_time))
+            ('purpose_type','=','turn_off_other_machine'),
+            ('is_connect','=', False),
+            ('create_date', '>', now - timedelta(minutes=user_obj.ho_id.otp_expired_time))
         ])
         if otp_objs:
-            for otp_obj in otp_objs:
-                otp_obj.is_connect = False
-                otp_obj.turn_off_date = turn_off_date
+            notes = ['Turn Off:']
             ### TURN OFF OTHER MACHINE
-            otp_objs = self.env['tt.otp'].search([
+            other_otp_objs = self.env['tt.otp'].search([
                 ('machine_id.code', '!=', req['machine_code']),
-                ('is_connect', '=', True)
+                ('is_connect', '=', True),
+                ('purpose_type','=', 'turn_on')
             ])
-            for otp_obj in otp_objs:
-                otp_obj.is_connect = False
-                otp_obj.turn_off_date = turn_off_date
+            for other_otp_obj in other_otp_objs:
+                other_otp_obj.update({
+                    "is_connect": False,
+                    "disconnect_date": now
+                })
+                notes.append("%s %s" % (other_otp_obj.machine_id.code, other_otp_obj.otp))
 
+            for otp_obj in otp_objs:
+                otp_obj.update({
+                    "is_connect": True,
+                    "connect_date": now,
+                    'description': "\n".join(notes)
+                })
             return ERR.get_no_error()
         return ERR.get_error(500, additional_message='Invalid OTP')
 
@@ -287,10 +336,25 @@ class TtOtp(models.Model):
     platform = fields.Char('Platform', related='machine_id.platform', readonly=True)
     browser = fields.Char('Browser', related='machine_id.browser', readonly=True)
     timezone = fields.Char('Timezone', related='machine_id.timezone', readonly=True)
-    turn_off_date = fields.Datetime('Turn Off Date', readonly=True)
-    need_otp_type = fields.Selection([
+    # turn_off_date = fields.Datetime('Turn Off Date', readonly=True)
+    purpose_type = fields.Selection([
+        ('turn_on', 'Turn On'), ('turn_off', 'Turn Off All OTP'), ('turn_off_other_machine', 'Turn Off Other Machine'),
+        ('turn_off_this_machine', 'Turn Off This Machine')], string='Purpose Type', default='turn_on')
+
+    duration = fields.Selection([
         ('always', 'Always'), ('1', '1 Days'), ('3', '3 Days'),
-        ('7', '7 Days'), ('never', 'First time only')], string='OTP Type')
+        ('7', '7 Days'), ('never', 'First time only')], string='Duration', default='never')
+
+
+    disconnect_date = fields.Datetime('Disconnect Time', readonly=True)
+    connect_date = fields.Datetime('Connect Time', readonly=True)
+
+    # otp_connect_date = fields.Datetime('Turn Off Date', readonly=True)
+    #
+    # need_otp_type = fields.Selection([
+    #     ('always', 'Always'), ('1', '1 Days'), ('3', '3 Days'),
+    #     ('7', '7 Days'), ('never', 'First time only')], string='OTP Type')
+    description = fields.Text('Description', default='')
     active = fields.Boolean('Active', default=True)
 
 
@@ -298,14 +362,14 @@ class TtOtp(models.Model):
         self.need_otp_type = req['need_otp_type']
         return ERR.get_no_error()
 
-    def create_otp_api(self, req, user_id):
+    def create_otp_api(self, req, user_id, purpose_type):
         machine_obj = self.env['tt.machine'].create_or_get_machine_api(req)
-
         return self.create({
             "machine_id": machine_obj.id,
             "otp": self.generate_otp(),
             "user_id": user_id,
-            "is_turn_off_request": req.get('turn_off_otp', False),
+            "purpose_type": purpose_type,
+            "is_turn_off_request": False if purpose_type == 'turn_on' else True,
         })
 
     def generate_otp(self):
