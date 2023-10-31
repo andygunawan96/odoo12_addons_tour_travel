@@ -20,6 +20,8 @@ class TtBankApiCon(models.Model):
             res = table_obj.turn_off_machine_otp_user_api(data,context)
         elif action == 'turn_off_other_machine_otp_user_api':
             res = table_obj.turn_off_other_machine_otp_user_api(data,context)
+        elif action == 'delete_user_api':
+            res = table_obj.delete_user_api(context)
         else:
             raise RequestException(999)
         return res

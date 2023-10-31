@@ -286,6 +286,10 @@ class TtAgentApiInherit(models.Model):
             '%sagent_id' % prefix: self.id,
             '%sagent_name' % prefix: self.name,
         }
+        if not prefix:
+            res.update({
+                "pricing_breakdown": self.pricing_breakdown
+            })
         if self.agent_type_id:
             res.update(self.agent_type_id.get_credential(prefix))
         return res
