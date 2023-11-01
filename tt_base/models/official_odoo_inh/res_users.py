@@ -355,13 +355,15 @@ class ResUsers(models.Model):
 
     def _check_credentials(self, password, otp_params=None):
         super(ResUsers,self)._check_credentials(password)
-        if otp_params and self.is_using_otp:
+        if self.is_using_otp:
+            if not otp_params:
+                raise RequestException(1041)
             self.check_need_otp_user_api({
                 'machine_code': otp_params.get('machine_code'),
-                'otp': otp_params.get('otp_data'),
+                'otp': otp_params.get('otp'),
                 'platform': otp_params.get('platform'),
-                'browser': otp_params.get('web_vendor'),
-                'timezone': otp_params.get('tz')
+                'browser': otp_params.get('browser'),
+                'timezone': otp_params.get('timezone')
             })
 
     ##password_security OCA

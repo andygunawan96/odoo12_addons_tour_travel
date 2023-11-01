@@ -3,8 +3,8 @@ odoo.define('tt.fingerprint', function (require) {
 
     var base = require('web_editor.base');
     var platform = '';
-    var unique_id = crypto.randomUUID();
-    var web_vendor = '';
+    var machine_code = crypto.randomUUID();
+    var browser = '';
     var timezone = '';
     $(document).ready(function() {
     //$("#kentng").click(function() {
@@ -19,27 +19,27 @@ odoo.define('tt.fingerprint', function (require) {
                     // console.log(result);
                     // This is the visitor identifier:
                     platform = result.components.platform.value;
-                    unique_id = result['visitorId'];
+                    machine_code = result['visitorId'];
                     if(result.components.vendorFlavors.value.length > 0)
-                        web_vendor = result.components.vendorFlavors.value[0];
+                        browser = result.components.vendorFlavors.value[0];
                     else if(result.components.webGlBasics.value.vendor)
-                        web_vendor = result.components.webGlBasics.value.vendor;
+                        browser = result.components.webGlBasics.value.vendor;
                     timezone = result.components.timezone.value;
                     localStorage.platform = platform;
-                    localStorage.unique_id = unique_id;
-                    localStorage.web_vendor = web_vendor;
+                    localStorage.machine_code = machine_code;
+                    localStorage.browser = browser;
                     localStorage.timezone = timezone;
                 });
             }else{
                 platform = localStorage.platform;
-                unique_id = localStorage.unique_id;
-                web_vendor = localStorage.web_vendor;
+                machine_code = localStorage.machine_code;
+                browser = localStorage.browser;
                 timezone = localStorage.timezone;
             }
             $("#platform").val(platform);
-            $("#machine_id").val(unique_id);
-            $("#web_vendor").val(web_vendor);
-            $("#tz").val(timezone);
+            $("#machine_code").val(machine_code);
+            $("#browser").val(browser);
+            $("#timezone").val(timezone);
         });
     });
 });

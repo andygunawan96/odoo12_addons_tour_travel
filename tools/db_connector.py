@@ -36,9 +36,9 @@ class DbConnector(object):
             res = Response().get_error('Error db connector execution, %s' % str(e), 500)
         return res
 
-    def authenticate(self, username, password):
+    def authenticate(self, username, password, otp_params=None):
         try:
-            res = self.common().authenticate(self.db_name, username, password, {})
+            res = self.common().authenticate(self.db_name, username, password, {}, otp_params)
             if not res:
                 return False
             return res

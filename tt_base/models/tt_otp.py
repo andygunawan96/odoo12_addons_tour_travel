@@ -44,7 +44,7 @@ class ResUsersInherit(models.Model):
             # return expired_date
 
     def create_or_get_otp_user_api(self, req):
-        ho_obj = self.ho_id
+        ho_obj = self.sudo().ho_id
         ## NEED TEST
 
         machine_objs = self.env['tt.machine'].sudo().search([
@@ -67,27 +67,24 @@ class ResUsersInherit(models.Model):
             otp_objs = machine_obj.otp_ids.filtered(lambda x:
                         x.create_date > datetime.now() - timedelta(minutes=ho_obj.otp_expired_time) and
                         x.purpose_type == purpose_type and x.is_connect == False)
-            is_need_send_email = False
             if otp_objs:
                 if req.get('is_resend_otp'):
-                    is_need_send_email = True
                     for otp_obj in otp_objs:
                         otp_obj.active = False
                     otp_objs = [self.env['tt.otp'].sudo().create_otp_api(req, self.id, purpose_type)]
                 else:
                     return otp_objs[0]
             else:
-                is_need_send_email = True
                 otp_objs = [self.env['tt.otp'].sudo().create_otp_api(req, self.id, purpose_type)]
-            if is_need_send_email:
-                if req.get('turn_off_otp'):
-                    otp_objs[0].send_email_turn_off_otp()
-                elif req.get('turn_off_machine_id') and req.get('is_turn_off_other_machine'):
-                    otp_objs[0].send_email_turn_off_other_machine()
-                elif req.get('turn_off_machine_id'):
-                    otp_objs[0].send_email_turn_off_machine()
-                else:
-                    otp_objs[0].send_email_otp()
+            if req.get('turn_off_otp'):
+                otp_objs[0].send_email_turn_off_otp()
+            elif req.get('turn_off_machine_id') and req.get('is_turn_off_other_machine'):
+                otp_objs[0].send_email_turn_off_other_machine()
+            elif req.get('turn_off_machine_id'):
+                otp_objs[0].send_email_turn_off_machine()
+            else:
+                otp_objs[0].send_email_otp()
+            self.env.cr.commit()
             return otp_objs[0]
 
     def check_otp_user_api(self, req):

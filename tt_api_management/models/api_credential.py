@@ -112,7 +112,7 @@ class ApiManagement(models.Model):
             if data.get('co_user') and data.get('co_password'):
                 if response['api_role'] == 'operator':
                     raise Exception('User Role is not allowed to do Co User login')
-                co_uid = _DB_CON.authenticate(data['co_user'], data['co_password'])
+                co_uid = _DB_CON.authenticate(data['co_user'], data['co_password'], data['otp_params'])
                 if not co_uid:
                     raise Exception('Co User and Co Password is not match')
                 _co_user = self.env['res.users'].sudo().browse(co_uid)

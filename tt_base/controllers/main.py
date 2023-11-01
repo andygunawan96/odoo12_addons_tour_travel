@@ -50,11 +50,11 @@ class Home(main.Home):
 
             if request.params['login']:
                 otp_params = {
-                    'machine_code': request.params['machine_id'],
-                    'otp': request.params.get('otp_data'),
+                    'machine_code': request.params['machine_code'],
+                    'otp': request.params.get('otp'),
                     'platform': request.params['platform'],
-                    'browser': request.params['web_vendor'],
-                    'timezone': request.params['tz'],
+                    'browser': request.params['browser'],
+                    'timezone': request.params['timezone'],
                 }
                 try:
                     uid = request.session.authenticate(request.session.db, request.params['login'], request.params['password'], otp_params)
