@@ -24,7 +24,7 @@ import odoo
 import odoo.modules.registry
 from odoo.tools.translate import _
 from odoo import http
-
+from ...tools.ERR import RequestException
 from uuid import getnode as get_mac
 
 
@@ -49,43 +49,26 @@ class Home(main.Home):
             old_uid = request.uid
 
             if request.params['login']:
-                user_rec = request.env['res.users'].sudo().search([('login', '=', request.params['login'])])
-                if user_rec.is_using_otp:
-                    need_otp = user_rec.check_need_otp_user_api({
-                        'machine_code': request.params['machine_id'],
-                        'otp': request.params.get('otp_data'),
-                        'platform': request.params['platform'],
-                        'browser': request.params['web_vendor'],
-                        'timezone': request.params['tz'],
-                    })
-                    if not need_otp: #Return True, False or Expired time
-                        try:
-                            uid = request.session.authenticate(request.session.db, request.params['login'], request.params['password'])
-                            request.params['login_success'] = True
-                            return http.redirect_with_hash(self._login_redirect(uid, redirect=redirect))
-                        except odoo.exceptions.AccessDenied as e:
-                            request.uid = old_uid
-                            if e.args == odoo.exceptions.AccessDenied().args:
-                                values['error'] = _("Wrong login/password")
-                            else:
-                                values['error'] = e.args[0]
+                otp_params = {
+                    'machine_code': request.params['machine_id'],
+                    'otp': request.params.get('otp_data'),
+                    'platform': request.params['platform'],
+                    'browser': request.params['web_vendor'],
+                    'timezone': request.params['tz'],
+                }
+                try:
+                    uid = request.session.authenticate(request.session.db, request.params['login'], request.params['password'], otp_params)
+                    request.params['login_success'] = True
+                    return http.redirect_with_hash(self._login_redirect(uid, redirect=redirect))
+                except RequestException as e:
+                    values['error'] = e.args[0]
+                    request.uid = old_uid
+                    values['is_need_otp'] = True
+                except odoo.exceptions.AccessDenied as e:
+                    request.uid = old_uid
+                    if e.args == odoo.exceptions.AccessDenied().args:
+                        values['error'] = _("Wrong login/password")
                     else:
-                        if isinstance(need_otp, bool):
-                            values['error'] = _("Wrong OTP")
-                        else: #Jika tipe data ne String (Timelimit)
-                            values['error'] = _("Send OTP, Please check your email")
-                        request.uid = old_uid
-                        values['is_need_otp'] = True
-                else:
-                    try:
-                        uid = request.session.authenticate(request.session.db, request.params['login'], request.params['password'])
-                        request.params['login_success'] = True
-                        return http.redirect_with_hash(self._login_redirect(uid, redirect=redirect))
-                    except odoo.exceptions.AccessDenied as e:
-                        request.uid = old_uid
-                        if e.args == odoo.exceptions.AccessDenied().args:
-                            values['error'] = _("Wrong login/password")
-                        else:
-                            values['error'] = e.args[0]
+                        values['error'] = e.args[0]
 
         return request.render('web.login', values)

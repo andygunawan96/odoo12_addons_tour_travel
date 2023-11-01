@@ -1,10 +1,11 @@
-from odoo import api, fields, models, _
+from odoo import api, fields, models, _, SUPERUSER_ID
 from ....tools.db_connector import GatewayConnector
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, AccessDenied
 import time,re
 import logging
 from ....tools.ERR import RequestException
 from ....tools import ERR
+from odoo.http import request
 
 _logger = logging.getLogger(__name__)
 
@@ -299,6 +300,69 @@ class ResUsers(models.Model):
 
         return (self.env.cr.dbname, values.get('login'), values.get('password'))
 
+    @classmethod
+    def authenticate(cls, db, login, password, user_agent_env, otp_params=None):
+        """Verifies and returns the user ID corresponding to the given
+          ``login`` and ``password`` combination, or False if there was
+          no matching user.
+           :param str db: the database on which user is trying to authenticate
+           :param str login: username
+           :param str password: user password
+           :param dict user_agent_env: environment dictionary describing any
+               relevant environment attributes
+        """
+        uid = cls._login(db, login, password, otp_params=otp_params)
+        if user_agent_env and user_agent_env.get('base_location'):
+            with cls.pool.cursor() as cr:
+                env = api.Environment(cr, uid, {})
+                if env.user.has_group('base.group_system'):
+                    # Successfully logged in as system user!
+                    # Attempt to guess the web base url...
+                    try:
+                        base = user_agent_env['base_location']
+                        ICP = env['ir.config_parameter']
+                        if not ICP.get_param('web.base.url.freeze'):
+                            ICP.set_param('web.base.url', base)
+                    except Exception:
+                        _logger.exception("Failed to update web.base.url configuration parameter")
+        return uid
+
+    @classmethod
+    def _login(cls, db, login, password, otp_params=None):
+        if not password:
+            raise AccessDenied()
+        ip = request.httprequest.environ['REMOTE_ADDR'] if request else 'n/a'
+        try:
+            with cls.pool.cursor() as cr:
+                self = api.Environment(cr, SUPERUSER_ID, {})[cls._name]
+                with self._assert_can_auth():
+                    user = self.search(self._get_login_domain(login))
+                    if not user:
+                        raise AccessDenied()
+                    user = user.sudo(user.id)
+                    user._check_credentials(password, otp_params=otp_params)
+                    user._update_last_login()
+        except RequestException as e:
+            _logger.info("Fail on OTP Check, %s" % (str(e)))
+            raise e
+        except AccessDenied:
+            _logger.info("Login failed for db:%s login:%s from %s", db, login, ip)
+            raise
+
+        _logger.info("Login successful for db:%s login:%s from %s", db, login, ip)
+
+        return user.id
+
+    def _check_credentials(self, password, otp_params):
+        super(ResUsers,self)._check_credentials(password)
+        if otp_params and self.is_using_otp:
+            self.check_need_otp_user_api({
+                'machine_code': otp_params.get('machine_code'),
+                'otp': otp_params.get('otp_data'),
+                'platform': otp_params.get('platform'),
+                'browser': otp_params.get('web_vendor'),
+                'timezone': otp_params.get('tz')
+            })
 
     ##password_security OCA
     @api.multi

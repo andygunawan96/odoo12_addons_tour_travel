@@ -117,9 +117,7 @@ class ApiManagement(models.Model):
                     raise Exception('Co User and Co Password is not match')
                 _co_user = self.env['res.users'].sudo().browse(co_uid)
 
-                ### CHECK OTP #####
-                _co_user.check_need_otp_user_api(data)
-
+                #generate OTP info for frontend
                 values.update({
                     "co_is_using_otp": _co_user.is_using_otp,
                     'co_otp_list_machine': []

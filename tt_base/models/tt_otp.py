@@ -14,7 +14,7 @@ class ResUsersInherit(models.Model):
         is_machine_connect = False
         ## NEED TEST
         if req.get('machine_code'):
-            otp_objs = self.env['tt.otp'].search([
+            otp_objs = self.env['tt.otp'].sudo().search([
                 ('machine_id.code','=', req['machine_code']),
                 ('user_id.id','=', self.id),
                 ('purpose_type','=', 'turn_on'),
@@ -47,14 +47,14 @@ class ResUsersInherit(models.Model):
         ho_obj = self.ho_id
         ## NEED TEST
 
-        machine_objs = self.env['tt.machine'].search([
+        machine_objs = self.env['tt.machine'].sudo().search([
             ('code', '=', req['machine_code']),
             ('user_id.id', '=', self.id)
         ])
 
         if not machine_objs:
-            machine_objs = [self.env['tt.machine'].create_or_get_machine_api(req)]
-            self.machine_ids = [(4, machine_objs[0].id)]
+            machine_objs = [self.env['tt.machine'].sudo().create_or_get_machine_api(req)]
+            self.sudo().machine_ids = [(4, machine_objs[0].id)]
 
         for machine_obj in machine_objs:
             purpose_type = 'turn_on'
@@ -73,12 +73,12 @@ class ResUsersInherit(models.Model):
                     is_need_send_email = True
                     for otp_obj in otp_objs:
                         otp_obj.active = False
-                    otp_objs = [self.env['tt.otp'].create_otp_api(req, self.id, purpose_type)]
+                    otp_objs = [self.env['tt.otp'].sudo().create_otp_api(req, self.id, purpose_type)]
                 else:
                     return otp_objs[0]
             else:
                 is_need_send_email = True
-                otp_objs = [self.env['tt.otp'].create_otp_api(req, self.id, purpose_type)]
+                otp_objs = [self.env['tt.otp'].sudo().create_otp_api(req, self.id, purpose_type)]
             if is_need_send_email:
                 if req.get('turn_off_otp'):
                     otp_objs[0].send_email_turn_off_otp()
@@ -91,12 +91,12 @@ class ResUsersInherit(models.Model):
             return otp_objs[0]
 
     def check_otp_user_api(self, req):
-        ho_obj = self.ho_id
+        ho_obj = self.sudo().ho_id
         now = datetime.now()
         if req.get('otp'):
             ## NEED TEST
 
-            otp_objs = self.env['tt.otp'].search([
+            otp_objs = self.env['tt.otp'].sudo().search([
                 ('machine_id.code','=', req['machine_code']),
                 ('otp','=', req['otp']),
                 ('create_date','>', now - timedelta(minutes=ho_obj.otp_expired_time)),
@@ -307,7 +307,7 @@ class TtMachine(models.Model):
     otp_ids = fields.One2many('tt.otp', 'machine_id', 'OTP', readonly=True)
 
     def create_or_get_machine_api(self, req):
-        machine_obj = self.search([('code','=', req['machine_code'])])
+        machine_obj = self.sudo().search([('code','=', req['machine_code'])])
         if machine_obj:
             data_update = {}
             if machine_obj.platform == '' and req.get('platform'):
