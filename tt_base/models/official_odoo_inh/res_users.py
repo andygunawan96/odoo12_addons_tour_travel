@@ -353,7 +353,7 @@ class ResUsers(models.Model):
 
         return user.id
 
-    def _check_credentials(self, password, otp_params):
+    def _check_credentials(self, password, otp_params=None):
         super(ResUsers,self)._check_credentials(password)
         if otp_params and self.is_using_otp:
             self.check_need_otp_user_api({
