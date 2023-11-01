@@ -40,8 +40,6 @@ class ResUsersInherit(models.Model):
 
         if self.is_using_otp and not is_machine_connect:
             self.check_otp_user_api(req)
-            # expired_date = self.check_otp_user_api(req)
-            # return expired_date
 
     def create_or_get_otp_user_api(self, req):
         ho_obj = self.sudo().ho_id
@@ -71,11 +69,11 @@ class ResUsersInherit(models.Model):
                 if req.get('is_resend_otp'):
                     for otp_obj in otp_objs:
                         otp_obj.active = False
-                    otp_objs = [self.env['tt.otp'].sudo().create_otp_api(req, self.id, purpose_type)]
+                    otp_objs = [self.env['tt.otp'].sudo().create_otp(req, self.id, purpose_type, machine_obj)]
                 else:
                     return otp_objs[0]
             else:
-                otp_objs = [self.env['tt.otp'].sudo().create_otp_api(req, self.id, purpose_type)]
+                otp_objs = [self.env['tt.otp'].sudo().create_otp(req, self.id, purpose_type, machine_obj)]
             if req.get('turn_off_otp'):
                 otp_objs[0].send_email_turn_off_otp()
             elif req.get('turn_off_machine_id') and req.get('is_turn_off_other_machine'):
@@ -369,8 +367,7 @@ class TtOtp(models.Model):
         self.need_otp_type = req['need_otp_type']
         return ERR.get_no_error()
 
-    def create_otp_api(self, req, user_id, purpose_type):
-        machine_obj = self.env['tt.machine'].create_or_get_machine_api(req)
+    def create_otp(self, req, user_id, purpose_type, machine_obj):
         return self.create({
             "machine_id": machine_obj.id,
             "otp": self.generate_otp(),
