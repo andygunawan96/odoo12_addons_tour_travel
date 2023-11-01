@@ -301,7 +301,7 @@ class ResUsers(models.Model):
         return (self.env.cr.dbname, values.get('login'), values.get('password'))
 
     @classmethod
-    def authenticate(cls, db, login, password, user_agent_env, otp_params=None):
+    def authenticate(cls, db, login, password, user_agent_env, otp_params=False):
         """Verifies and returns the user ID corresponding to the given
           ``login`` and ``password`` combination, or False if there was
           no matching user.
@@ -328,7 +328,7 @@ class ResUsers(models.Model):
         return uid
 
     @classmethod
-    def _login(cls, db, login, password, otp_params=None):
+    def _login(cls, db, login, password, otp_params=False):
         if not password:
             raise AccessDenied()
         ip = request.httprequest.environ['REMOTE_ADDR'] if request else 'n/a'
@@ -353,7 +353,7 @@ class ResUsers(models.Model):
 
         return user.id
 
-    def _check_credentials(self, password, otp_params=None):
+    def _check_credentials(self, password, otp_params=False):
         super(ResUsers,self)._check_credentials(password)
         if self.is_using_otp:
             if not otp_params:

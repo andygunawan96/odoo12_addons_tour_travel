@@ -7,7 +7,6 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-
 class DbConnector(object):
     def __init__(self):
         self.url = ''
@@ -36,7 +35,7 @@ class DbConnector(object):
             res = Response().get_error('Error db connector execution, %s' % str(e), 500)
         return res
 
-    def authenticate(self, username, password, otp_params=None):
+    def authenticate(self, username, password, otp_params=False):
         try:
             res = self.common().authenticate(self.db_name, username, password, {}, otp_params)
             if not res:

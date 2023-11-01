@@ -14,7 +14,7 @@ class ResUsersInherit(models.Model):
         is_machine_connect = False
         ## NEED TEST
         if req.get('machine_code'):
-            otp_objs = self.env['tt.otp'].sudo().search([
+            otp_objs = self.env['tt.otp'].sudo().search([ ## SUDO Needed, else login from backend will fail
                 ('machine_id.code','=', req['machine_code']),
                 ('user_id.id','=', self.id),
                 ('purpose_type','=', 'turn_on'),
