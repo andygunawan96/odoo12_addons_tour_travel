@@ -48,10 +48,10 @@ class TourSyncProducts(models.TransientModel):
             getattr(self.env['tt.master.tour'], def_name)(start_num, end_num)
 
     def deactivate_product(self):
-        products = self.env['tt.master.tour'].sudo().search([('provider_id', '=', self.provider_id.id)])
+        products = self.env['tt.master.tour'].search([('provider_id', '=', self.provider_id.id)])
         for rec in products:
             if rec.active:
-                rec.sudo().write({
+                rec.write({
                     'active': False
                 })
 
@@ -99,20 +99,29 @@ class MasterTour(models.Model):
     name = fields.Text('Name', required=True, default='Tour', size=40)
     description = fields.Text('Description')
 
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, readonly=True,
+                                  default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_tour_internal'),
+                                  copy=False)
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', domain=get_domain, required=True,
+                                 default=lambda self: self.env.ref('tt_reservation_tour.tt_transport_carrier_tour_itt'),
+                                 copy=False)
+    owner_ho_id = fields.Many2one('tt.agent', 'Owner Head Office', domain=[('is_ho_agent', '=', True)],
+                                  default=lambda self: self.env.user.ho_id)
+    ho_ids = fields.Many2many('tt.agent', 'tt_master_tour_ho_agent_rel', 'tour_id', 'ho_id',
+                              string='Allowed Head Office(s)', domain=[('is_ho_agent', '=', True)])
+    agent_id = fields.Many2one('tt.agent', 'Agent')
+
     tour_code = fields.Char('Tour Code', readonly=True, copy=False)
     tour_slug = fields.Char('Tour Slug', readonly=True, copy=False)
-    tour_route = fields.Selection([('international', 'International'), ('domestic', 'Domestic')],
-                                  'Route', required=True, default='international')
+    tour_route = fields.Char('Route', compute='_compute_tour_route', readonly=True)
     tour_category = fields.Selection([('group', 'For All Agents'), ('private', 'For Selected Agent')],
                                      'Tour Category', required=True, default='group')
-    tour_type = fields.Selection([('series', 'Series (With Tour Leader)'), ('sic', 'SIC (Without Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour'), ('open', 'Open Trip'), ('private', 'Private Tour')], 'Tour Type', required=True, default='series')
-
+    tour_type_id = fields.Many2one('tt.master.tour.type', 'Tour Type', required=True, domain="[('ho_id', '=', owner_ho_id)]")
+    is_can_choose_hotel = fields.Boolean('Can Choose Hotel', readonly=True, related='tour_type_id.is_can_choose_hotel')
+    is_use_tour_leader = fields.Boolean('Is Use Tour Leader', readonly=True, related='tour_type_id.is_use_tour_leader')
+    is_open_date = fields.Boolean('Is Open Date', readonly=True, related='tour_type_id.is_open_date')
     tour_line_ids = fields.One2many('tt.master.tour.lines', 'master_tour_id', 'Tour Lines')
     tour_line_amount = fields.Integer('Available Schedule(s)', readonly=True, compute='_compute_tour_line_amount')
-
-    owner_ho_id = fields.Many2one('tt.agent', 'Owner Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
-    ho_ids = fields.Many2many('tt.agent', 'tt_master_tour_ho_agent_rel', 'tour_id', 'ho_id', string='Allowed Head Office(s)', domain=[('is_ho_agent', '=', True)])
-    agent_id = fields.Many2one('tt.agent', 'Agent')
 
     is_can_hold = fields.Boolean('Can Be Hold', default=True, required=True)
     hold_date_timer = fields.Integer('Hold Date Timer (Hours)', default=6)
@@ -162,7 +171,7 @@ class MasterTour(models.Model):
     # end of deprecated
 
     discount_ids = fields.One2many('tt.master.tour.discount', 'tour_id')
-    room_ids = fields.One2many('tt.master.tour.rooms', 'tour_pricelist_id', required=True)
+    room_ids = fields.One2many('tt.master.tour.rooms', 'tour_pricelist_id')
 
     tour_leader_ids = fields.Many2many('tt.employee', string="Tour Leader")
     # tour_leader_ids = fields.Many2many('tt.employee', 'tour_leader_rel', 'pricelist_id', 'partner_id',
@@ -185,10 +194,6 @@ class MasterTour(models.Model):
 
     country_name = fields.Char('Country Name')
     itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary')
-    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, readonly=True,
-                                  default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_tour_internal'), copy=False)
-    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', domain=get_domain, required=True,
-                                 default=lambda self: self.env.ref('tt_reservation_tour.tt_transport_carrier_tour_itt'), copy=False)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
     related_provider_ids = fields.One2many('tt.master.tour.provider', 'master_tour_id', 'Related Vendor(s)')
     import_other_info = fields.Binary('Import JSON')
@@ -210,6 +215,15 @@ class MasterTour(models.Model):
                 temp_loc += rec2.country_id.name + ', '
             rec.country_str = temp_loc and temp_loc[:-2] or ''
 
+    @api.depends("carrier_id")
+    @api.onchange("carrier_id")
+    def _compute_tour_route(self):
+        for rec in self:
+            if rec.carrier_id.id == self.env.ref('tt_reservation_tour.tt_transport_carrier_tour_itt'):
+                rec.tour_route = 'international'
+            else:
+                rec.tour_route = 'domestic'
+
     @api.depends("tour_line_ids")
     @api.onchange("tour_line_ids")
     def _compute_tour_line_amount(self):
@@ -220,10 +234,16 @@ class MasterTour(models.Model):
                     line_amt += 1
             rec.tour_line_amount = line_amt
 
-    @api.onchange('tour_type')
+    @api.onchange('owner_ho_id')
+    def _onchange_domain_tour_type(self):
+        return {'domain': {
+            'tour_type_id': [('ho_id', '=', self.owner_ho_id.id)]
+        }}
+
+    @api.onchange('tour_type_id')
     def _set_to_null(self):
         for rec in self:
-            if rec.tour_type == 'sic':
+            if not rec.tour_type_id.is_use_tour_leader:
                 rec.tipping_tour_leader = 0
 
     # temporary function
@@ -351,7 +371,7 @@ class MasterTour(models.Model):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 295')
         new_tour_obj = self.copy()
         for rec in self.tour_line_ids:
-            new_tour_line_obj = self.env['tt.master.tour.lines'].sudo().create({
+            new_tour_line_obj = self.env['tt.master.tour.lines'].create({
                 'departure_date': rec.departure_date,
                 'arrival_date': rec.arrival_date,
                 'seat': rec.quota,
@@ -361,7 +381,7 @@ class MasterTour(models.Model):
                 'master_tour_id': new_tour_obj.id
             })
             for rec2 in rec.payment_rules_ids:
-                self.env['tt.payment.rules'].sudo().create({
+                self.env['tt.payment.rules'].create({
                     'name': rec2.name,
                     'payment_percentage': rec2.payment_percentage,
                     'description': rec2.description,
@@ -369,7 +389,7 @@ class MasterTour(models.Model):
                     'tour_lines_id': new_tour_line_obj.id,
                 })
             for rec2 in rec.special_dates_ids:
-                self.env['tt.master.tour.special.dates'].sudo().create({
+                self.env['tt.master.tour.special.dates'].create({
                     'name': rec2.name,
                     'date': rec2.date,
                     'currency_id': rec2.currency_id.id,
@@ -382,7 +402,7 @@ class MasterTour(models.Model):
                     'tour_line_id': new_tour_line_obj.id,
                 })
         for rec in self.other_charges_ids:
-            self.env['tt.master.tour.other.charges'].sudo().create({
+            self.env['tt.master.tour.other.charges'].create({
                 'name': rec.name,
                 'pax_type': rec.pax_type,
                 'currency_id': rec.currency_id.id,
@@ -391,7 +411,7 @@ class MasterTour(models.Model):
                 'master_tour_id': new_tour_obj.id
             })
         for rec in self.room_ids:
-            new_tour_room_obj = self.env['tt.master.tour.rooms'].sudo().create({
+            new_tour_room_obj = self.env['tt.master.tour.rooms'].create({
                 'name': rec.name,
                 'room_code': rec.room_code,
                 'bed_type': rec.bed_type,
@@ -409,7 +429,7 @@ class MasterTour(models.Model):
                 'tour_pricelist_id': new_tour_obj.id,
             })
             for rec2 in rec.tour_pricing_ids:
-                self.env['tt.master.tour.pricing'].sudo().create({
+                self.env['tt.master.tour.pricing'].create({
                     'currency_id': rec2.currency_id.id,
                     'min_pax': rec2.min_pax,
                     'is_infant_included': rec2.is_infant_included,
@@ -422,7 +442,7 @@ class MasterTour(models.Model):
                     'room_id': new_tour_room_obj.id
                 })
         for rec in self.flight_segment_ids:
-            self.env['flight.segment'].sudo().create({
+            self.env['flight.segment'].create({
                 'journey_type': rec.journey_type,
                 'class_of_service': rec.class_of_service,
                 'carrier_id': rec.carrier_id.id,
@@ -438,13 +458,13 @@ class MasterTour(models.Model):
                 'tour_pricelist_id': new_tour_obj.id,
             })
         for rec in self.itinerary_ids:
-            new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
+            new_itin_obj = self.env['tt.reservation.tour.itinerary'].create({
                 'name': rec.name,
                 'day': rec.day,
                 'tour_pricelist_id': new_tour_obj.id,
             })
             for rec2 in rec.item_ids:
-                self.env['tt.reservation.tour.itinerary.item'].sudo().create({
+                self.env['tt.reservation.tour.itinerary.item'].create({
                     'name': rec2.name,
                     'description': rec2.description,
                     'timeslot': rec2.timeslot,
@@ -455,21 +475,21 @@ class MasterTour(models.Model):
         new_image_ids = []
         for rec in self.image_ids:
             new_image_ids.append(rec.id)
-        new_tour_obj.sudo().write({
+        new_tour_obj.write({
             'image_ids': [(6, 0, new_image_ids)]
         })
 
         new_loc_ids = []
         for rec in self.location_ids:
             new_loc_ids.append(rec.id)
-        new_tour_obj.sudo().write({
+        new_tour_obj.write({
             'location_ids': [(6, 0, new_loc_ids)]
         })
 
         other_info_ids = []
         for rec in self.other_info_ids:
             other_info_ids.append(new_tour_obj.create_other_info_from_json(rec.convert_info_to_dict()))
-        new_tour_obj.sudo().write({
+        new_tour_obj.write({
             'other_info_ids': [(6, 0, other_info_ids)]
         })
 
@@ -491,19 +511,33 @@ class MasterTour(models.Model):
         file = data
         if file:
             for rec in file['result']:
-                provider_obj = self.env['tt.provider'].sudo().search([('code', '=', rec['provider'])], limit=1)
+                provider_obj = self.env['tt.provider'].search([('code', '=', rec['provider'])], limit=1)
                 provider_obj = provider_obj and provider_obj[0] or False
-                carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec['carrier_code'])], limit=1)
+                carrier_obj = self.env['tt.transport.carrier'].search([('code', '=', rec['carrier_code'])], limit=1)
                 carrier_obj = carrier_obj and carrier_obj[0] or False
-                currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
+                currency_obj = self.env['res.currency'].search([('name', '=', rec['currency_code'])], limit=1)
                 currency_obj = currency_obj and currency_obj[0] or False
+                tour_type_obj = self.env['tt.master.tour.type'].search([('is_can_choose_hotel', '=', rec['tour_type']['is_can_choose_hotel']),
+                                                                        ('is_use_tour_leader', '=', rec['tour_type']['is_use_tour_leader']),
+                                                                        ('is_open_date', '=', rec['tour_type']['is_open_date']),
+                                                                        ('ho_id', '=', self.env.user.ho_id.id)])
+                if tour_type_obj:
+                    tour_type_obj = tour_type_obj[0]
+                else:
+                    tour_type_obj = self.env['tt.master.tour.type'].create({
+                        'name': rec['tour_type']['name'],
+                        'description': rec['tour_type']['description'],
+                        'is_can_choose_hotel': rec['tour_type']['is_can_choose_hotel'],
+                        'is_use_tour_leader': rec['tour_type']['is_use_tour_leader'],
+                        'is_open_date': rec['tour_type']['is_open_date'],
+                        'ho_id': self.env.user.ho_id.id
+                    })
                 vals = {
                     'name': rec['name'],
                     'description': rec['description'],
                     'tour_code': rec['tour_code'],
-                    'tour_route': rec['tour_route'],
                     'tour_category': rec['tour_category'],
-                    'tour_type': rec['tour_type'],
+                    'tour_type_id': tour_type_obj and tour_type_obj.id or False,
                     'duration': rec['duration'],
                     'is_can_hold': rec['is_can_hold'],
                     'hold_date_timer': rec['hold_date_timer'],
@@ -535,12 +569,12 @@ class MasterTour(models.Model):
                     'owner_ho_id': self.env.user.ho_id.id,
                     'ho_ids': [(4, self.env.user.ho_id.id)]
                 }
-                new_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', rec['tour_code']), ('provider_id', '=', provider_obj.id), '|', '|', ('owner_ho_id', '=', self.env.user.ho_id.id), ('ho_ids', '=', self.env.user.ho_id.id), ('ho_ids', '=', False), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                new_tour_obj = self.env['tt.master.tour'].search([('tour_code', '=', rec['tour_code']), ('provider_id', '=', provider_obj.id), '|', '|', ('owner_ho_id', '=', self.env.user.ho_id.id), ('ho_ids', '=', self.env.user.ho_id.id), ('ho_ids', '=', False), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 if new_tour_obj:
                     new_tour_obj = new_tour_obj[0]
-                    new_tour_obj.sudo().write(vals)
+                    new_tour_obj.write(vals)
                 else:
-                    new_tour_obj = self.env['tt.master.tour'].sudo().create(vals)
+                    new_tour_obj = self.env['tt.master.tour'].create(vals)
 
                 req_post = {
                     'tour_code': rec['tour_code'],
@@ -552,25 +586,25 @@ class MasterTour(models.Model):
                 det_res = self.env['tt.master.tour.api.con'].get_details_provider(req_post, ho_id)
                 if det_res['error_code'] == 0:
                     for temp_line in new_tour_obj.tour_line_ids:
-                        temp_line.sudo().write({
+                        temp_line.write({
                             'active': False
                         })
                     for temp_charge in new_tour_obj.other_charges_ids:
-                        temp_charge.sudo().write({
+                        temp_charge.write({
                             'active': False
                         })
                     for temp_room in new_tour_obj.room_ids:
-                        temp_room.sudo().write({
+                        temp_room.write({
                             'active': False
                         })
                     for temp_flight in new_tour_obj.flight_segment_ids:
-                        temp_flight.sudo().unlink()
+                        temp_flight.unlink()
                     for temp_itin in new_tour_obj.itinerary_ids:
-                        temp_itin.sudo().unlink()
+                        temp_itin.unlink()
                     for temp_img in new_tour_obj.image_ids:
-                        temp_img.sudo().unlink()
+                        temp_img.unlink()
                     for temp_loc in new_tour_obj.location_ids:
-                        temp_loc.sudo().unlink()
+                        temp_loc.unlink()
                     if det_res['response'].get('selected_tour'):
                         detail_dat = det_res['response']['selected_tour']
                         for rec_det in detail_dat['tour_lines']:
@@ -585,15 +619,15 @@ class MasterTour(models.Model):
                                 'master_tour_id': new_tour_obj.id,
                                 'active': True
                             }
-                            new_tour_line_obj = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', rec_det['tour_line_code']), ('master_tour_id', '=', new_tour_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                            new_tour_line_obj = self.env['tt.master.tour.lines'].search([('tour_line_code', '=', rec_det['tour_line_code']), ('master_tour_id', '=', new_tour_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                             if new_tour_line_obj:
                                 new_tour_line_obj = new_tour_line_obj[0]
-                                new_tour_line_obj.sudo().write(new_tour_line_vals)
+                                new_tour_line_obj.write(new_tour_line_vals)
                             else:
-                                new_tour_line_obj = self.env['tt.master.tour.lines'].sudo().create(new_tour_line_vals)
+                                new_tour_line_obj = self.env['tt.master.tour.lines'].create(new_tour_line_vals)
 
                             for pay_rules in new_tour_line_obj.payment_rules_ids:
-                                pay_rules.sudo().unlink()
+                                pay_rules.unlink()
 
                             if rec_det.get('payment_rules_list'):
                                 for rec_det2 in rec_det['payment_rules_list']:
@@ -604,16 +638,16 @@ class MasterTour(models.Model):
                                         'due_date': rec_det2['due_date'],
                                         'tour_lines_id': new_tour_line_obj.id
                                     }
-                                    self.env['tt.payment.rules'].sudo().create(payment_rules_vals)
+                                    self.env['tt.payment.rules'].create(payment_rules_vals)
 
                             for spec_date in new_tour_line_obj.special_dates_ids:
-                                spec_date.sudo().write({
+                                spec_date.write({
                                     'active': False
                                 })
 
                             if rec_det.get('special_date_list'):
                                 for rec_det2 in rec_det['special_date_list']:
-                                    tour_special_date_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec_det2['currency_code'])], limit=1)
+                                    tour_special_date_currency_obj = self.env['res.currency'].search([('name', '=', rec_det2['currency_code'])], limit=1)
                                     new_tour_special_date_vals = {
                                         'name': rec_det2['name'],
                                         'date': rec_det2['date'],
@@ -624,14 +658,14 @@ class MasterTour(models.Model):
                                         'tour_line_id': new_tour_line_obj.id,
                                         'active': True
                                     }
-                                    new_tour_special_date_obj = self.env['tt.master.tour.special.dates'].sudo().search([('date', '=', rec_det2['date']), ('tour_line_id', '=', new_tour_line_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                                    new_tour_special_date_obj = self.env['tt.master.tour.special.dates'].search([('date', '=', rec_det2['date']), ('tour_line_id', '=', new_tour_line_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                                     if new_tour_special_date_obj:
-                                        new_tour_special_date_obj[0].sudo().write(new_tour_special_date_vals)
+                                        new_tour_special_date_obj[0].write(new_tour_special_date_vals)
                                     else:
-                                        self.env['tt.master.tour.special.dates'].sudo().create(new_tour_special_date_vals)
+                                        self.env['tt.master.tour.special.dates'].create(new_tour_special_date_vals)
 
                         for rec_det in detail_dat['other_charges']:
-                            tour_other_charges_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec_det['currency_id'])], limit=1)
+                            tour_other_charges_currency_obj = self.env['res.currency'].search([('name', '=', rec_det['currency_id'])], limit=1)
                             new_tour_other_charges_vals = {
                                 'name': rec_det['name'],
                                 'pax_type': rec_det['pax_type'],
@@ -641,11 +675,11 @@ class MasterTour(models.Model):
                                 'master_tour_id': new_tour_obj.id,
                                 'active': True
                             }
-                            new_other_charges_obj = self.env['tt.master.tour.other.charges'].sudo().search([('name', '=', rec_det['name']), ('pax_type', '=', rec_det['pax_type']), ('master_tour_id', '=', new_tour_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                            new_other_charges_obj = self.env['tt.master.tour.other.charges'].search([('name', '=', rec_det['name']), ('pax_type', '=', rec_det['pax_type']), ('master_tour_id', '=', new_tour_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                             if new_other_charges_obj:
-                                new_other_charges_obj[0].sudo().write(new_tour_other_charges_vals)
+                                new_other_charges_obj[0].write(new_tour_other_charges_vals)
                             else:
-                                self.env['tt.master.tour.other.charges'].sudo().create(new_tour_other_charges_vals)
+                                self.env['tt.master.tour.other.charges'].create(new_tour_other_charges_vals)
 
                         for rec_det in detail_dat['accommodations']:
                             new_acco_vals = {
@@ -666,15 +700,15 @@ class MasterTour(models.Model):
                                 'tour_pricelist_id': new_tour_obj.id,
                                 'active': True,
                             }
-                            new_acco_obj = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', rec_det['room_code']), ('tour_pricelist_id', '=', new_tour_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                            new_acco_obj = self.env['tt.master.tour.rooms'].search([('room_code', '=', rec_det['room_code']), ('tour_pricelist_id', '=', new_tour_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                             if new_acco_obj:
-                                new_acco_obj[0].sudo().write(new_acco_vals)
+                                new_acco_obj[0].write(new_acco_vals)
                             else:
-                                new_acco_obj = self.env['tt.master.tour.rooms'].sudo().create(new_acco_vals)
+                                new_acco_obj = self.env['tt.master.tour.rooms'].create(new_acco_vals)
 
                             if rec_det.get('pricing'):
                                 for rec_det2 in rec_det['pricing']:
-                                    tour_pricing_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec_det2['currency_id'])], limit=1)
+                                    tour_pricing_currency_obj = self.env['res.currency'].search([('name', '=', rec_det2['currency_id'])], limit=1)
                                     new_tour_pricing_vals = {
                                         'min_pax': rec_det2['min_pax'],
                                         'is_infant_included': rec_det2['is_infant_included'],
@@ -688,20 +722,20 @@ class MasterTour(models.Model):
                                         'room_id': new_acco_obj.id,
                                         'active': True
                                     }
-                                    new_tour_pricing_obj = self.env['tt.master.tour.pricing'].sudo().search([('min_pax', '=', int(rec_det2['min_pax'])), ('room_id', '=', new_acco_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                                    new_tour_pricing_obj = self.env['tt.master.tour.pricing'].search([('min_pax', '=', int(rec_det2['min_pax'])), ('room_id', '=', new_acco_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                                     if new_tour_pricing_obj:
-                                        new_tour_pricing_obj[0].sudo().write(new_tour_pricing_vals)
+                                        new_tour_pricing_obj[0].write(new_tour_pricing_vals)
                                     else:
-                                        self.env['tt.master.tour.pricing'].sudo().create(new_tour_pricing_vals)
+                                        self.env['tt.master.tour.pricing'].create(new_tour_pricing_vals)
 
                         for rec_flight in detail_dat['flight_segments']:
-                            carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec_flight['carrier_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
+                            carrier_obj = self.env['tt.transport.carrier'].search([('code', '=', rec_flight['carrier_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
                             carrier_obj = carrier_obj and carrier_obj[0] or False
-                            origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', rec_flight['origin_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
+                            origin_obj = self.env['tt.destinations'].search([('code', '=', rec_flight['origin_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
                             origin_obj = origin_obj and origin_obj[0] or False
-                            destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', rec_flight['destination_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
+                            destination_obj = self.env['tt.destinations'].search([('code', '=', rec_flight['destination_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
                             destination_obj = destination_obj and destination_obj[0] or False
-                            self.env['flight.segment'].sudo().create({
+                            self.env['flight.segment'].create({
                                 'journey_type': rec_flight['journey_type'],
                                 'class_of_service': rec_flight['class_of_service'],
                                 'carrier_id': carrier_obj and carrier_obj.id or False,
@@ -717,13 +751,13 @@ class MasterTour(models.Model):
                                 'tour_pricelist_id': new_tour_obj.id,
                             })
                         for rec_itin in detail_dat['itinerary_ids']:
-                            new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
+                            new_itin_obj = self.env['tt.reservation.tour.itinerary'].create({
                                 'name': rec_itin['name'],
                                 'day': rec_itin['day'],
                                 'tour_pricelist_id': new_tour_obj.id,
                             })
                             for rec_item in rec_itin['items']:
-                                self.env['tt.reservation.tour.itinerary.item'].sudo().create({
+                                self.env['tt.reservation.tour.itinerary.item'].create({
                                     'name': rec_item['name'],
                                     'description': rec_item['description'],
                                     'timeslot': rec_item['timeslot'],
@@ -735,7 +769,7 @@ class MasterTour(models.Model):
                         for rec_det in detail_dat['images_obj']:
                             new_image_ids.append(self.convert_image_to_own(rec_det['url'], rec_det['filename']))
                             self.env.cr.commit()
-                        new_tour_obj.sudo().write({
+                        new_tour_obj.write({
                             'image_ids': [(6, 0, new_image_ids)]
                         })
                         for rec_other in detail_dat['other_infos']:
@@ -744,25 +778,25 @@ class MasterTour(models.Model):
                         new_loc_ids = []
                         for rec_loc in detail_dat['locations']:
                             search_params = []
-                            new_country_obj = self.env['res.country'].sudo().search([('code', '=', rec_loc['country_code'])], limit=1)
-                            new_city_obj = self.env['res.city'].sudo().search([('name', '=', rec_loc['city_name'])], limit=1)
+                            new_country_obj = self.env['res.country'].search([('code', '=', rec_loc['country_code'])], limit=1)
+                            new_city_obj = self.env['res.city'].search([('name', '=', rec_loc['city_name'])], limit=1)
                             if new_country_obj:
                                 search_params.append(('country_id', '=', new_country_obj[0].id))
                             if new_city_obj:
                                 search_params.append(('city_id', '=', new_city_obj[0].id))
                             if search_params:
-                                temp_loc = self.env['tt.tour.master.locations'].sudo().search(search_params, limit=1)
+                                temp_loc = self.env['tt.tour.master.locations'].search(search_params, limit=1)
                                 if temp_loc:
                                     new_loc = temp_loc[0]
                                 else:
-                                    new_loc = self.env['tt.tour.master.locations'].sudo().create({
+                                    new_loc = self.env['tt.tour.master.locations'].create({
                                         'country_id': new_country_obj and new_country_obj[0].id or False,
                                         'city_id': new_city_obj and new_city_obj[0].id or False,
                                         'state_id': False,
                                     })
                                     self.env.cr.commit()
                                 new_loc_ids.append(new_loc.id)
-                        new_tour_obj.sudo().write({
+                        new_tour_obj.write({
                             'location_ids': [(6, 0, new_loc_ids)]
                         })
                         if new_tour_obj.state == 'draft':
@@ -788,7 +822,7 @@ class MasterTour(models.Model):
             }
             attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
             if attachment_obj['error_code'] == 0:
-                upload_obj = self.env['tt.upload.center'].sudo().search([('seq_id', '=', attachment_obj['response']['seq_id'])], limit=1)
+                upload_obj = self.env['tt.upload.center'].search([('seq_id', '=', attachment_obj['response']['seq_id'])], limit=1)
                 return upload_obj and upload_obj[0].id or False
             else:
                 return False
@@ -820,10 +854,11 @@ class MasterTour(models.Model):
         self.state = 'confirm'
         prefix = self.provider_id.alias and self.provider_id.alias + '~' or ''
         if not self.tour_code:
-            if self.tour_type == 'private':
-                self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.fit')
-            else:
-                self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.group')
+            self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code')
+            # if self.tour_type == 'private':
+            #     self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.fit')
+            # else:
+            #     self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.group')
         for rec in self.tour_line_ids:
             rec.action_validate()
 
@@ -846,14 +881,14 @@ class MasterTour(models.Model):
     def create_other_info_from_json(self, data):
         message_id_list = []
         for rec in data['message']:
-            msg_obj = self.env['tt.master.tour.otherinfo.messages'].sudo().create({
+            msg_obj = self.env['tt.master.tour.otherinfo.messages'].create({
                 'name': rec['text'],
                 'style': rec['style'],
                 'sequence': rec['sequence'],
             })
             message_id_list.append(msg_obj.id)
 
-        other_info_obj = self.env['tt.master.tour.otherinfo'].sudo().create({
+        other_info_obj = self.env['tt.master.tour.otherinfo'].create({
             'child_list_type': data['child_list_type'],
             'sequence': data['sequence'],
             'info_message_ids': [(6, 0, message_id_list)],
@@ -867,7 +902,7 @@ class MasterTour(models.Model):
         for rec in self.other_info_ids:
             list_of_dict.append(rec.convert_info_to_dict())
         json_data = json.dumps(list_of_dict)
-        self.sudo().write({
+        self.write({
             'export_other_info': base64.b64encode(json_data.encode())
         })
 
@@ -878,10 +913,10 @@ class MasterTour(models.Model):
             other_info_list = []
             upload_file = json.loads(base64.b64decode(self.import_other_info))
             for rec in self.other_info_ids:
-                rec.sudo().unlink()
+                rec.unlink()
             for rec in upload_file:
                 other_info_list.append(self.create_other_info_from_json(rec))
-            self.sudo().write({
+            self.write({
                 'import_other_info': False,
                 'other_info_ids': [(6, 0, other_info_list)]
             })
@@ -950,7 +985,7 @@ class MasterTour(models.Model):
             temp_txt += str(self.read_other_info_dict(rec, 'none'))
             temp_txt += '<br/>'
 
-        self.sudo().write({
+        self.write({
             'other_info_preview': str(temp_txt)
         })
 
@@ -1030,7 +1065,7 @@ class MasterTour(models.Model):
                     tour_line_list = []
                     for rec2 in rec.tour_line_ids:
                         if rec2.active:
-                            if (rec2.departure_date and rec2.departure_date >= fields.Date.today()) or rec.tour_type == 'open':
+                            if (rec2.departure_date and rec2.departure_date >= fields.Date.today()) or rec.tour_type_id.is_open_date:
                                 tour_line_list.append(rec2.to_dict())
                                 str_dept_date = rec2.departure_date.strftime("%Y-%m-%d")
                                 if search_request['departure_month'] != '00':
@@ -1050,12 +1085,12 @@ class MasterTour(models.Model):
                             'name': rec.name,
                             'tour_code': rec.tour_code,
                             'tour_slug': rec.tour_slug,
+                            'tour_route': rec.tour_route,
                             'tour_lines': tour_line_list,
                             'tour_line_amount': rec.tour_line_amount,
                             'tour_category': rec.tour_category,
-                            'tour_route': rec.tour_route,
-                            'tour_type': rec.tour_type,
-                            'tour_type_str': dict(rec._fields['tour_type'].selection).get(rec.tour_type),
+                            'tour_type': rec.tour_type_id.to_dict(),
+                            'tour_type_str': rec.tour_type_id.name,
                             'description': rec.description,
                             'currency_code': rec.currency_id.name,
                             'carrier_code': rec.carrier_id.code,
@@ -1113,7 +1148,7 @@ class MasterTour(models.Model):
                 data.update({
                     'provider': default_prov.code and default_prov.code or ''
                 })
-            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
+            provider_obj = self.env['tt.provider'].search([('code', '=', data['provider'])], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
@@ -1122,7 +1157,7 @@ class MasterTour(models.Model):
                 search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
             else:
                 search_params.append(('ho_ids', '=', False))
-            tour_obj = self.env['tt.master.tour'].sudo().search(search_params, limit=1)
+            tour_obj = self.env['tt.master.tour'].search(search_params, limit=1)
             if not tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_obj = tour_obj[0]
@@ -1148,7 +1183,7 @@ class MasterTour(models.Model):
 
     def update_availability_api(self, data, context, **kwargs):
         try:
-            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
+            provider_obj = self.env['tt.provider'].search([('code', '=', data['provider'])], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
@@ -1157,14 +1192,14 @@ class MasterTour(models.Model):
                 search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
             else:
                 search_params.append(('ho_ids', '=', False))
-            tour_obj = self.env['tt.master.tour'].sudo().search(search_params, limit=1)
+            tour_obj = self.env['tt.master.tour'].search(search_params, limit=1)
             if not tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_obj = tour_obj[0]
             for rec in tour_obj.tour_line_ids:
                 for rec2 in data['tour_lines']:
                     if rec.tour_line_code == rec2['tour_line_code']:
-                        rec.sudo().write({
+                        rec.write({
                             'seat': rec2['seat'],
                             'quota': rec2['quota'],
                             'state': rec2['state'],
@@ -1256,7 +1291,7 @@ class MasterTour(models.Model):
                 'provider': data.get('provider') and data['provider'] or ''
             }
             if search_request.get('tour_code'):
-                provider_obj = self.env['tt.provider'].sudo().search([('alias', '=', search_request['provider'])], limit=1)
+                provider_obj = self.env['tt.provider'].search([('alias', '=', search_request['provider'])], limit=1)
                 if not provider_obj:
                     raise RequestException(1002)
                 provider_obj = provider_obj[0]
@@ -1267,7 +1302,7 @@ class MasterTour(models.Model):
                 search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
             else:
                 search_params.append(('ho_ids', '=', False))
-            tour_obj = self.env['tt.master.tour'].sudo().search(search_params, limit=1)
+            tour_obj = self.env['tt.master.tour'].search(search_params, limit=1)
             if not tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_obj = tour_obj[0]
@@ -1345,14 +1380,14 @@ class MasterTour(models.Model):
                 'name': tour_obj.name,
                 'description': tour_obj.description,
                 'tour_code': tour_obj.tour_code,
-                'tour_route': tour_obj.tour_route,
                 'tour_category': tour_obj.tour_category,
-                'tour_type': tour_obj.tour_type,
-                'tour_type_str': dict(tour_obj._fields['tour_type'].selection).get(tour_obj.tour_type),
+                'tour_type': tour_obj.tour_type_id.to_dict(),
+                'tour_type_str': tour_obj.tour_type_id.name,
+                'tour_route': tour_obj.tour_route,
                 'tour_lines': tour_line_list,
                 'carrier_code': tour_obj.carrier_id.code,
                 'carrier_data': tour_obj.carrier_id.to_dict(),
-                'accommodations': accommodations,
+                'accommodations': tour_obj.tour_type_id.is_can_choose_hotel and accommodations or accommodations[:1],
                 'currency_code': tour_obj.currency_id.name,
                 'est_starting_price': tour_obj.est_starting_price,
                 'single_supplement': tour_obj.single_supplement,
@@ -1380,7 +1415,7 @@ class MasterTour(models.Model):
                 'flight_segments': tour_obj.get_flight_segment(),
                 'itinerary_ids': tour_obj.get_itineraries(),
                 'other_infos': tour_obj.get_tour_other_info(),
-                'hotel_names': hotel_names,
+                'hotel_names': tour_obj.tour_type_id.is_can_choose_hotel and hotel_names or hotel_names[:1],
                 'duration': tour_obj.duration and tour_obj.duration or 0,
                 'guiding_days': tour_obj.guiding_days and tour_obj.guiding_days or 0,
                 'driving_times': tour_obj.driving_times and tour_obj.driving_times or 0,
@@ -1410,15 +1445,15 @@ class MasterTour(models.Model):
                 'tour_line_code': data.get('tour_line_code') and data['tour_line_code'] or '',
                 'provider': data.get('provider') and data['provider'] or ''
             }
-            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
+            provider_obj = self.env['tt.provider'].search([('code', '=', search_request['provider'])], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            search_tour_obj = self.env['tt.master.tour'].search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if not search_tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             search_tour_obj = search_tour_obj[0]
-            search_tour_line_obj = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', search_request['tour_line_code']), ('master_tour_id', '=', search_tour_obj.id)], limit=1)
+            search_tour_line_obj = self.env['tt.master.tour.lines'].search([('tour_line_code', '=', search_request['tour_line_code']), ('master_tour_id', '=', search_tour_obj.id)], limit=1)
             if not search_tour_line_obj:
                 raise RequestException(1022, additional_message='Tour Line not found.')
             search_tour_line_obj = search_tour_line_obj[0]
@@ -1459,15 +1494,15 @@ class MasterTour(models.Model):
                 'tour_line_code': data.get('tour_line_code') and data['tour_line_code'] or '',
                 'provider': data.get('provider') and data['provider'] or ''
             }
-            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
+            provider_obj = self.env['tt.provider'].search([('code', '=', search_request['provider'])], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            search_tour_obj = self.env['tt.master.tour'].search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if not search_tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             search_tour_obj = search_tour_obj[0]
-            search_tour_line_obj = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', search_request['tour_line_code']), ('master_tour_id', '=', search_tour_obj.id)], limit=1)
+            search_tour_line_obj = self.env['tt.master.tour.lines'].search([('tour_line_code', '=', search_request['tour_line_code']), ('master_tour_id', '=', search_tour_obj.id)], limit=1)
             if not search_tour_line_obj:
                 raise RequestException(1022, additional_message='Tour Line not found.')
             search_tour_line_obj = search_tour_line_obj[0]
@@ -1476,11 +1511,11 @@ class MasterTour(models.Model):
             for rec in new_pay_rules:
                 if rec.get('is_dp'):
                     if float(rec['payment_percentage']) != float(search_tour_line_obj.down_payment):
-                        search_tour_line_obj.sudo().write({
+                        search_tour_line_obj.write({
                             'down_payment': float(rec['payment_percentage'])
                         })
                 else:
-                    new_pay_obj = self.env['tt.payment.rules'].sudo().create({
+                    new_pay_obj = self.env['tt.payment.rules'].create({
                         'name': rec['name'],
                         'description': rec['description'],
                         'payment_percentage': rec['payment_percentage'],
@@ -1489,7 +1524,7 @@ class MasterTour(models.Model):
                     new_pay_ids.append(new_pay_obj.id)
                 self.env.cr.commit()
 
-            search_tour_line_obj.sudo().write({
+            search_tour_line_obj.write({
                 'payment_rules_ids': [(6, 0, new_pay_ids)]
             })
 
@@ -1569,8 +1604,17 @@ class MasterTour(models.Model):
                                 }
                             })
 
+            tour_types_dict = {}
+            tour_types = self.env['tt.master.tour.type'].search([])
+            for rec in tour_types:
+                if not tour_types_dict.get(rec.ho_id.seq_id):
+                    tour_types_dict.update({
+                        rec.ho_id.seq_id: []
+                    })
+                tour_types_dict[rec.ho_id.seq_id].append(rec.to_dict())
             values = {
                 'countries': countries_dict,
+                'tour_types': tour_types_dict
             }
             return ERR.get_no_error(values)
         except RequestException as e:
@@ -1586,11 +1630,11 @@ class MasterTour(models.Model):
                 'tour_code': req.get('tour_code') and req['tour_code'] or '',
                 'provider': req.get('provider') and req['provider'] or ''
             }
-            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
+            provider_obj = self.env['tt.provider'].search([('code', '=', search_request['provider'])], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_data_list = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            tour_data_list = self.env['tt.master.tour'].search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if not tour_data_list:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_data = tour_data_list[0]
@@ -1657,7 +1701,7 @@ class MasterTour(models.Model):
             total_chd = 0
             total_inf = 0
             for rec in temp_room_list:
-                tour_room_list = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', rec['room_code']), ('tour_pricelist_id', '=', tour_data.id)], limit=1)
+                tour_room_list = self.env['tt.master.tour.rooms'].search([('room_code', '=', rec['room_code']), ('tour_pricelist_id', '=', tour_data.id)], limit=1)
                 tour_room = tour_room_list[0]
                 adult_amt = child_amt = infant_amt = adult_sur_amt = child_sur_amt = single_sup = 0
                 total_pax = int(rec['adult']) + int(rec['child']) + int(rec['infant'])
@@ -1765,10 +1809,10 @@ class MasterTour(models.Model):
                     'amount': rec_charges.amount
                 })
 
-            if tour_data.tour_type == 'open':
+            if tour_data.tour_type_id.is_open_date:
                 if not req.get('tour_line_code') or not req.get('departure_date'):
                     raise RequestException(1022, additional_message='A valid tour line code and your departure date are required to check Open Trip Price.')
-                tour_line_data_list = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', req['tour_line_code']), ('master_tour_id', '=', tour_data.id)], limit=1)
+                tour_line_data_list = self.env['tt.master.tour.lines'].search([('tour_line_code', '=', req['tour_line_code']), ('master_tour_id', '=', tour_data.id)], limit=1)
                 if not tour_line_data_list:
                     raise RequestException(1022, additional_message='Tour line not found.')
                 tour_line_data = tour_line_data_list[0]
@@ -1840,7 +1884,7 @@ class MasterTour(models.Model):
 
     def issued_booking_vendor(self, data, context, **kwargs):
         try:
-            book_obj = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])], limit=1)
+            book_obj = self.env['tt.reservation.tour'].search([('name', '=', data['order_number'])], limit=1)
             if book_obj:
                 book_obj = book_obj[0]
             response = {
@@ -1893,28 +1937,50 @@ class MasterTour(models.Model):
 
     def product_sync_webhook_nosend(self, req, context):
         try:
+            ho_obj = False
+            if context.get('co_ho_id'):
+                ho_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
+            elif context.get('co_ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+            if not ho_obj:
+                raise RequestException(1022, additional_message='Invalid context, cannot sync tour data.')
             _logger.info("Receiving tour data from webhook...")
-            provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
+            provider_id = self.env['tt.provider'].search([('code', '=', req['provider'])], limit=1)
             if not provider_id:
                 raise RequestException(1002)
             for rec in req['data']:
-                currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
-                carrier_id = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec['carrier_code'])], limit=1)
+                currency_obj = self.env['res.currency'].search([('name', '=', rec['currency_code'])], limit=1)
+                carrier_id = self.env['tt.transport.carrier'].search([('code', '=', rec['carrier_code'])], limit=1)
                 if not carrier_id:
                     carrier_id = [self.env.ref('tt_reservation_tour.tt_transport_carrier_tour_itt')]
+                tour_type_obj = self.env['tt.master.tour.type'].search(
+                    [('is_can_choose_hotel', '=', rec['tour_type']['is_can_choose_hotel']),
+                     ('is_use_tour_leader', '=', rec['tour_type']['is_use_tour_leader']),
+                     ('is_open_date', '=', rec['tour_type']['is_open_date']),
+                     ('ho_id', '=', ho_obj.id)])
+                if tour_type_obj:
+                    tour_type_obj = tour_type_obj[0]
+                else:
+                    tour_type_obj = self.env['tt.master.tour.type'].create({
+                        'name': rec['tour_type']['name'],
+                        'description': rec['tour_type']['description'],
+                        'is_can_choose_hotel': rec['tour_type']['is_can_choose_hotel'],
+                        'is_use_tour_leader': rec['tour_type']['is_use_tour_leader'],
+                        'is_open_date': rec['tour_type']['is_open_date'],
+                        'ho_id': ho_obj.id
+                    })
                 vals = {
                     'name': rec['name'],
                     'tour_code': rec['tour_code'],
                     'provider_id': provider_id[0].id,
                     'carrier_id': carrier_id[0].id,
-                    'tour_route': rec['tour_route'],
                     'sequence': rec['sequence'],
                     'is_can_hold': rec['is_can_hold'],
                     'hold_date_timer': rec['hold_date_timer'],
                     'currency_id': currency_obj and currency_obj[0].id or False,
                     'description': rec['description'],
                     'tour_category': rec['tour_category'],
-                    'tour_type': rec['tour_type'],
+                    'tour_type': tour_type_obj and tour_type_obj.id or False,
                     'duration': rec['duration'],
                     'guiding_days': rec['guiding_days'],
                     'driving_times': rec['driving_times'],
@@ -1938,24 +2004,27 @@ class MasterTour(models.Model):
                     'tipping_tour_leader_infant': rec['tipping_tour_leader_infant'],
                     'tipping_driver_infant': rec['tipping_driver_infant'],
                 }
-                tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=',  rec['tour_code']), ('provider_id', '=', provider_id[0].id)], limit=1)
+                tour_obj = self.env['tt.master.tour'].search([('tour_code', '=',  rec['tour_code']), ('provider_id', '=', provider_id[0].id), ('owner_ho_id', '=', ho_obj.id)], limit=1)
                 if tour_obj:
                     tour_obj = tour_obj[0]
-                    tour_obj.sudo().write(vals)
+                    tour_obj.write(vals)
                     for fli in tour_obj.flight_segment_ids:
-                        fli.sudo().unlink()
+                        fli.unlink()
                     for itin in tour_obj.itinerary_ids:
-                        itin.sudo().unlink()
+                        itin.unlink()
                     for temp_charge in tour_obj.other_charges_ids:
-                        temp_charge.sudo().write({
+                        temp_charge.write({
                             'active': False
                         })
                     for temp_room in tour_obj.room_ids:
-                        temp_room.sudo().write({
+                        temp_room.write({
                             'active': False
                         })
                 else:
-                    tour_obj = self.env['tt.master.tour'].sudo().create(vals)
+                    vals.update({
+                        'owner_ho_id': ho_obj.id
+                    })
+                    tour_obj = self.env['tt.master.tour'].create(vals)
                 self.env.cr.commit()
 
                 for rec2 in rec['tour_lines_ids']:
@@ -1971,15 +2040,15 @@ class MasterTour(models.Model):
                         'master_tour_id': tour_obj.id,
                         'active': True
                     }
-                    tour_line_obj = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', rec2['tour_line_code']), ('master_tour_id', '=', tour_obj.id), '|',('active', '=', False), ('active', '=', True)], limit=1)
+                    tour_line_obj = self.env['tt.master.tour.lines'].search([('tour_line_code', '=', rec2['tour_line_code']), ('master_tour_id', '=', tour_obj.id), '|',('active', '=', False), ('active', '=', True)], limit=1)
                     if tour_line_obj:
                         tour_line_obj = tour_line_obj[0]
-                        tour_line_obj.sudo().write(line_vals)
+                        tour_line_obj.write(line_vals)
                     else:
-                        tour_line_obj = self.env['tt.master.tour.lines'].sudo().create(line_vals)
+                        tour_line_obj = self.env['tt.master.tour.lines'].create(line_vals)
 
                     for pay_rules in tour_line_obj.payment_rules_ids:
-                        pay_rules.sudo().unlink()
+                        pay_rules.unlink()
 
                     if rec2.get('payment_rules_ids'):
                         for rec3 in rec2['payment_rules_ids']:
@@ -1990,16 +2059,16 @@ class MasterTour(models.Model):
                                 'due_date': rec3['due_date'],
                                 'tour_lines_id': tour_line_obj.id
                             }
-                            self.env['tt.payment.rules'].sudo().create(payment_rules_vals)
+                            self.env['tt.payment.rules'].create(payment_rules_vals)
 
                     for spec_date in tour_line_obj.special_dates_ids:
-                        spec_date.sudo().write({
+                        spec_date.write({
                             'active': False
                         })
 
-                    if rec['tour_type'] == 'open' and rec2.get('special_date_ids'):
+                    if rec['tour_type']['is_open_date'] and rec2.get('special_date_ids'):
                         for rec3 in rec2['special_date_ids']:
-                            special_date_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec3['currency_code'])], limit=1)
+                            special_date_currency_obj = self.env['res.currency'].search([('name', '=', rec3['currency_code'])], limit=1)
                             special_date_vals = {
                                 'name': rec3['name'],
                                 'date': rec3['date'],
@@ -2010,34 +2079,34 @@ class MasterTour(models.Model):
                                 'tour_line_id': tour_line_obj.id,
                                 'active': True
                             }
-                            special_date_obj = self.env['tt.master.tour.special.dates'].sudo().search([('date', '=', rec3['date']), ('tour_line_id', '=', tour_line_obj.id), '|',('active', '=', False), ('active', '=', True)], limit=1)
+                            special_date_obj = self.env['tt.master.tour.special.dates'].search([('date', '=', rec3['date']), ('tour_line_id', '=', tour_line_obj.id), '|',('active', '=', False), ('active', '=', True)], limit=1)
                             if special_date_obj:
                                 special_date_obj = special_date_obj[0]
-                                special_date_obj.sudo().write(special_date_vals)
+                                special_date_obj.write(special_date_vals)
                             else:
-                                special_date_obj = self.env['tt.master.tour.special.dates'].sudo().create(special_date_vals)
+                                special_date_obj = self.env['tt.master.tour.special.dates'].create(special_date_vals)
 
                 location_list = []
                 for rec2 in rec['location_ids']:
                     search_params = []
-                    country_obj = self.env['res.country'].sudo().search([('code', '=', rec2['country_code'])], limit=1)
+                    country_obj = self.env['res.country'].search([('code', '=', rec2['country_code'])], limit=1)
                     if country_obj:
                         search_params.append(('country_id', '=', country_obj[0].id))
-                    city_obj = self.env['res.city'].sudo().search([('name', '=', rec2['city_name'])], limit=1)
+                    city_obj = self.env['res.city'].search([('name', '=', rec2['city_name'])], limit=1)
                     if city_obj:
                         search_params.append(('city_id', '=', city_obj[0].id))
-                    loc_obj = self.env['tt.tour.master.locations'].sudo().search(search_params, limit=1)
+                    loc_obj = self.env['tt.tour.master.locations'].search(search_params, limit=1)
                     if loc_obj:
                         loc_obj = loc_obj[0]
                     else:
-                        loc_obj = self.env['tt.tour.master.locations'].sudo().create({
+                        loc_obj = self.env['tt.tour.master.locations'].create({
                             'country_id': country_obj and country_obj[0].id or False,
                             'city_id': city_obj and city_obj[0].id or False,
                         })
                     location_list.append(loc_obj.id)
 
                 for rec2 in rec['other_charges_ids']:
-                    other_charges_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec2['currency_code'])], limit=1)
+                    other_charges_currency_obj = self.env['res.currency'].search([('name', '=', rec2['currency_code'])], limit=1)
                     other_charges_vals = {
                         'name': rec2['name'],
                         'pax_type': rec2['pax_type'],
@@ -2047,12 +2116,12 @@ class MasterTour(models.Model):
                         'master_tour_id': tour_obj.id,
                         'active': True
                     }
-                    other_charges_obj = self.env['tt.master.tour.other.charges'].sudo().search([('name', '=', rec2['name']), ('pax_type', '=', rec2['pax_type']), ('master_tour_id', '=', tour_obj.id), '|',('active', '=', False), ('active', '=', True)], limit=1)
+                    other_charges_obj = self.env['tt.master.tour.other.charges'].search([('name', '=', rec2['name']), ('pax_type', '=', rec2['pax_type']), ('master_tour_id', '=', tour_obj.id), '|',('active', '=', False), ('active', '=', True)], limit=1)
                     if other_charges_obj:
                         other_charges_obj = other_charges_obj[0]
-                        other_charges_obj.sudo().write(other_charges_vals)
+                        other_charges_obj.write(other_charges_vals)
                     else:
-                        other_charges_obj = self.env['tt.master.tour.other.charges'].sudo().create(other_charges_vals)
+                        other_charges_obj = self.env['tt.master.tour.other.charges'].create(other_charges_vals)
 
                 for rec2 in rec['room_ids']:
                     room_vals = {
@@ -2073,21 +2142,21 @@ class MasterTour(models.Model):
                         'tour_pricelist_id': tour_obj.id,
                         'active': True,
                     }
-                    room_obj = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', rec2['room_code']), ('tour_pricelist_id', '=', tour_obj.id), '|',('active', '=', False), ('active', '=', True)], limit=1)
+                    room_obj = self.env['tt.master.tour.rooms'].search([('room_code', '=', rec2['room_code']), ('tour_pricelist_id', '=', tour_obj.id), '|',('active', '=', False), ('active', '=', True)], limit=1)
                     if room_obj:
                         room_obj = room_obj[0]
-                        room_obj.sudo().write(room_vals)
+                        room_obj.write(room_vals)
                     else:
-                        room_obj = self.env['tt.master.tour.rooms'].sudo().create(room_vals)
+                        room_obj = self.env['tt.master.tour.rooms'].create(room_vals)
 
                     for temp_pricing in room_obj.tour_pricing_ids:
-                        temp_pricing.sudo().write({
+                        temp_pricing.write({
                             'active': False
                         })
 
                     if rec2.get('tour_pricing_ids'):
                         for rec3 in rec2['tour_pricing_ids']:
-                            tour_pricing_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec3['currency_code'])], limit=1)
+                            tour_pricing_currency_obj = self.env['res.currency'].search([('name', '=', rec3['currency_code'])], limit=1)
                             tour_pricing_vals = {
                                 'currency_id': tour_pricing_currency_obj and tour_pricing_currency_obj[0].id or '',
                                 'min_pax': rec3['min_pax'],
@@ -2101,21 +2170,21 @@ class MasterTour(models.Model):
                                 'room_id': room_obj.id,
                                 'active': True
                             }
-                            tour_pricing_obj = self.env['tt.master.tour.pricing'].sudo().search([('min_pax', '=', int(rec3['min_pax'])), ('room_id', '=', room_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                            tour_pricing_obj = self.env['tt.master.tour.pricing'].search([('min_pax', '=', int(rec3['min_pax'])), ('room_id', '=', room_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                             if tour_pricing_obj:
                                 tour_pricing_obj = tour_pricing_obj[0]
-                                tour_pricing_obj.sudo().write(tour_pricing_vals)
+                                tour_pricing_obj.write(tour_pricing_vals)
                             else:
-                                tour_pricing_obj = self.env['tt.master.tour.pricing'].sudo().create(tour_pricing_vals)
+                                tour_pricing_obj = self.env['tt.master.tour.pricing'].create(tour_pricing_vals)
 
                 for rec2 in rec['flight_segment_ids']:
-                    carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec2['carrier_code']),('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)],limit=1)
+                    carrier_obj = self.env['tt.transport.carrier'].search([('code', '=', rec2['carrier_code']),('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)],limit=1)
                     carrier_obj = carrier_obj and carrier_obj[0] or False
-                    origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', rec2['origin_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)],limit=1)
+                    origin_obj = self.env['tt.destinations'].search([('code', '=', rec2['origin_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)],limit=1)
                     origin_obj = origin_obj and origin_obj[0] or False
-                    destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', rec2['destination_code']),('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)],limit=1)
+                    destination_obj = self.env['tt.destinations'].search([('code', '=', rec2['destination_code']),('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)],limit=1)
                     destination_obj = destination_obj and destination_obj[0] or False
-                    self.env['flight.segment'].sudo().create({
+                    self.env['flight.segment'].create({
                         'journey_type': rec2['journey_type'],
                         'class_of_service': rec2['class_of_service'],
                         'carrier_id': carrier_obj and carrier_obj.id or False,
@@ -2136,13 +2205,13 @@ class MasterTour(models.Model):
                         image_list.append(temp_img_list_id)
 
                 for rec2 in rec['itinerary_ids']:
-                    new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
+                    new_itin_obj = self.env['tt.reservation.tour.itinerary'].create({
                         'name': rec2['name'],
                         'day': rec2['day'],
                         'tour_pricelist_id': tour_obj.id,
                     })
                     for rec3 in rec2['item_ids']:
-                        self.env['tt.reservation.tour.itinerary.item'].sudo().create({
+                        self.env['tt.reservation.tour.itinerary.item'].create({
                             'name': rec3['name'],
                             'description': rec3['description'],
                             'timeslot': rec3['timeslot'],
@@ -2154,7 +2223,7 @@ class MasterTour(models.Model):
                 for rec2 in rec['other_info_ids']:
                     tour_obj.create_other_info_from_json(rec2)
 
-                tour_obj.sudo().write({
+                tour_obj.write({
                     'location_ids': [(6, 0, location_list)],
                     'image_ids': [(6, 0, image_list)]
                 })
@@ -2170,19 +2239,19 @@ class MasterTour(models.Model):
             return ERR.get_error()
 
     # def generate_all_room_codes(self):
-    #     room_list = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', False)])
+    #     room_list = self.env['tt.master.tour.rooms'].search([('room_code', '=', False)])
     #     for rec in room_list:
-    #         rec.sudo().write({
+    #         rec.write({
     #             'room_code': self.env['ir.sequence'].next_by_code('master.tour.room.code') or 'New'
     #         })
 
     # temporary function
     def convert_to_new_pricing(self):
-        all_tours = self.env['tt.master.tour'].sudo().search([])
+        all_tours = self.env['tt.master.tour'].search([])
         for rec in all_tours:
             for rec2 in rec.room_ids:
                 if not rec2.tour_pricing_ids:
-                    self.env['tt.master.tour.pricing'].sudo().create({
+                    self.env['tt.master.tour.pricing'].create({
                         'room_id': rec2.id,
                         'min_pax': 1,
                         'adult_fare': rec.adult_fare,
@@ -2198,15 +2267,17 @@ class TourSyncProductsChildren(models.TransientModel):
     _name = "tour.sync.product.children.wizard"
     _description = 'Tour Sync Product Children Wizard'
 
+    ho_id = fields.Many2one('tt.agent', 'From Head Office', domain=[('is_ho_agent', '=', True)],
+                            default=lambda self: self.env.user.ho_id)
+
     def sync_data_to_children(self):
         try:
             tour_data_list = []
-            tour_datas = self.env['tt.master.tour'].sudo().search([('state', 'in', ['confirm'])])
+            tour_datas = self.env['tt.master.tour'].search([('state', 'in', ['confirm']), ('owner_ho_id', '=', self.ho_id.id)])
             for rec in tour_datas:
                 dict_vals = {
                     'name': rec.name,
                     'tour_code': rec.tour_code,
-                    'tour_route': rec.tour_route,
                     'carrier_code': rec.carrier_id.code,
                     'sequence': rec.sequence,
                     'is_can_hold': rec.is_can_hold,
@@ -2214,7 +2285,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     'currency_code': rec.currency_id.name,
                     'description': rec.description,
                     'tour_category': rec.tour_category,
-                    'tour_type': rec.tour_type,
+                    'tour_type': rec.tour_type_id.to_dict(),
                     'duration': rec.duration,
                     'guiding_days': rec.guiding_days,
                     'driving_times': rec.driving_times,
@@ -2261,7 +2332,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     tour_line_dict.update({
                         'payment_rules_ids': payment_rules_list
                     })
-                    if rec.tour_type == 'open':
+                    if rec.tour_type_id.is_open_date:
                         special_date_list = []
                         for rec3 in rec2.special_dates_ids:
                             special_date_list.append({

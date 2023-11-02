@@ -34,16 +34,16 @@ class ImportRequestTourWizard(models.TransientModel):
             locations_list = []
             if upload_file.get('locations'):
                 for rec in upload_file['locations']:
-                    temp_city_id = rec.get('city_name') and self.env['res.city'].sudo().search([('name', '=', rec['city_name'])], limit=1) or False
-                    temp_country_id = rec.get('country_code') and self.env['res.country'].sudo().search([('code', '=', rec['country_code'])], limit=1) or False
+                    temp_city_id = rec.get('city_name') and self.env['res.city'].search([('name', '=', rec['city_name'])], limit=1) or False
+                    temp_country_id = rec.get('country_code') and self.env['res.country'].search([('code', '=', rec['country_code'])], limit=1) or False
                     city_id = temp_city_id and temp_city_id[0] or False
                     country_id = temp_country_id and temp_country_id[0] or False
                     if city_id and country_id:
-                        loc_objs = self.env['tt.tour.master.locations'].sudo().search([('city_id', '=', city_id.id), ('country_id', '=', country_id.id)], limit=1)
+                        loc_objs = self.env['tt.tour.master.locations'].search([('city_id', '=', city_id.id), ('country_id', '=', country_id.id)], limit=1)
                         if loc_objs:
                             locations_list.append(loc_objs[0].id)
                         else:
-                            new_loc_obj = self.env['tt.tour.master.locations'].sudo().create({
+                            new_loc_obj = self.env['tt.tour.master.locations'].create({
                                 'city_id': city_id.id,
                                 'country_id': country_id.id,
                             })
@@ -52,7 +52,7 @@ class ImportRequestTourWizard(models.TransientModel):
                         _logger.info('Cannot find city or country!')
 
             if upload_file.get('carrier_code'):
-                temp_carrier_id = self.env['tt.transport.carrier'].sudo().search([('code', '=', upload_file['carrier_code'])], limit=1)
+                temp_carrier_id = self.env['tt.transport.carrier'].search([('code', '=', upload_file['carrier_code'])], limit=1)
                 carrier_id = temp_carrier_id and temp_carrier_id[0].id or False
             else:
                 carrier_id = False
@@ -83,7 +83,7 @@ class ImportRequestTourWizard(models.TransientModel):
                 'notes': upload_file.get('notes') and upload_file['notes'] or False,
             })
 
-            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+            base_url = self.env['ir.config_parameter'].get_param('web.base.url')
             action_num = self.env.ref('tt_reservation_tour.tt_request_tour_view_action').id
             menu_num = self.env.ref('tt_reservation_tour.submenu_request_tour_package').id
             return {

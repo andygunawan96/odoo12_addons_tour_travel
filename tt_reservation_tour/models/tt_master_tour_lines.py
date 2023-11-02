@@ -32,6 +32,13 @@ class MasterTourLines(models.Model):
     down_payment = fields.Float('Down Payment (%)', default=100)
     payment_rules_ids = fields.One2many('tt.payment.rules', 'tour_lines_id')
     master_tour_id = fields.Many2one('tt.master.tour', 'Master Tour', readonly=True)
+    is_restrict_monday = fields.Boolean('Restrict Monday', readonly=True, states={'draft': [('readonly', False)]})
+    is_restrict_tuesday = fields.Boolean('Restrict Tuesday', readonly=True, states={'draft': [('readonly', False)]})
+    is_restrict_wednesday = fields.Boolean('Restrict Wednesday', readonly=True, states={'draft': [('readonly', False)]})
+    is_restrict_thursday = fields.Boolean('Restrict Thursday', readonly=True, states={'draft': [('readonly', False)]})
+    is_restrict_friday = fields.Boolean('Restrict Friday', readonly=True, states={'draft': [('readonly', False)]})
+    is_restrict_saturday = fields.Boolean('Restrict Saturday', readonly=True, states={'draft': [('readonly', False)]})
+    is_restrict_sunday = fields.Boolean('Restrict Sunday', readonly=True, states={'draft': [('readonly', False)]})
     active = fields.Boolean('Active', default=True)
 
     @api.multi
@@ -169,11 +176,28 @@ class MasterTourLines(models.Model):
             'payment_rules_list': payment_rules
         })
 
-        if self.master_tour_id.tour_type == 'open':
+        if self.master_tour_id.tour_type_id.is_open_date:
             special_dates = []
             for rec in self.special_dates_ids:
                 special_dates.append(rec.to_dict())
+
+            restricted_days = []
+            if self.is_restrict_monday:
+                restricted_days.append('1')
+            if self.is_restrict_tuesday:
+                restricted_days.append('2')
+            if self.is_restrict_wednesday:
+                restricted_days.append('3')
+            if self.is_restrict_thursday:
+                restricted_days.append('4')
+            if self.is_restrict_friday:
+                restricted_days.append('5')
+            if self.is_restrict_saturday:
+                restricted_days.append('6')
+            if self.is_restrict_sunday:
+                restricted_days.append('7')
             res_dict.update({
-                'special_date_list': special_dates
+                'special_date_list': special_dates,
+                'restricted_days_idx': restricted_days
             })
         return res_dict

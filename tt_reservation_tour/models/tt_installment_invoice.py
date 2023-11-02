@@ -40,12 +40,12 @@ class InstallmentInvoice(models.Model):
         return self.due_date.strftime('%d %B %Y')
 
     def action_open(self):
-        self.sudo().write({
+        self.write({
             'state_invoice': 'open'
         })
 
     def action_trouble(self):
-        self.sudo().write({
+        self.write({
             'state_invoice': 'trouble'
         })
         try:
@@ -71,7 +71,7 @@ class InstallmentInvoice(models.Model):
 
     def action_done(self):
         if self.agent_invoice_id.state == 'paid':
-            self.sudo().write({
+            self.write({
                 'state_invoice': 'done'
             })
         else:
@@ -79,13 +79,13 @@ class InstallmentInvoice(models.Model):
                 _('Invoice has not been paid.'))
 
     def action_set_to_done(self):
-        self.sudo().write({
+        self.write({
             'state_invoice': 'done'
         })
 
     def action_cancel(self):
         if self.agent_invoice_id.state == 'cancel':
-            self.sudo().write({
+            self.write({
                 'state_invoice': 'cancel'
             })
         else:
@@ -95,7 +95,7 @@ class InstallmentInvoice(models.Model):
     def action_pay_now(self):
         if self.state_invoice in ['open', 'trouble']:
             commission_ledger = False
-            not_paid_installments = self.env['tt.installment.invoice'].sudo().search([('state_invoice', 'in', ['open', 'trouble']), ('booking_id', '=', int(self.booking_id.id)), ('id', '!=', int(self.id))])
+            not_paid_installments = self.env['tt.installment.invoice'].search([('state_invoice', 'in', ['open', 'trouble']), ('booking_id', '=', int(self.booking_id.id)), ('id', '!=', int(self.id))])
             if not not_paid_installments:
                 commission_ledger = True
             else:
@@ -105,7 +105,7 @@ class InstallmentInvoice(models.Model):
                             _('Please pay the previous installment first!'))
             for rec in self.booking_id.provider_booking_ids:
                 rec.action_create_installment_ledger(self.booking_id.issued_uid.id, self.payment_rules_id.id, commission_ledger, self.booking_id.is_using_point_reward)
-            self.sudo().write({
+            self.write({
                 'state_invoice': 'done'
             })
         else:

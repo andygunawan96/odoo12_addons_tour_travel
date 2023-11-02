@@ -164,5 +164,5 @@
     </record>
 
     <menuitem id="submenu_tour_travel_activity_master" parent="tt_reservation_activity.menu_tour_travel_activity_master"
-              name="Activity" action="tt_reservation_activity.tt_master_activity_view_action"/>
+              name="Activity" action="tt_reservation_activity.tt_master_activity_view_action" sequence="10"/>
 </odoo>

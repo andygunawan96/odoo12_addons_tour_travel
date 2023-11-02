@@ -187,7 +187,7 @@ class TtProviderActivity(models.Model):
                 'booked_date': fields.Datetime.now(),
             })
             for rec2 in rec.cost_service_charge_ids:
-                rec2.sudo().write({
+                rec2.write({
                     'description': provider_data['code']
                 })
 

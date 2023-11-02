@@ -45,7 +45,22 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Tour Special Dates (For Open Tour Only)">
+                        <page string="Departure Days Restriction (For Open Dated Tour Only)">
+                            <group>
+                                <group>
+                                    <field name="is_restrict_monday"/>
+                                    <field name="is_restrict_tuesday"/>
+                                    <field name="is_restrict_wednesday"/>
+                                    <field name="is_restrict_thursday"/>
+                                </group>
+                                <group>
+                                    <field name="is_restrict_friday"/>
+                                    <field name="is_restrict_saturday"/>
+                                    <field name="is_restrict_sunday"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Special Departure Dates (For Open Dated Tour Only)">
                             <field name="special_dates_ids"/>
                         </page>
                         <page string="Installment Payment Rules">

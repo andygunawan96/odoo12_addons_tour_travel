@@ -171,7 +171,7 @@ class ReservationTour(models.Model):
 
             try:
                 if self.agent_type_id.is_send_email_issued:
-                    mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_tour')], limit=1)
+                    mail_created = self.env['tt.email.queue'].with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_tour')], limit=1)
                     if not mail_created:
                         temp_data = {
                             'provider_type': 'tour',
@@ -213,7 +213,7 @@ class ReservationTour(models.Model):
         self.tour_lines_id.cancel_book_line_quota(pax_amount)
         for rec in self.tour_id.passengers_ids:
             if rec.booking_id.id == self.id:
-                rec.sudo().write({
+                rec.write({
                     'master_tour_id': False,
                     'master_tour_line_id': False
                 })
@@ -253,7 +253,7 @@ class ReservationTour(models.Model):
                 rec.tour_lines_id.cancel_book_line_quota(pax_amount)
                 for rec2 in rec.tour_id.passengers_ids:
                     if rec2.booking_id.id == rec.id:
-                        rec2.sudo().write({
+                        rec2.write({
                             'master_tour_id': False,
                             'master_tour_line_id': False
                         })
@@ -267,7 +267,7 @@ class ReservationTour(models.Model):
         self.tour_lines_id.cancel_book_line_quota(pax_amount)
         for rec in self.tour_id.passengers_ids:
             if rec.booking_id.id == self.id:
-                rec.sudo().write({
+                rec.write({
                     'master_tour_id': False,
                     'master_tour_line_id': False
                 })
@@ -307,7 +307,7 @@ class ReservationTour(models.Model):
 
             try:
                 if self.agent_type_id.is_send_email_booked:
-                    mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_tour')], limit=1)
+                    mail_created = self.env['tt.email.queue'].with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_tour')], limit=1)
                     if not mail_created:
                         temp_data = {
                             'provider_type': 'tour',
@@ -423,16 +423,16 @@ class ReservationTour(models.Model):
             temp_tour_code = data.get('tour_code') and data['tour_code'] or ''
             temp_tour_line_code = data.get('tour_line_code') and data['tour_line_code'] or ''
             room_list = data.get('room_list') and data['room_list'] or []
-            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', temp_provider_code)], limit=1)
+            provider_obj = self.env['tt.provider'].search([('code', '=', temp_provider_code)], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_data = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + temp_tour_code),('provider_id', '=', provider_obj.id)], limit=1)
+            tour_data = self.env['tt.master.tour'].search([('tour_code', '=', provider_obj.alias + '~' + temp_tour_code),('provider_id', '=', provider_obj.id)], limit=1)
             pricing = data.get('pricing') and data['pricing'] or []
             if not tour_data:
                 raise RequestException(1004, additional_message='Tour not found. Please check your tour code.')
             tour_data = tour_data[0]
-            tour_line_data = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', temp_tour_line_code), ('master_tour_id', '=', tour_data.id)])
+            tour_line_data = self.env['tt.master.tour.lines'].search([('tour_line_code', '=', temp_tour_line_code), ('master_tour_id', '=', tour_data.id)])
             pricelist_id = tour_data.id
             provider_id = tour_data.provider_id
             carrier_id = tour_data.carrier_id
@@ -453,7 +453,7 @@ class ReservationTour(models.Model):
 
             for idx, temp_pax in enumerate(passengers):
                 tour_room_code = temp_pax.get('tour_room_code', '')
-                tour_room_obj = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', tour_room_code)], limit=1)
+                tour_room_obj = self.env['tt.master.tour.rooms'].search([('room_code', '=', tour_room_code)], limit=1)
                 list_passenger_value[idx][2].update({
                     'customer_id': pax_ids[idx].id,
                     'title': temp_pax['title'],
@@ -471,7 +471,7 @@ class ReservationTour(models.Model):
             except Exception:
                 agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
 
-            if tour_data.tour_type == 'open':
+            if tour_data.tour_type_id.is_open_date:
                 if not data.get('departure_date'):
                     raise RequestException(1004, additional_message='Departure Date parameter is required for Open Trip!')
                 temp_dept_date = data['departure_date']
@@ -520,12 +520,12 @@ class ReservationTour(models.Model):
 
             if booking_obj:
                 for room in room_list:
-                    room_obj = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', room['room_code'])], limit=1)
+                    room_obj = self.env['tt.master.tour.rooms'].search([('room_code', '=', room['room_code'])], limit=1)
                     room.update({
                         'booking_id': booking_obj.id,
                         'room_id': room_obj and room_obj[0].id or False
                     })
-                    self.env['tt.reservation.tour.room'].sudo().create(room)
+                    self.env['tt.reservation.tour.room'].create(room)
 
                 balance_due = 0
                 for temp_sc in pricing:
@@ -547,7 +547,7 @@ class ReservationTour(models.Model):
                     'sequence': 1
                 }
 
-                provider_tour_obj = self.env['tt.provider.tour'].sudo().create(provider_tour_vals)
+                provider_tour_obj = self.env['tt.provider.tour'].create(provider_tour_vals)
                 for psg in booking_obj.passenger_ids:
                     vals = {
                         'provider_id': provider_tour_obj.id,
@@ -555,7 +555,7 @@ class ReservationTour(models.Model):
                         'pax_type': psg.pax_type,
                         'tour_room_id': psg.tour_room_id.id
                     }
-                    self.env['tt.ticket.tour'].sudo().create(vals)
+                    self.env['tt.ticket.tour'].create(vals)
                 provider_tour_obj.delete_service_charge()
                 provider_tour_obj.create_service_charge(pricing)
 
@@ -594,16 +594,16 @@ class ReservationTour(models.Model):
     def issued_booking_api(self, data, context, **kwargs):
         try:
             if data.get('book_id'):
-                book_obj = self.env['tt.reservation.tour'].sudo().browse(int(data['book_id']))
+                book_obj = self.env['tt.reservation.tour'].browse(int(data['book_id']))
             else:
-                book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])], limit=1)
+                book_objs = self.env['tt.reservation.tour'].search([('name', '=', data['order_number'])], limit=1)
                 book_obj = book_objs[0]
 
             payment_method = data.get('payment_method') and data['payment_method'] or 'full'
             vals = {
                 'payment_method_tour': payment_method
             }
-            book_obj.sudo().write(vals)
+            book_obj.write(vals)
 
             provider_booking_list = []
             for prov in book_obj.provider_booking_ids:
@@ -635,7 +635,7 @@ class ReservationTour(models.Model):
     def get_booking_for_vendor_by_api(self, data, context, **kwargs):
         try:
             search_booking_num = data['order_number']
-            book_obj = self.env['tt.reservation.tour'].sudo().search([('name', '=', search_booking_num)], limit=1)
+            book_obj = self.env['tt.reservation.tour'].search([('name', '=', search_booking_num)], limit=1)
             if book_obj:
                 book_obj = book_obj[0]
             master = self.env['tt.master.tour'].browse(book_obj.tour_id.id)
@@ -671,7 +671,7 @@ class ReservationTour(models.Model):
 
         # if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
         # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
-        _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
+        _co_user = self.env['res.users'].browse(int(context['co_uid']))
         if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
             image_urls = []
             for img in book_obj.tour_id.image_ids:
@@ -683,8 +683,8 @@ class ReservationTour(models.Model):
                 'departure_date': book_obj.tour_lines_id.departure_date,
                 'arrival_date': book_obj.tour_lines_id.arrival_date,
                 'tour_category': book_obj.tour_id.tour_category,
-                'tour_type': book_obj.tour_id.tour_type,
-                'tour_type_str': dict(book_obj.tour_id._fields['tour_type'].selection).get(book_obj.tour_id.tour_type),
+                'tour_type': book_obj.tour_id.tour_type_id.to_dict(),
+                'tour_type_str': book_obj.tour_id.tour_type_id.name,
                 'image_urls': image_urls,
                 'flight_segments': book_obj.tour_id.get_flight_segment(),
                 'itinerary_ids': book_obj.tour_id.get_itineraries(),
@@ -692,7 +692,7 @@ class ReservationTour(models.Model):
             }
 
             passengers = []
-            for rec in book_obj.sudo().passenger_ids:
+            for rec in book_obj.passenger_ids:
                 passengers.append(rec.to_dict())
             contact = self.env['tt.customer'].browse(book_obj.contact_id.id)
 
@@ -749,7 +749,7 @@ class ReservationTour(models.Model):
                     'state': data['state']
                 }
 
-                book_obj.sudo().write(book_update_vals)
+                book_obj.write(book_update_vals)
                 self.env.cr.commit()
 
             provider_booking_list = []
@@ -772,9 +772,9 @@ class ReservationTour(models.Model):
     def update_booking_api(self, data, context, **kwargs):
         try:
             if data.get('book_id'):
-                book_obj = self.env['tt.reservation.tour'].sudo().browse(int(data['book_id']))
+                book_obj = self.env['tt.reservation.tour'].browse(int(data['book_id']))
             else:
-                book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])], limit=1)
+                book_objs = self.env['tt.reservation.tour'].search([('name', '=', data['order_number'])], limit=1)
                 book_obj = book_objs[0]
 
             book_info = data.get('book_info') and data['book_info'] or {}
@@ -791,7 +791,7 @@ class ReservationTour(models.Model):
                     pnr_list.append(book_info.get('pnr') or '')
 
                 book_obj.check_provider_state(context, pnr_list)
-                book_obj.sudo().write(write_vals)
+                book_obj.write(write_vals)
             elif book_info['status'] == 'issued':
                 for rec in book_obj.provider_booking_ids:
                     rec.action_issued_api_tour(context)
@@ -996,7 +996,7 @@ class ReservationTour(models.Model):
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
         desc_txt += 'Tour: ' + self.tour_id.name + '<br/>'
-        desc_txt += 'Category: ' + dict(self.tour_id._fields['tour_category'].selection).get(self.tour_id.tour_category) + ' - ' + dict(self.tour_id._fields['tour_type'].selection).get(self.tour_id.tour_type) + '<br/>'
+        desc_txt += 'Category: ' + dict(self.tour_id._fields['tour_category'].selection).get(self.tour_id.tour_category) + ' - ' + self.tour_id.tour_type_id.name + '<br/>'
         desc_txt += 'Departure Date: ' + datetime.strptime(self.departure_date, '%Y-%m-%d').strftime('%d %b %Y') + '<br/>'
         desc_txt += 'Arrival Date: ' + datetime.strptime(self.arrival_date, '%Y-%m-%d').strftime('%d %b %Y') + '<br/>'
         return desc_txt

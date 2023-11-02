@@ -77,7 +77,8 @@ class TtCustomerParentInhAcc(models.Model):
                 'ho_id': ho_obj.id
             }
             ext_credit_limit = self.env['tt.accounting.connector.%s' % acc_vendor].check_credit_limit(vals)
-            ext_credit_limit = int(ext_credit_limit)
+            ext_credit_limit = float(ext_credit_limit)
+            _logger.info('Current external credit limit for customer parent %s is %s' % (self.name, str(ext_credit_limit)))
         else:
             ext_credit_limit = 0
             _logger.info('Accounting Setup not found, failed to check external credit limit for customer parent: %s.' % self.name)

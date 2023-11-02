@@ -67,5 +67,5 @@
     </record>
 
     <menuitem id="submenu_tour_travel_activity_category" parent="tt_reservation_activity.menu_tour_travel_activity_master"
-              name="Category" action="tt_reservation_activity.tt_activity_category_view_action"/>
+              name="Category" action="tt_reservation_activity.tt_activity_category_view_action" sequence="20"/>
 </odoo>

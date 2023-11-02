@@ -3181,13 +3181,17 @@ class ReservationAirline(models.Model):
 
                 if not new_booking_obj:
                     new_booking_obj = book_obj.copy()
-                    new_booking_obj.write({
+                    new_book_write_vals = {
                         'split_from_resv_id': book_obj.id,
                         'split_uid': context['co_uid'],
                         'split_date': fields.Datetime.now(),
                         'state': book_obj.state,
                         'sale_service_charge_ids': [(5,)]
-                    })
+                    }
+                    update_new_vals = book_obj.get_posted_acc_actions()
+                    if update_new_vals:
+                        new_book_write_vals.update(update_new_vals)
+                    new_booking_obj.write(new_book_write_vals)
 
                 new_prov_obj = prov_obj.copy()
                 for journey_obj in prov_obj.journey_ids:

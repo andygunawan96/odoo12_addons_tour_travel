@@ -17,10 +17,10 @@ class PaymentRules(models.Model):
     def create(self, vals):
         if vals.get('payment_percentage') and vals.get('pricelist_id'):
             total_percent = 0
-            other_payment_rules = self.env['tt.payment.rules'].sudo().search([('tour_lines_id', '=', vals['tour_lines_id'])])
+            other_payment_rules = self.env['tt.payment.rules'].search([('tour_lines_id', '=', vals['tour_lines_id'])])
             for rec in other_payment_rules:
                 total_percent += rec.payment_percentage
-            tour_obj = self.env['tt.master.tour.lines'].sudo().browse(int(vals['tour_lines_id']))
+            tour_obj = self.env['tt.master.tour.lines'].browse(int(vals['tour_lines_id']))
             total_percent += tour_obj.down_payment
             if total_percent + vals['payment_percentage'] > 100.00:
                 raise UserError(_('Total Installments and Down Payment cannot be more than 100%. Please re-adjust your Installment Payment Rules!'))
@@ -30,7 +30,7 @@ class PaymentRules(models.Model):
     def write(self, vals):
         if vals.get('payment_percentage'):
             total_percent = 0
-            other_payment_rules = self.env['tt.payment.rules'].sudo().search([('tour_lines_id', '=', self.tour_lines_id.id), ('id', '!=', self.id)])
+            other_payment_rules = self.env['tt.payment.rules'].search([('tour_lines_id', '=', self.tour_lines_id.id), ('id', '!=', self.id)])
             for rec in other_payment_rules:
                 total_percent += rec.payment_percentage
             total_percent += self.pricelist_id.down_payment

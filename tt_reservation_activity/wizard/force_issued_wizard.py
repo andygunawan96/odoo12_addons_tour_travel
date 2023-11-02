@@ -39,7 +39,7 @@ class ForceIssuedWizard(models.TransientModel):
     @api.onchange('provider_id')
     def _compute_booker_agent_id(self):
         for rec in self:
-            provider_obj = self.env['tt.provider.activity'].sudo().search([('id', '=', rec.provider_id.id)])
+            provider_obj = self.env['tt.provider.activity'].search([('id', '=', rec.provider_id.id)])
             rec.agent_id = provider_obj.booking_id.agent_id.id
             rec.ho_id = provider_obj.booking_id.ho_id.id
             rec.booker_id = provider_obj.booking_id.booker_id.id

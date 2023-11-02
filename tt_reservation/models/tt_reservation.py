@@ -1828,3 +1828,6 @@ class TtReservation(models.Model):
     def get_company_name(self):
         company_obj = self.env['res.company'].search([],limit=1)
         return company_obj.name
+
+    def get_posted_acc_actions(self):
+        return {}

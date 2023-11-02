@@ -62,11 +62,11 @@ class ActivitySyncProducts(models.TransientModel):
             self.env['tt.master.activity'].action_sync_products(self.provider_id.code, self.start_num, self.end_num)
 
     def deactivate_product(self):
-        products = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
+        products = self.env['tt.master.activity'].search([('provider_id', '=', self.provider_id.id)])
         prod_count = 0
         for rec in products:
             if rec.active:
-                rec.sudo().write({
+                rec.write({
                     'active': False
                 })
                 prod_count += 1
@@ -162,12 +162,12 @@ class MasterActivity(models.Model):
         from_currency = req['from_currency']
         base_amount = req['base_amount']
         to_currency = req.get('to_currency') and req['to_currency'] or 'IDR'
-        from_currency_id = self.env['res.currency'].sudo().search([('name', '=', from_currency), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+        from_currency_id = self.env['res.currency'].search([('name', '=', from_currency), '|', ('active', '=', False), ('active', '=', True)], limit=1)
         from_currency_id = from_currency_id and from_currency_id[0] or False
         try:
-            provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
+            provider_id = self.env['tt.provider'].search([('code', '=', provider)], limit=1)
             provider_id = provider_id[0]
-            multiplier = self.env['tt.provider.rate'].sudo().search([('provider_ho_data_id.provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
+            multiplier = self.env['tt.provider.rate'].search([('provider_ho_data_id.provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
             computed_amount = base_amount * multiplier[0].sell_rate
         except Exception as e:
             computed_amount = self.env['res.currency']._compute(from_currency_id, self.env.user.company_id.currency_id, base_amount)
@@ -510,24 +510,24 @@ class MasterActivity(models.Model):
                                 obj_id = obj_id[0]
                                 line_obj = self.env['tt.activity.category.lines'].search([('category_id', '=', obj_id.id), ('provider_id', '=', vendor_id)], limit=1)
                                 if not line_obj:
-                                    self.env['tt.activity.category.lines'].sudo().create({
+                                    self.env['tt.activity.category.lines'].create({
                                         'uuid': rec['uuid'],
                                         'provider_id': vendor_id,
                                         'category_id': obj_id.id,
                                     })
                                 else:
-                                    line_obj[0].sudo().write({
+                                    line_obj[0].write({
                                         'uuid': rec['uuid']
                                     })
                                 obj_id.parent_id = False
                             else:
-                                obj_id = self.env['tt.activity.category'].sudo().create({
+                                obj_id = self.env['tt.activity.category'].create({
                                     'name': rec['name'],
                                     'type': type_lib[index],
                                     'parent_id': False,
                                 })
                                 self.env.cr.commit()
-                                self.env['tt.activity.category.lines'].sudo().create({
+                                self.env['tt.activity.category.lines'].create({
                                     'uuid': rec['uuid'],
                                     'provider_id': vendor_id,
                                     'category_id': obj_id.id,
@@ -540,24 +540,24 @@ class MasterActivity(models.Model):
                                         child_id = child_id[0]
                                         child_lines = self.env['tt.activity.category.lines'].search([('category_id', '=', child_id.id), ('provider_id', '=', vendor_id)], limit=1)
                                         if not child_lines:
-                                            self.env['tt.activity.category.lines'].sudo().create({
+                                            self.env['tt.activity.category.lines'].create({
                                                 'uuid': child['uuid'],
                                                 'provider_id': vendor_id,
                                                 'category_id': child_id.id,
                                             })
                                         else:
-                                            child_lines[0].sudo().write({
+                                            child_lines[0].write({
                                                 'uuid': child['uuid']
                                             })
                                         child_id.parent_id = obj_id.id
                                     else:
-                                        child_id = self.env['tt.activity.category'].sudo().create({
+                                        child_id = self.env['tt.activity.category'].create({
                                             'name': child['name'],
                                             'type': type_lib[index],
                                             'parent_id': obj_id.id,
                                         })
                                         self.env.cr.commit()
-                                        self.env['tt.activity.category.lines'].sudo().create({
+                                        self.env['tt.activity.category.lines'].create({
                                             'uuid': child['uuid'],
                                             'provider_id': vendor_id,
                                             'category_id': child_id.id,
@@ -576,7 +576,7 @@ class MasterActivity(models.Model):
         if file:
             product_data_list = []
             for rec in file['product_detail']:
-                provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
+                provider_id = self.env['tt.provider'].search([('code', '=', provider)], limit=1)
                 provider_id = provider_id and provider_id[0] or False
                 product_obj = self.env['tt.master.activity'].search([('uuid', '=', rec['product']['uuid']), ('provider_id', '=', provider_id.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 product_obj = product_obj and product_obj[0] or False
@@ -584,13 +584,13 @@ class MasterActivity(models.Model):
                 for category in rec['product']['categories']:
                     category_obj = self.env['tt.activity.category'].search([('name', '=', category['name']), ('type', '=', 'category')], limit=1)
                     if not category_obj:
-                        category_obj = self.env['tt.activity.category'].sudo().create({
+                        category_obj = self.env['tt.activity.category'].create({
                             'name': category['name'],
                             'type': 'category',
                             'parent_id': False,
                         })
                         self.env.cr.commit()
-                        self.env['tt.activity.category.lines'].sudo().create({
+                        self.env['tt.activity.category.lines'].create({
                             'uuid': category['uuid'],
                             'provider_id': provider_id.id,
                             'category_id': category_obj.id,
@@ -600,20 +600,20 @@ class MasterActivity(models.Model):
 
                 temp2 = []
                 if rec['product'].get('country_id'):
-                    rec_provider_codes = self.env['tt.provider.code'].sudo().search([('code', '=', rec['product']['country_id']), ('provider_id', '=', int(provider_id.id))])
+                    rec_provider_codes = self.env['tt.provider.code'].search([('code', '=', rec['product']['country_id']), ('provider_id', '=', int(provider_id.id))])
                     for prov_data in rec_provider_codes:
-                        city_id = self.env['res.city'].sudo().search([('name', '=', rec['product']['cities'][0])], limit=1)
+                        city_id = self.env['res.city'].search([('name', '=', rec['product']['cities'][0])], limit=1)
                         search_params = []
                         if prov_data.country_id:
                             search_params.append(('country_id', '=', prov_data.country_id.id))
                         if city_id:
                             search_params.append(('city_id', '=', city_id[0].id))
                         if search_params:
-                            temp_loc = self.env['tt.activity.master.locations'].sudo().search(search_params, limit=1)
+                            temp_loc = self.env['tt.activity.master.locations'].search(search_params, limit=1)
                             if temp_loc:
                                 new_loc = temp_loc[0]
                             else:
-                                new_loc = self.env['tt.activity.master.locations'].sudo().create({
+                                new_loc = self.env['tt.activity.master.locations'].create({
                                     'country_id': prov_data.country_id and prov_data.country_id.id or False,
                                     'city_id': city_id and city_id[0].id or False,
                                     'state_id': False
@@ -622,19 +622,19 @@ class MasterActivity(models.Model):
                             temp2.append(new_loc.id)
                 else:
                     for idx, countries in enumerate(rec['product']['countries']):
-                        country_id = self.env['res.country'].sudo().search([('name', '=', countries)], limit=1)
-                        city_id = self.env['res.city'].sudo().search([('name', '=', rec['product']['cities'][idx])], limit=1)
+                        country_id = self.env['res.country'].search([('name', '=', countries)], limit=1)
+                        city_id = self.env['res.city'].search([('name', '=', rec['product']['cities'][idx])], limit=1)
                         search_params = []
                         if country_id:
                             search_params.append(('country_id', '=', country_id[0].id))
                         if city_id:
                             search_params.append(('city_id', '=', city_id[0].id))
                         if search_params:
-                            temp_loc = self.env['tt.activity.master.locations'].sudo().search(search_params, limit=1)
+                            temp_loc = self.env['tt.activity.master.locations'].search(search_params, limit=1)
                             if temp_loc:
                                 new_loc = temp_loc[0]
                             else:
-                                new_loc = self.env['tt.activity.master.locations'].sudo().create({
+                                new_loc = self.env['tt.activity.master.locations'].create({
                                     'country_id': country_id and country_id[0].id or False,
                                     'city_id': city_id and city_id[0].id or False,
                                     'state_id': False,
@@ -700,29 +700,29 @@ class MasterActivity(models.Model):
                         vals.update({
                             'currency_id': cur_obj and cur_obj[0].id or False
                         })
-                    product_obj = self.env['tt.master.activity'].sudo().create(vals)
+                    product_obj = self.env['tt.master.activity'].create(vals)
                 self.env.cr.commit()
 
                 images = self.env['tt.activity.master.images'].search([('activity_id', '=', product_obj.id)])
-                images.sudo().unlink()
+                images.unlink()
                 for img in rec['product']['photos']:
                     data_values = {
                         'activity_id': product_obj.id,
                         'photos_url': rec['product']['photosUrl'],
                         'photos_path': img,
                     }
-                    self.env['tt.activity.master.images'].sudo().create(data_values)
+                    self.env['tt.activity.master.images'].create(data_values)
                     self.env.cr.commit()
 
                 videos = self.env['tt.activity.master.videos'].search([('activity_id', '=', product_obj.id)])
-                videos.sudo().unlink()
+                videos.unlink()
                 if rec['product'].get('videos'):
                     for vid in rec['product']['videos']:
                         data_values = {
                             'activity_id': product_obj.id,
                             'video_url': vid,
                         }
-                        self.env['tt.activity.master.videos'].sudo().create(data_values)
+                        self.env['tt.activity.master.videos'].create(data_values)
                         self.env.cr.commit()
 
                 product_data_list.append({
@@ -740,9 +740,9 @@ class MasterActivity(models.Model):
         if res['error_code'] == 0:
             for prod_rec in res['response']:
                 product_id = prod_rec['product_id']
-                activity_old_obj = self.env['tt.master.activity.lines'].sudo().search([('activity_id', '=', product_id)])
+                activity_old_obj = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id)])
                 for temp_old in activity_old_obj:
-                    temp_old.sudo().write({
+                    temp_old.write({
                         'active': False
                     })
                 for rec in prod_rec['activity_lines']:
@@ -750,7 +750,7 @@ class MasterActivity(models.Model):
                         'activity_id': product_id,
                         'active': True
                     })
-                    activity_type_exist = self.env['tt.master.activity.lines'].sudo().search([('activity_id', '=', product_id), ('uuid', '=', rec['uuid']), '|',('active', '=', False), ('active', '=', True)], limit=1)
+                    activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', rec['uuid']), '|',('active', '=', False), ('active', '=', True)], limit=1)
                     vals = rec
                     util.pop_empty_key(vals, whitelist=['isNonRefundable', 'instantConfirmation', 'voucherRequiresPrinting'])
 
@@ -762,78 +762,78 @@ class MasterActivity(models.Model):
 
                     if activity_type_exist:
                         activity_obj = activity_type_exist[0]
-                        activity_obj.sudo().write(vals)
+                        activity_obj.write(vals)
                     else:
-                        activity_obj = self.env['tt.master.activity.lines'].sudo().create(vals)
+                        activity_obj = self.env['tt.master.activity.lines'].create(vals)
                     self.env.cr.commit()
 
                     for temp_sku in sku_list:
-                        old_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', temp_sku['sku_id']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                        old_sku = self.env['tt.master.activity.sku'].search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', temp_sku['sku_id']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                         temp_sku.update({
                             'active': True,
                             'activity_line_id': activity_obj.id,
                         })
                         if old_sku:
-                            old_sku[0].sudo().write(temp_sku)
+                            old_sku[0].write(temp_sku)
                         else:
-                            self.env['tt.master.activity.sku'].sudo().create(temp_sku)
+                            self.env['tt.master.activity.sku'].create(temp_sku)
                         self.env.cr.commit()
 
-                    old_timeslot = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', activity_obj.id)])
+                    old_timeslot = self.env['tt.activity.master.timeslot'].search([('product_type_id', '=', activity_obj.id)])
                     for old_time in old_timeslot:
-                        old_time.sudo().write({
+                        old_time.write({
                             'active': False
                         })
                     for temp_time in timeslot_list:
-                        old_timeslot = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', activity_obj.id), ('uuid', '=', temp_time['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                        old_timeslot = self.env['tt.activity.master.timeslot'].search([('product_type_id', '=', activity_obj.id), ('uuid', '=', temp_time['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                         temp_time.update({
                             'product_type_id': activity_obj.id,
                             'active': True,
                         })
                         if old_timeslot:
-                            old_timeslot[0].sudo().write(temp_time)
+                            old_timeslot[0].write(temp_time)
                         else:
-                            self.env['tt.activity.master.timeslot'].sudo().create(temp_time)
+                            self.env['tt.activity.master.timeslot'].create(temp_time)
                         self.env.cr.commit()
 
                     option_ids = []
                     for temp_opt in option_list['perBooking']:
                         temp_opt_items = temp_opt.get('items') and temp_opt.pop('items') or []
                         temp_cur_code_opt = temp_opt.get('currency_code') and temp_opt.pop('currency_code') or False
-                        cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code_opt), '|', ('active', '=', False), ('active', '=', True)],limit=1) or False
+                        cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].search([('name', '=', temp_cur_code_opt), '|', ('active', '=', False), ('active', '=', True)],limit=1) or False
                         temp_opt.update({
                             'currency_id': cur_obj_opt and cur_obj_opt[0].id or False,
                         })
-                        opt_obj = self.env['tt.activity.booking.option'].sudo().create(temp_opt)
+                        opt_obj = self.env['tt.activity.booking.option'].create(temp_opt)
                         self.env.cr.commit()
                         for temp_item in temp_opt_items:
                             temp_cur_code = temp_item.get('currency_code') and temp_item.pop('currency_code') or False
-                            cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code), '|', ('active', '=', False), ('active', '=', True)], limit=1) or False
+                            cur_obj = temp_cur_code and self.env['res.currency'].search([('name', '=', temp_cur_code), '|', ('active', '=', False), ('active', '=', True)], limit=1) or False
                             temp_item.update({
                                 'currency_id': cur_obj and cur_obj[0].id or False,
                                 'booking_option_id': opt_obj.id,
                             })
-                            self.env['tt.activity.booking.option.line'].sudo().create(temp_item)
+                            self.env['tt.activity.booking.option.line'].create(temp_item)
                             self.env.cr.commit()
                         option_ids.append(opt_obj.id)
 
                     for temp_opt in option_list['perPax']:
                         temp_opt_items = temp_opt.get('items') and temp_opt.pop('items') or []
                         temp_cur_code_opt = temp_opt.get('currency_code') and temp_opt.pop('currency_code') or False
-                        cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code_opt), '|', ('active', '=', False), ('active', '=', True)], limit=1) or False
+                        cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].search([('name', '=', temp_cur_code_opt), '|', ('active', '=', False), ('active', '=', True)], limit=1) or False
                         temp_opt.update({
                             'currency_id': cur_obj_opt and cur_obj_opt[0].id or False,
                         })
-                        opt_obj = self.env['tt.activity.booking.option'].sudo().create(temp_opt)
+                        opt_obj = self.env['tt.activity.booking.option'].create(temp_opt)
                         self.env.cr.commit()
                         for temp_item in temp_opt_items:
                             temp_cur_code = temp_item.get('currency_code') and temp_item.pop('currency_code') or False
-                            cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code), '|', ('active', '=', False), ('active', '=', True)], limit=1) or False
+                            cur_obj = temp_cur_code and self.env['res.currency'].search([('name', '=', temp_cur_code), '|', ('active', '=', False), ('active', '=', True)], limit=1) or False
                             temp_item.update({
                                 'currency_id': cur_obj and cur_obj[0].id or False,
                                 'booking_option_id': opt_obj.id,
                             })
-                            self.env['tt.activity.booking.option.line'].sudo().create(temp_item)
+                            self.env['tt.activity.booking.option.line'].create(temp_item)
                             self.env.cr.commit()
                         option_ids.append(opt_obj.id)
 
@@ -845,7 +845,7 @@ class MasterActivity(models.Model):
 
     def get_config_by_api(self):
         try:
-            result_objs = self.env['tt.activity.category'].sudo().search([])
+            result_objs = self.env['tt.activity.category'].search([])
             categories = result_objs.filtered(lambda x: x.type == 'category' and not x.parent_id)
             categories_list = []
             for rec in categories:
@@ -931,7 +931,7 @@ class MasterActivity(models.Model):
             city = req.get('city') and req['city'] or ''
             type_id = 0
             if req.get('type'):
-                temp_type_id = req['type'] != '0' and self.env['tt.activity.category'].sudo().search([('id', '=', req['type']), ('type', '=', 'type')]) or ''
+                temp_type_id = req['type'] != '0' and self.env['tt.activity.category'].search([('id', '=', req['type']), ('type', '=', 'type')]) or ''
                 type_id = temp_type_id and temp_type_id[0].id or 0
 
             get_cat_instead = 0
@@ -951,7 +951,7 @@ class MasterActivity(models.Model):
                     category = ''
 
             provider = req.get('provider', 'all')
-            provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
+            provider_id = self.env['tt.provider'].search([('code', '=', provider)], limit=1)
             provider_id = provider_id and provider_id[0] or False
 
             sql_query = 'select themes.* from tt_master_activity themes left join tt_activity_location_rel locrel on locrel.product_id = themes.id left join tt_activity_master_locations loc on loc.id = locrel.location_id '
@@ -1179,7 +1179,7 @@ class MasterActivity(models.Model):
                                 sale_price = str(int(converted_price / 1000)) + str(idx + 1) + '00'
                             break
 
-                    temp_alt_cur = result.get('currency_id') and self.env['res.currency'].sudo().browse(int(result['currency_id'])) or False
+                    temp_alt_cur = result.get('currency_id') and self.env['res.currency'].browse(int(result['currency_id'])) or False
                     alt_currency_code = temp_alt_cur and temp_alt_cur.name or False
 
                     result.pop('basePrice')
@@ -1202,7 +1202,7 @@ class MasterActivity(models.Model):
 
     def get_details_by_api(self, req, context):
         try:
-            provider_obj = self.env['tt.provider'].sudo().search([('alias', '=', req['provider'])], limit=1)
+            provider_obj = self.env['tt.provider'].search([('alias', '=', req['provider'])], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
@@ -1523,11 +1523,11 @@ class MasterActivity(models.Model):
             ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
         if not ho_obj:
             raise RequestException(1022, additional_message='Invalid context, cannot sync activity data.')
-        provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
+        provider_id = self.env['tt.provider'].search([('code', '=', req['provider'])], limit=1)
         if not provider_id:
             raise RequestException(1002)
         provider_id = provider_id[0]
-        activity_id = self.env['tt.master.activity'].sudo().search(
+        activity_id = self.env['tt.master.activity'].search(
             [('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id), ('owner_ho_id', '=', ho_obj.id)],
             limit=1)
         activity_id = activity_id[0]
@@ -1553,12 +1553,12 @@ class MasterActivity(models.Model):
             ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
         if not ho_obj:
             raise RequestException(1022, additional_message='Invalid context, cannot sync activity data.')
-        provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
+        provider_id = self.env['tt.provider'].search([('code', '=', req['provider'])], limit=1)
         if not provider_id:
             raise RequestException(1002)
         provider_id = provider_id[0]
         if req.get('productUuid'):
-            activity_id = self.env['tt.master.activity'].sudo().search(
+            activity_id = self.env['tt.master.activity'].search(
                 [('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id), ('owner_ho_id', '=', ho_obj.id)], limit=1)
             product_id = activity_id and activity_id[0].id or False
         else:
@@ -1584,7 +1584,7 @@ class MasterActivity(models.Model):
             vals.pop('voucher_validity_date')
         if activity_type_exist:
             activity_obj = activity_type_exist[0]
-            activity_obj.sudo().write(vals)
+            activity_obj.write(vals)
         else:
             activity_obj = self.env['tt.master.activity.lines'].sudo().create(vals)
         self.env.cr.commit()

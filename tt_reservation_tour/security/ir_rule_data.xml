@@ -47,4 +47,11 @@
         <field name="domain_force">['|','|',('owner_ho_id','=',user.ho_id.id),('ho_ids','=',user.ho_id.id),('ho_ids','=',False)]</field>
         <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
     </record>
+
+    <record id="tt_master_tour_type_for_ho_user" model="ir.rule">
+        <field name="name">Master Tour Type For HO User</field>
+        <field name="model_id" ref="model_tt_master_tour_type"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
 </odoo>
