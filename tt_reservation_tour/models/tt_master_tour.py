@@ -1290,14 +1290,15 @@ class MasterTour(models.Model):
                 'tour_slug': data.get('tour_slug') and data['tour_slug'] or '',
                 'provider': data.get('provider') and data['provider'] or ''
             }
+            search_params = [('state', '=', 'confirm')]
             if search_request.get('tour_code'):
                 provider_obj = self.env['tt.provider'].search([('alias', '=', search_request['provider'])], limit=1)
                 if not provider_obj:
                     raise RequestException(1002)
                 provider_obj = provider_obj[0]
-                search_params = [('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)]
+                search_params += [('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)]
             else:
-                search_params = [('tour_slug', '=', search_request['tour_slug'])]
+                search_params += [('tour_slug', '=', search_request['tour_slug'])]
             if context and context.get('co_ho_id'):
                 search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
             else:
