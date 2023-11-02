@@ -152,6 +152,40 @@ class MasterTourLines(models.Model):
             })
         self.write(write_vals)
 
+    def get_restricted_days(self, mode=''):
+        restricted_days = []
+        if mode == 'index':
+            if self.is_restrict_monday:
+                restricted_days.append('1')
+            if self.is_restrict_tuesday:
+                restricted_days.append('2')
+            if self.is_restrict_wednesday:
+                restricted_days.append('3')
+            if self.is_restrict_thursday:
+                restricted_days.append('4')
+            if self.is_restrict_friday:
+                restricted_days.append('5')
+            if self.is_restrict_saturday:
+                restricted_days.append('6')
+            if self.is_restrict_sunday:
+                restricted_days.append('7')
+        else:
+            if self.is_restrict_monday:
+                restricted_days.append('Monday')
+            if self.is_restrict_tuesday:
+                restricted_days.append('Tuesday')
+            if self.is_restrict_wednesday:
+                restricted_days.append('Wednesday')
+            if self.is_restrict_thursday:
+                restricted_days.append('Thursday')
+            if self.is_restrict_friday:
+                restricted_days.append('Friday')
+            if self.is_restrict_saturday:
+                restricted_days.append('Saturday')
+            if self.is_restrict_sunday:
+                restricted_days.append('Sunday')
+        return restricted_days
+
     def to_dict(self):
         res_dict = {
             'tour_line_code': self.tour_line_code,
@@ -181,23 +215,8 @@ class MasterTourLines(models.Model):
             for rec in self.special_dates_ids:
                 special_dates.append(rec.to_dict())
 
-            restricted_days = []
-            if self.is_restrict_monday:
-                restricted_days.append('1')
-            if self.is_restrict_tuesday:
-                restricted_days.append('2')
-            if self.is_restrict_wednesday:
-                restricted_days.append('3')
-            if self.is_restrict_thursday:
-                restricted_days.append('4')
-            if self.is_restrict_friday:
-                restricted_days.append('5')
-            if self.is_restrict_saturday:
-                restricted_days.append('6')
-            if self.is_restrict_sunday:
-                restricted_days.append('7')
             res_dict.update({
                 'special_date_list': special_dates,
-                'restricted_days_idx': restricted_days
+                'restricted_days_idx': self.get_restricted_days('index')
             })
         return res_dict
