@@ -138,7 +138,8 @@ class ApiManagement(models.Model):
                 #generate OTP info for frontend
                 values.update({
                     "co_is_using_otp": _co_user.is_using_otp,
-                    'co_otp_list_machine': []
+                    'co_otp_list_machine': [],
+                    'co_is_using_pin': _co_user.is_using_pin
                 })
                 if _co_user.is_using_otp:
                     otp_objs = self.env['tt.otp'].search([

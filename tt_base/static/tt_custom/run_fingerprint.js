@@ -2,7 +2,7 @@ odoo.define('tt.fingerprint', function (require) {
 'use strict';
 
     var base = require('web_editor.base');
-    var platform = '';
+    var platform = 'default';
     var machine_code = crypto.randomUUID();
     var browser = '';
     var timezone = '';
@@ -30,6 +30,8 @@ odoo.define('tt.fingerprint', function (require) {
                     localStorage.browser = browser;
                     localStorage.timezone = timezone;
                 });
+                localStorage.platform = platform;
+                localStorage.machine_code = machine_code;
             }else{
                 platform = localStorage.platform;
                 machine_code = localStorage.machine_code;
