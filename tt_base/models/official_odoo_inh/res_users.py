@@ -6,6 +6,7 @@ import logging
 from ....tools.ERR import RequestException
 from ....tools import ERR
 from odoo.http import request
+import passlib.context
 
 _logger = logging.getLogger(__name__)
 
@@ -71,6 +72,27 @@ class ResUsers(models.Model):
     transaction_limit = fields.Monetary('Transaction Limit')
     agent_type_id = fields.Many2one('tt.agent.type', 'Template For Agent Type', help="Agent Type Template")
     is_user_template = fields.Boolean('Is User Template', default=False)
+
+    is_using_pin = fields.Boolean("Is Using Pin", default=False)
+    pin = fields.Char("PIN", compute='_compute_pin', inverse='_set_pin', invisible=True, copy=False, store=True)
+
+    def _compute_pin(self):
+        for user in self:
+            user.pin = ''
+
+    def _set_pin(self):
+        ctx = self._crypt_context()
+        for user in self:
+            self._set_encrypted_pin(user.id, ctx.encrypt(user.pin))
+
+    def _set_encrypted_pin(self, uid, pin):
+        assert self._crypt_context().identify(pin) != 'plaintext'
+
+        self.env.cr.execute(
+            'UPDATE res_users SET pin=%s WHERE id=%s',
+            (pin, uid)
+        )
+        self.invalidate_cache(['pin'], [uid])
 
     customer_id = fields.Many2one('tt.customer', 'Customer')
     customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent')
@@ -365,6 +387,20 @@ class ResUsers(models.Model):
                 'browser': otp_params.get('browser'),
                 'timezone': otp_params.get('timezone')
             })
+
+    def _check_pin(self, pin):
+        assert pin
+        self.env.cr.execute(
+            "SELECT COALESCE(pin, '') FROM res_users WHERE id=%s",
+            [self.env.user.id]
+        )
+        [hashed] = self.env.cr.fetchone()
+        valid, replacement = self._crypt_context()\
+            .verify_and_update(pin, hashed)
+        if replacement is not None:
+            self._set_encrypted_pin(self.env.user.id, replacement)
+        if not valid:
+            raise RequestException(1042)
 
     ##password_security OCA
     @api.multi
