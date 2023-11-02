@@ -444,6 +444,41 @@ class ResUsers(models.Model):
     #         'user_ip_add': request.httprequest.environ['REMOTE_ADDR'],
     #     })
 
+    def turn_on_pin_api(self, data, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+
+        user_obj.pin = data['pin']
+        user_obj.is_using_pin = True
+
+        return ERR.get_no_error()
+
+    def turn_off_pin_api(self, data, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+
+        user_obj._check_pin(data['pin'])
+        user_obj.pin = ''
+        user_obj.is_using_pin = False
+        return ERR.get_no_error()
+
+    def change_pin_api(self, data, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+        user_obj._check_pin(data['old_pin'])
+        user_obj.pin = data['pin']
+        return ERR.get_no_error()
+
+
     def delete_user_api(self, context):
         user_obj = self.env['res.users'].browse(context['co_uid'])
         try:
