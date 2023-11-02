@@ -385,7 +385,9 @@ class ResUsers(models.Model):
                 'otp': otp_params.get('otp'),
                 'platform': otp_params.get('platform'),
                 'browser': otp_params.get('browser'),
-                'timezone': otp_params.get('timezone')
+                'timezone': otp_params.get('timezone'),
+                'otp_type': otp_params.get('otp_type', False),
+                'is_resend_otp': otp_params.get('is_resend_otp', False),
             })
 
     def _check_pin(self, pin):
