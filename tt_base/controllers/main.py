@@ -61,7 +61,7 @@ class Home(main.Home):
                     request.params['login_success'] = True
                     return http.redirect_with_hash(self._login_redirect(uid, redirect=redirect))
                 except RequestException as e:
-                    values['error'] = e.args[0]
+                    values['error'] = str(e)
                     request.uid = old_uid
                     values['is_need_otp'] = True
                 except odoo.exceptions.AccessDenied as e:

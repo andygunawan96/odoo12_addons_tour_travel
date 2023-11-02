@@ -392,7 +392,7 @@ class ResUsers(models.Model):
         assert pin
         self.env.cr.execute(
             "SELECT COALESCE(pin, '') FROM res_users WHERE id=%s",
-            [self.env.user.id]
+            [self.id]
         )
         [hashed] = self.env.cr.fetchone()
         valid, replacement = self._crypt_context()\
