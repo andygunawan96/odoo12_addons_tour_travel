@@ -708,9 +708,9 @@ class ReservationTour(models.Model):
                     'room_code': room_data.room_id.room_code,
                     'room_name': room_data.room_id.name,
                     'room_bed_type': room_data.room_id.bed_type,
-                    'room_hotel': room_data.room_id.hotel and room_data.room_id.hotel or '-',
+                    'room_hotel': room_data.room_id.hotel and room_data.room_id.hotel or '',
                     'room_desc': room_data.room_id.description and room_data.room_id.description or '-',
-                    'room_notes': room_data.notes and room_data.notes or '-',
+                    'room_notes': room_data.notes and room_data.notes or '-'
                 })
                 room_idx += 1
 
