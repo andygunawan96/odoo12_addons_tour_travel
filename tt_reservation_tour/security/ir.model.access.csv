@@ -31,6 +31,14 @@ tt_master_tour_for_master_data_tour_level_3,tt.master.tour.for.master.data.tour.
 tt_master_tour_for_master_data_tour_level_4,tt.master.tour.for.master.data.tour.level.4,model_tt_master_tour,tt_base.group_master_data_tour_level_4,1,1,1,0
 tt_master_tour_for_master_data_tour_level_5,tt.master.tour.for.master.data.tour.level.5,model_tt_master_tour,tt_base.group_master_data_tour_level_5,1,1,1,1
 ,,,,,,,
+tt_master_tour_type_for_all,tt.master.tour.type.for.all,model_tt_master_tour_type,,1,0,0,0
+,,,,,,,
+tt_master_tour_type_for_master_data_tour_level_1,tt.master.tour.type.for.master.data.tour.level.1,model_tt_master_tour_type,tt_base.group_master_data_tour_level_1,1,0,0,0
+tt_master_tour_type_for_master_data_tour_level_2,tt.master.tour.type.for.master.data.tour.level.2,model_tt_master_tour_type,tt_base.group_master_data_tour_level_2,1,0,1,0
+tt_master_tour_type_for_master_data_tour_level_3,tt.master.tour.type.for.master.data.tour.level.3,model_tt_master_tour_type,tt_base.group_master_data_tour_level_3,1,1,1,0
+tt_master_tour_type_for_master_data_tour_level_4,tt.master.tour.type.for.master.data.tour.level.4,model_tt_master_tour_type,tt_base.group_master_data_tour_level_4,1,1,1,0
+tt_master_tour_type_for_master_data_tour_level_5,tt.master.tour.type.for.master.data.tour.level.5,model_tt_master_tour_type,tt_base.group_master_data_tour_level_5,1,1,1,1
+,,,,,,,
 tt_master_tour_lines_for_all,tt.master.tour.lines.for.all,model_tt_master_tour_lines,,1,0,0,0
 ,,,,,,,
 tt_master_tour_lines_for_master_data_tour_level_1,tt.master.tour.lines.for.master.data.tour.level.1,model_tt_master_tour_lines,tt_base.group_master_data_tour_level_1,1,0,0,0

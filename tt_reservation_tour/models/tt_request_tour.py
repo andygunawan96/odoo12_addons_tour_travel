@@ -215,7 +215,7 @@ class TtRequestTour(models.Model):
             'notes': self.notes,
         }
         json_data = json.dumps(dict_data)
-        self.sudo().write({
+        self.write({
             'export_data': base64.b64encode(json_data.encode())
         })
         return {
@@ -224,7 +224,7 @@ class TtRequestTour(models.Model):
         }
 
     def remove_export_json(self):
-        self.sudo().write({
+        self.write({
             'export_data': False
         })
         return {

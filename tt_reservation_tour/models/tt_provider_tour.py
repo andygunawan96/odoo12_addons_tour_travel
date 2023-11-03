@@ -196,7 +196,7 @@ class TtProviderTour(models.Model):
                 'booked_date': fields.Datetime.now(),
             })
             for rec2 in rec.cost_service_charge_ids:
-                rec2.sudo().write({
+                rec2.write({
                     'description': provider_data['pnr']
                 })
 
@@ -513,7 +513,7 @@ class TtProviderTour(models.Model):
 
     def action_create_installment_ledger(self, issued_uid, payment_rules_id, commission_ledger=False, use_point=False):
         try:
-            payment_rules_obj = self.env['tt.payment.rules'].sudo().browse(int(payment_rules_id))
+            payment_rules_obj = self.env['tt.payment.rules'].browse(int(payment_rules_id))
             total_amount = (payment_rules_obj.payment_percentage / 100) * self.booking_id.total
 
             is_enough = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id, total_amount)

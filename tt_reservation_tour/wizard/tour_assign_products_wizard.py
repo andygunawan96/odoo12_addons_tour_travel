@@ -24,7 +24,7 @@ class TourAssignProductsWizard(models.TransientModel):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
                 'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 362')
-        all_tours = self.env['tt.master.tour'].sudo().search([('provider_id', '=', self.provider_id.id)])
+        all_tours = self.env['tt.master.tour'].search([('provider_id', '=', self.provider_id.id)])
         for rec in all_tours:
             if self.ho_id.id not in rec.ho_ids.ids:
                 rec.write({
@@ -37,7 +37,7 @@ class TourAssignProductsWizard(models.TransientModel):
             raise UserError('Please select Head Office(s)!')
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 363')
-        all_tours = self.env['tt.master.tour'].sudo().search([('provider_id', '=', self.provider_id.id)])
+        all_tours = self.env['tt.master.tour'].search([('provider_id', '=', self.provider_id.id)])
         for rec in all_tours:
             for rec2 in self.ho_ids:
                 if rec2.id not in rec.ho_ids.ids:
@@ -51,7 +51,7 @@ class TourAssignProductsWizard(models.TransientModel):
             raise UserError('Please select Head Office(s)!')
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 364')
-        all_tours = self.env['tt.master.tour'].sudo().search([('provider_id', '=', self.provider_id.id)])
+        all_tours = self.env['tt.master.tour'].search([('provider_id', '=', self.provider_id.id)])
         for rec in all_tours:
             for rec2 in self.ho_ids:
                 if rec2.id in rec.ho_ids.ids:
