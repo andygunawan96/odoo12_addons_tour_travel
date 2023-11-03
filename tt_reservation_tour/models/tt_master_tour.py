@@ -378,6 +378,13 @@ class MasterTour(models.Model):
                 'quota': rec.quota,
                 'sequence': rec.sequence,
                 'down_payment': rec.down_payment,
+                'is_restrict_monday': rec.is_restrict_monday,
+                'is_restrict_tuesday': rec.is_restrict_tuesday,
+                'is_restrict_wednesday': rec.is_restrict_wednesday,
+                'is_restrict_thursday': rec.is_restrict_thursday,
+                'is_restrict_friday': rec.is_restrict_friday,
+                'is_restrict_saturday': rec.is_restrict_saturday,
+                'is_restrict_sunday': rec.is_restrict_sunday,
                 'master_tour_id': new_tour_obj.id
             })
             for rec2 in rec.payment_rules_ids:
@@ -413,7 +420,6 @@ class MasterTour(models.Model):
         for rec in self.room_ids:
             new_tour_room_obj = self.env['tt.master.tour.rooms'].create({
                 'name': rec.name,
-                'room_code': rec.room_code,
                 'bed_type': rec.bed_type,
                 'description': rec.description,
                 'hotel': rec.hotel,
