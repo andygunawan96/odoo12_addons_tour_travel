@@ -1043,5 +1043,18 @@
             ]"/>
             <field name="active" eval="False"/>
         </record>
+
+        <record id="tt_transport_carrier_airline_rj_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="name">Royal Jordanian</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_rj"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">177</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
     </data>
 </odoo>
