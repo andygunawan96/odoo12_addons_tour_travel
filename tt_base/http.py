@@ -15,7 +15,7 @@ class OpenERPSessionInh(odoo.http.OpenERPSession):
         :param uid: If not None, that user id will be used instead the login
                     to authenticate the user.
         """
-        if isinstance(uid,dict): #We substitute UID as OTP PARAMS
+        if isinstance(uid,dict) or uid is None: #We substitute UID as OTP PARAMS
             wsgienv = request.httprequest.environ
             env = dict(
                 base_location=request.httprequest.url_root.rstrip('/'),
