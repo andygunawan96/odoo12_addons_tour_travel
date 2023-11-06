@@ -12,7 +12,6 @@ odoo.define('tt.fingerprint', function (require) {
             if(typeof(localStorage.platform) === 'undefined'){
                 //console.log('XXX1');
                 //const fpPromise = import('https://openfpcdn.io/fingerprintjs/v4').then(FingerprintJS => FingerprintJS.load())
-                //const fpPromise = import('/web/static/src/js/tt_custom/fingerprint.js').then(FingerprintJS => FingerprintJS.load())
                 const fpPromise = import('/tt_base/static/tt_custom/fingerprint.js').then(FingerprintJS => FingerprintJS.load())
                 // Get the visitor identifier when you need it.
                 fpPromise.then(fp => fp.get()).then(result => {

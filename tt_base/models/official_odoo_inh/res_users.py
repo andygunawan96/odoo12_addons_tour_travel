@@ -62,6 +62,23 @@ class ResPartner(models.Model):
     signup_expiration = fields.Datetime(copy=False,
                                         groups="base.group_erp_manager, tt_base.group_user_data_level_3")
 
+    @api.model
+    def signup_retrieve_info(self, token):
+        # Tdk di inherit kren func _signup_retrieve_partner cll once only
+        partner = self._signup_retrieve_partner(token, raise_exception=True)
+        res = {'db': self.env.cr.dbname}
+        if partner.signup_valid:
+            res['token'] = token
+            res['name'] = partner.name
+        if partner.user_ids:
+            res['login'] = partner.user_ids[0].login
+            # Extended p4rt st4rt
+            res['is_need_otp'] = partner.user_ids[0].is_using_otp
+            # Extended p4rt end
+        else:
+            res['email'] = res['login'] = partner.email or ''
+        return res
+
 
 class ResUsers(models.Model):
     _inherit = 'res.users'
