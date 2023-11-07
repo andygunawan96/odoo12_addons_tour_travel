@@ -140,6 +140,7 @@ access_tt_social_media_type_for_social_info_level_4,social.media.type.for.social
 access_tt_social_media_type_for_social_info_level_5,social.media.type.for.social.info.level.5,model_res_social_media_type,tt_base.group_social_info_level_5,1,1,1,1
 ,,,,,,,
 access_res_users_for_public,res.users.for.public,model_res_users,,1,0,0,0
+access_res_users_for_access_rights,res.users.for.access.rights,model_res_users,base.group_erp_manager,1,1,1,1
 ,,,,,,,
 access_res_users_for_user_data_level_1,res.users.for.user.data.level.1,model_res_users,tt_base.group_user_data_level_1,1,0,0,0
 access_res_users_for_user_data_level_2,res.users.for.user.data.level.2,model_res_users,tt_base.group_user_data_level_2,1,0,1,0

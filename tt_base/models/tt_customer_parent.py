@@ -113,10 +113,22 @@ class TtCustomerParent(models.Model):
     #                 })
 
     def to_dict_acc(self):
+        booker_list = []
+        for rec in self.booker_customer_ids:
+            temp_booker_dict = rec.customer_id.to_dict()
+            temp_booker_dict.update({
+                'job_position': rec.job_position_id.name
+            })
+            booker_list.append(temp_booker_dict)
         return {
             'seq_id': self.seq_id,
             'customer_parent_name': self.name,
-            'customer_parent_type': self.customer_parent_type_id and self.customer_parent_type_id.name or ''
+            'customer_parent_type': self.customer_parent_type_id and self.customer_parent_type_id.name or '',
+            'customer_parent_type_code': self.customer_parent_type_id and self.customer_parent_type_id.code or '',
+            'address_list': [rec.to_dict() for rec in self.address_ids],
+            'phone_list': [rec.to_dict() for rec in self.phone_ids],
+            'email': self.email,
+            'booker_list': booker_list
         }
 
     def action_create_corporate_user(self):
@@ -278,8 +290,8 @@ class TtCustomerParent(models.Model):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 48')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
-        if not self.address_ids or not self.phone_ids:
-            raise UserError("Please fill at least one ADDRESS data and one PHONE data!")
+        if not self.address_ids or not self.phone_ids or not self.booker_customer_ids:
+            raise UserError("Please fill at least one BOOKER, one ADDRESS data and one PHONE data!")
         self.write({
             'state': 'confirm',
             'confirm_uid': self.env.user.id,

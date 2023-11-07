@@ -7,7 +7,7 @@
                   web_icon="base,static/description/settings.png"
                   sequence="500"
                   groups="base.group_erp_manager,tt_base.group_user_data_level_3"/>
-        <menuitem id="base.menu_users" name="Users &amp; Companies" parent="base.menu_administration" sequence="0" groups="tt_base.group_user_data_level_3"/>
+        <menuitem id="base.menu_users" name="Users &amp; Companies" parent="base.menu_administration" sequence="0" groups="base.group_erp_manager,tt_base.group_user_data_level_3"/>
 
         <act_window id="base.change_password_wizard_action"
                     name="Change Password"

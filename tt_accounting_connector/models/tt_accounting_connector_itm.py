@@ -39,7 +39,7 @@ class AccountingConnectorITM(models.Model):
         res = self.response_parser_customer(response)
 
         if res['status'] == 'success':
-            _logger.info('Insert Customer Success')
+            _logger.info('ITM Insert Customer Success')
             if res['content'].get('Data') and res['content']['Data'].get('dsAPIMethod1') and vals.get('seq_id'):
                 for cust_resp in res['content']['Data']['dsAPIMethod1']:
                     cust_parent_obj = self.env['tt.customer.parent'].search([('seq_id', '=', vals['seq_id'])], limit=1)
@@ -48,7 +48,7 @@ class AccountingConnectorITM(models.Model):
                             'accounting_uid': cust_resp.get('ContactCD') and str(cust_resp['ContactCD']) or ''
                         })
         else:
-            _logger.info('Insert Customer Failed')
+            _logger.info('ITM Insert Customer Failed')
         _logger.info(res)
 
         return res
@@ -98,6 +98,8 @@ class AccountingConnectorITM(models.Model):
                 })
             except (UnicodeDecodeError, AttributeError):
                 pass
+        else:
+            res['content'] = {}
         if res['content'].get('Messages'):
             if all(msg.get('Type', '') == 'SUCCESS' for msg in res['content']['Messages']):
                 status = 'success'
@@ -165,9 +167,9 @@ class AccountingConnectorITM(models.Model):
         res = self.response_parser(response)
 
         if res['status'] == 'success':
-            _logger.info('Insert Success')
+            _logger.info('ITM Insert Success')
         else:
-            _logger.info('Insert Failed')
+            _logger.info('ITM Insert Failed')
         _logger.info(res)
 
         return res

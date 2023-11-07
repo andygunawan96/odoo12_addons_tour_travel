@@ -44,7 +44,7 @@ class TtCustomerParentInhAcc(models.Model):
     @api.model
     def create(self, vals_list):
         res = super(TtCustomerParentInhAcc, self).create(vals_list)
-        if res.parent_agent_id and res.parent_agent_id.is_sync_to_acc:
+        if res.customer_parent_type_id.id == self.env.ref('tt_base.customer_type_fpo').id and res.parent_agent_id and res.parent_agent_id.is_sync_to_acc:
             search_params = [('is_create_customer', '=', True)]
             if res.ho_id:
                 ho_obj = res.ho_id
@@ -57,6 +57,21 @@ class TtCustomerParentInhAcc(models.Model):
                 vendor_list = [rec.accounting_provider for rec in setup_list]
                 res.sync_customer_accounting('create', vendor_list)
         return res
+
+    def action_done(self):
+        super(TtCustomerParentInhAcc, self).action_done()
+        if not self.accounting_uid and self.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id] and self.parent_agent_id and self.parent_agent_id.is_sync_to_acc:
+            search_params = [('is_create_customer', '=', True)]
+            if self.ho_id:
+                ho_obj = self.ho_id
+            else:
+                ho_obj = self.parent_agent_id.ho_id
+            if ho_obj:
+                search_params.append(('ho_id', '=', ho_obj.id))
+            setup_list = self.env['tt.accounting.setup'].search(search_params)
+            if setup_list:
+                vendor_list = [rec.accounting_provider for rec in setup_list]
+                self.sync_customer_accounting('create', vendor_list)
 
     def check_use_ext_credit_limit(self):
         return self.parent_agent_id.is_use_ext_credit_cor
