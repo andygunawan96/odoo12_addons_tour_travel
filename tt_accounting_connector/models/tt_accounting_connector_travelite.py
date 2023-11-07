@@ -299,7 +299,7 @@ class AccountingConnectorTravelite(models.Model):
                     "sourcetypeid": source_type_id,
                     "printflag": False,
                     "autopaidbydp": False,
-                    "userid": request['issued_accounting_uid']
+                    "userid": request.get('issued_accounting_uid') and request['issued_accounting_uid'] or ''
                 }
             }
             for prov in request['provider_bookings']:
