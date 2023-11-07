@@ -73,7 +73,7 @@ class ResPartner(models.Model):
         if partner.user_ids:
             res['login'] = partner.user_ids[0].login
             # Extended p4rt st4rt
-            res['is_need_otp'] = partner.user_ids[0].is_using_otp
+            # res['is_need_otp'] = partner.user_ids[0].is_using_otp
             # Extended p4rt end
         else:
             res['email'] = res['login'] = partner.email or ''
@@ -275,6 +275,17 @@ class ResUsers(models.Model):
                 vals.pop(keys_to_check['corpor'])
         if vals.get('password'):
             self._check_password(vals['password'])
+
+            if self.is_using_otp:
+                self.check_need_otp_user_api({
+                    'machine_code': vals.get('machine_code'),
+                    'otp': vals.get('otp'),
+                    'platform': vals.get('platform'),
+                    'browser': vals.get('browser'),
+                    'timezone': vals.get('timezone'),
+                    'otp_type': vals.get('otp_type', False),
+                    'is_resend_otp': vals.get('is_resend_otp', False),
+                })
         return super(ResUsers, self).write(vals)
 
     @api.multi

@@ -111,7 +111,6 @@ class ResUsersInherit(models.Model):
                 return True
             raise RequestException(1041)
 
-
         else:
             ## NO OTP CODE CREATE
             otp_obj = self.create_or_get_otp_user_api(req)
