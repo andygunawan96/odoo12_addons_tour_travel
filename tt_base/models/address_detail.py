@@ -46,3 +46,15 @@ class AddressDetail(models.Model):
         if not vals_list.get('name'):
             vals_list['name'] = vals_list['type']
         return super(AddressDetail, self).create(vals_list)
+
+    def to_dict(self):
+        return {
+            'address': self.address,
+            'rt': self.rt,
+            'rw': self.rw,
+            'zip': self.zip,
+            'city': self.city_id and self.city_id.name or '',
+            'state': self.state_id and self.state_id.name or '',
+            'country': self.country_id and self.country_id.name or '',
+            'type': self.type
+        }

@@ -129,10 +129,10 @@
                     </group>
                     <notebook colspan="3">
                         <page string="Addresses And Phones">
-                            <label for="phone_ids"/>
-                            <field name="phone_ids" readonly="1"/>
                             <label for="address_ids"/>
                             <field name="address_ids" readonly="1"/>
+                            <label for="phone_ids"/>
+                            <field name="phone_ids" readonly="1"/>
                             <label for="social_media_ids"/>
                             <field name="social_media_ids" readonly="1"/>
                         </page>

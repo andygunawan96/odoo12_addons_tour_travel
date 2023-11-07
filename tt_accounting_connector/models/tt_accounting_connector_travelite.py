@@ -21,9 +21,9 @@ class AccountingConnectorTravelite(models.Model):
             raise Exception('Request cannot be sent because some field requirements are not met. Missing: "ho_id"')
         url_obj = self.env['tt.accounting.setup.variables'].search(
             [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
-             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'credit_limit_url')], limit=1)
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'customer_url')], limit=1)
         if not url_obj:
-            raise Exception('Please provide a variable with the name "url" in Travelite / TOP Accounting Setup!')
+            raise Exception('Please provide a variable with the name "customer_url" in Travelite / TOP Accounting Setup!')
         username_obj = self.env['tt.accounting.setup.variables'].search(
             [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
              ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'username')], limit=1)
@@ -43,7 +43,7 @@ class AccountingConnectorTravelite(models.Model):
 
         is_include_book = include_book_obj and include_book_obj.variable_value or "1"
         is_include_dp = include_dp_obj and include_dp_obj.variable_value or "0"
-        url = '%s?&custid=%s&includeBooking=%s&includeDP=%s' % (url_obj.variable_value, vals['customer_id'], is_include_book, is_include_dp)
+        url = '%s/checkcreditlimit?&custid=%s&includeBooking=%s&includeDP=%s' % (url_obj.variable_value, vals['customer_id'], is_include_book, is_include_dp)
         username = username_obj.variable_value
         password = password_obj.variable_value
         headers = {
@@ -58,6 +58,143 @@ class AccountingConnectorTravelite(models.Model):
         temp_split = temp_res.split(';')
         res = len(temp_split) > 1 and temp_split[1] or temp_split[0]
         return float(res)
+
+    def add_customer(self, vals):
+        if not vals.get('ho_id'):
+            raise Exception('Request cannot be sent because some field requirements are not met. Missing: "ho_id"')
+        url_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'customer_url')], limit=1)
+        if not url_obj:
+            raise Exception('Please provide a variable with the name "customer_url" in Travelite / TOP Accounting Setup!')
+        username_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'username')], limit=1)
+        if not username_obj:
+            raise Exception('Please provide a variable with the name "username" in Travelite / TOP Accounting Setup!')
+        password_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'password')], limit=1)
+        if not password_obj:
+            raise Exception('Please provide a variable with the name "password" in Travelite / TOP Accounting Setup!')
+
+        url = '%s/create' % url_obj.variable_value
+        username = username_obj.variable_value
+        password = password_obj.variable_value
+        headers = {
+            'Content-Type': 'application/json',
+            'username': username,
+            'password': password
+        }
+        req_data = self.request_parser_customer(vals)
+        _logger.info('Travelite / TOP Request Add Customer: %s', req_data)
+        if vals.get('accounting_queue_id'):
+            queue_obj = self.env['tt.accounting.queue'].browse(int(vals['accounting_queue_id']))
+            if queue_obj:
+                queue_obj.write({
+                    'request': req_data
+                })
+        response = requests.post(url, data=req_data, headers=headers)
+        res = self.response_parser_customer(response)
+
+        if res['status'] == 'success':
+            _logger.info('Travelite / TOP Insert Customer Success')
+            cust_parent_obj = self.env['tt.customer.parent'].search([('seq_id', '=', vals['seq_id'])], limit=1)
+            if cust_parent_obj:
+                cust_parent_obj[0].write({
+                    'accounting_uid': str(res['content'])
+                })
+        else:
+            _logger.info('Travelite / TOP Insert Customer Failed')
+        _logger.info(res)
+        return res
+
+    def request_parser_customer(self, request):
+        address_list = []
+        first_post_code = ''
+        first_country = ''
+        first_city = ''
+        if not request.get('address_list'):
+            address_list.append({
+                'address': '-'
+            })
+        for rec in request['address_list']:
+            if rec.get('address'):
+                address_list.append({
+                    'address': rec['address']
+                })
+                if not first_post_code:
+                    first_post_code = rec.get('zip') and rec['zip'] or ''
+                if not first_country:
+                    first_country = rec.get('country') and rec['country'] or ''
+                if not first_city:
+                    first_city = rec.get('city') and rec['city'] or ''
+        ctp_list = []
+        if not request.get('booker_list'):
+            ctp_list.append({
+                'maincctcname': '-'
+            })
+        for rec in request['booker_list']:
+            if rec.get('name'):
+                ctp_list.append({
+                    'maincctcname': rec['name']
+                })
+        phone_list = []
+        for rec in request['phone_list']:
+            if rec.get('calling_number'):
+                phone_list.append('%s%s' % (rec.get('calling_code', '62'), rec['calling_number']))
+        def_cust_email = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'),
+             ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('accounting_setup_id.active', '=', True),
+             ('variable_name', '=', 'default_cust_email')], limit=1)
+        cust_email = def_cust_email and def_cust_email.variable_value or 'orbis@company.com'
+        req = {
+            "custcode": '', # bisa di isi seq_id, tapi kosongkan saja supaya generate otomatis dari TOP
+            "custname": request.get('customer_parent_name') and request['customer_parent_name'] or '',
+            "custpostcode": first_post_code,
+            "cgroup": 'C',
+            "custtype": request.get('customer_parent_type_code') == 'cor' and '5' or '1',
+            "ppnflag": False,
+            "mobileno": len(phone_list) > 0 and phone_list[0] or '000000000000',
+            "custphone1": len(phone_list) > 1 and phone_list[1] or '000000000000',
+            "custphone2": len(phone_list) > 2 and phone_list[2] or '000000000000',
+            "custfax1": '000000000000',
+            "custaddress1": address_list and address_list[0]['address'] or '-',
+            "custemail": request.get('email') and request['email'] or cust_email,
+            "businessregdate": datetime.now().strftime('%Y-%m-%d'),
+            "citydesc": first_city and first_city or 'Jakarta',
+            "countrydesc": first_country and first_country or 'Indonesia',
+            "showgst": 0,
+            "showfee": 0,
+            "idtype": "0",
+            "tmrflag": False,
+            "contactperson": ctp_list,
+            "billingaddress": address_list
+        }
+        return json.dumps(req)
+
+    def response_parser_customer(self, response):
+        res = {
+            'status_code': response.status_code or 500,
+            'content': response.content or ''
+        }
+        if res['status_code'] == 200:
+            status = 'success'
+        else:
+            status = 'failed'
+        if res.get('content'):
+            try:
+                res.update({
+                    'content': res['content'].decode("UTF-8")
+                })
+            except (UnicodeDecodeError, AttributeError):
+                pass
+        else:
+            res['content'] = ''
+        res.update({
+            'status': status
+        })
+        return res
 
     def add_sales_order(self, vals):
         url_obj = self.env['tt.accounting.setup.variables'].search(
@@ -97,9 +234,9 @@ class AccountingConnectorTravelite(models.Model):
         res = self.response_parser(response)
 
         if res['status'] == 'success':
-            _logger.info('Insert Success')
+            _logger.info('Travelite / TOP Insert Success')
         else:
-            _logger.info('Insert Failed')
+            _logger.info('Travelite / TOP Insert Failed')
         _logger.info(res)
 
         return res
