@@ -106,7 +106,7 @@ class Home(main.Home):
                 _logger.exception('error when resetting password')
             except Exception as e:
                 qcontext['error'] = str(e)
-                if e.code == 1040: #'Please Input the OTP sent to your email' in e.message
+                if e.code in [1040, 1041]: #'Please Input the OTP sent to your email' in e.message
                     qcontext['is_need_otp'] = True
 
         response = request.render('auth_signup.reset_password', qcontext)
