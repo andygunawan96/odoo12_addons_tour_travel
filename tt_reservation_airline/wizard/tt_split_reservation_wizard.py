@@ -228,7 +228,9 @@ class TtSplitReservationWizard(models.TransientModel):
                 'sync_reservation': book_obj.sync_reservation,
                 'state': book_obj.state
             }
-
+            update_new_vals = book_obj.get_posted_acc_actions()
+            if update_new_vals:
+                new_vals.update(update_new_vals)
             new_book_obj = self.env['tt.reservation.airline'].create(new_vals)
             if self.is_split_journey and self.is_split_passenger:
                 pass  # planned

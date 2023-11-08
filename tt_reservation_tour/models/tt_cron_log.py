@@ -10,7 +10,7 @@ class TtCronLogInhResv(models.Model):
 
     def cron_update_installment_invoice(self):
         try:
-            installment_objs = self.env['tt.installment.invoice'].sudo().search([('state_invoice', 'in', ['open', 'trouble'])])
+            installment_objs = self.env['tt.installment.invoice'].search([('state_invoice', 'in', ['open', 'trouble'])])
             for rec in installment_objs:
                 if rec.agent_invoice_id.state == 'paid':
                     rec.action_set_to_done()
@@ -28,10 +28,10 @@ class TtCronLogInhResv(models.Model):
 
     def cron_send_installment_reminder_email(self):
         try:
-            installment_objs = self.env['tt.installment.invoice'].sudo().search([('state_invoice', 'in', ['open', 'trouble'])])
+            installment_objs = self.env['tt.installment.invoice'].search([('state_invoice', 'in', ['open', 'trouble'])])
             for rec in installment_objs:
                 if rec.due_date > date.today() and (rec.due_date - date.today()).days == 3:
-                    mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test': False}).search([('res_id', '=', rec.id), ('res_model', '=', rec._name), ('type', '=', 'tour_installment_reminder')], limit=1)
+                    mail_created = self.env['tt.email.queue'].with_context({'active_test': False}).search([('res_id', '=', rec.id), ('res_model', '=', rec._name), ('type', '=', 'tour_installment_reminder')], limit=1)
                     if not mail_created:
                         temp_data = {
                             'provider_type': 'tour_installment',
@@ -47,7 +47,7 @@ class TtCronLogInhResv(models.Model):
                         _logger.info('Installment Reminder email for {} is already created!'.format(rec.booking_id.name))
                         raise Exception('Installment Reminder email for {} is already created!'.format(rec.booking_id.name))
                 elif rec.due_date < date.today() and (date.today() - rec.due_date).days == 1:
-                    mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test': False}).search([('res_id', '=', rec.id), ('res_model', '=', rec._name), ('type', '=', 'tour_installment_overdue')], limit=1)
+                    mail_created = self.env['tt.email.queue'].with_context({'active_test': False}).search([('res_id', '=', rec.id), ('res_model', '=', rec._name), ('type', '=', 'tour_installment_overdue')], limit=1)
                     if not mail_created:
                         temp_data = {
                             'provider_type': 'tour_installment',

@@ -85,7 +85,7 @@
                             <!--                            <field name="actual_balance"/>-->
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
-                            <field name="pricing_breakdown" widget="boolean_toggle"/>
+                            <field name="pricing_breakdown" widget="boolean_toggle" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
                         </group>
                         <group>
                             <field name="credit_limit" attrs="{'readonly': [('is_ho_agent', '=', True)]}" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
@@ -129,10 +129,10 @@
                     </group>
                     <notebook colspan="3">
                         <page string="Addresses And Phones">
-                            <label for="phone_ids"/>
-                            <field name="phone_ids" readonly="1"/>
                             <label for="address_ids"/>
                             <field name="address_ids" readonly="1"/>
+                            <label for="phone_ids"/>
+                            <field name="phone_ids" readonly="1"/>
                             <label for="social_media_ids"/>
                             <field name="social_media_ids" readonly="1"/>
                         </page>
@@ -190,7 +190,7 @@
         <field name="name">tt.agent.form.view.agent.management</field>
         <field name="model">tt.agent</field>
         <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_management_operator'),ref('tt_base.group_agent_level_4')])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_agent_level_4')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="name" position="replace">
@@ -281,7 +281,7 @@
         <field name="name">tt.agent.form.view.agent.user</field>
         <field name="model">tt.agent</field>
         <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator'),ref('tt_base.group_tt_agent_user')])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="payment_acquirer_ids" position="replace">

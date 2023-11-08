@@ -1,8 +1,12 @@
-from odoo import api, fields, models, _
+from odoo import api, fields, models, _, SUPERUSER_ID
 from ....tools.db_connector import GatewayConnector
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, AccessDenied
 import time,re
 import logging
+from ....tools.ERR import RequestException
+from ....tools import ERR
+from odoo.http import request
+import passlib.context
 
 _logger = logging.getLogger(__name__)
 
@@ -52,11 +56,28 @@ DEVICE_TYPE = [
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    signup_token = fields.Char(copy=False, groups="base.group_erp_manager, tt_base.group_tt_agent_management_operator, tt_base.group_user_data_level_3")
+    signup_token = fields.Char(copy=False, groups="base.group_erp_manager, tt_base.group_user_data_level_3")
     signup_type = fields.Char(string='Signup Token Type', copy=False,
-                              groups="base.group_erp_manager, tt_base.group_tt_agent_management_operator, tt_base.group_user_data_level_3")
+                              groups="base.group_erp_manager, tt_base.group_user_data_level_3")
     signup_expiration = fields.Datetime(copy=False,
-                                        groups="base.group_erp_manager, tt_base.group_tt_agent_management_operator, tt_base.group_user_data_level_3")
+                                        groups="base.group_erp_manager, tt_base.group_user_data_level_3")
+
+    @api.model
+    def signup_retrieve_info(self, token):
+        # Tdk di inherit kren func _signup_retrieve_partner cll once only
+        partner = self._signup_retrieve_partner(token, raise_exception=True)
+        res = {'db': self.env.cr.dbname}
+        if partner.signup_valid:
+            res['token'] = token
+            res['name'] = partner.name
+        if partner.user_ids:
+            res['login'] = partner.user_ids[0].login
+            # Extended p4rt st4rt
+            # res['is_need_otp'] = partner.user_ids[0].is_using_otp
+            # Extended p4rt end
+        else:
+            res['email'] = res['login'] = partner.email or ''
+        return res
 
 
 class ResUsers(models.Model):
@@ -68,6 +89,27 @@ class ResUsers(models.Model):
     transaction_limit = fields.Monetary('Transaction Limit')
     agent_type_id = fields.Many2one('tt.agent.type', 'Template For Agent Type', help="Agent Type Template")
     is_user_template = fields.Boolean('Is User Template', default=False)
+
+    is_using_pin = fields.Boolean("Is Using Pin", default=False)
+    pin = fields.Char("PIN", compute='_compute_pin', inverse='_set_pin', invisible=True, copy=False, store=True)
+
+    def _compute_pin(self):
+        for user in self:
+            user.pin = ''
+
+    def _set_pin(self):
+        ctx = self._crypt_context()
+        for user in self:
+            self._set_encrypted_pin(user.id, ctx.encrypt(user.pin))
+
+    def _set_encrypted_pin(self, uid, pin):
+        assert self._crypt_context().identify(pin) != 'plaintext'
+
+        self.env.cr.execute(
+            'UPDATE res_users SET pin=%s WHERE id=%s',
+            (pin, uid)
+        )
+        self.invalidate_cache(['pin'], [uid])
 
     customer_id = fields.Many2one('tt.customer', 'Customer')
     customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent')
@@ -233,6 +275,17 @@ class ResUsers(models.Model):
                 vals.pop(keys_to_check['corpor'])
         if vals.get('password'):
             self._check_password(vals['password'])
+
+            if self.is_using_otp:
+                self.check_need_otp_user_api({
+                    'machine_code': vals.get('machine_code'),
+                    'otp': vals.get('otp'),
+                    'platform': vals.get('platform'),
+                    'browser': vals.get('browser'),
+                    'timezone': vals.get('timezone'),
+                    'otp_type': vals.get('otp_type', False),
+                    'is_resend_otp': vals.get('is_resend_otp', False),
+                })
         return super(ResUsers, self).write(vals)
 
     @api.multi
@@ -297,6 +350,87 @@ class ResUsers(models.Model):
 
         return (self.env.cr.dbname, values.get('login'), values.get('password'))
 
+    @classmethod
+    def authenticate(cls, db, login, password, user_agent_env, otp_params=False):
+        """Verifies and returns the user ID corresponding to the given
+          ``login`` and ``password`` combination, or False if there was
+          no matching user.
+           :param str db: the database on which user is trying to authenticate
+           :param str login: username
+           :param str password: user password
+           :param dict user_agent_env: environment dictionary describing any
+               relevant environment attributes
+        """
+        uid = cls._login(db, login, password, otp_params=otp_params)
+        if user_agent_env and user_agent_env.get('base_location'):
+            with cls.pool.cursor() as cr:
+                env = api.Environment(cr, uid, {})
+                if env.user.has_group('base.group_system'):
+                    # Successfully logged in as system user!
+                    # Attempt to guess the web base url...
+                    try:
+                        base = user_agent_env['base_location']
+                        ICP = env['ir.config_parameter']
+                        if not ICP.get_param('web.base.url.freeze'):
+                            ICP.set_param('web.base.url', base)
+                    except Exception:
+                        _logger.exception("Failed to update web.base.url configuration parameter")
+        return uid
+
+    @classmethod
+    def _login(cls, db, login, password, otp_params=False):
+        if not password:
+            raise AccessDenied()
+        ip = request.httprequest.environ['REMOTE_ADDR'] if request else 'n/a'
+        try:
+            with cls.pool.cursor() as cr:
+                self = api.Environment(cr, SUPERUSER_ID, {})[cls._name]
+                with self._assert_can_auth():
+                    user = self.search(self._get_login_domain(login))
+                    if not user:
+                        raise AccessDenied()
+                    user = user.sudo(user.id)
+                    user._check_credentials(password, otp_params=otp_params)
+                    user._update_last_login()
+        except RequestException as e:
+            _logger.info("Fail on OTP Check, %s" % (str(e)))
+            raise e
+        except AccessDenied:
+            _logger.info("Login failed for db:%s login:%s from %s", db, login, ip)
+            raise
+
+        _logger.info("Login successful for db:%s login:%s from %s", db, login, ip)
+
+        return user.id
+
+    def _check_credentials(self, password, otp_params=False):
+        super(ResUsers,self)._check_credentials(password)
+        if self.is_using_otp:
+            if not otp_params:
+                raise RequestException(1041)
+            self.check_need_otp_user_api({
+                'machine_code': otp_params.get('machine_code'),
+                'otp': otp_params.get('otp'),
+                'platform': otp_params.get('platform'),
+                'browser': otp_params.get('browser'),
+                'timezone': otp_params.get('timezone'),
+                'otp_type': otp_params.get('otp_type', False),
+                'is_resend_otp': otp_params.get('is_resend_otp', False),
+            })
+
+    def _check_pin(self, pin):
+        assert pin
+        self.env.cr.execute(
+            "SELECT COALESCE(pin, '') FROM res_users WHERE id=%s",
+            [self.id]
+        )
+        [hashed] = self.env.cr.fetchone()
+        valid, replacement = self._crypt_context()\
+            .verify_and_update(pin, hashed)
+        if replacement is not None:
+            self._set_encrypted_pin(self.env.user.id, replacement)
+        if not valid:
+            raise RequestException(1042)
 
     ##password_security OCA
     @api.multi
@@ -339,3 +473,80 @@ class ResUsers(models.Model):
     #         # 'user_ip_add': request.httprequest.headers.environ.get('HTTP_X_REAL_IP'),
     #         'user_ip_add': request.httprequest.environ['REMOTE_ADDR'],
     #     })
+
+    def turn_on_pin_api(self, data, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+
+        user_obj.pin = data['pin']
+        user_obj.is_using_pin = True
+
+        return ERR.get_no_error()
+
+    def turn_off_pin_api(self, data, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+
+        user_obj._check_pin(data['pin'])
+        user_obj.pin = ''
+        user_obj.is_using_pin = False
+        return ERR.get_no_error()
+
+    def change_pin_api(self, data, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+        user_obj._check_pin(data['old_pin'])
+        user_obj.pin = data['pin']
+        return ERR.get_no_error()
+
+
+    def delete_user_api(self, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+        ## HANYA DI OPEN UNTUK AGENT BTC
+        if user_obj.ho_id.btc_agent_type_id == user_obj.agent_id.agent_type_id:
+            ### DELETE USER
+            user_seq_id = self.env['ir.sequence'].next_by_code('deleted.res.users.seq')
+            notif_string = 'From %s to %s by user request' % (user_obj.name, user_seq_id)
+            user_obj.login = user_seq_id
+            user_obj.name = user_seq_id
+            ### DELETE AGENT JIKA USER HANYA ADA YG AKAN DI INACTIVE SAJA
+            if len(user_obj.user_ids.ids) == 1:
+                user_obj.agent_id.name = self.env['ir.sequence'].next_by_code('deleted.tt.agent.seq')
+            user_obj.active = False
+
+            data = {
+                'code': 9909,
+                'title': 'Inactive User',
+                'message': notif_string
+            }
+            context = {
+                "co_ho_id": context['co_ho_id']
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+
+            return ERR.get_no_error()
+        else:
+            data = {
+                'code': 9909,
+                'title': 'Inactive User',
+                'message': '%s is trying to delete account by user request' % user_obj.name
+            }
+            context = {
+                "co_ho_id": context['co_ho_id']
+            }
+            GatewayConnector().telegram_notif_api(data, context)
+
+            return ERR.get_error(500, additional_message='Please contact Admin to delete account!')

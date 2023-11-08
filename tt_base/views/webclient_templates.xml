@@ -11,19 +11,40 @@
         <xpath expr="//div[@class='form-group field-password']" position="after">
             <t t-if="is_need_otp">
                 <div class="form-group field-otp">
-                    <label for="otp_data">OTP Data</label>
-                    <input type="text" name="otp_data" id="otp_data" class="form-control"/>
+                    <label for="otp">OTP Data</label>
+                    <input type="text" name="otp" id="otp" class="form-control" required="required"/>
                 </div>
             </t>
             <div class="input-group">
                 <input type="hidden" name="platform" id="platform" class="form-control"/>
-                <input type="hidden" name="web_vendor" id="web_vendor" class="form-control"/>
+                <input type="hidden" name="browser" id="browser" class="form-control"/>
             </div>
             <div class="input-group">
-                <input type="hidden" name="machine_id" id="machine_id" class="form-control"/>
+                <input type="hidden" name="machine_code" id="machine_code" class="form-control"/>
             </div>
             <div class="input-group">
-                <input type="hidden" name="tz" id="tz" class="form-control"/>
+                <input type="hidden" name="timezone" id="timezone" class="form-control"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="auth_signup_reset_password_fingerprint" inherit_id="auth_signup.fields">
+        <xpath expr="//div[@class='form-group field-confirm_password']" position="after">
+            <t t-if="is_need_otp">
+                <div class="form-group field-otp">
+                    <label for="otp">OTP Data</label>
+                    <input type="text" name="otp" id="otp" class="form-control" required="required"/>
+                </div>
+            </t>
+            <div class="input-group">
+                <input type="hidden" name="platform" id="platform" class="form-control"/>
+                <input type="hidden" name="browser" id="browser" class="form-control"/>
+            </div>
+            <div class="input-group">
+                <input type="hidden" name="machine_code" id="machine_code" class="form-control"/>
+            </div>
+            <div class="input-group">
+                <input type="hidden" name="timezone" id="timezone" class="form-control"/>
             </div>
         </xpath>
     </template>

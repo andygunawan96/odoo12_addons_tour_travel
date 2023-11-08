@@ -170,7 +170,7 @@
         <field name="name">tt.ledger.tree.view.ho.inh</field>
         <field name="model">tt.ledger</field>
         <field name="inherit_id" ref="tt_accounting.tt_ledger_tree_view"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel_operator'),ref('tt_base.group_tt_tour_travel')])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel')])]" />
         <field name="priority">10</field>
         <field name="arch" type="xml">
             <field name="pnr" position="after">

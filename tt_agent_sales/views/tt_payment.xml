@@ -100,7 +100,7 @@
         <field name="name">tt.payment.form.inh.view.agent</field>
         <field name="model">tt.payment</field>
         <field name="inherit_id" ref="tt_payment.tt_payment_form_view_agent"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator'),ref('tt_base.group_tt_agent_user')])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user')])]" />
         <field name="priority">30</field>
         <field name="arch" type="xml">
             <xpath expr="//header" position="replace">

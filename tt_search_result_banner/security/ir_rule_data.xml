@@ -1,10 +1,4 @@
 <odoo>
-    <record id="tt_search_result_banner_for_ho" model="ir.rule">
-        <field name="name">Search Result Banner For HO</field>
-        <field name="model_id" ref="model_tt_search_result_banner"/>
-        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
-        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
-    </record>
 
     <record id="tt_search_result_banner_for_ho_user" model="ir.rule">
         <field name="name">Search Result Banner For HO User</field>

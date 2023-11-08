@@ -37,7 +37,7 @@
                         </group>
                     </group>
                     <group string="Expenses">
-                        <field name="vendor_ids" attrs="{'readonly': [('state_passport', 'in', ['draft','confirm','partial_validate','validate','delivered','done'])]}" groups="account.group_account_user,tt_base.group_tt_tour_travel,base.group_erp_manager">
+                        <field name="vendor_ids" attrs="{'readonly': [('state_passport', 'in', ['draft','confirm','partial_validate','validate','delivered','done'])]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                             <tree editable="bottom">
                                 <field name="passport_id" invisible="1"/>
                                 <field name="provider_id" invisible="1"/>

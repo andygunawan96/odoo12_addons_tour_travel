@@ -88,24 +88,25 @@ class PaymentAcquirer(models.Model):
             lost_or_profit = cust_fee-bank_fee
             return lost_or_profit,cust_fee, uniq
 
-    @api.onchange('start_time', 'end_time')
-    def check_start_end_time(self):
-        # Opsi #1 Control klo user input 24 ++
-        # self.start_time = self.start_time % 24
-        # self.end_time = self.end_time % 24
-        # Opsi #2 Notif alert
-        if self.start_time > 24:
-            raise UserError(_('Start Date range 00:00 -> 24:00'))
-        if self.end_time > 24:
-            raise UserError(_('End Date range 00:00 -> 24:00'))
-
-        # Replace 00:05 => 24:10
-        # self.start_time = self.start_time / 1 == 0 and self.start_time + 24
-        if self.end_time == 0.0:
-            self.end_time += 24
-        # if self.start_time and self.end_time:
-        #     if self.start_time > self.end_time:
-        #         raise UserError(_('End Date cannot be lower than Start Time.'))
+    ## Freeze the browser when there are many payment aquirers
+    # @api.onchange('start_time', 'end_time')
+    # def check_start_end_time(self):
+    #     # Opsi #1 Control klo user input 24 ++
+    #     # self.start_time = self.start_time % 24
+    #     # self.end_time = self.end_time % 24
+    #     # Opsi #2 Notif alert
+    #     if self.start_time > 24:
+    #         raise UserError(_('Start Date range 00:00 -> 24:00'))
+    #     if self.end_time > 24:
+    #         raise UserError(_('End Date range 00:00 -> 24:00'))
+    #
+    #     # Replace 00:05 => 24:10
+    #     # self.start_time = self.start_time / 1 == 0 and self.start_time + 24
+    #     if self.end_time == 0.0:
+    #         self.end_time += 24
+    #     # if self.start_time and self.end_time:
+    #     #     if self.start_time > self.end_time:
+    #     #         raise UserError(_('End Date cannot be lower than Start Time.'))
 
     def acquirer_format(self, amount, unique, agent_obj=None, currency_name='', context={}):
         # NB:  CASH /payment/cash/feedback?acq_id=41

@@ -58,32 +58,37 @@
                         <field name="agent_type_id" readonly="1"/>
                         <field name="reference" readonly="1"/>
                         <field name="parent_agent_id" readonly="1"/>
-                        <field name="user_ids" readonly="1"/>
-                        <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="1"/>
                     </group>
 
                     <group string="Information">
                         <field name="email" placeholder="Agent's Email" readonly="1"/>
                         <field name="website" readonly="1"/>
                         <field name="npwp" readonly="1"/>
-                        <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view','tree_view_ref': 'tt_base.payment_acquirer_tree_view'}" readonly="1"/>
                         <!--<field name="history_ids"/>-->
                     </group>
 
                     <group name="Ledger">
                     </group>
                     <notebook colspan="3">
-                        <page string="Addresses">
+                        <page string="Addresses And Phones">
+                            <label for="address_ids"/>
                             <field name="address_ids" readonly="1"/>
-                        </page>
-                        <page string="Phones">
+                            <label for="phone_ids"/>
                             <field name="phone_ids" readonly="1"/>
-                        </page>
-                        <page string="Social Media">
+                            <label for="social_media_ids"/>
                             <field name="social_media_ids" readonly="1"/>
                         </page>
+                        <page string="Users">
+                            <field name="user_ids" readonly="1"/>
+                        </page>
+                        <page string="Corporates">
+                            <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="1"/>
+                        </page>
                         <page string="Payment Acquirer Number">
+                            <label for="payment_acq_ids" string="VA List"/>
                             <field name="payment_acq_ids" readonly="1"/>
+                            <label for="payment_acquirer_ids"/>
+                            <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view','tree_view_ref': 'tt_base.payment_acquirer_tree_view'}" readonly="1"/>
                         </page>
                         <page string="Third Party Key">
                             <field name="third_party_key_ids" readonly="1"/>
@@ -117,7 +122,7 @@
         <field name="name">tt.agent.form.view.customer.agent.management</field>
         <field name="model">tt.agent</field>
         <field name="inherit_id" ref="tt_base.tt_agent_form_view_customer"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_management_operator'),ref('tt_base.group_agent_level_4')])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_agent_level_4')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="name" position="replace">
@@ -172,7 +177,7 @@
         <field name="name">tt.agent.form.view.customer.agent.user</field>
         <field name="model">tt.agent</field>
         <field name="inherit_id" ref="tt_base.tt_agent_form_view_customer"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator'),ref('tt_base.group_tt_agent_user')])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="payment_acquirer_ids" position="replace">

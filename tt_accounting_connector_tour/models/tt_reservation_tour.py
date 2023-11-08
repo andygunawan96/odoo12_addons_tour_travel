@@ -13,6 +13,11 @@ class TtReservationTour(models.Model):
 
     posted_acc_actions = fields.Char('Posted to Accounting after Recon', default='')
 
+    def get_posted_acc_actions(self):
+        return {
+            'posted_acc_actions': self.posted_acc_actions
+        }
+
     def send_ledgers_to_accounting(self, func_action, vendor_list):
         try:
             res = []
@@ -45,24 +50,25 @@ class TtReservationTour(models.Model):
         super(TtReservationTour, self).action_issued_tour(data)
         if self.agent_id.is_sync_to_acc:
             temp_post = self.posted_acc_actions or ''
-            ho_obj = self.agent_id and self.agent_id.ho_id or False
-            search_params = [('cycle', '=', 'real_time'), ('is_send_tour', '=', True)]
-            if ho_obj:
-                search_params.append(('ho_id', '=', ho_obj.id))
-            setup_list = self.env['tt.accounting.setup'].search(search_params)
-            if setup_list:
-                vendor_list = []
-                for rec in setup_list:
-                    if rec.accounting_provider not in vendor_list:
-                        vendor_list.append(rec.accounting_provider)
-                self.send_ledgers_to_accounting('issued', vendor_list)
-                if temp_post:
-                    temp_post += ',issued'
-                else:
-                    temp_post += 'issued'
-                self.write({
-                    'posted_acc_actions': temp_post
-                })
+            if 'issued' not in temp_post.split(','):
+                ho_obj = self.agent_id and self.agent_id.ho_id or False
+                search_params = [('cycle', '=', 'real_time'), ('is_send_tour', '=', True)]
+                if ho_obj:
+                    search_params.append(('ho_id', '=', ho_obj.id))
+                setup_list = self.env['tt.accounting.setup'].search(search_params)
+                if setup_list:
+                    vendor_list = []
+                    for rec in setup_list:
+                        if rec.accounting_provider not in vendor_list:
+                            vendor_list.append(rec.accounting_provider)
+                    self.send_ledgers_to_accounting('issued', vendor_list)
+                    if temp_post:
+                        temp_post += ',issued'
+                    else:
+                        temp_post += 'issued'
+                    self.write({
+                        'posted_acc_actions': temp_post
+                    })
 
     def action_reverse_tour(self,context):
         old_state = self.state

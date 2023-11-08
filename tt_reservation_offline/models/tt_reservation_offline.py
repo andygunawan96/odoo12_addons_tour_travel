@@ -845,7 +845,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_done(self,  kwargs={}):
-        if not ({self.env.ref('account.group_account_invoice').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 205')
         if self.state_offline not in ['cancel','done']:
             if self.resv_code:

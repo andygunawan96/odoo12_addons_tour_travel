@@ -65,7 +65,7 @@
         <field name="name">tt.reconcile.transaction.form.view.tt.accounting.manager</field>
         <field name="model">tt.reconcile.transaction</field>
         <field name="inherit_id" ref="tt_reconcile_transaction_form_view" />
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_accounting_manager'),ref('tt_base.group_reconcile_level_4')])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_reconcile_level_4')])]" />
         <field name="arch" type="xml">
             <field name="start_balance" position="attributes">
                 <attribute name="readonly">0</attribute>

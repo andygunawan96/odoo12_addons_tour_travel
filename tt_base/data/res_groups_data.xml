@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
+        <!--    is user HO-->
+        <record id="group_tt_tour_travel" model="res.groups">
+            <field name="name">Is Tour Travel HO</field>
+            <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        <!--    is user agent-->
+        <record id="group_tt_agent_user" model="res.groups">
+            <field name="name">Is Agent User</field>
+            <field name="category_id" ref="tt_base.module_category_agent_user"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
         <!--    is finance agent-->
         <record id="group_tt_agent_finance" model="res.groups">
             <field name="name">Is Agent Finance</field>
@@ -2496,231 +2508,6 @@
             <field name="name">Access Vendor Report</field>
             <field name="category_id" ref="tt_base.module_category_vendor_report"/>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
-
-        <!--OLD GROUPS STARTING FROM HERE-->
-
-        <!--BILLING STATEMENT USER GROUP-->
-        <record id="group_tt_billing_statement_operator" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_billing_statement"/>
-            <field name="implied_ids" eval="[(4, ref('group_billing_statement_level_5'))]"/>
-        </record>
-
-        <record id="group_tt_billing_statement_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
-            <field name="category_id" ref="tt_base.module_category_billing_statement"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_billing_statement_operator'))]"/>
-        </record>
-
-        <record id="group_tt_billing_statement_manager" model="res.groups">
-            <field name="name">Manager</field>
-            <field name="category_id" ref="tt_base.module_category_billing_statement"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_billing_statement_supervisor'))]"/>
-        </record>
-
-        <!--AGENT INVOICE USER GROUP-->
-        <record id="group_tt_agent_invoice_operator" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_agent_invoice"/>
-            <field name="implied_ids" eval="[(4, ref('group_agent_invoice_level_5'))]"/>
-        </record>
-
-        <record id="group_tt_agent_invoice_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
-            <field name="category_id" ref="tt_base.module_category_agent_invoice"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_agent_invoice_operator'))]"/>
-        </record>
-
-        <record id="group_tt_agent_invoice_manager" model="res.groups">
-            <field name="name">Manager</field>
-            <field name="category_id" ref="tt_base.module_category_agent_invoice"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_agent_invoice_supervisor'))]"/>
-        </record>
-
-        <!--AGENT USER GROUP-->
-        <record id="group_tt_agent_user_operator" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_agent_user"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
-
-        <record id="group_tt_agent_user_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
-            <field name="category_id" ref="tt_base.module_category_agent_user"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_agent_user_operator'))]"/>
-        </record>
-
-        <record id="group_tt_agent_user_manager" model="res.groups">
-            <field name="name">Manager</field>
-            <field name="category_id" ref="tt_base.module_category_agent_user"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_agent_user_supervisor'))]"/>
-        </record>
-
-        <!--SUB-AGENT USER GROUP-->
-        <record id="group_tt_sub_agent_user_operator" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_sub_agent_user"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
-
-        <record id="group_tt_sub_agent_user_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
-            <field name="category_id" ref="tt_base.module_category_sub_agent_user"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_sub_agent_user_operator'))]"/>
-        </record>
-
-        <record id="group_tt_sub_agent_user_manager" model="res.groups">
-            <field name="name">Manager</field>
-            <field name="category_id" ref="tt_base.module_category_sub_agent_user"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_sub_agent_user_supervisor'))]"/>
-        </record>
-
-        <!--AGENT FINANCE GROUP-->
-        <record id="group_tt_agent_finance_operator" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_agent_finance"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_agent_finance'))]"/>
-        </record>
-
-        <record id="group_tt_agent_finance_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
-            <field name="category_id" ref="tt_base.module_category_agent_finance"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_agent_finance_operator'))]"/>
-        </record>
-
-        <record id="group_tt_agent_finance_manager" model="res.groups">
-            <field name="name">Manager</field>
-            <field name="category_id" ref="tt_base.module_category_agent_finance"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_agent_finance_supervisor'))]"/>
-        </record>
-
-        <!--AGENT MANAGEMENT GROUP-->
-        <record id="group_tt_agent_management_operator" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_agent_management"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
-
-        <record id="group_tt_agent_management_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
-            <field name="category_id" ref="tt_base.module_category_agent_management"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_agent_management_operator'))]"/>
-        </record>
-
-        <record id="group_tt_agent_management_manager" model="res.groups">
-            <field name="name">Manager</field>
-            <field name="category_id" ref="tt_base.module_category_agent_management"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_agent_management_supervisor'))]"/>
-        </record>
-
-        <!--TICKETING SYSTEM GROUP-->
-        <record id="group_tt_ticketing_operator" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_ticketing_system"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
-
-        <record id="group_tt_ticketing_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
-            <field name="category_id" ref="tt_base.module_category_ticketing_system"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_ticketing_operator'))]"/>
-        </record>
-
-        <record id="group_tt_ticketing_manager" model="res.groups">
-            <field name="name">Manager</field>
-            <field name="category_id" ref="tt_base.module_category_ticketing_system"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_ticketing_supervisor'))]"/>
-        </record>
-
-        <!--TOUR AND TRAVEL SYSTEM GROUP-->
-        <record id="group_tt_tour_travel_operator" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
-
-        <record id="group_tt_tour_travel_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
-            <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_tour_travel_operator'))]"/>
-        </record>
-
-        <record id="group_tt_tour_travel_manager" model="res.groups">
-            <field name="name">Manager</field>
-            <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_tour_travel_supervisor'))]"/>
-        </record>
-
-        <!--    is user HO-->
-        <record id="group_tt_tour_travel" model="res.groups">
-            <field name="name">Is Tour Travel HO</field>
-            <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_tour_travel_operator'))]"/>
-        </record>
-        <!--    is user agent-->
-        <record id="group_tt_agent_user" model="res.groups">
-            <field name="name">Is Agent User</field>
-            <field name="category_id" ref="tt_base.module_category_agent_user"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_agent_user_operator'))]"/>
-        </record>
-
-        <!-- ACCOUNTING & TOP UP SYSTEM GROUP -->
-
-        <record id="group_tt_accounting_operator" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_accounting_system"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
-
-        <record id="group_tt_accounting_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
-            <field name="category_id" ref="tt_base.module_category_accounting_system"/>
-            <field name="implied_ids" eval="[(4, ref('tt_base.group_tt_accounting_operator'))]"/>
-        </record>
-
-        <record id="group_tt_accounting_manager" model="res.groups">
-            <field name="name">Manager</field>
-            <field name="category_id" ref="tt_base.module_category_accounting_system"/>
-            <field name="implied_ids" eval="[(4, ref('tt_base.group_tt_accounting_supervisor'))]"/>
-        </record>
-
-        <!--TOUR AND TRAVEL SYSTEM GROUP-->
-        <record id="group_tt_tour_division_operator" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_tour_division_system"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
-
-        <record id="group_tt_tour_division_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
-            <field name="category_id" ref="tt_base.module_category_tour_division_system"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_tour_division_operator'))]"/>
-        </record>
-
-        <record id="group_tt_tour_division_manager" model="res.groups">
-            <field name="name">Manager</field>
-            <field name="category_id" ref="tt_base.module_category_tour_division_system"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_tour_division_supervisor'))]"/>
-        </record>
-
-        <!--External Vendor SYSTEM GROUP-->
-        <record id="group_tt_external_vendor_operator" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_external_vendor_system"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
-
-        <record id="group_tt_external_vendor_supervisor" model="res.groups">
-            <field name="name">Supervisor</field>
-            <field name="category_id" ref="tt_base.module_category_external_vendor_system"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_external_vendor_operator'))]"/>
-        </record>
-
-        <record id="group_tt_external_vendor_manager" model="res.groups">
-            <field name="name">Manager</field>
-            <field name="category_id" ref="tt_base.module_category_external_vendor_system"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_external_vendor_supervisor'))]"/>
         </record>
 
         <!--     LINK kan group yg baru dibuat dengan ADMIN-->

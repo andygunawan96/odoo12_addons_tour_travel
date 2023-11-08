@@ -1,13 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-tt_traveldoc_type_for_operator,tt.traveldoc.type.for.operator,model_tt_traveldoc_type,tt_base.group_tt_tour_travel_operator,1,1,0,0
-tt_traveldoc_type_for_supervisor,tt.traveldoc.type.for.supervisor,model_tt_traveldoc_type,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
-tt_traveldoc_type_for_manager,tt.traveldoc.type.for.manager,model_tt_traveldoc_type,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
 tt_traveldoc_type_for_ho,tt.traveldoc.type.for.ho,model_tt_traveldoc_type,tt_base.group_tt_tour_travel,1,1,1,1
-
-tt_traveldoc_type_for_agent_user_operator,tt.traveldoc.type.for.agent.user.operator,model_tt_traveldoc_type,tt_base.group_tt_agent_user_operator,1,0,0,0
-tt_traveldoc_type_for_agent_user_supervisor,tt.traveldoc.type.for.agent.user.supervisor,model_tt_traveldoc_type,tt_base.group_tt_agent_user_supervisor,1,0,0,0
-tt_traveldoc_type_for_agent_user_manager,tt.traveldoc.type.for.agent.user.manager,model_tt_traveldoc_type,tt_base.group_tt_agent_user_manager,1,0,0,0
 
 tt_traveldoc_type_for_agent,tt.traveldoc.type.for.agent,model_tt_traveldoc_type,tt_base.group_tt_agent_user,1,0,0,0
 tt_traveldoc_type_for_admin,tt.traveldoc.type.for.admin,model_tt_traveldoc_type,base.group_erp_manager,1,1,1,1

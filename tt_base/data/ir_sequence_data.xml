@@ -81,5 +81,19 @@
             <field name="prefix">PO.%(y)s%(month)s%(day)s%(h24)s</field>
             <field name="padding">3</field>
         </record>
+
+        <record id="seq_deleted_user" model="ir.sequence">
+            <field name="name">Deleted User</field>
+            <field name="code">deleted.res.users.seq</field>
+            <field name="prefix">DU.%(y)s%(month)s%(day)s%(h24)s</field>
+            <field name="padding">3</field>
+        </record>
+
+        <record id="seq_deleted_agent" model="ir.sequence">
+            <field name="name">Deleted Agent</field>
+            <field name="code">deleted.tt.agent.seq</field>
+            <field name="prefix">DA.%(y)s%(month)s%(day)s%(h24)s</field>
+            <field name="padding">3</field>
+        </record>
     </data>
 </odoo>

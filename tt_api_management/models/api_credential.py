@@ -8,9 +8,23 @@ from datetime import datetime,timedelta
 import uuid, base64
 import logging, traceback
 
+from odoo.service import common
+import odoo
+from odoo.exceptions import AccessDenied
+
 _DB_CON = BackendConnector()
 _logger = logging.getLogger(__name__)
 
+def exp_authenticate(db, login, password, user_agent_env, otp_params=False):
+    res_users = odoo.registry(db)['res.users']
+    try:
+        return res_users.authenticate(db, login, password, user_agent_env, otp_params)
+    except RequestException as e:
+        return e.error_dict()
+    except AccessDenied:
+        return False
+
+common.exp_authenticate = exp_authenticate
 
 class ApiManagement(models.Model):
     _name = 'tt.api.credential'
@@ -112,27 +126,27 @@ class ApiManagement(models.Model):
             if data.get('co_user') and data.get('co_password'):
                 if response['api_role'] == 'operator':
                     raise Exception('User Role is not allowed to do Co User login')
-                co_uid = _DB_CON.authenticate(data['co_user'], data['co_password'])
-                if not co_uid:
+                auth_db_res = _DB_CON.authenticate(data['co_user'], data['co_password'], data['otp_params'])
+
+                if isinstance(auth_db_res, dict):
+                    return auth_db_res
+                elif isinstance(auth_db_res, int):
+                    _co_user = self.env['res.users'].sudo().browse(auth_db_res)
+                else:
                     raise Exception('Co User and Co Password is not match')
-                _co_user = self.env['res.users'].sudo().browse(co_uid)
 
-                ### CHECK OTP #####
-                expired_time = _co_user.check_need_otp_user_api(data)
-                if expired_time:
-                    if data.get('otp'):
-                        raise RequestException(1041)
-                    else:
-                        raise RequestException(1040,additional_message=expired_time)
-
+                #generate OTP info for frontend
                 values.update({
-                    "co_is_use_otp": _co_user.is_use_otp,
-                    'co_otp_list_machine': []
+                    "co_is_using_otp": _co_user.is_using_otp,
+                    'co_otp_list_machine': [],
+                    'co_is_using_pin': _co_user.is_using_pin
                 })
-                if _co_user.is_use_otp:
+                if _co_user.is_using_otp:
                     otp_objs = self.env['tt.otp'].search([
                         ('user_id.id', '=', _co_user.id),
-                        ('is_connect','=', True)
+                        ('is_connect','=', True),
+                        ('is_disconnect','=', False),
+                        ('purpose_type','=', 'turn_on')
                     ])
                     for otp_obj in otp_objs:
                         values['co_otp_list_machine'].append({
@@ -286,6 +300,10 @@ class TtAgentApiInherit(models.Model):
             '%sagent_id' % prefix: self.id,
             '%sagent_name' % prefix: self.name,
         }
+        if not prefix:
+            res.update({
+                "pricing_breakdown": self.pricing_breakdown
+            })
         if self.agent_type_id:
             res.update(self.agent_type_id.get_credential(prefix))
         return res

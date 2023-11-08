@@ -1,4 +1,5 @@
 from . import tt_master_tour_flight
+from . import tt_master_tour_type
 from . import tt_payment_rules
 from . import tt_tour_master_locations
 from . import tt_reservation_tour

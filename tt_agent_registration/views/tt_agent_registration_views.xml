@@ -150,7 +150,7 @@
             <field name="name">tt.agent.registration.form.view.tour.travel</field>
             <field name="model">tt.agent.registration</field>
             <field name="inherit_id" ref="tt_agent_registration.tt_agent_registration_form_view"/>
-            <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel_operator'),ref('tt_base.group_tt_tour_travel'),ref('base.group_erp_manager')])]" />
+            <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel'),ref('base.group_erp_manager')])]" />
             <field name="priority">2</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='registration_document_ids']" position="replace">

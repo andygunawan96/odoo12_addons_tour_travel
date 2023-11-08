@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_master_tour_type_series" model="tt.master.tour.type">
+            <field name="name">Series</field>
+            <field name="is_can_choose_hotel" eval="False"/>
+            <field name="is_use_tour_leader" eval="True"/>
+            <field name="is_open_date" eval="False"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_tour_type_series_no_tl" model="tt.master.tour.type">
+            <field name="name">Series (Without Tour Leader)</field>
+            <field name="is_can_choose_hotel" eval="False"/>
+            <field name="is_use_tour_leader" eval="False"/>
+            <field name="is_open_date" eval="False"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_tour_type_open" model="tt.master.tour.type">
+            <field name="name">Open Trip</field>
+            <field name="is_can_choose_hotel" eval="False"/>
+            <field name="is_use_tour_leader" eval="True"/>
+            <field name="is_open_date" eval="True"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_tour_type_open_no_tl" model="tt.master.tour.type">
+            <field name="name">Open Trip (Without Tour Leader)</field>
+            <field name="is_can_choose_hotel" eval="False"/>
+            <field name="is_use_tour_leader" eval="False"/>
+            <field name="is_open_date" eval="True"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_tour_type_private" model="tt.master.tour.type">
+            <field name="name">Private Tour</field>
+            <field name="is_can_choose_hotel" eval="True"/>
+            <field name="is_use_tour_leader" eval="True"/>
+            <field name="is_open_date" eval="True"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_tour_type_private_no_tl" model="tt.master.tour.type">
+            <field name="name">Private Tour (Without Tour Leader)</field>
+            <field name="is_can_choose_hotel" eval="True"/>
+            <field name="is_use_tour_leader" eval="False"/>
+            <field name="is_open_date" eval="True"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>
