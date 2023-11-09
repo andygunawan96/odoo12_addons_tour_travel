@@ -139,7 +139,9 @@ class ApiManagement(models.Model):
                 values.update({
                     "co_is_using_otp": _co_user.is_using_otp,
                     'co_otp_list_machine': [],
-                    'co_is_using_pin': _co_user.is_using_pin
+                    'co_is_using_pin': _co_user.is_using_pin,
+                    'co_ho_is_using_pin': _co_user.ho_id.is_agent_required_pin,
+                    'co_ho_is_using_otp': _co_user.ho_id.is_agent_required_otp
                 })
                 if _co_user.is_using_otp:
                     otp_objs = self.env['tt.otp'].search([

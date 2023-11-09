@@ -16,6 +16,8 @@
                     <field name="customer_parent_type_id"/>
                     <field name="use_credit_limit" attrs="{'invisible': ['|', ('customer_parent_type_id', '=', %(tt_base.customer_type_fpo)d), ('customer_parent_type_id', '=', False)]}"/>
                     <field name="acquirer_id" attrs="{'invisible': [('use_credit_limit', '=', True), ('customer_parent_type_id', '!=', %(tt_base.customer_type_fpo)d)], 'required': ['|', '&amp;', ('use_credit_limit', '=', False), ('customer_parent_type_id', '!=', %(tt_base.customer_type_fpo)d), ('customer_parent_type_id', '=', %(tt_base.customer_type_fpo)d)]}"/>
+                    <field name="is_using_pin" invisible="1"/>
+                    <field name="pin" attrs="{'invisible': [('is_using_pin', '=', False)]}" password="True"/>
                 </group>
                 <footer>
                     <button name="submit_force_issued" string="Force Issued (Create Ledger)" type="object" default_focus="1" class="oe_highlight"/>

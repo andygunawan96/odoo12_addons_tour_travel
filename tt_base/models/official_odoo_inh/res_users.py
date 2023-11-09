@@ -278,6 +278,15 @@ class ResUsers(models.Model):
                 vals.pop(keys_to_check['agent'])
             elif keys_to_check.get('corpor') and not self.has_group('tt_base.group_tt_tour_travel') and not is_set_ho and not self.has_group('tt_base.group_tt_agent_user') and not is_set_agent:
                 vals.pop(keys_to_check['corpor'])
+        if 'is_using_pin' in vals and not self.env.user.has_group('base.group_system'):
+            vals.pop('is_using_pin')
+        if 'is_using_otp' in vals:
+            # kalau tidak punya admin atau user data level 5 tidak bisa edit field ini
+            if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_user_data_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
+                vals.pop('is_using_otp')
+            # kalau bukan admin tidak bisa mematikan OTP
+            elif not self.env.user.has_group('base.group_system') and not vals['is_using_otp']:
+                vals.pop('is_using_otp')
         if vals.get('password'):
             self._check_password(vals['password'])
 
