@@ -7,8 +7,9 @@ from ...tools import ERR
 class ResUsersInherit(models.Model):
     _inherit = 'res.users'
 
-    is_using_otp = fields.Boolean('Use OTP', default=False)
-    machine_ids = fields.One2many('tt.machine', 'user_id', 'Machine IDs', readonly=True)
+    ## HO cuman boleh menyalakan, Admin boleh nyala mati
+    def toggle_active_otp(self):
+        self.is_using_otp = not self.is_using_otp
 
     def check_need_otp_user_api(self, req):
         is_machine_connect = False

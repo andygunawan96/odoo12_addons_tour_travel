@@ -6,7 +6,6 @@ import logging
 from ....tools.ERR import RequestException
 from ....tools import ERR
 from odoo.http import request
-import passlib.context
 
 _logger = logging.getLogger(__name__)
 
@@ -72,7 +71,11 @@ class ResUsers(models.Model):
     transaction_limit = fields.Monetary('Transaction Limit')
     agent_type_id = fields.Many2one('tt.agent.type', 'Template For Agent Type', help="Agent Type Template")
     is_user_template = fields.Boolean('Is User Template', default=False)
+    vendor_id = fields.Many2one('tt.vendor', 'External Vendor')
 
+    ##security section
+    is_using_otp = fields.Boolean('Is Using OTP', default=False)
+    machine_ids = fields.One2many('tt.machine', 'user_id', 'Machine IDs', readonly=True)
     is_using_pin = fields.Boolean("Is Using Pin", default=False)
     pin = fields.Char("PIN", compute='_compute_pin', inverse='_set_pin', invisible=True, copy=False, store=True)
 
@@ -117,6 +120,7 @@ class ResUsers(models.Model):
 
     # Fungsi ini perlu di lengkapi/disempurnakan
     # Tujuan : kalau res_pertner.parent_agent_id berubah maka user.agent_id ikut berubah
+
     @api.onchange('partner_id.parent_agent_id')
     @api.depends('partner_id.parent_agent_id')
     def _onchange_partner_id(self):
