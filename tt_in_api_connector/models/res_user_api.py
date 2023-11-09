@@ -28,6 +28,8 @@ class TtBankApiCon(models.Model):
             res = table_obj.turn_off_pin_api(data, context)
         elif action == 'change_pin_api':
             res = table_obj.change_pin_api(data, context)
+        elif action == 'change_pin_otp_api':
+            res = table_obj.change_pin_otp_api(data, context)
         else:
             raise RequestException(999)
         return res
