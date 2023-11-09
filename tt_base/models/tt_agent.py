@@ -72,6 +72,10 @@ class TtAgent(models.Model):
     email_server_id = fields.Many2one('ir.mail_server', string="Email Server")
     is_agent_breakdown_price_printout = fields.Boolean('Is Agent Breakdown Price Printout')
     is_btc_breakdown_price_printout = fields.Boolean('Is BTC Breakdown Price Printout')
+
+    is_agent_required_otp = fields.Boolean('Is Agent Required OTP')
+    is_agent_required_pin = fields.Boolean('Is Agent Required PIN')
+
     redirect_url_signup = fields.Char('Redirect URL Signup', default='/')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')

@@ -1,14 +1,21 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 import math
 import random
 from datetime import datetime, timedelta
 from ...tools.ERR import RequestException
 from ...tools import ERR
+import pytz
+
 class ResUsersInherit(models.Model):
     _inherit = 'res.users'
 
     ## HO cuman boleh menyalakan, Admin boleh nyala mati
     def toggle_active_otp(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_user_data_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 466')
+        if not self.env.user.has_group('base.group_system') and self.is_using_otp:
+            raise UserError('You do not have permission to turn off OTP.')
         self.is_using_otp = not self.is_using_otp
 
     def check_need_otp_user_api(self, req):
@@ -32,7 +39,7 @@ class ResUsersInherit(models.Model):
                 if otp_obj.duration == 'never':
                     is_machine_connect = True
                 elif len(otp_obj.duration) == 1: ## DAYS
-                    if otp_obj.create_date + timedelta(days=int(otp_obj.duration)) > datetime.now():
+                    if datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration)) > datetime.strptime(datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S"):
                         is_machine_connect = True
                     else:
                         otp_obj.active = False

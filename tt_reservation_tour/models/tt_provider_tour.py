@@ -92,6 +92,7 @@ class TtProviderTour(models.Model):
             'book_id': self.booking_id.id,
             'member': payment_data.get('member'),
             'acquirer_seq_id': payment_data.get('acquirer_seq_id'),
+            'pin': payment_data.get('pin')
         }
         context = {
             'co_agent_id': self.booking_id.agent_id.id,
