@@ -4,6 +4,7 @@ import random
 from datetime import datetime, timedelta
 from ...tools.ERR import RequestException
 from ...tools import ERR
+import pytz
 class ResUsersInherit(models.Model):
     _inherit = 'res.users'
 
@@ -32,7 +33,7 @@ class ResUsersInherit(models.Model):
                 if otp_obj.duration == 'never':
                     is_machine_connect = True
                 elif len(otp_obj.duration) == 1: ## DAYS
-                    if otp_obj.create_date + timedelta(days=int(otp_obj.duration)) > datetime.now():
+                    if datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration)) > datetime.strptime(datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S"):
                         is_machine_connect = True
                     else:
                         otp_obj.active = False
