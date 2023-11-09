@@ -50,6 +50,8 @@ tt_error_api_1041,1041,"Invalid OTP.",,,1,1
 tt_error_api_1042,1042,"Invalid PIN.",,,1,1
 tt_error_api_1043,1043,"Please Activate your OTP first.",,,1,1
 tt_error_api_1044,1044,"Please clear your browser cache first.",,,1,1
+tt_error_api_1045,1045,"Please Activate your PIN first.",,,1,1
+tt_error_api_1046,1046,"Please Activate your PIN & OTP first.",,,1,1
 tt_error_api_4001,4001,Invalid action type,,,1,1
 tt_error_api_4002,4002,Error while validating your credential,,,1,1
 tt_error_api_4003,4003,Your session has been expired,,,1,1
