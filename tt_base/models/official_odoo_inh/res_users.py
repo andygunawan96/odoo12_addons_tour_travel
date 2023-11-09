@@ -6,6 +6,7 @@ import logging
 from ....tools.ERR import RequestException
 from ....tools import ERR
 from odoo.http import request
+from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -509,13 +510,51 @@ class ResUsers(models.Model):
         user_obj.is_using_pin = False
         return ERR.get_no_error()
 
+    def change_pin_otp_api(self, data, context):
+        user_obj = self.browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+        if data.get('otp_params'):
+            if not user_obj.is_using_otp:
+                raise RequestException(1043)
+            data['otp_params']['change_pin'] = True
+            otp_obj = user_obj.create_or_get_otp_user_api(data['otp_params'])
+            raise RequestException(1040, additional_message=(otp_obj.create_date + timedelta(minutes=user_obj.ho_id.otp_expired_time)).strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            raise RequestException(1044)
+
     def change_pin_api(self, data, context):
         user_obj = self.env['res.users'].browse(context['co_uid'])
         try:
             user_obj.create_date
         except:
             raise RequestException(1008)
-        user_obj._check_pin(data['old_pin'])
+
+        if data.get('otp_params'):
+            now = datetime.now()
+            otp_objs = self.env['tt.otp'].search([
+                ('machine_id.code', '=', data['otp_params']['machine_code']),
+                ('otp', '=', data['otp_params']['otp']),
+                ('purpose_type', '=', 'change_pin'),
+                ('is_connect', '=', False),
+                ('create_date', '>', now - timedelta(minutes=user_obj.ho_id.otp_expired_time))
+            ])
+            if otp_objs:
+                notes = ['Forgot pin, Change PIN using this OTP']
+                for otp_obj in otp_objs:
+                    otp_obj.update({
+                        "is_connect": True,
+                        "is_disconnect": True,
+                        "connect_date": now,
+                        "disconnect_date": now,
+                        'description': "\n".join(notes)
+                    })
+            else:
+                return ERR.get_error(1041)
+        else:
+            user_obj._check_pin(data['old_pin'])
         user_obj.pin = data['pin']
         return ERR.get_no_error()
 
