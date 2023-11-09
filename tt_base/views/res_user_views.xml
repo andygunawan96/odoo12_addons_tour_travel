@@ -32,9 +32,9 @@
             </xpath>
             <xpath expr="//button[@name='toggle_active']" position="before">
                 <field name="is_banned" invisible="1"/>
-                <label for ="toggle_active" string="Banned" attrs="{'invisible': [('is_banned','=',False)]}"/>
+                <label for ="toggle_active" string="| Banned" attrs="{'invisible': [('is_banned','=',False)]}"/>
                 <field name="is_using_pin" invisible="1"/>
-                <label for ="toggle_active" string="PIN ON" attrs="{'invisible': [('is_using_pin','=',False)]}"/>
+                <label for ="toggle_active" string="| PIN ON" attrs="{'invisible': [('is_using_pin','=',False)]}"/>
                 <button name="toggle_active_otp" type="object" groups="base.group_user"
                         class="oe_stat_button" icon="fa-key">
                     <field name="is_using_otp" widget="boolean_button"
