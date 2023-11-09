@@ -516,7 +516,7 @@ class ResUsers(models.Model):
             otp_obj = user_obj.create_or_get_otp_user_api(data['otp_params'])
             raise RequestException(1040, additional_message=(otp_obj.create_date + timedelta(minutes=user_obj.ho_id.otp_expired_time)).strftime('%Y-%m-%d %H:%M:%S'))
         else:
-            return ERR.get_error(500, )
+            raise RequestException(1044)
 
     def change_pin_api(self, data, context):
         user_obj = self.env['res.users'].browse(context['co_uid'])
