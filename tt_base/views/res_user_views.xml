@@ -35,7 +35,7 @@
                 <label for ="toggle_active" string="Banned" attrs="{'invisible': [('is_banned','=',False)]}"/>
                 <field name="is_using_pin" invisible="1"/>
                 <label for ="toggle_active" string="PIN ON" attrs="{'invisible': [('is_using_pin','=',False)]}"/>
-                <button name="toggle_active_otp" type="object" groups="base.group_user"
+                <button name="toggle_active_otp" type="object" groups="base.group_system,tt_base.group_user_data_level_5"
                         class="oe_stat_button" icon="fa-key">
                     <field name="is_using_otp" widget="boolean_button"
                            options='{"terminology": "default"}'/>

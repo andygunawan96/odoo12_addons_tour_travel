@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-import base64,hashlib,time,os,traceback,logging,re
+import base64,hmac,hashlib,time,os,traceback,logging,re
 from odoo.exceptions import UserError
 from ...tools import ERR
 
@@ -19,6 +19,8 @@ class ForceIssuedWizard(models.TransientModel):
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type', related='customer_parent_id.customer_parent_type_id', readonly=True)
     use_credit_limit = fields.Boolean('Use COR Credit Limit', default=False)
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Method', domain="[('agent_id', '=', agent_id)]")
+    is_using_pin = fields.Boolean('Is Using PIN', compute='_compute_is_using_pin')
+    pin = fields.Char('PIN')
 
     @api.depends('provider_id')
     @api.onchange('provider_id')
@@ -43,6 +45,10 @@ class ForceIssuedWizard(models.TransientModel):
             rec.ho_id = provider_obj.booking_id.ho_id.id
             rec.booker_id = provider_obj.booking_id.booker_id.id
 
+    def _compute_is_using_pin(self):
+        for rec in self:
+            rec.is_using_pin = self.env.user.is_using_pin
+
     def submit_force_issued(self):
         if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 148')
@@ -56,6 +62,12 @@ class ForceIssuedWizard(models.TransientModel):
                 'member': False,
                 'acquirer_seq_id': self.acquirer_id.seq_id
             }
+        if self.env.user.is_using_pin:
+            if not self.pin:
+                raise UserError('Please input your PIN!')
+            payment_data.update({
+                'pin': hmac.new(str.encode('orbisgoldenway'), str.encode(self.pin), digestmod=hashlib.sha256).hexdigest()
+            })
         provider_obj = self.env['tt.provider.hotel'].search([('id', '=', self.provider_id.id)])
         provider_obj.action_force_issued_from_button(payment_data)
 

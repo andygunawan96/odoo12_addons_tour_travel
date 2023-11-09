@@ -1,14 +1,20 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError, AccessDenied
 import math
 import random
 from datetime import datetime, timedelta
 from ...tools.ERR import RequestException
 from ...tools import ERR
+
 class ResUsersInherit(models.Model):
     _inherit = 'res.users'
 
     ## HO cuman boleh menyalakan, Admin boleh nyala mati
     def toggle_active_otp(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_user_data_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 466')
+        if not self.env.user.has_group('base.group_system') and self.is_using_otp:
+            raise UserError('You do not have permission to turn off OTP.')
         self.is_using_otp = not self.is_using_otp
 
     def check_need_otp_user_api(self, req):
