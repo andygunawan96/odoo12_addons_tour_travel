@@ -243,7 +243,7 @@ class ReportSelling(models.Model):
         provider_type.name as provider_type_name,
         tour.name as tour_name,
         tour.tour_category as tour_category, 
-        tour.tour_type as tour_type, 
+        tourtype.name as tour_type, 
         tour.tour_route as tour_route, 
         tour.duration as tour_duration, 
         country.name as tour_country_name,
@@ -875,6 +875,7 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
         LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
         LEFT JOIN tt_master_tour tour ON tour.id = reservation.tour_id
+        LEFT JOIN tt_master_tour_type tourtype ON tourtype.id = tour.tour_type_id
         LEFT JOIN tt_tour_location_rel tour_location_rel ON tour_location_rel.product_id = tour.id
         LEFT JOIN tt_tour_master_locations tour_location ON tour_location.id = tour_location_rel.location_id
         LEFT JOIN res_country country ON tour_location.country_id = country.id
@@ -1161,7 +1162,7 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _group_by_tour():
-        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, tour.name, tour.tour_category, tour.tour_type, tour.tour_route, tour.duration, country.name, tour_location.country_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, tour.name, tour.tour_category, tourtype.name, tour.tour_route, tour.duration, country.name, tour_location.country_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_event():
