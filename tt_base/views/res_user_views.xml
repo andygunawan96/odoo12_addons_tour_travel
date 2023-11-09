@@ -70,6 +70,7 @@
         </field>
     </record>
 
+    <!--    machine_ids harus dipisah karena ditambah di view khusus base.group_system, kalo tambah di page atau fieldnya tetap error (user biasa ga bisa buka) -->
     <record id="res_user_form_view_machine_inh" model="ir.ui.view">
         <field name="name">res.user.form.view.machine.inh</field>
         <field name="model">res.users</field>

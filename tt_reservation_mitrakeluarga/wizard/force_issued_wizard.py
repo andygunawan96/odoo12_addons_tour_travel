@@ -20,7 +20,7 @@ class ForceIssuedWizard(models.TransientModel):
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Type', related='customer_parent_id.customer_parent_type_id', readonly=True)
     use_credit_limit = fields.Boolean('Use COR Credit Limit', default=False)
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Method', domain="[('agent_id', '=', agent_id)]")
-    is_using_pin = fields.Boolean('Is Using PIN', compute='_compute_is_using_pin')
+    is_using_pin = fields.Boolean('Is Using PIN', compute='_compute_is_using_pin', default=lambda self: self.env.user.is_using_pin)
     pin = fields.Char('PIN')
 
     @api.depends('provider_id')
