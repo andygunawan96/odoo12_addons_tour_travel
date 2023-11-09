@@ -174,4 +174,40 @@
 
 
     </data>
+
+	<data>
+		<record model="mail.template" id="template_mail_change_pin">
+			<field name="name">Template OTP</field>
+			<field name="email_from">${object.user_id.ho_id.email_server_id.smtp_user}</field>
+			<field name="subject">${object.user_id.name} OTP</field>
+			<field name="email_to">${object.user_id.login}</field>
+			<field name="model_id" ref="tt_base.model_tt_otp"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.user_id.name}</p>
+<br/>
+<p>We have received a request to change pin in our system</p>
+<p>Machine ID: ${object.machine_id.code}</p>
+<p>Platform: ${object.platform}</p>
+<p>Browser: ${object.browser}</p>
+<p>Please input the 6 digit authentification code below to change pin</p>
+<br/>
+<h3>${object.otp}</h3>
+<br/>
+
+<p>This OTP code will expire on ${object.get_expired_time()} GMT+0.</p>
+<p>If you didn't make this request, please contact helpdesk or change your password</p>
+
+<br/>
+<p>Regards,</p>
+<p>${object.get_company_name()}</p>
+]]>
+			</field>
+		</record>
+
+
+    </data>
 </odoo>

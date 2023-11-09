@@ -65,6 +65,8 @@ class ResUsersInherit(models.Model):
                 purpose_type = 'turn_off_this_machine'
             if req.get('is_turn_off_other_machine'):
                 purpose_type = 'turn_off_other_machine'
+            if req.get('change_pin'):
+                purpose_type = 'change_pin'
             otp_objs = machine_obj.otp_ids.filtered(lambda x:
                         x.create_date > datetime.now() - timedelta(minutes=ho_obj.otp_expired_time) and
                         x.purpose_type == purpose_type and x.is_connect == False and x.user_id.id == self.id)
@@ -83,6 +85,8 @@ class ResUsersInherit(models.Model):
                 otp_objs[0].send_email_turn_off_other_machine()
             elif req.get('turn_off_machine_id'):
                 otp_objs[0].send_email_turn_off_machine()
+            elif req.get('change_pin'):
+                otp_objs[0].send_email_change_pin()
             else:
                 otp_objs[0].send_email_otp()
             self.env.cr.commit()
@@ -346,7 +350,7 @@ class TtOtp(models.Model):
     # turn_off_date = fields.Datetime('Turn Off Date', readonly=True)
     purpose_type = fields.Selection([
         ('turn_on', 'Turn On'), ('turn_off', 'Turn Off All OTP'), ('turn_off_other_machine', 'Turn Off Other Machine'),
-        ('turn_off_this_machine', 'Turn Off This Machine')], string='Purpose Type', default='turn_on')
+        ('turn_off_this_machine', 'Turn Off This Machine'), ('change_pin', 'Change Pin')], string='Purpose Type', default='turn_on')
 
     duration = fields.Selection([
         ('always', 'Always'), ('1', '1 Days'), ('3', '3 Days'),
@@ -412,6 +416,11 @@ class TtOtp(models.Model):
     @api.multi
     def send_email_turn_off_otp(self):
         template = self.env.ref('tt_base.template_mail_turn_off_otp', raise_if_not_found=False)
+        template.send_mail(self.id, force_send=True)
+
+    @api.multi
+    def send_email_change_pin(self):
+        template = self.env.ref('tt_base.template_mail_change_pin', raise_if_not_found=False)
         template.send_mail(self.id, force_send=True)
 
     @api.multi
