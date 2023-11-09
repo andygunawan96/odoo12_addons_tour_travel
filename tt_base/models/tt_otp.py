@@ -44,7 +44,7 @@ class ResUsersInherit(models.Model):
 
     def create_or_get_otp_user_api(self, req):
         if not req.get('machine_code'):
-            raise RequestException(1041, additional_message="Please clear browser cache first.")
+            raise RequestException(1044)
         ho_obj = self.sudo().ho_id
         ## NEED TEST
 
