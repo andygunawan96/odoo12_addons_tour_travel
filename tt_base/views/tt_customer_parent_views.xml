@@ -132,14 +132,16 @@
                         <page string="OSI Codes">
                             <field name="osi_corporate_code_ids" context="{'default_customer_parent_id': id}"/>
                         </page>
-                        <page string="Addresses">
+                        <page string="Addresses And Phones">
+                            <label for="address_ids"/>
                             <field name="address_ids"/>
-                        </page>
-                        <page string="Phones">
+                            <label for="phone_ids"/>
                             <field name="phone_ids"/>
-                        </page>
-                        <page string="Social Media">
+                            <label for="social_media_ids"/>
                             <field name="social_media_ids"/>
+                        </page>
+                        <page string="Users">
+                            <field name="user_ids" readonly="1"/>
                         </page>
                         <page string="Notes">
                             <field name="notes"/>

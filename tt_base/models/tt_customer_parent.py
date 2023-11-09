@@ -113,10 +113,22 @@ class TtCustomerParent(models.Model):
     #                 })
 
     def to_dict_acc(self):
+        booker_list = []
+        for rec in self.booker_customer_ids:
+            temp_booker_dict = rec.customer_id.to_dict()
+            temp_booker_dict.update({
+                'job_position': rec.job_position_id.name
+            })
+            booker_list.append(temp_booker_dict)
         return {
             'seq_id': self.seq_id,
             'customer_parent_name': self.name,
-            'customer_parent_type': self.customer_parent_type_id and self.customer_parent_type_id.name or ''
+            'customer_parent_type': self.customer_parent_type_id and self.customer_parent_type_id.name or '',
+            'customer_parent_type_code': self.customer_parent_type_id and self.customer_parent_type_id.code or '',
+            'address_list': [rec.to_dict() for rec in self.address_ids],
+            'phone_list': [rec.to_dict() for rec in self.phone_ids],
+            'email': self.email,
+            'booker_list': booker_list
         }
 
     def action_create_corporate_user(self):
@@ -278,8 +290,8 @@ class TtCustomerParent(models.Model):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 48')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
-        if not self.address_ids or not self.phone_ids:
-            raise UserError("Please fill at least one ADDRESS data and one PHONE data!")
+        if not self.address_ids or not self.phone_ids or not self.booker_customer_ids:
+            raise UserError("Please fill at least one BOOKER, one ADDRESS data and one PHONE data!")
         self.write({
             'state': 'confirm',
             'confirm_uid': self.env.user.id,
@@ -378,8 +390,8 @@ class TtCustomerParent(models.Model):
                 'address': data['company_address']
             })
             phone_ids = []
-            calling_code = data['company_phone_number'][:1] if data['company_phone_number'][:1] == '0' else data['company_phone_number'][:2]
-            calling_number = data['company_phone_number'][1:] if data['company_phone_number'][:1] == '0' else data['company_phone_number'][2:]
+            calling_code = data['company_phone']['calling_code']
+            calling_number = data['company_phone']['calling_number']
             phone_obj = self.env['phone.detail'].create({
                 'type': 'work',
                 'calling_code': calling_code,
@@ -387,8 +399,8 @@ class TtCustomerParent(models.Model):
             })
             phone_ids.append(phone_obj.id)
 
-            calling_code = data['owner_phone_number'][:1] if data['owner_phone_number'][:1] == '0' else data['owner_phone_number'][:2]
-            calling_number = data['owner_phone_number'][1:] if data['owner_phone_number'][:1] == '0' else data['owner_phone_number'][2:]
+            calling_code = data['owner_phone']['calling_code']
+            calling_number = data['owner_phone']['calling_number']
             phone_obj = self.env['phone.detail'].create({
                 'type': 'work',
                 'calling_code': calling_code,
@@ -396,8 +408,8 @@ class TtCustomerParent(models.Model):
             })
             phone_ids.append(phone_obj.id)
 
-            calling_code = data['director_phone_number'][:1] if data['director_phone_number'][:1] == '0' else data['director_phone_number'][:2]
-            calling_number = data['director_phone_number'][1:] if data['director_phone_number'][:1] == '0' else data['director_phone_number'][2:]
+            calling_code = data['director_phone']['calling_code']
+            calling_number = data['director_phone']['calling_number']
             phone_obj = self.env['phone.detail'].create({
                 'type': 'work',
                 'calling_code': calling_code,
@@ -405,8 +417,8 @@ class TtCustomerParent(models.Model):
             })
             phone_ids.append(phone_obj.id)
 
-            calling_code = data['accounting_phone_number'][:1] if data['accounting_phone_number'][:1] == '0' else data['accounting_phone_number'][:2]
-            calling_number = data['accounting_phone_number'][1:] if data['accounting_phone_number'][:1] == '0' else data['accounting_phone_number'][2:]
+            calling_code = data['accounting_phone']['calling_code']
+            calling_number = data['accounting_phone']['calling_code']
             phone_obj = self.env['phone.detail'].create({
                 'type': 'work',
                 'calling_code': calling_code,
@@ -437,7 +449,7 @@ class TtCustomerParent(models.Model):
             notes = 'Company Name: %s\n' % data['company_name']
             notes += 'Company Address: %s\n' % data['company_address']
             notes += 'Company Property: %s\n' % data['company_property']
-            notes += 'Company Phone Number: %s\n' % data['company_phone_number']
+            notes += 'Company Phone Number: %s - %s\n' % (data['company_phone']['calling_code'],data['company_phone']['calling_number'])
             notes += 'Company Email: %s\n' % data['company_email']
             notes += 'Company Established Date: %s\n' % data['company_established_date']
             notes += 'Company Worker: %s\n' % data['company_worker']
@@ -453,32 +465,32 @@ class TtCustomerParent(models.Model):
             notes += 'Owner Name: %s\n' % data['owner_name']
             notes += 'Owner Position: %s\n' % data['owner_position']
             notes += 'Owner Birth Date: %s\n' % data['owner_birth_date']
-            notes += 'Owner Phone Number: %s\n' % data['owner_phone_number']
+            notes += 'Owner Phone Number: %s - %s\n' % (data['owner_phone']['calling_code'], data['owner_phone']['calling_number'])
             notes += 'Owner Email: %s\n\n' % data['owner_email']
             # notes += 'Owner KTP URL: %s\n\n' % data_img['img_owner_ktp']['url']
 
             notes += 'Director Name: %s\n' % data['director_name']
             notes += 'Director Position: %s\n' % data['director_position']
             notes += 'Director Birth Date: %s\n' % data['director_birth_date']
-            notes += 'Director Phone Number: %s\n' % data['director_phone_number']
+            notes += 'Director Phone Number: %s - %s\n' % (data['director_phone']['calling_code'], data['director_phone']['calling_number'])
             notes += 'Director Email: %s\n\n' % data['director_email']
 
             notes += 'Accounting Name: %s\n' % data['accounting_name']
             notes += 'Accounting Position: %s\n' % data['accounting_position']
             notes += 'Accounting Birth Date: %s\n' % data['accounting_birth_date']
-            notes += 'Accounting Phone Number: %s\n' % data['accounting_phone_number']
+            notes += 'Accounting Phone Number: %s - %s\n' % (data['accounting_phone']['calling_code'], data['accounting_phone']['calling_number'])
             notes += 'Accounting Email: %s\n' % data['accounting_email']
             # notes += 'Accounting KTP URL: %s\n' % data_img['img_accounting_ktp']['url']
 
             notes += 'PIC Name: %s %s %s\n' % (data['pic_title'], data['pic_first_name'], data['pic_last_name'])
             notes += 'PIC Position: %s\n' % data['pic_position']
             notes += 'PIC Birth Date: %s\n' % data['pic_birth_date']
-            notes += 'PIC Phone Number: %s\n' % data['pic_phone_number']
+            notes += 'PIC Phone Number: %s - %s\n' % (data['pic_phone']['calling_code'], data['pic_phone']['calling_number'])
             notes += 'PIC Email: %s\n' % data['pic_email']
             # notes += 'PIC KTP URL: %s\n' % data_img['img_pic_ktp']['url']
 
-            calling_code = data['pic_phone_number'][:1] if data['pic_phone_number'][:1] == '0' else data['pic_phone_number'][:2]
-            calling_number = data['pic_phone_number'][1:] if data['pic_phone_number'][:1] == '0' else data['pic_phone_number'][2:]
+            calling_code = data['pic_phone']['calling_code']
+            calling_number = data['pic_phone']['calling_number']
             phone_obj = self.env['phone.detail'].create({
                 'type': 'work',
                 'calling_code': calling_code,

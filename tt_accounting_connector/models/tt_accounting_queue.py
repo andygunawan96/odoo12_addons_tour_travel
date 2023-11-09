@@ -309,7 +309,8 @@ class TtAccountingQueue(models.Model):
                     'total': trans_obj.total,
                     'total_discount': trans_obj.total_discount,
                     'is_send_commission': is_send_commission,
-                    'billing_due_date': billing_due_date
+                    'billing_due_date': billing_due_date,
+                    'issued_accounting_uid': trans_obj.issued_uid and trans_obj.issued_uid.accounting_uid or ''
                 })
                 if self.res_model == 'tt.reservation.airline':
                     request.update({

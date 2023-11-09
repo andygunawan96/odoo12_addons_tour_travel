@@ -67,16 +67,16 @@ class ResUsersInherit(models.Model):
                 purpose_type = 'turn_off_other_machine'
             otp_objs = machine_obj.otp_ids.filtered(lambda x:
                         x.create_date > datetime.now() - timedelta(minutes=ho_obj.otp_expired_time) and
-                        x.purpose_type == purpose_type and x.is_connect == False)
+                        x.purpose_type == purpose_type and x.is_connect == False and x.user_id.id == self.id)
             if otp_objs:
                 if req.get('is_resend_otp'):
                     for otp_obj in otp_objs:
                         otp_obj.active = False
-                    otp_objs = [self.env['tt.otp'].sudo().create_otp(req, self.id, purpose_type, machine_obj)]
+                    otp_objs = [self.env['tt.otp'].sudo().create_otp(self.id, purpose_type, machine_obj)]
                 else:
                     return otp_objs[0]
             else:
-                otp_objs = [self.env['tt.otp'].sudo().create_otp(req, self.id, purpose_type, machine_obj)]
+                otp_objs = [self.env['tt.otp'].sudo().create_otp(self.id, purpose_type, machine_obj)]
             if req.get('turn_off_otp'):
                 otp_objs[0].send_email_turn_off_otp()
             elif req.get('turn_off_machine_id') and req.get('is_turn_off_other_machine'):
@@ -111,7 +111,6 @@ class ResUsersInherit(models.Model):
                     })
                 return True
             raise RequestException(1041)
-
 
         else:
             ## NO OTP CODE CREATE
@@ -370,7 +369,7 @@ class TtOtp(models.Model):
         self.need_otp_type = req['need_otp_type']
         return ERR.get_no_error()
 
-    def create_otp(self, req, user_id, purpose_type, machine_obj):
+    def create_otp(self, user_id, purpose_type, machine_obj):
         return self.create({
             "machine_id": machine_obj.id,
             "otp": self.generate_otp(),
