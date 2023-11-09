@@ -1,5 +1,4 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError, AccessDenied
 import math
 import random
 from datetime import datetime, timedelta

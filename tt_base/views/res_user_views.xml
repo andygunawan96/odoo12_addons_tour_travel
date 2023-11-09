@@ -61,7 +61,7 @@
                 </page>
             </xpath>
             <xpath expr="//notebook" position="inside">
-                <page string="Machine">
+                <page string="Machine" groups="base.group_system">
                     <field name="machine_ids"/>
                 </page>
             </xpath>
