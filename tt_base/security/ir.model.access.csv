@@ -665,8 +665,7 @@ access_tt_otp_for_public,tt.otp.for.public,model_tt_otp,,0,0,0,0
 ,,,,,,,
 access_tt_otp_for_admin,tt.otp.for.admin,model_tt_otp,base.group_system,1,1,1,1
 ,,,,,,,
-access_tt_machine_for_user_data_level_1,tt.machine.for.user_data.level.1,model_tt_machine,tt_base.group_user_data_level_1,1,0,0,0
-access_tt_machine_for_user_data_level_2,tt.machine.for.user_data.level.2,model_tt_machine,tt_base.group_user_data_level_2,1,0,1,0
-access_tt_machine_for_user_data_level_3,tt.machine.for.user_data.level.3,model_tt_machine,tt_base.group_user_data_level_3,1,1,1,0
-access_tt_machine_for_user_data_level_4,tt.machine.for.user_data.level.4,model_tt_machine,tt_base.group_user_data_level_4,1,1,1,0
-access_tt_machine_for_user_data_level_5,tt.machine.for.user_data.level.5,model_tt_machine,tt_base.group_user_data_level_5,1,1,1,1
+access_tt_machine_for_public,tt.machine.for.public,model_tt_machine,,0,0,0,0
+,,,,,,,
+access_tt_machine_for_admin,tt.machine.for.admin,model_tt_machine,base.group_system,1,1,1,1
+,,,,,,,

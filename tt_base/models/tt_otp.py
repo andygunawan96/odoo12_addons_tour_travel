@@ -4,11 +4,13 @@ import random
 from datetime import datetime, timedelta
 from ...tools.ERR import RequestException
 from ...tools import ERR
+import pytz
 class ResUsersInherit(models.Model):
     _inherit = 'res.users'
 
-    is_using_otp = fields.Boolean('Use OTP', default=False)
-    machine_ids = fields.One2many('tt.machine', 'user_id', 'Machine IDs', readonly=True)
+    ## HO cuman boleh menyalakan, Admin boleh nyala mati
+    def toggle_active_otp(self):
+        self.is_using_otp = not self.is_using_otp
 
     def check_need_otp_user_api(self, req):
         is_machine_connect = False
@@ -31,7 +33,7 @@ class ResUsersInherit(models.Model):
                 if otp_obj.duration == 'never':
                     is_machine_connect = True
                 elif len(otp_obj.duration) == 1: ## DAYS
-                    if otp_obj.create_date + timedelta(days=int(otp_obj.duration)) > datetime.now():
+                    if datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration)) > datetime.strptime(datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S"):
                         is_machine_connect = True
                     else:
                         otp_obj.active = False
@@ -43,7 +45,7 @@ class ResUsersInherit(models.Model):
 
     def create_or_get_otp_user_api(self, req):
         if not req.get('machine_code'):
-            raise RequestException(1041, additional_message="Please clear browser cache first.")
+            raise RequestException(1044)
         ho_obj = self.sudo().ho_id
         ## NEED TEST
 
@@ -64,6 +66,8 @@ class ResUsersInherit(models.Model):
                 purpose_type = 'turn_off_this_machine'
             if req.get('is_turn_off_other_machine'):
                 purpose_type = 'turn_off_other_machine'
+            if req.get('change_pin'):
+                purpose_type = 'change_pin'
             otp_objs = machine_obj.otp_ids.filtered(lambda x:
                         x.create_date > datetime.now() - timedelta(minutes=ho_obj.otp_expired_time) and
                         x.purpose_type == purpose_type and x.is_connect == False and x.user_id.id == self.id)
@@ -82,6 +86,8 @@ class ResUsersInherit(models.Model):
                 otp_objs[0].send_email_turn_off_other_machine()
             elif req.get('turn_off_machine_id'):
                 otp_objs[0].send_email_turn_off_machine()
+            elif req.get('change_pin'):
+                otp_objs[0].send_email_change_pin()
             else:
                 otp_objs[0].send_email_otp()
             self.env.cr.commit()
@@ -345,7 +351,7 @@ class TtOtp(models.Model):
     # turn_off_date = fields.Datetime('Turn Off Date', readonly=True)
     purpose_type = fields.Selection([
         ('turn_on', 'Turn On'), ('turn_off', 'Turn Off All OTP'), ('turn_off_other_machine', 'Turn Off Other Machine'),
-        ('turn_off_this_machine', 'Turn Off This Machine')], string='Purpose Type', default='turn_on')
+        ('turn_off_this_machine', 'Turn Off This Machine'), ('change_pin', 'Change Pin')], string='Purpose Type', default='turn_on')
 
     duration = fields.Selection([
         ('always', 'Always'), ('1', '1 Days'), ('3', '3 Days'),
@@ -411,6 +417,11 @@ class TtOtp(models.Model):
     @api.multi
     def send_email_turn_off_otp(self):
         template = self.env.ref('tt_base.template_mail_turn_off_otp', raise_if_not_found=False)
+        template.send_mail(self.id, force_send=True)
+
+    @api.multi
+    def send_email_change_pin(self):
+        template = self.env.ref('tt_base.template_mail_change_pin', raise_if_not_found=False)
         template.send_mail(self.id, force_send=True)
 
     @api.multi

@@ -6,7 +6,7 @@ import logging
 from ....tools.ERR import RequestException
 from ....tools import ERR
 from odoo.http import request
-import passlib.context
+from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -89,7 +89,11 @@ class ResUsers(models.Model):
     transaction_limit = fields.Monetary('Transaction Limit')
     agent_type_id = fields.Many2one('tt.agent.type', 'Template For Agent Type', help="Agent Type Template")
     is_user_template = fields.Boolean('Is User Template', default=False)
+    vendor_id = fields.Many2one('tt.vendor', 'External Vendor')
 
+    ##security section
+    is_using_otp = fields.Boolean('Is Using OTP', default=False)
+    machine_ids = fields.One2many('tt.machine', 'user_id', 'Machine IDs', readonly=True)
     is_using_pin = fields.Boolean("Is Using Pin", default=False)
     pin = fields.Char("PIN", compute='_compute_pin', inverse='_set_pin', invisible=True, copy=False, store=True)
 
@@ -134,6 +138,7 @@ class ResUsers(models.Model):
 
     # Fungsi ini perlu di lengkapi/disempurnakan
     # Tujuan : kalau res_pertner.parent_agent_id berubah maka user.agent_id ikut berubah
+
     @api.onchange('partner_id.parent_agent_id')
     @api.depends('partner_id.parent_agent_id')
     def _onchange_partner_id(self):
@@ -498,13 +503,51 @@ class ResUsers(models.Model):
         user_obj.is_using_pin = False
         return ERR.get_no_error()
 
+    def change_pin_otp_api(self, data, context):
+        user_obj = self.browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+        if data.get('otp_params'):
+            if not user_obj.is_using_otp:
+                raise RequestException(1043)
+            data['otp_params']['change_pin'] = True
+            otp_obj = user_obj.create_or_get_otp_user_api(data['otp_params'])
+            raise RequestException(1040, additional_message=(otp_obj.create_date + timedelta(minutes=user_obj.ho_id.otp_expired_time)).strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            raise RequestException(1044)
+
     def change_pin_api(self, data, context):
         user_obj = self.env['res.users'].browse(context['co_uid'])
         try:
             user_obj.create_date
         except:
             raise RequestException(1008)
-        user_obj._check_pin(data['old_pin'])
+
+        if data.get('otp_params'):
+            now = datetime.now()
+            otp_objs = self.env['tt.otp'].search([
+                ('machine_id.code', '=', data['otp_params']['machine_code']),
+                ('otp', '=', data['otp_params']['otp']),
+                ('purpose_type', '=', 'change_pin'),
+                ('is_connect', '=', False),
+                ('create_date', '>', now - timedelta(minutes=user_obj.ho_id.otp_expired_time))
+            ])
+            if otp_objs:
+                notes = ['Forgot pin, Change PIN using this OTP']
+                for otp_obj in otp_objs:
+                    otp_obj.update({
+                        "is_connect": True,
+                        "is_disconnect": True,
+                        "connect_date": now,
+                        "disconnect_date": now,
+                        'description': "\n".join(notes)
+                    })
+            else:
+                return ERR.get_error(1041)
+        else:
+            user_obj._check_pin(data['old_pin'])
         user_obj.pin = data['pin']
         return ERR.get_no_error()
 

@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="res_users_otp_form_view_inherit" model="ir.ui.view">
-        <field name="name">res.users.otp.form.view.inherit</field>
-        <field name="model">res.users</field>
-        <field name="inherit_id" ref="tt_base.res_user_form_view_inh"/>
-        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]" />
-        <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside" attrs="{'invisible': ['|', ('ho_id.email_server_id','=',False), ('ho_id','=',False)]}">
-                <page string="Machine">
-                    <group>
-                        <field name="is_using_otp"/>
-                    </group>
-                    <field name="machine_ids"/>
-                </page>
-            </xpath>
-        </field>
-    </record>
-
     <record id="tt_agent_otp_form_view_inherit" model="ir.ui.view">
         <field name="name">tt.agent.otp.form.view.inherit</field>
         <field name="model">tt.agent</field>
         <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
         <field name="arch" type="xml">
-
             <field name="email_server_id" position="after">
                 <field name="otp_expired_time"  attrs="{'invisible': [('is_ho_agent','=',False)]}" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
             </field>

@@ -10,6 +10,11 @@
                 <field name="agent_id" string="Agent"/>
                 <field name="agent_type_related_id" string="Agent Type Related"/>
                 <filter name="is_banned" string="Banned" domain="[('is_banned','=',True)]"/>
+                <separator/>
+                <filter name="is_using_otp" string="OTP ON" domain="[('is_using_otp','=',True)]"/>
+                <filter name="is_using_otp" string="OTP OFF" domain="[('is_using_otp','=',False)]"/>
+                <filter name="is_using_pin" string="PIN ON" domain="[('is_using_pin','=',True)]"/>
+                <filter name="is_using_pin" string="PIN OFF" domain="[('is_using_pin','=',False)]"/>
             </field>
         </field>
     </record>
@@ -28,6 +33,13 @@
             <xpath expr="//button[@name='toggle_active']" position="before">
                 <field name="is_banned" invisible="1"/>
                 <label for ="toggle_active" string="Banned" attrs="{'invisible': [('is_banned','=',False)]}"/>
+                <field name="is_using_pin" invisible="1"/>
+                <label for ="toggle_active" string="PIN ON" attrs="{'invisible': [('is_using_pin','=',False)]}"/>
+                <button name="toggle_active_otp" type="object" groups="base.group_user"
+                        class="oe_stat_button" icon="fa-key">
+                    <field name="is_using_otp" widget="boolean_button"
+                           options='{"terminology": "default"}'/>
+                </button>
             </xpath>
             <xpath expr="//div[hasclass('oe_title')]/group/field[@name='partner_id']" position="after">
                 <field name="is_user_template"/>
@@ -40,12 +52,17 @@
                 <field name='vendor_id' groups="base.group_user" readonly="False" attrs="{'invisible': [('is_user_template','=',True)]}"/>
             </xpath>
             <xpath expr="//notebook/page[last()]" position="after">
-                <page string="User Info" name="skytors">
+                <page string="User Info" name="orbisway">
                     <group>
                         <field name='email' groups="base.group_system"/>
                     </group>
                     <separator string="Frontend Permissions"/>
                     <field name="frontend_security_ids"/>
+                </page>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Machine">
+                    <field name="machine_ids"/>
                 </page>
             </xpath>
             <!--            gk jelas ini apa 22JAN2020-->
