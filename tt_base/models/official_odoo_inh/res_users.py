@@ -511,7 +511,7 @@ class ResUsers(models.Model):
             raise RequestException(1008)
         if data.get('otp_params'):
             if not user_obj.is_using_otp:
-                raise RequestException(1042)
+                raise RequestException(1043)
             data['otp_params']['change_pin'] = True
             otp_obj = user_obj.create_or_get_otp_user_api(data['otp_params'])
             raise RequestException(1040, additional_message=(otp_obj.create_date + timedelta(minutes=user_obj.ho_id.otp_expired_time)).strftime('%Y-%m-%d %H:%M:%S'))
