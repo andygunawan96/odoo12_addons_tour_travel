@@ -1510,11 +1510,11 @@ class TtReservation(models.Model):
                     if context['co_user_login'] == context['user_login']:
                         is_need_check_required = False
                 if is_need_check_required:
-                    if user_obj.ho_id.is_agent_required_otp and not user_obj.is_using_otp and user_obj.ho_id.is_agent_required_pin and not user_obj.is_using_pin:
+                    if user_obj.ho_id.is_agent_required_otp == 'required' and not user_obj.is_using_otp and user_obj.ho_id.is_agent_required_pin == 'required' and not user_obj.is_using_pin:
                         raise RequestException(1046)
-                    elif user_obj.ho_id.is_agent_required_otp and not user_obj.is_using_otp:
+                    elif user_obj.ho_id.is_agent_required_otp == 'required' and not user_obj.is_using_otp:
                         raise RequestException(1043)
-                    elif user_obj.ho_id.is_agent_required_pin and not user_obj.is_using_pin:
+                    elif user_obj.ho_id.is_agent_required_pin == 'required' and not user_obj.is_using_pin:
                         raise RequestException(1045)
             #### CHECK PIN HERE ####
             if user_obj.is_using_pin and not book_obj.payment_acquirer_number_id or user_obj.is_using_pin and book_obj.payment_acquirer_number_id and book_obj.payment_acquirer_number_id.state not in ['process', 'waiting']:

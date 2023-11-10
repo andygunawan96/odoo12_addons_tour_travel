@@ -10,6 +10,8 @@ import time
 import json
 from odoo import _
 from odoo.tools import ustr
+from ....tools.db_connector import GatewayConnector
+
 _logger = logging.getLogger(__name__)
 def_folder = '/var/log/tour_travel/gmailcredentials'
 
@@ -135,7 +137,18 @@ class IrMailServer(models.Model):
             if os.path.exists("%s/%s.pickle" % (def_folder, email_name)):
                 with open("%s/%s.pickle" % (def_folder, email_name), "rb") as token:
                     creds = pickle.load(token)
-                connection = gmail.connect_gmail(creds, email_name)
+                try:
+                    connection = gmail.connect_gmail(creds, email_name)
+                except:
+                    data = {
+                        'code': 9999,
+                        'title': 'ERROR EMAIL BACKEND',
+                        'message': 'Error refresh token email backend %s' % (self.get_email_name()),
+                    }
+                    context = {
+                        "co_ho_id": self.ho_id.id
+                    }
+                    GatewayConnector().telegram_notif_api(data, context)
             return connection
         else:
             return super(IrMailServer, self).connect(host, port, user, password, encryption, smtp_debug, mail_server_id)
