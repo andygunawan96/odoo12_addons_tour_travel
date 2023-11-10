@@ -9,7 +9,7 @@ odoo.define('tt.fingerprint', function (require) {
     $(document).ready(function() {
     //$("#kentng").click(function() {
         $(document).click(function() {
-            if(typeof(localStorage.platform) === 'undefined'){
+            if(typeof(localStorage.machine_code) !== 'undefined' || localStorage.machine_code == '' || typeof(localStorage.platform) === 'undefined' || typeof(localStorage.browser) !== 'undefined' || typeof(localStorage.timezone) !== 'undefined'){
                 //console.log('XXX1');
                 //const fpPromise = import('https://openfpcdn.io/fingerprintjs/v4').then(FingerprintJS => FingerprintJS.load())
                 const fpPromise = import('/tt_base/static/tt_custom/fingerprint.js').then(FingerprintJS => FingerprintJS.load())
@@ -29,8 +29,27 @@ odoo.define('tt.fingerprint', function (require) {
                     localStorage.browser = browser;
                     localStorage.timezone = timezone;
                 });
-                localStorage.platform = platform;
-                localStorage.machine_code = machine_code;
+
+                if(localStorage.hasOwnProperty('platform'))
+                    platform = localStorage.platform;
+                else
+                    platform = '';
+
+                if(localStorage.hasOwnProperty('browser'))
+                    browser = localStorage.browser;
+                else
+                    browser = '';
+
+                if(localStorage.hasOwnProperty('timezone'))
+                    timezone = localStorage.timezone;
+                else
+                    timezone = '';
+
+                if(localStorage.hasOwnProperty('machine_code'))
+                    machine_code = localStorage.machine_code;
+                else{
+                    localStorage.machine_code = machine_code;
+                }
             }else{
                 platform = localStorage.platform;
                 machine_code = localStorage.machine_code;
