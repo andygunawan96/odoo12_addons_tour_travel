@@ -73,8 +73,8 @@ class TtAgent(models.Model):
     is_agent_breakdown_price_printout = fields.Boolean('Is Agent Breakdown Price Printout')
     is_btc_breakdown_price_printout = fields.Boolean('Is BTC Breakdown Price Printout')
 
-    is_agent_required_otp = fields.Boolean('Is Agent Required OTP')
-    is_agent_required_pin = fields.Boolean('Is Agent Required PIN')
+    is_agent_required_otp = fields.Selection([('optional','Optional'), ('notification','Notification'), ('required','Required')], 'Is Agent Required OTP', default='optional', help="Optional: User can issued in system without set OTP\nNotification: User can issued in system without set OTP and always info\nRequired: User need set OTP to issued in system and always info")
+    is_agent_required_pin = fields.Selection([('optional','Optional'), ('notification','Notification'), ('required','Required')], 'Is Agent Required PIN', default='optional', help="Optional: User can issued in system without set PIN\nNotification: User can issued in system without set PIN and always info\nRequired: User need set PIN to issued in system and always info")
 
     redirect_url_signup = fields.Char('Redirect URL Signup', default='/')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
