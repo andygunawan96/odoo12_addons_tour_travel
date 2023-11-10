@@ -151,12 +151,21 @@ class ApiManagement(models.Model):
                         ('purpose_type','=', 'turn_on')
                     ])
                     for otp_obj in otp_objs:
-                        values['co_otp_list_machine'].append({
-                            "machine_id": otp_obj.machine_id.code,
-                            "platform": otp_obj.platform,
-                            "browser": otp_obj.browser,
-                            "timezone": otp_obj.timezone
-                        })
+                        is_need_add_otp = False
+                        if len(otp_obj.duration) == 1:
+                            if datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration)) > datetime.now():
+                                is_need_add_otp = True
+                        elif otp_obj.duration == 'never':
+                            is_need_add_otp = True
+                        if is_need_add_otp:
+                            values['co_otp_list_machine'].append({
+                                "machine_id": otp_obj.machine_id.code,
+                                "platform": otp_obj.platform,
+                                "browser": otp_obj.browser,
+                                "timezone": otp_obj.timezone,
+                                "valid_date": (datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration))).strftime('%Y-%m-%d %H:%M:%S') if otp_obj.duration != 'never' else 'Never ask again for this browser',
+                                "connect_date": datetime.strptime(otp_obj.connect_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+                            })
 
                 if _co_user.is_banned:
                     additional_msg = ""
