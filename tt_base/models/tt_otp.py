@@ -334,8 +334,8 @@ class TtMachine(models.Model):
         else:
             return self.create({
                 "code": req['machine_code'],
-                "platform": req['platform'],
-                "browser": req['browser'],
+                "platform": req.get('platform', ''),
+                "browser": req.get('browser', ''),
                 "timezone": req.get('timezone', ''),
             })
 
