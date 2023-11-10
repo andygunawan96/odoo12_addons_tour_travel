@@ -21,7 +21,7 @@ import traceback
 import time
 import json
 import base64
-from .db_connector import GatewayConnector
+
 from odoo.exceptions import UserError
 _logger = logging.getLogger(__name__)
 # Request all access (permission to read/send/receive emails, manage the inbox, and more)
@@ -62,12 +62,6 @@ def gmail_authenticate(creds, email_name):
                     _logger.error('Error update credential backend')
                     _logger.error("%s, %s" % (str(e), traceback.format_exc()))
                     raise UserError('Connection Failed') ## user error disini karena kalau di test connection pakai try except hasil return akan selalu failed
-                    # data = {
-                    #     'code': 9903,
-                    #     'title': 'ERROR EMAIL BACKEND',
-                    #     'message': 'Error refresh token email backend %s' % (str(e)),
-                    # }
-                    # GatewayConnector().telegram_notif_api(data, {})
                 update_status_email_file.update({
                     "is_update": False,
                     "last_update": time.time(),
