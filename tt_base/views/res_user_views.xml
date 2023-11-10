@@ -32,9 +32,9 @@
             </xpath>
             <xpath expr="//button[@name='toggle_active']" position="before">
                 <field name="is_banned" invisible="1"/>
-                <label for ="toggle_active" string="| Banned" attrs="{'invisible': [('is_banned','=',False)]}"/>
+                <label for ="toggle_active" string="Banned" attrs="{'invisible': [('is_banned','=',False)]}"/>
                 <field name="is_using_pin" invisible="1"/>
-                <label for ="toggle_active" string="| PIN ON" attrs="{'invisible': [('is_using_pin','=',False)]}"/>
+                <label for ="toggle_active" string="PIN ON" attrs="{'invisible': [('is_using_pin','=',False)]}"/>
                 <button name="toggle_active_otp" type="object" groups="base.group_system,tt_base.group_user_data_level_5"
                         class="oe_stat_button" icon="fa-key">
                     <field name="is_using_otp" widget="boolean_button"
@@ -60,11 +60,6 @@
                     <field name="frontend_security_ids"/>
                 </page>
             </xpath>
-            <xpath expr="//notebook" position="inside">
-                <page string="Machine">
-                    <field name="machine_ids"/>
-                </page>
-            </xpath>
             <!--            gk jelas ini apa 22JAN2020-->
             <!--            <xpath expr="//field[@name='subs']" position="attributes">-->
             <!--                <attribute name="readonly">1</attribute>-->
@@ -72,6 +67,21 @@
             <field name="partner_id" position="attributes">
                 <attribute name="groups">base.group_user</attribute>
             </field>
+        </field>
+    </record>
+
+    <!--    machine_ids harus dipisah karena ditambah di view khusus base.group_system, kalo tambah di page atau fieldnya tetap error (user biasa ga bisa buka) -->
+    <record id="res_user_form_view_machine_inh" model="ir.ui.view">
+        <field name="name">res.user.form.view.machine.inh</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Machine">
+                    <field name="machine_ids"/>
+                </page>
+            </xpath>
         </field>
     </record>
 
