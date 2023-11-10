@@ -38,7 +38,7 @@ def gmail_authenticate(creds, email_name):
                     "last_update": time.time(),
                     "is_update": True
                 }
-                write_file_update(update_status_email_file)
+                write_file_update(update_status_email_file, email_name)
                 update_status_email_file.update({## open untuk worker yg bikin file
                     "is_update": False
                 })
