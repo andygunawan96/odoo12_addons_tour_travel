@@ -116,7 +116,7 @@ class ResUsersInherit(models.Model):
                 for otp_obj in otp_objs:
                     otp_obj.update({
                         "is_connect": True,
-                        "duration": req.get('otp_type','never'),
+                        "duration": req.get('otp_type','never') if req['otp_type'] != False else 'never',
                         "connect_date": now,
                         "description": 'Turn On'
                     })
@@ -158,7 +158,7 @@ class ResUsersInherit(models.Model):
             for otp_obj in otp_objs:
                 otp_obj.update({
                     "is_connect": True,
-                    "duration": req.get('otp_type', 'never'),
+                    "duration": req.get('otp_type','never') if req['otp_type'] != False else 'never',
                     "connect_date": now,
                     "description": 'Turn On'
                 })
