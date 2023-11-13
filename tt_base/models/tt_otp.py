@@ -345,7 +345,7 @@ class TtOtp(models.Model):
     _order = "id desc"
     _description = "OTP User"
 
-    machine_id = fields.Many2one('tt.machine', 'Machine ID')
+    machine_id = fields.Many2one('tt.machine', 'Machine ID', ondelete='cascade')
     user_id = fields.Many2one('res.users', 'User', readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', related='user_id.agent_id', readonly=True)
     otp = fields.Char('OTP')
