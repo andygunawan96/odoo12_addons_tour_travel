@@ -153,9 +153,9 @@
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
-        <record id="tt_provider_airline_scoot_new" model="tt.provider">
-            <field name="name">Scoot New</field>
-            <field name="code">scoot_new</field>
+        <record id="tt_provider_airline_scoot_ndc" model="tt.provider">
+            <field name="name">Scoot NDC</field>
+            <field name="code">scoot_ndc</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
