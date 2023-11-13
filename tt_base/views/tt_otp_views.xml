@@ -74,6 +74,7 @@
         <field name="model">tt.otp</field>
         <field name="arch" type="xml">
             <tree string="TT OTP">
+                <field name="user_id"/>
                 <field name="machine_id"/>
                 <field name="otp" groups="base.group_erp_manager"/>
                 <field name="is_connect"/>
