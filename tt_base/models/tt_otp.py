@@ -114,12 +114,16 @@ class ResUsersInherit(models.Model):
 
             if otp_objs:
                 for otp_obj in otp_objs:
-                    otp_obj.update({
+                    data_update = {
                         "is_connect": True,
-                        "duration": req.get('otp_type','never') if req['otp_type'] != False else 'never',
                         "connect_date": now,
                         "description": 'Turn On'
-                    })
+                    }
+                    if req.get('otp_type') and req['otp_type'] != '':
+                        data_update.update({
+                            "duration": req['otp_type']
+                        })
+                    otp_obj.update(data_update)
                 return True
             raise RequestException(1041)
 
@@ -156,12 +160,16 @@ class ResUsersInherit(models.Model):
         ])
         if otp_objs:
             for otp_obj in otp_objs:
-                otp_obj.update({
+                data_update = {
                     "is_connect": True,
-                    "duration": req.get('otp_type','never') if req['otp_type'] != False else 'never',
                     "connect_date": now,
                     "description": 'Turn On'
-                })
+                }
+                if req.get('otp_type') and req['otp_type'] != '':
+                    data_update.update({
+                        "duration": req['otp_type']
+                    })
+                otp_obj.update(data_update)
             user_obj.is_using_otp = True
             return ERR.get_no_error()
         return ERR.get_error(500, additional_message='Invalid OTP')
