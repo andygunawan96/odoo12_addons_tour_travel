@@ -116,9 +116,9 @@ class ResUsersInherit(models.Model):
                 for otp_obj in otp_objs:
                     otp_obj.update({
                         "is_connect": True,
-                        "duration": req.get('otp_type','never') if req['otp_type'] != False else 'never',
                         "connect_date": now,
-                        "description": 'Turn On'
+                        "description": 'Turn On',
+                        "duration": req['otp_type'] if req.get('otp_type') and req['otp_type'] != '' else 'never'
                     })
                 return True
             raise RequestException(1041)
@@ -158,9 +158,9 @@ class ResUsersInherit(models.Model):
             for otp_obj in otp_objs:
                 otp_obj.update({
                     "is_connect": True,
-                    "duration": req.get('otp_type','never') if req['otp_type'] != False else 'never',
                     "connect_date": now,
-                    "description": 'Turn On'
+                    "description": 'Turn On',
+                    "duration": req['otp_type'] if req.get('otp_type') and req['otp_type'] != '' else 'never'
                 })
             user_obj.is_using_otp = True
             return ERR.get_no_error()

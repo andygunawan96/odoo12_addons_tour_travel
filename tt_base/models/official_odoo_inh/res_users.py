@@ -297,7 +297,7 @@ class ResUsers(models.Model):
                     'platform': vals.get('platform'),
                     'browser': vals.get('browser'),
                     'timezone': vals.get('timezone'),
-                    'otp_type': vals.get('otp_type', False),
+                    'otp_type': vals.get('otp_type', ''),
                     'is_resend_otp': vals.get('is_resend_otp', False),
                 })
         return super(ResUsers, self).write(vals)
