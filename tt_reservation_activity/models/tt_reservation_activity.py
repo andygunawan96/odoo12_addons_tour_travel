@@ -872,7 +872,6 @@ class ReservationActivity(models.Model):
 
     def resend_voucher_button(self):
         view = self.env.ref('tt_reservation_activity.activity_voucher_wizard')
-        view_id = view and view.id or False
         context = dict(self._context or {})
         return {
             'name': 'Resend Voucher to Email',
@@ -880,8 +879,8 @@ class ReservationActivity(models.Model):
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'activity.voucher.wizard',
-            'views': [(view_id, 'form')],
-            'view_id': view_id,
+            'views': [(view.id, 'form')],
+            'view_id': view.id,
             'target': 'new',
             'context': context,
         }

@@ -1510,17 +1510,18 @@ class TtReservation(models.Model):
                     if context['co_user_login'] == context['user_login']:
                         is_need_check_required = False
                 if is_need_check_required:
-                    if user_obj.ho_id.is_agent_required_otp == 'required' and not user_obj.is_using_otp and user_obj.ho_id.is_agent_required_pin == 'required' and not user_obj.is_using_pin:
+                    # tambah sudo karena kalo offline / visa bukan gateway user yang akses
+                    if user_obj.ho_id.sudo().is_agent_required_otp == 'required' and not user_obj.is_using_otp and user_obj.ho_id.sudo().is_agent_required_pin == 'required' and not user_obj.is_using_pin:
                         raise RequestException(1046)
-                    elif user_obj.ho_id.is_agent_required_otp == 'required' and not user_obj.is_using_otp:
+                    elif user_obj.ho_id.sudo().is_agent_required_otp == 'required' and not user_obj.is_using_otp:
                         raise RequestException(1043)
-                    elif user_obj.ho_id.is_agent_required_pin == 'required' and not user_obj.is_using_pin:
+                    elif user_obj.ho_id.sudo().is_agent_required_pin == 'required' and not user_obj.is_using_pin:
                         raise RequestException(1045)
             #### CHECK PIN HERE ####
             if user_obj.is_using_pin and not book_obj.payment_acquirer_number_id or user_obj.is_using_pin and book_obj.payment_acquirer_number_id and book_obj.payment_acquirer_number_id.state not in ['process', 'waiting']:
-                if table_name not in ['visa', 'offline']:
-                    ### ASUMSI KLO DI SET TIDAK MUNGKIN KOSONG
-                    user_obj._check_pin(req.get('pin', ''))
+                # if table_name not in ['visa', 'offline']:
+                ### ASUMSI KLO DI SET TIDAK MUNGKIN KOSONG
+                user_obj._check_pin(req.get('pin', ''))
 
             if agent_obj.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids:
                 book_obj.write({
@@ -1560,7 +1561,7 @@ class TtReservation(models.Model):
                     agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
 
                 is_use_point = False
-                website_use_point_reward = book_obj.agent_id.ho_id.is_use_point_reward
+                website_use_point_reward = book_obj.agent_id.ho_id.sudo().is_use_point_reward
                 if website_use_point_reward:
                     is_use_point = req.get('use_point')
 

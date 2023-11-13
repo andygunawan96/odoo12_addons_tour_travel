@@ -459,9 +459,29 @@ class TtVisa(models.Model):
             _logger.error(traceback.format_exc(e))
             return Response().get_error(error_message='contact b2b', error_code=500)
 
-    def action_in_process_visa(self):
+    def action_in_process_visa_button(self):
+        return self.action_in_process_visa()
+
+    def action_in_process_visa(self, pin=''):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 329')
+        if self.env.user.is_using_pin and not pin:
+            view = self.env.ref('tt_base.tt_input_pin_wizard_form_view')
+            return {
+                'name': 'Input Pin Wizard',
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'tt.input.pin.wizard',
+                'views': [(view.id, 'form')],
+                'view_id': view.id,
+                'target': 'new',
+                'context': {
+                    'default_res_model': self._name,
+                    'default_res_id': self.id
+                }
+            }
+
         data = {
             'order_number': self.name,
             'member': self.is_member,
@@ -481,6 +501,10 @@ class TtVisa(models.Model):
         if self.is_using_point_reward and website_use_point_reward == 'True':
             data.update({
                 'use_point': self.is_using_point_reward
+            })
+        if self.env.user.is_using_pin:
+            data.update({
+                'pin': pin
             })
         ctx = {
             'co_agent_type_id': self.agent_type_id.id,
