@@ -152,10 +152,12 @@ class ApiManagement(models.Model):
                     ])
                     for otp_obj in otp_objs:
                         is_need_add_otp = False
-                        if len(otp_obj.duration) == 1:
+                        if otp_obj.duration and len(otp_obj.duration) == 1:
                             if datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration)) > datetime.now():
                                 is_need_add_otp = True
                         elif otp_obj.duration == 'never':
+                            is_need_add_otp = True
+                        else:
                             is_need_add_otp = True
                         if is_need_add_otp:
                             values['co_otp_list_machine'].append({
