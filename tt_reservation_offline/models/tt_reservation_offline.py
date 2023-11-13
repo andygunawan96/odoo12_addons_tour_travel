@@ -660,11 +660,31 @@ class IssuedOffline(models.Model):
         self.cancel_message = False
         self.resv_code = False
 
-    @api.one
-    def action_validate(self, kwargs={}):
+    def action_validate_button(self):
+        temp = self.action_validate()
+        return temp
+
+    def action_validate(self, pin='', kwargs={}):
         # create prices
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 203')
+        if self.env.user.is_using_pin and not pin:
+            view = self.env.ref('tt_base.tt_input_pin_wizard_form_view')
+            return {
+                'name': 'Input Pin Wizard',
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'tt.input.pin.wizard',
+                'views': [(view.id, 'form')],
+                'view_id': view.id,
+                'target': 'new',
+                'context': {
+                    'default_res_model': self._name,
+                    'default_res_id': self.id
+                }
+            }
+
         self.state = 'booked'
 
         req = {
@@ -683,6 +703,10 @@ class IssuedOffline(models.Model):
             req.update({
                 'member': True,
                 'acquirer_seq_id': self.customer_parent_id.seq_id
+            })
+        if self.env.user.is_using_pin:
+            req.update({
+                'pin': pin
             })
         context = {
             'co_uid': self.env.user.id,
