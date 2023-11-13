@@ -28,12 +28,12 @@ Key Features
         'data/ir_send_email.xml',
 
         'data/res.social.media.type.csv',
-        'data/tt_pnr_quota_price_list.xml',
         'views/menu_item_base.xml',
         'views/tt_agent_views.xml',
         'data/agent_type_orbis_data.xml',
         'data/tt_agent_ho_data.xml',
         'data/agent_b2c_data.xml',
+        'data/tt_pnr_quota_price_list.xml',
         'data/payment_acquirer_ho_data.xml',
         'data/user_template.xml',
 
