@@ -101,6 +101,7 @@ Key Features
         'wizard/create_ho_transport_carrier_search_config_wizard_view.xml',
         'wizard/create_provider_ho_data_wizard_view.xml',
         'wizard/move_agent_ho_wizard_view.xml',
+        'wizard/tt_input_pin_wizard_view.xml',
         'views/tt_upload_center_views.xml',
         'views/tt_vendor_views.xml',
         'views/ir_model_data_views.xml',
