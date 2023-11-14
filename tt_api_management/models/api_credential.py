@@ -166,7 +166,7 @@ class ApiManagement(models.Model):
                                 "browser": otp_obj.browser,
                                 "timezone": otp_obj.timezone,
                                 "valid_date": (datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration))).strftime('%Y-%m-%d %H:%M:%S') if otp_obj.duration != 'never' else 'Never ask again for this browser',
-                                "connect_date": datetime.strptime(otp_obj.connect_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+                                "connect_date_utc": datetime.strptime(otp_obj.connect_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
                             })
 
                 if _co_user.is_banned:
