@@ -325,15 +325,16 @@ class ttCronTopUpValidator(models.Model):
                     try:
                         # get_bank_account = self.env.ref('tt_bank_transaction.bank_account_bca_1')
                         #can be modified to respected account
-                        data = {
-                            'account_id': rec.id,
-                            'account_number': rec.bank_account_number_without_dot,
-                            'provider': rec.bank_id.code,
-                            'startdate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
-                            'enddate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
-                        }
-                        #called function to proceed data and input in bank transaction
-                        self.env['tt.bank.transaction'].get_data(data, rec.ho_id.id)
+                        # data = {
+                        #     'account_id': rec.id,
+                        #     'account_number': rec.bank_account_number_without_dot,
+                        #     'provider': rec.bank_id.code,
+                        #     'startdate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
+                        #     'enddate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
+                        # }
+                        # #called function to proceed data and input in bank transaction
+                        # self.env['tt.bank.transaction'].get_data(data, rec.ho_id.id)
+                        rec.get_bank_mutation()
                         self.cron_auto_top_up_validator()
                     except Exception as e:
                         self.create_cron_log_folder()

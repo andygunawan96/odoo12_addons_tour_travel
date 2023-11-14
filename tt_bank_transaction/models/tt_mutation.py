@@ -36,6 +36,18 @@ class TtBankAccount(models.Model):
 
         return result
 
+    def get_bank_mutation(self):
+        data = {
+            'account_id': self.id,
+            'account_number': self.bank_account_number_without_dot,
+            'provider': self.bank_id.code,
+            'startdate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
+            'enddate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
+        }
+        # called function to proceed data and input in bank transaction
+        self.env['tt.bank.transaction'].get_data(data, self.ho_id.id)
+        self.cron_auto_top_up_validator()
+
 class TtBankDateTransaction(models.Model):
     _name = 'tt.bank.transaction.date'
     _description = "collections of date"
