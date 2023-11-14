@@ -4124,8 +4124,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racprv',
+                                            'charge_type': 'RACHSP',
+                                            'charge_code': 'rachosvc',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': -ho_commission_amount,
@@ -4139,8 +4139,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'rachosvc',
+                                            'charge_type': 'ROCHSP',
+                                            'charge_code': 'rochosvc',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': ho_commission_amount,
@@ -4177,8 +4177,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racprv',
+                                            'charge_type': 'RACHVP',
+                                            'charge_code': 'rachovat',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': -tax_ho_commission_amount,
@@ -4192,8 +4192,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'rachovat',
+                                            'charge_type': 'ROCHVP',
+                                            'charge_code': 'rochovat',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': tax_ho_commission_amount,
@@ -4201,6 +4201,21 @@ class RepricingToolsV2(object):
                                             'total': total_tax_ho_commission_amount,
                                         })
                                         fare_data['service_charges'].append(sc_values)
+                                    # else:
+                                    #     if pax_type in sc_temp_repo:
+                                    #         sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    #     else:
+                                    #         sc_values = copy.deepcopy(sc_temp)
+                                    #     sc_values.update({
+                                    #         'charge_type': 'ROC',
+                                    #         'charge_code': 'rochovat',
+                                    #         'pax_type': pax_type,
+                                    #         'pax_count': pax_count,
+                                    #         'amount': tax_ho_commission_amount,
+                                    #         'foreign_amount': tax_ho_commission_amount,
+                                    #         'total': total_tax_ho_commission_amount,
+                                    #     })
+                                    #     fare_data['service_charges'].append(sc_values)
                             else:
                                 pass
 
@@ -4229,8 +4244,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racvat',
+                                            'charge_type': 'ROCAVP',
+                                            'charge_code': 'rocvat',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': -tax_commission_amount,
@@ -4248,10 +4263,43 @@ class RepricingToolsV2(object):
                             else:
                                 if total_commission_amount >= abs(sub_total_commission_amount):
                                     total_commission_amount -= abs(sub_total_commission_amount)
+                                    diff_commission_amount = abs(sub_total_commission_amount)
+                                    base_diff_commission_amount = abs(commission_amount)
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'RACCHG',
+                                        'charge_code': 'racchg',
+                                        'pax_type': pax_type,
+                                        'pax_count': pax_count,
+                                        'amount': -base_diff_commission_amount,
+                                        'foreign_amount': -base_diff_commission_amount,
+                                        'total': -diff_commission_amount,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
+
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'ROCCHG',
+                                        'charge_code': 'rocchg',
+                                        'pax_type': pax_type,
+                                        'pax_count': pax_count,
+                                        'amount': base_diff_commission_amount,
+                                        'foreign_amount': base_diff_commission_amount,
+                                        'total': diff_commission_amount,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
                                 else:
-                                    diff_commission_amount = abs(sub_total_commission_amount) - total_commission_amount
-                                    base_diff_commission_amount = diff_commission_amount / pax_count
-                                    total_commission_amount = 0.0
+                                    # diff_commission_amount = abs(sub_total_commission_amount) - total_commission_amount
+                                    # base_diff_commission_amount = diff_commission_amount / pax_count
+                                    # total_commission_amount = 0.0
+                                    diff_commission_amount = abs(sub_total_commission_amount)
+                                    base_diff_commission_amount = abs(commission_amount)
                                     if pax_type in sc_temp_repo:
                                         sc_values = copy.deepcopy(sc_temp_repo[pax_type])
                                     else:
@@ -4425,8 +4473,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racagt',
+                                            'charge_type': 'RACHSA',
+                                            'charge_code': 'racagthosvc',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': -ho_commission_amount,
@@ -4439,8 +4487,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racagthosvc',
+                                            'charge_type': 'ROCHSA',
+                                            'charge_code': 'rocagthosvc',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': ho_commission_amount,
@@ -4477,8 +4525,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racagt',
+                                            'charge_type': 'RACHVA',
+                                            'charge_code': 'racagthovat',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': -tax_ho_commission_amount,
@@ -4491,8 +4539,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racagthovat',
+                                            'charge_type': 'ROCHVA',
+                                            'charge_code': 'rocagthovat',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': tax_ho_commission_amount,
@@ -4500,6 +4548,21 @@ class RepricingToolsV2(object):
                                             'total': total_tax_ho_commission_amount,
                                         })
                                         fare_data['service_charges'].append(sc_values)
+                                    # else:
+                                    #     if pax_type in sc_temp_repo:
+                                    #         sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    #     else:
+                                    #         sc_values = copy.deepcopy(sc_temp)
+                                    #     sc_values.update({
+                                    #         'charge_type': 'ROC',
+                                    #         'charge_code': 'rocagthovat',
+                                    #         'pax_type': pax_type,
+                                    #         'pax_count': pax_count,
+                                    #         'amount': tax_ho_commission_amount,
+                                    #         'foreign_amount': tax_ho_commission_amount,
+                                    #         'total': total_tax_ho_commission_amount,
+                                    #     })
+                                    #     fare_data['service_charges'].append(sc_values)
                             else:
                                 pass
 
@@ -4529,8 +4592,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racagt',
+                                            'charge_type': 'RACAVA',
+                                            'charge_code': 'racagtvat',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': tax_commission_amount,
@@ -4543,8 +4606,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racagtvat',
+                                            'charge_type': 'ROCAVA',
+                                            'charge_code': 'rocagtvat',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': -tax_commission_amount,
@@ -4576,10 +4639,44 @@ class RepricingToolsV2(object):
                             else:
                                 if total_commission_amount >= abs(sub_total_commission_amount):
                                     total_commission_amount -= abs(sub_total_commission_amount)
+                                    if pricing_breakdown:
+                                        diff_commission_amount = abs(sub_total_commission_amount)
+                                        base_diff_commission_amount = abs(commission_amount)
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RACCHG',
+                                            'charge_code': 'racagtchg',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': -base_diff_commission_amount,
+                                            'foreign_amount': -base_diff_commission_amount,
+                                            'total': -diff_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+
+                                        if pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'ROCCHG',
+                                            'charge_code': 'rocagtchg',
+                                            'pax_type': pax_type,
+                                            'pax_count': pax_count,
+                                            'amount': base_diff_commission_amount,
+                                            'foreign_amount': base_diff_commission_amount,
+                                            'total': diff_commission_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                                 else:
-                                    diff_commission_amount = abs(sub_total_commission_amount) - total_commission_amount
-                                    base_diff_commission_amount = diff_commission_amount / pax_count
-                                    total_commission_amount = 0.0
+                                    # diff_commission_amount = abs(sub_total_commission_amount) - total_commission_amount
+                                    # base_diff_commission_amount = diff_commission_amount / pax_count
+                                    # total_commission_amount = 0.0
+                                    diff_commission_amount = abs(sub_total_commission_amount)
+                                    base_diff_commission_amount = abs(commission_amount)
                                     if pax_type in sc_temp_repo:
                                         sc_values = copy.deepcopy(sc_temp_repo[pax_type])
                                     else:
@@ -4653,8 +4750,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'raccust',
+                                            'charge_type': 'RACAVC',
+                                            'charge_code': 'raccustvat',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': tax_commission_amount,
@@ -4668,8 +4765,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'raccustvat',
+                                            'charge_type': 'ROCAVC',
+                                            'charge_code': 'roccustvat',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': -tax_commission_amount,
@@ -4706,29 +4803,31 @@ class RepricingToolsV2(object):
                                 # October 18, 2023 - SAM
                                 # Update mekanisme
                                 sub_total_commission_amount = commission_amount * pax_count
-                                if total_commission_amount >= abs(sub_total_commission_amount):
-                                    total_commission_amount -= abs(sub_total_commission_amount)
+                                # if total_commission_amount >= abs(sub_total_commission_amount):
+                                #     total_commission_amount -= abs(sub_total_commission_amount)
+                                # else:
+                                # diff_commission_amount = abs(sub_total_commission_amount) - total_commission_amount
+                                # base_diff_commission_amount = diff_commission_amount / pax_count
+                                # total_commission_amount = 0.0
+                                diff_commission_amount = abs(sub_total_commission_amount)
+                                base_diff_commission_amount = abs(commission_amount)
+                                if pax_type in sc_temp_repo:
+                                    sc_values = copy.deepcopy(sc_temp_repo[pax_type])
                                 else:
-                                    diff_commission_amount = abs(sub_total_commission_amount) - total_commission_amount
-                                    base_diff_commission_amount = diff_commission_amount / pax_count
-                                    total_commission_amount = 0.0
-                                    if pax_type in sc_temp_repo:
-                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
-                                    else:
-                                        sc_values = copy.deepcopy(sc_temp)
-                                    sc_values.update({
-                                        'charge_type': 'ROC',
-                                        'charge_code': 'roccustadj',
-                                        'pax_type': pax_type,
-                                        'pax_count': pax_count,
-                                        'amount': base_diff_commission_amount,
-                                        'foreign_amount': base_diff_commission_amount,
-                                        'total': diff_commission_amount,
-                                    })
-                                    fare_data['service_charges'].append(sc_values)
-                                    sc_total = diff_commission_amount
-                                    total_reservation_amount += sc_total
-                                    tax_amount += base_diff_commission_amount
+                                    sc_values = copy.deepcopy(sc_temp)
+                                sc_values.update({
+                                    'charge_type': 'ROC',
+                                    'charge_code': 'roccustadj',
+                                    'pax_type': pax_type,
+                                    'pax_count': pax_count,
+                                    'amount': base_diff_commission_amount,
+                                    'foreign_amount': base_diff_commission_amount,
+                                    'total': diff_commission_amount,
+                                })
+                                fare_data['service_charges'].append(sc_values)
+                                sc_total = diff_commission_amount
+                                total_reservation_amount += sc_total
+                                tax_amount += base_diff_commission_amount
                                 # END
 
             ## 3
@@ -5025,8 +5124,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'racrsvprv',
+                                                'charge_type': 'RACHSP',
+                                                'charge_code': 'rachorsvsvc',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': -calc_amount,
@@ -5040,8 +5139,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'rachorsvsvc',
+                                                'charge_type': 'ROCHSP',
+                                                'charge_code': 'rochorsvsvc',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': calc_amount,
@@ -5086,8 +5185,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'racrsvprv',
+                                                'charge_type': 'RACAVP',
+                                                'charge_code': 'rachorsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': -calc_amount,
@@ -5101,8 +5200,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'rachorsvvat',
+                                                'charge_type': 'ROCAVP',
+                                                'charge_code': 'rochorsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': calc_amount,
@@ -5110,6 +5209,24 @@ class RepricingToolsV2(object):
                                                 'total': total_calc_amount,
                                             })
                                             fare_data['service_charges'].append(sc_values)
+                                # else:
+                                #     for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                #         if pcd_pax_count > 0:
+                                #             total_calc_amount = calc_amount * pcd_pax_count
+                                #             if pcd_pax_type in sc_temp_repo:
+                                #                 sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                #             else:
+                                #                 sc_values = copy.deepcopy(sc_temp)
+                                #             sc_values.update({
+                                #                 'charge_type': 'ROC',
+                                #                 'charge_code': 'rochorsvvat',
+                                #                 'pax_type': pcd_pax_type,
+                                #                 'pax_count': pcd_pax_count,
+                                #                 'amount': calc_amount,
+                                #                 'foreign_amount': calc_amount,
+                                #                 'total': total_calc_amount,
+                                #             })
+                                #             fare_data['service_charges'].append(sc_values)
                         else:
                             pass
 
@@ -5128,8 +5245,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'racrsvprv',
+                                                'charge_type': 'RACAVP',
+                                                'charge_code': 'racrsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': calc_amount,
@@ -5143,8 +5260,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'racrsvvat',
+                                                'charge_type': 'ROCAVP',
+                                                'charge_code': 'rocrsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': -calc_amount,
@@ -5161,9 +5278,46 @@ class RepricingToolsV2(object):
                         else:
                             if total_commission_amount >= abs(commission_amount):
                                 total_commission_amount -= abs(commission_amount)
+                                diff_commission_amount = abs(commission_amount)
+                                calc_amount = diff_commission_amount / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        total_reservation_amount += total_calc_amount
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RACCHG',
+                                            'charge_code': 'racrsvchg',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'ROCCHG',
+                                            'charge_code': 'rocrsvchg',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': calc_amount,
+                                            'foreign_amount': calc_amount,
+                                            'total': total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                             else:
-                                diff_commission_amount = abs(commission_amount) - total_commission_amount
-                                total_commission_amount = 0.0
+                                # diff_commission_amount = abs(commission_amount) - total_commission_amount
+                                # total_commission_amount = 0.0
+                                diff_commission_amount = abs(commission_amount)
                                 calc_amount = diff_commission_amount / total_all_pax_count
                                 calc_amount = self.ceil(calc_amount, 0)
                                 for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
@@ -5347,8 +5501,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'racagtrsv',
+                                                'charge_type': 'RACHSA',
+                                                'charge_code': 'racagthorsvsvc',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': -calc_amount,
@@ -5362,8 +5516,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'racagthorsvsvc',
+                                                'charge_type': 'ROCHSA',
+                                                'charge_code': 'rocagthorsvsvc',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': calc_amount,
@@ -5408,8 +5562,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'racagtrsv',
+                                                'charge_type': 'RACHSA',
+                                                'charge_code': 'racagthorsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': -calc_amount,
@@ -5423,8 +5577,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'racagthorsvvat',
+                                                'charge_type': 'ROCHSA',
+                                                'charge_code': 'rocagthorsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': calc_amount,
@@ -5432,6 +5586,24 @@ class RepricingToolsV2(object):
                                                 'total': total_calc_amount,
                                             })
                                             fare_data['service_charges'].append(sc_values)
+                                # else:
+                                #     for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                #         if pcd_pax_count > 0:
+                                #             total_calc_amount = calc_amount * pcd_pax_count
+                                #             if pcd_pax_type in sc_temp_repo:
+                                #                 sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                #             else:
+                                #                 sc_values = copy.deepcopy(sc_temp)
+                                #             sc_values.update({
+                                #                 'charge_type': 'ROC',
+                                #                 'charge_code': 'rocagthorsvvat',
+                                #                 'pax_type': pcd_pax_type,
+                                #                 'pax_count': pcd_pax_count,
+                                #                 'amount': calc_amount,
+                                #                 'foreign_amount': calc_amount,
+                                #                 'total': total_calc_amount,
+                                #             })
+                                #             fare_data['service_charges'].append(sc_values)
                         else:
                             pass
 
@@ -5469,8 +5641,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'racagtrsv',
+                                                'charge_type': 'RACAVA',
+                                                'charge_code': 'racagtrsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': calc_amount,
@@ -5484,8 +5656,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'racagtrsvvat',
+                                                'charge_type': 'ROCAVA',
+                                                'charge_code': 'rocagtrsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': -calc_amount,
@@ -5521,9 +5693,46 @@ class RepricingToolsV2(object):
                         else:
                             if total_commission_amount >= abs(commission_amount):
                                 total_commission_amount -= abs(commission_amount)
+                                diff_commission_amount = abs(commission_amount)
+                                calc_amount = diff_commission_amount / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        total_reservation_amount += total_calc_amount
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RACCHG',
+                                            'charge_code': 'racagtrsvchg',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'ROCCHG',
+                                            'charge_code': 'rocagtrsvchg',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': calc_amount,
+                                            'foreign_amount': calc_amount,
+                                            'total': total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                             else:
-                                diff_commission_amount = abs(commission_amount) - total_commission_amount
-                                total_commission_amount = 0.0
+                                # diff_commission_amount = abs(commission_amount) - total_commission_amount
+                                # total_commission_amount = 0.0
+                                diff_commission_amount = abs(commission_amount)
                                 calc_amount = diff_commission_amount / total_all_pax_count
                                 calc_amount = self.ceil(calc_amount, 0)
                                 for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
@@ -5556,6 +5765,8 @@ class RepricingToolsV2(object):
                         else:
                             total_pax_count += pax_count
 
+                    total_commission_amount = self.round(total_commission_amount)
+
                     com_param = {
                         # 'rule_obj': agent_obj,
                         'rule_obj': agent_com_obj,
@@ -5567,6 +5778,7 @@ class RepricingToolsV2(object):
                         'route_count': route_count,
                         'segment_count': segment_count,
                     }
+                    pricing_breakdown = agent_com_obj.get('pricing_breakdown', False)
                     # agent_com_res = self.agent_pricing.get_commission_calculation(**com_param)
                     agent_com_res = self.agent_commission.get_commission_calculation(**com_param)
                     if agent_com_res['agent_discount_amount']:
@@ -5702,6 +5914,36 @@ class RepricingToolsV2(object):
                                             'commission_agent_id': agent_com_res['parent_agent_id']
                                         })
                                         fare_data['service_charges'].append(sc_values)
+                                    if pricing_breakdown:
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RACUA',
+                                            'charge_code': 'raccom',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'ROCUA',
+                                            'charge_code': 'roccom',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': calc_amount,
+                                            'foreign_amount': calc_amount,
+                                            'total': total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                             total_commission_amount -= real_commission_amount
                         else:
                             # # April 14, 2022 - SAM
@@ -5749,6 +5991,35 @@ class RepricingToolsV2(object):
                                             'foreign_amount': -calc_amount,
                                             'total': -total_calc_amount,
                                             'commission_agent_id': agent_com_res['ho_agent_id']
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                    if pricing_breakdown:
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RACUA',
+                                            'charge_code': 'raccom',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'ROCUA',
+                                            'charge_code': 'roccom',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': calc_amount,
+                                            'foreign_amount': calc_amount,
+                                            'total': total_calc_amount,
                                         })
                                         fare_data['service_charges'].append(sc_values)
                             total_commission_amount -= real_commission_amount
@@ -5802,6 +6073,35 @@ class RepricingToolsV2(object):
                                                 'commission_agent_id': upline['agent_id']
                                             })
                                             fare_data['service_charges'].append(sc_values)
+                                        if pricing_breakdown:
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RACUA',
+                                                'charge_code': 'raccom',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'ROCUA',
+                                                'charge_code': 'roccom',
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': calc_amount,
+                                                'foreign_amount': calc_amount,
+                                                'total': total_calc_amount,
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
                                 total_commission_amount -= real_commission_amount
                             else:
                                 # # April 14, 2022 - SAM
@@ -5850,6 +6150,35 @@ class RepricingToolsV2(object):
                                             'foreign_amount': -calc_amount,
                                             'total': -total_calc_amount,
                                             'commission_agent_id': agent_com_res['residual_agent_id']
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                    if pricing_breakdown:
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RACUA',
+                                            'charge_code': 'raccom',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'ROCUA',
+                                            'charge_code': 'roccom',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': calc_amount,
+                                            'foreign_amount': calc_amount,
+                                            'total': total_calc_amount,
                                         })
                                         fare_data['service_charges'].append(sc_values)
                             total_commission_amount -= real_commission_amount
@@ -6006,8 +6335,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'raccustrsv',
+                                                'charge_type': 'RACAVC',
+                                                'charge_code': 'raccustrsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': calc_amount,
@@ -6021,8 +6350,8 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RAC',
-                                                'charge_code': 'raccustrsvvat',
+                                                'charge_type': 'ROCAVC',
+                                                'charge_code': 'roccustrsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
                                                 'amount': -calc_amount,
@@ -6056,31 +6385,32 @@ class RepricingToolsV2(object):
                                         })
                                         fare_data['service_charges'].append(sc_values)
                         else:
-                            if total_commission_amount >= abs(commission_amount):
-                                total_commission_amount -= abs(commission_amount)
-                            else:
-                                diff_commission_amount = abs(commission_amount) - total_commission_amount
-                                total_commission_amount = 0.0
-                                calc_amount = diff_commission_amount / total_all_pax_count
-                                calc_amount = self.ceil(calc_amount, 0)
-                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
-                                    if pcd_pax_count > 0:
-                                        total_calc_amount = calc_amount * pcd_pax_count
-                                        total_reservation_amount += total_calc_amount
-                                        if pcd_pax_type in sc_temp_repo:
-                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
-                                        else:
-                                            sc_values = copy.deepcopy(sc_temp)
-                                        sc_values.update({
-                                            'charge_type': 'ROC',
-                                            'charge_code': 'roccustrsvadj',
-                                            'pax_type': pcd_pax_type,
-                                            'pax_count': pcd_pax_count,
-                                            'amount': calc_amount,
-                                            'foreign_amount': calc_amount,
-                                            'total': total_calc_amount,
-                                        })
-                                        fare_data['service_charges'].append(sc_values)
+                            # if total_commission_amount >= abs(commission_amount):
+                            #     total_commission_amount -= abs(commission_amount)
+                            # else:
+                            # diff_commission_amount = abs(commission_amount) - total_commission_amount
+                            # total_commission_amount = 0.0
+                            diff_commission_amount = abs(commission_amount)
+                            calc_amount = diff_commission_amount / total_all_pax_count
+                            calc_amount = self.ceil(calc_amount, 0)
+                            for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                if pcd_pax_count > 0:
+                                    total_calc_amount = calc_amount * pcd_pax_count
+                                    total_reservation_amount += total_calc_amount
+                                    if pcd_pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'ROC',
+                                        'charge_code': 'roccustrsvadj',
+                                        'pax_type': pcd_pax_type,
+                                        'pax_count': pcd_pax_count,
+                                        'amount': calc_amount,
+                                        'foreign_amount': calc_amount,
+                                        'total': total_calc_amount,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
                     # END
 
         # May 30, 2022 - SAM
