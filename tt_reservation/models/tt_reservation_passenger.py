@@ -140,6 +140,7 @@ class TtReservationCustomer(models.Model):
             base_tax = Decimal("0.0")
             base_roc = Decimal("0.0")
             base_commission = Decimal("0.0")
+            base_commission_charge = Decimal("0.0")
             base_discount = Decimal("0.0")
             base_commission_upline = Decimal("0.0")
             base_commission_provider_ho = Decimal("0.0")
@@ -186,6 +187,10 @@ class TtReservationCustomer(models.Model):
                         base_vat_ho += sc_amount
                     elif charge_type == 'ROCAVP':
                         base_vat_provider += sc_amount
+                    elif charge_type == 'ROCCHG':
+                        pass
+                    elif charge_type == 'RACCHG':
+                        base_commission_charge += sc_amount
                     elif charge_type in ['RACHSA', 'RACHVA', 'RACAVA', 'RACHSC', 'RACHVC', 'RACAVC']:
                         base_commission_ho += sc_amount
                     elif charge_type in ['ROCHSA', 'ROCHSC']:
@@ -197,10 +202,12 @@ class TtReservationCustomer(models.Model):
                     if not pax_type:
                         pax_type = sc['pax_type']
 
-            base_tax_total = base_tax + base_roc + base_vat_ho
+            # base_tax_total = base_tax + base_roc + base_vat_ho
+            base_tax_total = base_tax + base_roc
             base_price_ori = base_fare + base_tax
-            base_price = base_fare + base_tax + base_roc + base_discount + base_vat_ho
-            base_commission_airline = base_commission + base_commission_upline + base_commission_provider_ho + base_commission_provider_vat
+            # base_price = base_fare + base_tax + base_roc + base_discount + base_vat_ho
+            base_price = base_fare + base_tax + base_roc + base_discount
+            base_commission_airline = base_commission + base_commission_upline + base_commission_provider_ho + base_commission_provider_vat + base_commission_charge
             base_nta = base_price + base_commission
             base_nta_airline = base_price_ori + base_commission_airline
 
@@ -218,6 +225,8 @@ class TtReservationCustomer(models.Model):
                 'base_commission_ho': float(base_commission_ho),
                 'base_commission_upline': float(base_commission_upline),
                 'base_commission_provider_vat': float(base_commission_provider_vat),
+                'base_commission_charge': float(base_commission_charge),
+                'base_commission_airline': float(base_commission_airline),
                 'base_fee_ho': float(base_fee_ho),
                 'base_vat_ho': float(base_vat_ho),
                 'base_vat_provider': float(base_vat_provider),
