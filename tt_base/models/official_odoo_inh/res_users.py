@@ -285,8 +285,8 @@ class ResUsers(models.Model):
             if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_user_data_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
                 vals.pop('is_using_otp')
             # kalau bukan admin tidak bisa mematikan OTP
-            elif not self.env.user.has_group('base.group_system') and not vals['is_using_otp']:
-                vals.pop('is_using_otp')
+            # elif not self.env.user.has_group('base.group_system') and not vals['is_using_otp']:
+            #     vals.pop('is_using_otp')
         if vals.get('password'):
             self._check_password(vals['password'])
 
