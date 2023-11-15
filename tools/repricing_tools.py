@@ -1118,6 +1118,47 @@ class ProviderPricing(object):
         self.data = {}
         self.do_config()
 
+    def ceil(self, data, number):
+        digit = 1
+        for i in range(number):
+            digit *= 10
+        temp = data / digit
+        res = ceil(temp) * digit
+        return res
+
+    def floor(self, data, number):
+        digit = 1
+        for i in range(number):
+            digit *= 10
+        temp = data / digit
+        res = floor(temp) * digit
+        return res
+
+    def round(self, data, agent_data={}):
+        # June 27, 2023 - SAM
+        # Karena mostly data decimal 2 terbanyak, sementara hardcode untuk default 2 decimal di belakang koma
+        data_with_two_dec = float(data) * 100
+        data_round = round(data_with_two_dec)
+        data = data_round / 100
+        if not agent_data:
+            # res = round(data)
+            res = data
+            return res
+
+        if agent_data['rounding_amount_type'] == 'round':
+            digit = 1
+            for i in range(agent_data['rounding_places']):
+                digit *= 10
+            temp = data / digit
+            res = round(temp) * digit
+        elif agent_data['rounding_amount_type'] == 'ceil':
+            res = self.ceil(data, agent_data['rounding_places'])
+        elif agent_data['rounding_amount_type'] == 'floor':
+            res = self.floor(data, agent_data['rounding_places'])
+        else:
+            res = data
+        return res
+
     def do_config(self):
         data = self.get_backend_data()
         if not data:
@@ -1710,6 +1751,47 @@ class AgentPricing(object):
         self.agent_type = agent_type
         self.data = {}
         self.do_config()
+
+    def ceil(self, data, number):
+        digit = 1
+        for i in range(number):
+            digit *= 10
+        temp = data / digit
+        res = ceil(temp) * digit
+        return res
+
+    def floor(self, data, number):
+        digit = 1
+        for i in range(number):
+            digit *= 10
+        temp = data / digit
+        res = floor(temp) * digit
+        return res
+
+    def round(self, data, agent_data={}):
+        # June 27, 2023 - SAM
+        # Karena mostly data decimal 2 terbanyak, sementara hardcode untuk default 2 decimal di belakang koma
+        data_with_two_dec = float(data) * 100
+        data_round = round(data_with_two_dec)
+        data = data_round / 100
+        if not agent_data:
+            # res = round(data)
+            res = data
+            return res
+
+        if agent_data['rounding_amount_type'] == 'round':
+            digit = 1
+            for i in range(agent_data['rounding_places']):
+                digit *= 10
+            temp = data / digit
+            res = round(temp) * digit
+        elif agent_data['rounding_amount_type'] == 'ceil':
+            res = self.ceil(data, agent_data['rounding_places'])
+        elif agent_data['rounding_amount_type'] == 'floor':
+            res = self.floor(data, agent_data['rounding_places'])
+        else:
+            res = data
+        return res
 
     def do_config(self):
         data = self.get_backend_data()
@@ -2515,6 +2597,47 @@ class CustomerPricing(object):
         self.data = {}
         self.do_config()
 
+    def ceil(self, data, number):
+        digit = 1
+        for i in range(number):
+            digit *= 10
+        temp = data / digit
+        res = ceil(temp) * digit
+        return res
+
+    def floor(self, data, number):
+        digit = 1
+        for i in range(number):
+            digit *= 10
+        temp = data / digit
+        res = floor(temp) * digit
+        return res
+
+    def round(self, data, agent_data={}):
+        # June 27, 2023 - SAM
+        # Karena mostly data decimal 2 terbanyak, sementara hardcode untuk default 2 decimal di belakang koma
+        data_with_two_dec = float(data) * 100
+        data_round = round(data_with_two_dec)
+        data = data_round / 100
+        if not agent_data:
+            # res = round(data)
+            res = data
+            return res
+
+        if agent_data['rounding_amount_type'] == 'round':
+            digit = 1
+            for i in range(agent_data['rounding_places']):
+                digit *= 10
+            temp = data / digit
+            res = round(temp) * digit
+        elif agent_data['rounding_amount_type'] == 'ceil':
+            res = self.ceil(data, agent_data['rounding_places'])
+        elif agent_data['rounding_amount_type'] == 'floor':
+            res = self.floor(data, agent_data['rounding_places'])
+        else:
+            res = data
+        return res
+
     def do_config(self):
         data = self.get_backend_data()
         if not data:
@@ -3015,6 +3138,47 @@ class AgentCommission(object):
         self.data = {}
         self.do_config()
 
+    def ceil(self, data, number):
+        digit = 1
+        for i in range(number):
+            digit *= 10
+        temp = data / digit
+        res = ceil(temp) * digit
+        return res
+
+    def floor(self, data, number):
+        digit = 1
+        for i in range(number):
+            digit *= 10
+        temp = data / digit
+        res = floor(temp) * digit
+        return res
+
+    def round(self, data, agent_data={}):
+        # June 27, 2023 - SAM
+        # Karena mostly data decimal 2 terbanyak, sementara hardcode untuk default 2 decimal di belakang koma
+        data_with_two_dec = float(data) * 100
+        data_round = round(data_with_two_dec)
+        data = data_round / 100
+        if not agent_data:
+            # res = round(data)
+            res = data
+            return res
+
+        if agent_data['rounding_amount_type'] == 'round':
+            digit = 1
+            for i in range(agent_data['rounding_places']):
+                digit *= 10
+            temp = data / digit
+            res = round(temp) * digit
+        elif agent_data['rounding_amount_type'] == 'ceil':
+            res = self.ceil(data, agent_data['rounding_places'])
+        elif agent_data['rounding_amount_type'] == 'floor':
+            res = self.floor(data, agent_data['rounding_places'])
+        else:
+            res = data
+        return res
+
     def do_config(self):
         data = self.get_backend_data()
         if not data:
@@ -3509,7 +3673,13 @@ class AgentCommission(object):
 
         agent_commission_amount = agent_res['commission_amount']
         if agent_commission_amount > commission_amount:
-            agent_commission_amount = 0.0
+            # November 15, 2023 - SAM
+            # Sementara pakai pendekatan kalau selisih nya kurang dari 1.0 masih valid
+            # Case nya agent_commission_amount = 9102, commission_amount = 9101.93
+            if (agent_commission_amount - commission_amount) < 1.0:
+                commission_amount = 0.0
+            else:
+                agent_commission_amount = 0.0
         else:
             commission_amount -= agent_commission_amount
 
@@ -4023,6 +4193,11 @@ class RepricingToolsV2(object):
 
                 fare_amount = sc_sum['total_fare_amount'] / pax_count
                 tax_amount = sc_sum['total_tax_amount'] / pax_count
+
+                # TEST ONLY
+                # fare_amount = 612000
+                # tax_amount = 410759
+
                 sub_total = fare_amount + tax_amount
 
                 calc_param = {
@@ -4229,8 +4404,8 @@ class RepricingToolsV2(object):
                                         else:
                                             sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
-                                            'charge_type': 'RAC',
-                                            'charge_code': 'racprv',
+                                            'charge_type': 'RACAVP',
+                                            'charge_code': 'racvat',
                                             'pax_type': pax_type,
                                             'pax_count': pax_count,
                                             'amount': tax_commission_amount,
