@@ -36,12 +36,21 @@ class ReservationOffline(models.Model):
         ho_invoice_id = False
 
         temp_ho_obj = self.agent_id.ho_id
+        is_use_ext_credit_limit = self.customer_parent_id.check_use_ext_credit_limit() and self.customer_parent_type_id.id in [
+            self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id]
+        if is_use_ext_credit_limit:
+            state = 'paid'
+            add_info = self.customer_parent_id.get_external_payment_acq_seq_id()
+        else:
+            state = 'confirm'
+            add_info = ''
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': self.booker_id.id,
                 'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
-                'state': 'confirm',
+                'state': state,
+                'additional_information': add_info,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
                 'currency_id': temp_ho_obj.currency_id.id,
@@ -276,27 +285,27 @@ class ReservationOffline(models.Model):
                 })
                 self.env['tt.ledger'].use_point_reward(self, True, total_use_point, self.issued_uid.id)
 
-
-        ##membuat payment dalam draft
-        payment_obj = self.env['tt.payment'].create({
-            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
-            'agent_id': self.agent_id.id,
-            'currency_id': temp_ho_obj.currency_id.id,
-            'real_total_amount': invoice_id.grand_total,
-            'customer_parent_id': self.customer_parent_id.id,
-            'confirm_uid': invoice_id.confirmed_uid.id,
-            'confirm_date': datetime.now()
-        })
-        if self.acquirer_id:
-            payment_obj.update({
-                'acquirer_id': self.acquirer_id.id,
+        if not is_use_ext_credit_limit:
+            ##membuat payment dalam draft
+            payment_obj = self.env['tt.payment'].create({
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
+                'agent_id': self.agent_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
+                'real_total_amount': invoice_id.grand_total,
+                'customer_parent_id': self.customer_parent_id.id,
+                'confirm_uid': invoice_id.confirmed_uid.id,
+                'confirm_date': datetime.now()
             })
+            if self.acquirer_id:
+                payment_obj.update({
+                    'acquirer_id': self.acquirer_id.id,
+                })
 
-        self.env['tt.payment.invoice.rel'].create({
-            'invoice_id': invoice_id.id,
-            'payment_id': payment_obj.id,
-            'pay_amount': invoice_id.grand_total
-        })
+            self.env['tt.payment.invoice.rel'].create({
+                'invoice_id': invoice_id.id,
+                'payment_id': payment_obj.id,
+                'pay_amount': invoice_id.grand_total
+            })
 
         ## payment HO
         acq_obj = False

@@ -328,7 +328,7 @@ class TtAgent(models.Model):
     def get_corpor_list_agent_api(self, context):
         customer_parent_data = {}
         agent_obj = self.browse(context['co_agent_id'])
-        for rec in agent_obj.customer_parent_ids.filtered(lambda x: x.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id] and x.credit_limit != 0 and x.state == 'done'):
+        for rec in agent_obj.customer_parent_ids.filtered(lambda x: x.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id] and (x.credit_limit != 0 or x.check_use_ext_credit_limit()) and x.state == 'done'):
             booker_data = {}
             for rec2 in rec.booker_customer_ids:
                 booker_data.update({

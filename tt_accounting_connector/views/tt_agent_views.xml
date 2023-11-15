@@ -6,8 +6,9 @@
         <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
         <field name="arch" type="xml">
             <field name="est_date" position="after">
-                <field name="is_sync_to_acc" groups="base.group_erp_manager"/>
-                <field name="is_use_ext_credit_cor" groups="base.group_erp_manager"/>
+                <field name="is_sync_to_acc" groups="base.group_erp_manager,tt_base.group_ledger_level_5"/>
+                <field name="is_use_ext_credit_cor" groups="base.group_erp_manager,tt_base.group_ledger_level_5"/>
+                <field name="ext_credit_cor_acq_id" groups="base.group_erp_manager,tt_base.group_ledger_level_5" attrs="{'invisible':[('is_use_ext_credit_cor','=',False)], 'required':[('is_use_ext_credit_cor','=',True)]}"/>
             </field>
         </field>
     </record>

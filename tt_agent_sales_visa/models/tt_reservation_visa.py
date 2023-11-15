@@ -57,6 +57,14 @@ class ReservationVisa(models.Model):
         ho_invoice_id = False
 
         temp_ho_obj = self.agent_id.ho_id
+        is_use_ext_credit_limit = self.customer_parent_id.check_use_ext_credit_limit() and self.customer_parent_type_id.id in [
+            self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id]
+        if is_use_ext_credit_limit:
+            state = 'paid'
+            add_info = self.customer_parent_id.get_external_payment_acq_seq_id()
+        else:
+            state = 'confirm'
+            add_info = ''
         book_obj = self.env['tt.reservation.visa'].search([('name', '=', data['order_number'])])
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
@@ -66,7 +74,8 @@ class ReservationVisa(models.Model):
                 'customer_parent_id': book_obj.customer_parent_id.id,
                 'customer_parent_type_id': book_obj.customer_parent_type_id.id,
                 'currency_id': temp_ho_obj.currency_id.id,
-                'state': 'confirm',
+                'state': state,
+                'additional_information': add_info,
                 'confirmed_uid': book_obj.confirmed_uid.id,
                 'confirmed_date': datetime.now()
             })
@@ -79,7 +88,6 @@ class ReservationVisa(models.Model):
             'reference': book_obj.name,
             'desc': book_obj.get_visa_summary(),
             'admin_fee': self.payment_acquirer_number_id.fee_amount,
-            'ho_id': temp_ho_obj and temp_ho_obj.id or False
         })
 
         invoice_line_id = inv_line_obj.id
@@ -114,7 +122,6 @@ class ReservationVisa(models.Model):
             'reference': book_obj.name,
             'desc': book_obj.get_visa_summary(),
             'admin_fee': 0,
-            'ho_id': temp_ho_obj and temp_ho_obj.id or False
         })
 
         ho_invoice_line_id = ho_inv_line_obj.id
@@ -227,52 +234,53 @@ class ReservationVisa(models.Model):
         inv_line_obj.discount = abs(discount)
         ho_inv_line_obj.discount = abs(discount)
 
-        payref_id_list = []
-        if data.get('payment_ref_attachment'):
-            for idx, att in enumerate(data['payment_ref_attachment']):
-                file_ext = att['name'].split(".")[-1]
-                temp_filename = '%s_Payment_Ref_%s.%s' % (str(idx), invoice_id.name, file_ext)
-                res = self.env['tt.upload.center.wizard'].upload_file_api(
-                    {
-                        'filename': temp_filename,
-                        'file_reference': 'Payment Reference',
-                        'file': att['file']
-                    },
-                    {
-                        'co_agent_id': self.agent_id.id,
-                        'co_uid': data['co_uid'],
-                    }
-                )
-                upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-                payref_id_list.append(upc_id.id)
+        if not is_use_ext_credit_limit:
+            payref_id_list = []
+            if data.get('payment_ref_attachment'):
+                for idx, att in enumerate(data['payment_ref_attachment']):
+                    file_ext = att['name'].split(".")[-1]
+                    temp_filename = '%s_Payment_Ref_%s.%s' % (str(idx), invoice_id.name, file_ext)
+                    res = self.env['tt.upload.center.wizard'].upload_file_api(
+                        {
+                            'filename': temp_filename,
+                            'file_reference': 'Payment Reference',
+                            'file': att['file']
+                        },
+                        {
+                            'co_agent_id': self.agent_id.id,
+                            'co_uid': data['co_uid'],
+                        }
+                    )
+                    upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+                    payref_id_list.append(upc_id.id)
 
-        payment_vals = {
-            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
-            'agent_id': book_obj.agent_id.id,
-            'currency_id': temp_ho_obj.currency_id.id,
-            'real_total_amount': invoice_id.grand_total,
-            'customer_parent_id': book_obj.customer_parent_id.id
-        }
+            payment_vals = {
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
+                'agent_id': book_obj.agent_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
+                'real_total_amount': invoice_id.grand_total,
+                'customer_parent_id': book_obj.customer_parent_id.id
+            }
 
-        if payref_id_list:
-            payment_vals.update({
-                'reference': data.get('payment_reference', ''),
-                'payment_image_ids': [(6, 0, payref_id_list)]
-            })
-        if 'seq_id' in data:
-            if data['seq_id']:
+            if payref_id_list:
                 payment_vals.update({
-                    'acquirer_id': self.env['payment.check_provider_acquirer'].search([('seq_id', '=', data['seq_id'])], limit=1).id,
+                    'reference': data.get('payment_reference', ''),
+                    'payment_image_ids': [(6, 0, payref_id_list)]
                 })
+            if 'seq_id' in data:
+                if data['seq_id']:
+                    payment_vals.update({
+                        'acquirer_id': self.env['payment.check_provider_acquirer'].search([('seq_id', '=', data['seq_id'])], limit=1).id,
+                    })
 
-        ##membuat payment dalam draft
-        payment_obj = self.env['tt.payment'].create(payment_vals)
+            ##membuat payment dalam draft
+            payment_obj = self.env['tt.payment'].create(payment_vals)
 
-        self.env['tt.payment.invoice.rel'].create({
-            'invoice_id': invoice_id.id,
-            'payment_id': payment_obj.id,
-            'pay_amount': invoice_id.grand_total
-        })
+            self.env['tt.payment.invoice.rel'].create({
+                'invoice_id': invoice_id.id,
+                'payment_id': payment_obj.id,
+                'pay_amount': invoice_id.grand_total
+            })
 
         ## payment HO
         acq_obj = False
