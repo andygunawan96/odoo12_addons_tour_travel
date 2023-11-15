@@ -278,14 +278,14 @@
     <template id="external_layout_header">
         <div class="row" style="height:100px; font-family: 'Liberation Sans'">
             <t t-if="doc_type in ['ho_invoice', 'top_up', 'ho_billing']">
-                <t t-if="ho_obj.sudo().logo">
+                <t t-if="doc.ho_id.sudo().logo">
                     <div class="col-4" style="margin-left: 30px">
-                        <img t-att-src="'data:image/png;base64,%s' % to_text(ho_obj.sudo().logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/>
+                        <img t-att-src="'data:image/png;base64,%s' % to_text(doc.ho_id.sudo().logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/>
                     </div>
                 </t>
                 <t t-else="">
                     <div class="col-4" style="margin-left: 30px; text-align: center; display: inline-flex; align-items: center;">
-                        <span t-field="ho_obj.sudo().name" style="font-size: 28px;"/>
+                        <span t-field="doc.ho_id.sudo().name" style="font-size: 28px;"/>
                     </div>
                 </t>
             </t>
@@ -595,11 +595,11 @@
                     <div class="row">
                         <div class="col-6" style="margin-top:10px; padding: 0 30px;">
                             <div style="margin-left: 15px; margin-right: 15px;">
-                                <span style="font-weight: 600; color: white" t-field="ho_obj.sudo().name"/>
+                                <span style="font-weight: 600; color: white" t-field="doc.ho_id.sudo().name"/>
                             </div>
                             <div style="margin-left: 15px; margin-right: 15px;">
-                                <t t-if="ho_obj.sudo().address_ids">
-                                    <span style="color: white; font-size: 13px;" t-field="ho_obj.sudo().address_ids[0].address"/>
+                                <t t-if="doc.ho_id.sudo().address_ids">
+                                    <span style="color: white; font-size: 13px;" t-field="doc.ho_id.sudo().address_ids[0].address"/>
                                 </t>
                                 <t t-else="">
                                     <span style="color: white; font-size: 13px;">-</span>
@@ -614,16 +614,16 @@
                                 <div class="col-6" style="padding-right: 0px">
                                     <div style="margin-top: 5px;">
                                         <span style="color: white"><img t-att-src="'/tt_report_common/static/images/call-answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="ho_obj.sudo().phone_ids">
-                                                <span style="color: white; font-size: 13px" t-field="ho_obj.sudo().phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="ho_obj.sudo().phone_ids[0].calling_number"/>
+                                            <t t-if="doc.ho_id.sudo().phone_ids">
+                                                <span style="color: white; font-size: 13px" t-field="doc.ho_id.sudo().phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="doc.ho_id.sudo().phone_ids[0].calling_number"/>
                                             </t>
                                             <t t-else=""><span style="color: white; font-size: 13px">-</span></t>
                                         </span>
                                     </div>
                                     <div style="margin-top: 5px;">
                                         <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="ho_obj.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')">
-                                                <span style="color: white; font-size: 13px" t-field="ho_obj.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')[0].name"/>
+                                            <t t-if="doc.ho_id.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')">
+                                                <span style="color: white; font-size: 13px" t-field="doc.ho_id.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')[0].name"/>
                                             </t>
                                             <t t-else="">
                                                 <span style="color: white; font-size: 13px">-</span>
@@ -634,16 +634,16 @@
                                 <div class="col-6" style="padding-right: 0px">
                                     <div style="margin-top: 5px;">
                                         <span style="color: white"><img t-att-src="'/tt_report_common/static/images/telegram.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="ho_obj.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')">
-                                                <span style="color: white; font-size: 13px" t-field="ho_obj.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')[0].name"/>
+                                            <t t-if="doc.ho_id.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')">
+                                                <span style="color: white; font-size: 13px" t-field="doc.ho_id.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')[0].name"/>
                                             </t>
                                             <t t-else=""><span style="color: white; font-size: 13px">-</span></t>
                                         </span>
                                     </div>
                                     <div style="margin-top: 5px;">
                                         <span style="color: white"><img t-att-src="'/tt_report_common/static/images/line.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="ho_obj.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'Line')">
-                                                <span style="color: white; font-size: 13px" t-field="ho_obj.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'Line')[0].name"/>
+                                            <t t-if="doc.ho_id.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'Line')">
+                                                <span style="color: white; font-size: 13px" t-field="doc.ho_id.sudo().social_media_ids.filtered(lambda x: x.type_id.name == 'Line')[0].name"/>
                                             </t>
                                             <t t-else=""><span style="color: white; font-size: 13px">-</span></t>
                                         </span>
@@ -836,7 +836,7 @@
         <div class="row" style="page-break-inside:avoid; font-family: 'DeJavu Sans'">
             <!--No Rekening-->
             <div class="col-11">
-                <t t-if="ho_obj.sudo().payment_acquirer_ids">
+                <t t-if="doc.ho_id.sudo().payment_acquirer_ids">
                     <span style="font-size: 18px; font-weight: 730">IMPORTANT NOTES</span><br/>
                     <ol style="margin: 0 25px;">
                         <span t-raw="invoice_footer"/>
@@ -844,7 +844,7 @@
                         <li>
                             List of bank:
                             <ul>
-                                <t t-foreach="ho_obj.sudo().payment_acquirer_ids" t-as="payment_id">
+                                <t t-foreach="doc.ho_id.sudo().payment_acquirer_ids" t-as="payment_id">
                                     <!-- <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and current &lt; limit">-->
                                     <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and payment_id.website_published">
                                         <li style="font-size: 14px;"><span t-field="payment_id.bank_id.name"/> <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
@@ -854,9 +854,9 @@
                             </ul>
                         </li>
                         <t t-if="current == 0">
-                            <li>Direct payment (cash) at <span t-field="ho_obj.sudo().name"/></li>
+                            <li>Direct payment (cash) at <span t-field="doc.ho_id.sudo().name"/></li>
                         </t>
-                        <li style="font-size: 14px;">This invoice is generated by computer system and is considered as a legal invoice of <t t-esc="ho_obj.sudo().name"/></li>
+                        <li style="font-size: 14px;">This invoice is generated by computer system and is considered as a legal invoice of <t t-esc="doc.ho_id.sudo().name"/></li>
                     </ol>
                 </t>
             </div>

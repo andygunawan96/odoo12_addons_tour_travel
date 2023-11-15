@@ -5,6 +5,12 @@ import pytz
 import base64
 import logging
 
+try:
+    from BytesIO import BytesIO
+except ImportError:
+    from io import BytesIO
+import zipfile
+
 _logger = logging.getLogger(__name__)
 
 class TtBillingStatement(models.Model):
@@ -229,6 +235,44 @@ class TtBillingStatement(models.Model):
         }
         return url
         # return printout_billing_statement_action.report_action(self, data=datas)
+
+    def print_all_agent_invoice(self):
+        zip_filename = "inv_%s.zip" % self.name
+        bitIO = BytesIO()
+        zip_file = zipfile.ZipFile(bitIO, "w", zipfile.ZIP_DEFLATED)
+
+        for inv_obj in self.ho_invoice_ids:
+            # if not inv_obj.printout_invoice_id:
+            #     inv_obj.print_invoice()
+            if inv_obj.printout_invoice_id:
+                zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
+            # zip_file.writestr('qq' + str(inv_obj.name) + '.json', 'data_json')
+        for inv_obj in self.invoice_ids:
+            if inv_obj.inv_obj.printout_invoice_id:
+                zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
+        zip_file.close()
+
+        res = self.env['tt.upload.center.wizard'].upload_file_api(
+            {
+                'filename': '%s' % zip_filename,
+                'file_reference': 'ZipFile',
+                'file': base64.b64encode(bitIO.getvalue()),
+                'delete_date': datetime.today() + timedelta(minutes=10)
+            },
+            {
+                'co_agent_id': self.agent_id.id,
+                'co_uid': self.env.user.id,
+            }
+        )
+        upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "Zip " + str(datetime.now()),
+            'target': 'new',
+            'url': upc_id.url,
+        }
+        return url
 
     def get_email_reply_to(self):
         try:
