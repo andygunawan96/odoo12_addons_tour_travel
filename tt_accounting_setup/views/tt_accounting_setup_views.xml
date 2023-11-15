@@ -119,7 +119,7 @@
 
         <menuitem id="menu_administration_accounting_setup"
                   parent="tt_accounting_setup.menu_tour_travel_accounting"
-                  groups="base.group_erp_manager,tt_base.group_after_sales_master_level_4"
+                  groups="base.group_erp_manager,tt_base.group_ledger_level_5"
                   name="Accounting Setup"
                   sequence="1"
                   action="tt_accounting_setup.tt_accounting_setup_action_view"/>

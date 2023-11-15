@@ -68,6 +68,10 @@
                                 class="oe_stat_button"
                                 groups=""
                                 string="Billing Statement" type="object" icon="fa-print"/>
+                        <button name="print_all_agent_invoice"
+                                class="oe_stat_button"
+                                groups=""
+                                string="All Agent Invoice" type="object" icon="fa-print"/>
                         <button name="unlink_all_printout"
                             class="oe_stat_button" string="Delete PrintOut" type="object" icon="fa-minus-square"/>
                     </div>

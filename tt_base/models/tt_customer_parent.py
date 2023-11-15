@@ -220,6 +220,9 @@ class TtCustomerParent(models.Model):
     def get_external_credit_limit(self):
         return 0
 
+    def get_external_payment_acq_seq_id(self):
+        return self.seq_id
+
     def set_all_cor_por_email_cc(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('base.user_admin').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 47')

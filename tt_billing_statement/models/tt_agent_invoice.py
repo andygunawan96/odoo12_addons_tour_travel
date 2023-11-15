@@ -18,10 +18,10 @@ class AgentInvoice(models.Model):
         super(AgentInvoice, self).check_paid_status()
         if self.prev_state != self.state: ## kalau state tidak burubah jangan create ledger
             if self.state == 'paid':
-                if self.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id]:
+                if self.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id] and not self.customer_parent_id.check_use_ext_credit_limit():
                     self.create_ledger_invoice(debit=True)
             elif self.state == 'bill2':
-                if self.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id]:
+                if self.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id] and not self.customer_parent_id.check_use_ext_credit_limit():
                     self.create_ledger_invoice(debit=False)
         if self.billing_statement_id:
             self.billing_statement_id.check_status_bs()
