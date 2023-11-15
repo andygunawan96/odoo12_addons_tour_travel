@@ -98,3 +98,9 @@ class TtCustomerParentInhAcc(models.Model):
             ext_credit_limit = 0
             _logger.info('Accounting Setup not found, failed to check external credit limit for customer parent: %s.' % self.name)
         return ext_credit_limit
+
+    def get_external_payment_acq_seq_id(self):
+        if self.parent_agent_id.ext_credit_cor_acq_id:
+            return self.parent_agent_id.ext_credit_cor_acq_id.seq_id
+        else:
+            return self.seq_id
