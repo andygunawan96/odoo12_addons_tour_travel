@@ -46,7 +46,6 @@ class TtBankAccount(models.Model):
         }
         # called function to proceed data and input in bank transaction
         self.env['tt.bank.transaction'].get_data(data, self.ho_id.id)
-        self.cron_auto_top_up_validator()
 
 class TtBankDateTransaction(models.Model):
     _name = 'tt.bank.transaction.date'
