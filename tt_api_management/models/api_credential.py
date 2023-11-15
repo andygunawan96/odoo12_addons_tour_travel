@@ -136,38 +136,8 @@ class ApiManagement(models.Model):
                     raise Exception('Co User and Co Password is not match')
 
                 #generate OTP info for frontend
-                values.update({
-                    "co_is_using_otp": _co_user.is_using_otp,
-                    'co_otp_list_machine': [],
-                    'co_is_using_pin': _co_user.is_using_pin,
-                    'co_ho_is_using_pin': _co_user.ho_id.is_agent_required_pin,
-                    'co_ho_is_using_otp': _co_user.ho_id.is_agent_required_otp
-                })
-                if _co_user.is_using_otp:
-                    otp_objs = self.env['tt.otp'].search([
-                        ('user_id.id', '=', _co_user.id),
-                        ('is_connect','=', True),
-                        ('is_disconnect','=', False),
-                        ('purpose_type','=', 'turn_on')
-                    ])
-                    for otp_obj in otp_objs:
-                        is_need_add_otp = False
-                        if otp_obj.duration and len(otp_obj.duration) == 1:
-                            if datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration)) > datetime.now():
-                                is_need_add_otp = True
-                        elif otp_obj.duration == 'never':
-                            is_need_add_otp = True
-                        else:
-                            is_need_add_otp = True
-                        if is_need_add_otp:
-                            values['co_otp_list_machine'].append({
-                                "machine_id": otp_obj.machine_id.code,
-                                "platform": otp_obj.platform,
-                                "browser": otp_obj.browser,
-                                "timezone": otp_obj.timezone,
-                                "valid_date": (datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration))).strftime('%Y-%m-%d %H:%M:%S') if otp_obj.duration != 'never' else 'Never ask again for this browser',
-                                "connect_date_utc": datetime.strptime(otp_obj.connect_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
-                            })
+                values.update(_co_user.get_machine_otp_pin())
+
 
                 if _co_user.is_banned:
                     additional_msg = ""
@@ -217,6 +187,19 @@ class ApiManagement(models.Model):
             # Menambahkan uplines dari user
             co_user_info = self.env['tt.agent'].sudo().get_agent_level(response['co_agent_id'])
             response['co_user_info'] = co_user_info
+            res = Response().get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def update_context_machine_otp_pin_api(self, context):
+        try:
+            response = {}
+            _co_user = self.env['res.users'].sudo().browse(context['co_uid'])
+            response.update(_co_user.get_machine_otp_pin())
             res = Response().get_no_error(response)
         except RequestException as e:
             _logger.error(traceback.format_exc())
