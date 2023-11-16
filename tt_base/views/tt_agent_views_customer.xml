@@ -4,7 +4,7 @@
         <field name="name">tt.agent.form.view.customer</field>
         <field name="model">tt.agent</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="false">
                 <header>
                 </header>
                 <sheet>
@@ -200,7 +200,7 @@
         <field name="model">tt.agent</field>
         <field name="priority">10</field>
         <field name="arch" type="xml">
-            <kanban class="o_hr_employee_kanban">
+            <kanban class="o_hr_employee_kanban" create="false">
                 <field name="id"/>
                 <field name="name"/>
                 <field name="agent_type_id"/>

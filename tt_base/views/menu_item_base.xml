@@ -306,5 +306,6 @@
                   groups="tt_base.group_loyalty_program_level_1"
                   parent="tt_base.top_tour_travel_master_data"
                   sequence="300"/>
+
     </data>
 </odoo>
