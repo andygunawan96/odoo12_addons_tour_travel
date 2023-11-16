@@ -307,9 +307,5 @@
                   parent="tt_base.top_tour_travel_master_data"
                   sequence="300"/>
 
-        <!--Override official odoo-->
-        <record model="ir.ui.menu" id="mail.menu_root_discuss">
-            <field name="groups_id" eval="[(6,0,[ref('base.group_system')])]"/>
-        </record>
     </data>
 </odoo>
