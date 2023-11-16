@@ -5,6 +5,13 @@
         <field name="model">tt.customer</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button string="Archive Dupe Customers" name="%(tt_base.archive_dupe_customer_wizard_action_view)d" type="action"
+                        groups="tt_base.group_customer_level_3"
+                        context="{
+                            'default_customer_id': id
+                        }"/>
+                </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <label for="is_get_booking_from_vendor" string="Retrieved From Vendor" attrs="{'invisible': [('is_get_booking_from_vendor','=',False)]}"/>

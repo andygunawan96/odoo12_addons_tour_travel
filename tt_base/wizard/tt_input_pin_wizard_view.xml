@@ -5,7 +5,7 @@
         <field name="name">Input PIN Wizard</field>
         <field name="model">tt.input.pin.wizard</field>
         <field name="arch" type="xml">
-            <form string="Input PIN Wizard">
+            <form string="Enter your PIN">
                 <group>
                     <field name="res_model" groups="base.group_system"/>
                     <field name="res_id" groups="base.group_system"/>

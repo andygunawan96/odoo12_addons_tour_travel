@@ -45,7 +45,7 @@
         <field name="name">tt.agent.form.view</field>
         <field name="model">tt.agent</field>
         <field name="arch" type="xml">
-            <form create="false">
+            <form>
                 <header>
                 </header>
                 <sheet>
