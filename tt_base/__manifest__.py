@@ -115,6 +115,7 @@ Key Features
         'views/tt_letter_guarantee_lines_views.xml',
         'views/tt_agent_notification_views.xml',
         'views/tt_otp_views.xml',
+        'views/tt_pin_log_views.xml',
         'views/webclient_templates.xml'
     ],
     'demo': [],
