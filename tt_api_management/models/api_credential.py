@@ -97,15 +97,15 @@ class ApiManagement(models.Model):
                 raise Exception('User and Password is not match')
             _user = self.env['res.users'].sudo().browse(uid)
 
-            if _user.is_banned:
-                additional_msg = ""
-                try:
-                    additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime+timedelta(hours=7), '%Y-%m-%d %I %p')
-                except:
-                    pass
-                raise RequestException(1029,additional_message=additional_msg)
-            if not _user.is_api_user:
-                raise Exception('User is not allowed to access API')
+            # if _user.is_banned:
+            #     additional_msg = ""
+            #     try:
+            #         additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime+timedelta(hours=7), '%Y-%m-%d %I %p')
+            #     except:
+            #         pass
+            #     raise RequestException(1029,additional_message=additional_msg)
+            # if not _user.is_api_user:
+            #     raise Exception('User is not allowed to access API')
 
             _obj = self.sudo().search([('user_id', '=', uid), ('api_key', '=', data['api_key']),
                                        ('active', '=', 1)], limit=1)
@@ -139,16 +139,16 @@ class ApiManagement(models.Model):
                 values.update(_co_user.get_machine_otp_pin())
 
 
-                if _co_user.is_banned:
-                    additional_msg = ""
-                    try:
-                        additional_msg = 'Until %s.' % datetime.strftime(
-                            self.env['tt.ban.user'].search([('user_id', '=', _co_user.id)],
-                                                           limit=1).end_datetime+timedelta(hours=7),
-                            '%Y-%m-%d %I %p')
-                    except:
-                        pass
-                    raise RequestException(1029, additional_message=additional_msg)
+                # if _co_user.is_banned:
+                #     additional_msg = ""
+                #     try:
+                #         additional_msg = 'Until %s.' % datetime.strftime(
+                #             self.env['tt.ban.user'].search([('user_id', '=', _co_user.id)],
+                #                                            limit=1).end_datetime+timedelta(hours=7),
+                #             '%Y-%m-%d %I %p')
+                #     except:
+                #         pass
+                #     raise RequestException(1029, additional_message=additional_msg)
 
                 values.update(_co_user.get_credential(prefix='co_'))
             if data.get('co_uid'):
@@ -212,13 +212,13 @@ class ApiManagement(models.Model):
         try:
             _user = self.env['res.users'].sudo().browse(int(data['user_id']))
 
-            if _user.is_banned:
-                additional_msg = ""
-                try:
-                    additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime+timedelta(hours=7), '%Y-%m-%d %I %p')
-                except:
-                    pass
-                raise RequestException(1029,additional_message=additional_msg)
+            # if _user.is_banned:
+            #     additional_msg = ""
+            #     try:
+            #         additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime+timedelta(hours=7), '%Y-%m-%d %I %p')
+            #     except:
+            #         pass
+            #     raise RequestException(1029,additional_message=additional_msg)
 
             # July 13, 2023 - SAM
             # Update untuk support OCN gateway

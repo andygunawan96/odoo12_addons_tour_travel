@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="tt_pin_log_form_view" model="ir.ui.view">
+        <field name="name">tt.pin.log.form.view</field>
+        <field name="model">tt.pin.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="purpose_type"/>
+                        <field name="is_bypass_check"/>
+                        <field name="datetime_bypass_check"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_pin_log_tree_view" model="ir.ui.view">
+        <field name="name">tt.pin.log.tree.view</field>
+        <field name="model">tt.pin.log</field>
+        <field name="arch" type="xml">
+            <tree string="TT Pin Log">
+                <field name="purpose_type"/>
+                <field name="is_bypass_check"/>
+                <field name="datetime_bypass_check"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

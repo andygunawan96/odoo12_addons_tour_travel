@@ -55,3 +55,4 @@ from .official_odoo_inh import ir_exports
 from .official_odoo_inh import ir_filters
 from . import tt_agent_notification
 from . import tt_otp
+from . import tt_pin_log

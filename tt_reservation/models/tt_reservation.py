@@ -1521,7 +1521,7 @@ class TtReservation(models.Model):
             if user_obj.is_using_pin and not book_obj.payment_acquirer_number_id or user_obj.is_using_pin and book_obj.payment_acquirer_number_id and book_obj.payment_acquirer_number_id.state not in ['process', 'waiting']:
                 # if table_name not in ['visa', 'offline']:
                 ### ASUMSI KLO DI SET TIDAK MUNGKIN KOSONG
-                user_obj._check_pin(req.get('pin', ''))
+                user_obj.check_pin_api('check', req.get('pin', ''))
 
             if agent_obj.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids:
                 book_obj.write({

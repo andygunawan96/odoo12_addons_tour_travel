@@ -85,6 +85,21 @@
         </field>
     </record>
 
+    <!--    machine_ids harus dipisah karena ditambah di view khusus base.group_system, kalo tambah di page atau fieldnya tetap error (user biasa ga bisa buka) -->
+    <record id="res_user_form_view_pin_log_inh" model="ir.ui.view">
+        <field name="name">res.user.form.view.pin.log.inh</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Pin Log">
+                    <field name="pin_log_ids"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
     <record id="res_user_form_simplified_view_inh" model="ir.ui.view">
         <field name="name">res.user.form.view.inh</field>
         <field name="model">res.users</field>

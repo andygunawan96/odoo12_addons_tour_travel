@@ -669,3 +669,7 @@ access_tt_machine_for_public,tt.machine.for.public,model_tt_machine,,0,0,0,0
 ,,,,,,,
 access_tt_machine_for_admin,tt.machine.for.admin,model_tt_machine,base.group_system,1,1,1,1
 ,,,,,,,
+access_tt_pin_log_for_public,tt.pin.log.for.public,model_tt_pin_log,,0,0,0,0
+,,,,,,,
+access_tt_pin_log_for_admin,tt.pin.log.for.admin,model_tt_pin_log,base.group_system,1,1,1,1
+,,,,,,,

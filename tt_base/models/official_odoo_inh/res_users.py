@@ -95,6 +95,7 @@ class ResUsers(models.Model):
     is_using_otp = fields.Boolean('Is Using OTP', default=False)
     machine_ids = fields.One2many('tt.machine', 'user_id', 'Machine IDs', readonly=True)
     is_using_pin = fields.Boolean("Is Using Pin", default=False)
+    pin_log_ids = fields.One2many('tt.pin.log', 'user_id', 'Pin Log IDs', readonly=True)
     pin = fields.Char("PIN", compute='_compute_pin', inverse='_set_pin', invisible=True, copy=False, store=True)
 
     def _compute_pin(self):
@@ -408,10 +409,13 @@ class ResUsers(models.Model):
                     if not user:
                         raise AccessDenied()
                     user = user.sudo(user.id)
+                    if user.is_banned:
+                        raise RequestException(4030)
+
                     user._check_credentials(password, otp_params=otp_params)
                     user._update_last_login()
         except RequestException as e:
-            _logger.info("Fail on OTP Check, %s" % (str(e)))
+            _logger.info("Fail on Login Check, %s" % (str(e)))
             raise e
         except AccessDenied:
             _logger.info("Login failed for db:%s login:%s from %s", db, login, ip)
@@ -449,6 +453,19 @@ class ResUsers(models.Model):
             self._set_encrypted_pin(self.env.user.id, replacement)
         if not valid:
             raise RequestException(1042)
+
+
+    def check_pin_api(self, purpose_type, pin):
+        try:
+            if self.is_banned:
+                raise RequestException(4030)
+            self._check_pin(pin)
+            if purpose_type == 'check':
+                purpose_type = 'correct'
+            self.env['tt.pin.log'].create_pin_log(self, purpose_type)
+        except RequestException as e:
+            self.env['tt.pin.log'].create_pin_log(self, 'wrong')
+            raise e
 
     ##password_security OCA
     @api.multi
@@ -501,7 +518,7 @@ class ResUsers(models.Model):
 
         user_obj.pin = data['pin']
         user_obj.is_using_pin = True
-
+        self.env['tt.log.pin'].create_pin_log(self, 'set')
         return ERR.get_no_error()
 
     def turn_off_pin_api(self, data, context):
@@ -511,7 +528,7 @@ class ResUsers(models.Model):
         except:
             raise RequestException(1008)
 
-        user_obj._check_pin(data['pin'])
+        user_obj.check_pin_api('turn_off', data['pin'])
         user_obj.pin = ''
         user_obj.is_using_pin = False
         return ERR.get_no_error()
@@ -545,6 +562,7 @@ class ResUsers(models.Model):
                 ('otp', '=', data['otp_params']['otp']),
                 ('purpose_type', '=', 'change_pin'),
                 ('is_connect', '=', False),
+                ('user_id','=',user_obj.id),
                 ('create_date', '>', now - timedelta(minutes=user_obj.ho_id.otp_expired_time))
             ])
             if otp_objs:
@@ -557,10 +575,12 @@ class ResUsers(models.Model):
                         "disconnect_date": now,
                         'description': "\n".join(notes)
                     })
+                self.env['tt.pin.log'].create_pin_log(user_obj, 'change_by_otp')
             else:
+                self.env['tt.pin.log'].create_pin_log(user_obj, 'wrong')
                 return ERR.get_error(1041)
         else:
-            user_obj._check_pin(data['old_pin'])
+            user_obj.check_pin_api('change', data['old_pin'])
         user_obj.pin = data['pin']
         return ERR.get_no_error()
 
