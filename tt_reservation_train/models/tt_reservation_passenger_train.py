@@ -19,6 +19,7 @@ class TtReservationCustomer(models.Model):
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
         sale_service_charges = self.get_service_charges()
+        service_charge_details = self.get_service_charge_details()
         pax_type = ''
         for pnr in sale_service_charges:
             for svc in sale_service_charges[pnr]:
@@ -27,6 +28,7 @@ class TtReservationCustomer(models.Model):
             break
         res.update({
             'sale_service_charges': sale_service_charges,
+            'service_charge_details': service_charge_details,
             'temporary_field': json.loads(self.temporary_field) if self.temporary_field else [],
             'behaviors': self.customer_id.get_behavior(),
             'seq_id': self.customer_id.seq_id,
