@@ -76,6 +76,8 @@ class TtAgent(models.Model):
     is_agent_required_otp = fields.Selection([('optional','Optional'), ('notification','Notification'), ('required','Required')], 'Is Agent Required OTP', default='optional', help="Optional: User can issued in system without set OTP\nNotification: User can issued in system without set OTP and always info\nRequired: User need set OTP to issued in system and always info")
     is_agent_required_pin = fields.Selection([('optional','Optional'), ('notification','Notification'), ('required','Required')], 'Is Agent Required PIN', default='optional', help="Optional: User can issued in system without set PIN\nNotification: User can issued in system without set PIN and always info\nRequired: User need set PIN to issued in system and always info")
 
+    max_wrong_pin = fields.Integer('Max Wrong Pin Agent', default=3)
+
     redirect_url_signup = fields.Char('Redirect URL Signup', default='/')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')

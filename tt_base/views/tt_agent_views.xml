@@ -102,6 +102,7 @@
                             <field name="is_btc_breakdown_price_printout" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
                             <field name="is_agent_required_otp" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
                             <field name="is_agent_required_pin" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
+                            <field name="max_wrong_pin" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
                             <field name="ho_id" required="True" readonly="0" groups="base.group_erp_manager"/>
                             <field name="parent_agent_id" readonly="1"/>
                             <field name="agent_type_id" readonly="1"/>

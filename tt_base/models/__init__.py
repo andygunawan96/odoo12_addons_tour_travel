@@ -53,3 +53,4 @@ from .official_odoo_inh import ir_mail_server
 from .official_odoo_inh import mail_mail
 from . import tt_agent_notification
 from . import tt_otp
+from . import tt_pin_log
