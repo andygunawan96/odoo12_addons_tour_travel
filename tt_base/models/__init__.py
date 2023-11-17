@@ -51,5 +51,7 @@ from . import tt_public_holiday
 from . import tt_letter_guarantee
 from .official_odoo_inh import ir_mail_server
 from .official_odoo_inh import mail_mail
+from .official_odoo_inh import ir_exports
+from .official_odoo_inh import ir_filters
 from . import tt_agent_notification
 from . import tt_otp
