@@ -1392,6 +1392,12 @@ class TtProviderAirline(models.Model):
             "reference": self.reference,
             "context": context
         }
+        passengers = self.booking_id.passenger_ids.to_dict()
+        req.update({
+            'booking_data': {
+                'passengers': passengers
+            }
+        })
         res = self.env['tt.airline.api.con'].send_void_booking_vendor(req)
         _logger.info('Action Void Provider, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
 

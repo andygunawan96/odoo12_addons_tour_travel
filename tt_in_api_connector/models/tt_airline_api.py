@@ -148,6 +148,7 @@ class TtAirlineApiCon(models.Model):
             'is_retrieved': req.get('is_retrieved',False),
             'pricing_date': req.get('pricing_date',False),
             'context': req.get('context', {}),
+            'booking_data': req.get('booking_data', {}),
         }
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
