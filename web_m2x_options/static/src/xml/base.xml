@@ -10,4 +10,14 @@
             </attribute>
         </t>
     </t>
+    <t t-extend="mail.systray.MessagingMenu">
+        <t t-jquery=".o_mail_systray_item" t-operation="replace">
+            <t></t>
+        </t>
+    </t>
+    <t t-extend="mail.systray.ActivityMenu">
+        <t t-jquery=".o_mail_systray_item" t-operation="replace">
+            <t></t>
+        </t>
+    </t>
 </templates>

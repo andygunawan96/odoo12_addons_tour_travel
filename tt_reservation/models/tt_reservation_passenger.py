@@ -226,14 +226,14 @@ class TtReservationCustomer(models.Model):
                 'base_commission_upline': float(base_commission_upline),
                 'base_commission_provider_vat': float(base_commission_provider_vat),
                 'base_commission_charge': float(base_commission_charge),
-                'base_commission_airline': float(base_commission_airline),
+                'base_commission_vendor': float(base_commission_airline),
                 'base_fee_ho': float(base_fee_ho),
                 'base_vat_ho': float(base_vat_ho),
                 'base_vat_provider': float(base_vat_provider),
                 'base_price': float(base_price),
                 'base_price_ori': float(base_price_ori),
                 'base_nta': float(base_nta),
-                'base_nta_airline': float(base_nta_airline),
+                'base_nta_vendor': float(base_nta_airline),
             }
             result.append(pax_values)
         return result

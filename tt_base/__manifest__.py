@@ -43,6 +43,7 @@ Key Features
         'wizard/res_users_duplicate_permissions_wizard_view.xml',
         'wizard/frontend_security_assign_wizard_view.xml',
         'wizard/tt_upload_center_wizard_view.xml',
+        'wizard/archive_dupe_customer_wizard_view.xml',
 
         'views/res_country_views.xml',
         'views/res_country_state_views.xml',
