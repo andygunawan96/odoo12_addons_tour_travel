@@ -300,4 +300,32 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>
     </record>
 
+    <record id="ir_exports_for_ho_user" model="ir.rule">
+        <field name="name">Ir Exports For HO User</field>
+        <field name="model_id" ref="model_ir_exports"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="ir_exports_for_agent_user" model="ir.rule">
+        <field name="name">Ir Exports For Agent User</field>
+        <field name="model_id" ref="model_ir_exports"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>
+    </record>
+
+    <record id="ir_filters_for_ho_user" model="ir.rule">
+        <field name="name">Ir Filters For HO User</field>
+        <field name="model_id" ref="model_ir_filters"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="ir_filters_for_agent_user" model="ir.rule">
+        <field name="name">Ir Filters For Agent User</field>
+        <field name="model_id" ref="model_ir_filters"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>
+    </record>
+
 </odoo>
