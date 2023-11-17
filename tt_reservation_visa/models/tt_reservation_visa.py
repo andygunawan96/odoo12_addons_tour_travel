@@ -908,7 +908,7 @@ class TtVisa(models.Model):
                     if len(pax.channel_service_charge_ids.ids) > 0:
                         channel_service_charges = pax.get_channel_service_charges()
                     sale_service_charges = pax.get_service_charges()
-
+                    service_charge_details = pax.get_service_charge_details()
 
                     """ Requirements """
                     for require in pax.to_requirement_ids:
@@ -980,6 +980,7 @@ class TtVisa(models.Model):
                         },
                         'channel_service_charges': channel_service_charges,
                         'sale_service_charges': sale_service_charges,
+                        'service_charge_details': service_charge_details,
                         'pax_type': pax_type,
                         'sequence': idx
                     })
@@ -1340,8 +1341,9 @@ class TtVisa(models.Model):
             currency = ''
             currency_obj = None
             for provider in sell_visa['provider_bookings']:
-                for svc in provider['service_charges']:
-                    currency = svc['currency']
+                for svc_summary in provider['service_charge_summary']:
+                    for svc in svc_summary['service_charges']:
+                        currency = svc['currency']
             if currency:
                 currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
                 # if currency_obj:
@@ -1390,7 +1392,7 @@ class TtVisa(models.Model):
                                 visa_list.append({
                                     'id': visa['id'],
                                     'pax_count': 1,
-                                    'service_charges': visa['service_charges']
+                                    'service_charge_summary': visa['service_charge_summary']
                                 })
                                 break
 
@@ -1407,20 +1409,21 @@ class TtVisa(models.Model):
                     })
 
                 for visa in visa_list:
-                    for svc in visa['service_charges']:
-                        ## currency di skip default ke company
-                        service_charges_val.append({
-                            "pax_type": svc['pax_type'],
-                            "pax_count": visa['pax_count'],
-                            "amount": svc['amount'],
-                            "total_amount": svc['amount'] * visa['pax_count'],
-                            "foreign_amount": svc['foreign_amount'],
-                            "charge_code": svc['charge_code'],
-                            "charge_type": svc['charge_type'],
-                            "commission_agent_id": svc.get('commission_agent_id', False),
-                            "price_list_code": svc.get('visa_id')
-                        })
-                        total_price += svc['amount'] * visa['pax_count']
+                    for svc_summary in visa['service_charge_summary']:
+                        for svc in svc_summary['service_charges']:
+                            ## currency di skip default ke company
+                            service_charges_val.append({
+                                "pax_type": svc['pax_type'],
+                                "pax_count": visa['pax_count'],
+                                "amount": svc['amount'],
+                                "total_amount": svc['amount'] * visa['pax_count'],
+                                "foreign_amount": svc['foreign_amount'],
+                                "charge_code": svc['charge_code'],
+                                "charge_type": svc['charge_type'],
+                                "commission_agent_id": svc.get('commission_agent_id', False),
+                                "price_list_code": visa.get('id')
+                            })
+                            total_price += svc['amount'] * visa['pax_count']
 
                 provider_obj.create_service_charge(service_charges_val)
                 provider_obj.total_price = total_price
