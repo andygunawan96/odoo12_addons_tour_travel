@@ -2296,7 +2296,17 @@ class AgentPricing(object):
         }
         return payload
 
-    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, upsell_by_amount_charge=True, **kwargs):
+    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, upsell_by_amount_charge=True, tkt_res=None, **kwargs):
+        if rule_obj.get('pricing_type'):
+            if rule_obj['pricing_type'] == 'from_nta':
+                if tkt_res:
+                    fare_amount = tkt_res['nta_amount']
+                    tax_amount = 0.0
+            elif rule_obj['pricing_type'] == 'from_sales':
+                if tkt_res:
+                    fare_amount = tkt_res['sales_amount']
+                    tax_amount = 0.0
+
         sales_data = rule_obj['ticketing']['sales']
         sales_res = self.calculate_price(sales_data, fare_amount, tax_amount, pax_type, route_count, segment_count, upsell_by_amount_charge)
         total_upsell_amount = sales_res['upsell_amount']
@@ -4184,6 +4194,7 @@ class RepricingToolsV2(object):
         # December 17, 2021 - SAM
         # Flow 2
         is_agent_commission_applied = False
+        tkt_res_lib = {}
         for pricing_idx in range(3):
             for pax_type, sc_sum in sc_summary_dict.items():
                 pax_count = pax_count_dict[pax_type]
@@ -4210,6 +4221,7 @@ class RepricingToolsV2(object):
                 if pricing_idx == 0:
                     if rule_obj:
                         tkt_res = self.provider_pricing.get_ticketing_calculation(rule_obj=rule_obj, tax_amount=tax_amount, **calc_param)
+                        tkt_res_lib[pax_type] = tkt_res
 
                         if tkt_res['upsell_amount']:
                             if pax_type in sc_temp_repo:
@@ -4574,7 +4586,7 @@ class RepricingToolsV2(object):
 
                 if pricing_idx == 1:
                     if agent_obj:
-                        agent_tkt = self.agent_pricing.get_ticketing_calculation(rule_obj=agent_obj, tax_amount=tax_amount, **calc_param)
+                        agent_tkt = self.agent_pricing.get_ticketing_calculation(rule_obj=agent_obj, tax_amount=tax_amount, tkt_res=tkt_res_lib.get(pax_type, None), **calc_param)
 
                         if agent_tkt['upsell_amount']:
                             if pax_type in sc_temp_repo:
