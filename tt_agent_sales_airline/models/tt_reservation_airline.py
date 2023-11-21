@@ -46,6 +46,14 @@ class ReservationAirline(models.Model):
                 tmp += '%s - %s\n' % (rec.departure_date[:16], rec.arrival_date[:16])
         return tmp
 
+    def get_psg_ticket_numbers(self, psg_id):
+        ticket_numbers = []
+        for prov in self.provider_booking_ids:
+            pax = prov.ticket_ids.filtered(lambda x: x.passenger_id.id == int(psg_id))
+            if pax and pax[0].ticket_number:
+                ticket_numbers.append(pax[0].ticket_number)
+        return ticket_numbers
+
     def action_create_invoice(self, data, payment_method_to_ho):
         invoice_id = False
         ho_invoice_id = False
@@ -124,6 +132,9 @@ class ReservationAirline(models.Model):
 
         for psg in self.passenger_ids:
             desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+            ticket_num_list = self.get_psg_ticket_numbers(psg.id)
+            for ticknum in ticket_num_list:
+                desc_text += '\n%s' % ticknum
             price_unit = 0
             for cost_charge in psg.cost_service_charge_ids:
                 if cost_charge.charge_type not in ['RAC', 'DISC']:
@@ -147,6 +158,9 @@ class ReservationAirline(models.Model):
         commission_list = {}
         for psg in self.passenger_ids:
             desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+            ticket_num_list = self.get_psg_ticket_numbers(psg.id)
+            for ticknum in ticket_num_list:
+                desc_text += '\n%s' % ticknum
             price_unit = 0
 
             for cost_charge in psg.cost_service_charge_ids:
