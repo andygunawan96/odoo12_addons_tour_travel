@@ -2318,16 +2318,20 @@ class AgentPricing(object):
         }
         return payload
 
-    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, upsell_by_amount_charge=True, tkt_res=None, **kwargs):
+    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, upsell_by_amount_charge=True, tkt_res=None, roc_amount=0.0, rac_amount=0.0, **kwargs):
         if rule_obj.get('pricing_type'):
             if rule_obj['pricing_type'] == 'from_nta':
                 if tkt_res:
                     fare_amount = tkt_res['nta_amount']
                     tax_amount = 0.0
+                    if rac_amount:
+                        fare_amount -= rac_amount
             elif rule_obj['pricing_type'] == 'from_sales':
                 if tkt_res:
                     fare_amount = tkt_res['sales_amount']
                     tax_amount = 0.0
+                    if roc_amount:
+                        fare_amount += roc_amount
 
         sales_data = rule_obj['ticketing']['sales']
         sales_res = self.calculate_price(sales_data, fare_amount, tax_amount, pax_type, route_count, segment_count, upsell_by_amount_charge)
@@ -4158,7 +4162,7 @@ class RepricingToolsV2(object):
                     total_reservation_amount += sc_total
                 elif sc['charge_type'] == 'ROC':
                     has_roc_rac = True
-                    # sc_data['total_upsell_amount'] += sc_total
+                    sc_data['total_upsell_amount'] += sc_total
                 elif sc['charge_type'] == 'RAC':
                     has_roc_rac = True
                     if pricing_type == 'from_nta':
@@ -4263,6 +4267,8 @@ class RepricingToolsV2(object):
 
                 fare_amount = sc_sum['total_fare_amount'] / pax_count
                 tax_amount = sc_sum['total_tax_amount'] / pax_count
+                roc_amount = sc_sum['total_upsell_amount'] / pax_count
+                rac_amount = sc_sum['total_commission_amount'] / pax_count
 
                 # TEST ONLY
                 # fare_amount = 612000
@@ -4272,6 +4278,8 @@ class RepricingToolsV2(object):
 
                 calc_param = {
                     'fare_amount': fare_amount,
+                    'roc_amount': roc_amount,
+                    'rac_amount': rac_amount,
                     'pax_type': pax_type,
                     'route_count': route_count,
                     'segment_count': segment_count,
