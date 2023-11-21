@@ -49,7 +49,7 @@ class ReservationAirline(models.Model):
     def get_psg_ticket_numbers(self, psg_id):
         ticket_numbers = []
         for prov in self.provider_booking_ids:
-            pax = self.env['tt.ticket.airline'].search([('passenger_id', '=', int(psg_id)), ('provider_id', '=', prov.id)], limit=1)
+            pax = prov.ticket_ids.filtered(lambda x: x.passenger_id.id == int(psg_id))
             if pax and pax[0].ticket_number:
                 ticket_numbers.append(pax[0].ticket_number)
         return ticket_numbers
