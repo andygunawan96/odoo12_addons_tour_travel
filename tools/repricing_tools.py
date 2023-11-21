@@ -1548,12 +1548,16 @@ class ProviderPricing(object):
                 tax_ho_commission_amount += com_tax_charge
             if com_tax_amount != 0 and com_tax_amount > 0:
                 tax_ho_commission_amount += com_tax_amount
-            if com_rounding > 0:
-                digit = 1
-                for i in range(com_rounding):
-                    digit *= 10
+            # if com_rounding > 0:
+            digit = 1
+            for i in range(abs(com_rounding)):
+                digit *= 10
+            if com_rounding < 0:
                 temp = tax_ho_commission_amount / digit
-                tax_ho_commission_amount = ceil(temp) * digit
+                tax_ho_commission_amount = round(temp) * digit
+            else:
+                temp = tax_ho_commission_amount * digit
+                tax_ho_commission_amount = round(temp) / digit
 
         tax_total_commission_amount = 0.0
         if rule_obj['ticketing'].get('commission', {}):
@@ -1571,15 +1575,22 @@ class ProviderPricing(object):
             if com_tax_amount != 0 and com_tax_amount < 0:
                 tax_total_commission_amount += com_tax_amount
                 # total_commission_amount = total_commission_amount + com_tax_amount
-            if com_rounding > 0:
-                digit = 1
-                for i in range(com_rounding):
-                    digit *= 10
-                # temp = total_commission_amount / digit
-                # total_commission_amount = ceil(temp) * digit
-                temp = tax_total_commission_amount / digit
-                tax_total_commission_amount = ceil(temp) * digit
+            # if com_rounding > 0:
+            digit = 1
+            for i in range(abs(com_rounding)):
+                digit *= 10
+            # temp = total_commission_amount / digit
+            # total_commission_amount = ceil(temp) * digit
+            # temp = tax_total_commission_amount / digit
+            # tax_total_commission_amount = ceil(temp) * digit
             # nta_agent_total_amount = sales_total_amount - total_commission_amount
+            abs_tax_total_commission_amount = abs(tax_total_commission_amount)
+            if com_rounding < 0:
+                temp = abs_tax_total_commission_amount / digit
+                tax_total_commission_amount = -1.0 * round(temp) * digit
+            else:
+                temp = abs_tax_total_commission_amount * digit
+                tax_total_commission_amount = -1.0 * round(temp) / digit
 
         # END
 
@@ -1681,12 +1692,16 @@ class ProviderPricing(object):
                 tax_ho_commission_amount += com_tax_charge
             if com_tax_amount != 0 and com_tax_amount > 0:
                 tax_ho_commission_amount += com_tax_amount
-            if com_rounding > 0:
-                digit = 1
-                for i in range(com_rounding):
-                    digit *= 10
+            # if com_rounding > 0:
+            digit = 1
+            for i in range(abs(com_rounding)):
+                digit *= 10
+            if com_rounding < 0:
                 temp = tax_ho_commission_amount / digit
-                tax_ho_commission_amount = ceil(temp) * digit
+                tax_ho_commission_amount = round(temp) * digit
+            else:
+                temp = tax_ho_commission_amount * digit
+                tax_ho_commission_amount = round(temp) / digit
 
         tax_total_commission_amount = 0.0
         if rule_obj['reservation'].get('commission', {}):
@@ -1704,15 +1719,22 @@ class ProviderPricing(object):
             if com_tax_amount != 0 and com_tax_amount < 0:
                 tax_total_commission_amount += com_tax_amount
                 # total_commission_amount = total_commission_amount + com_tax_amount
-            if com_rounding > 0:
-                digit = 1
-                for i in range(com_rounding):
-                    digit *= 10
-                # temp = total_commission_amount / digit
-                # total_commission_amount = ceil(temp) * digit
-                temp = tax_total_commission_amount / digit
-                tax_total_commission_amount = ceil(temp) * digit
+            # if com_rounding > 0:
+            digit = 1
+            for i in range(abs(com_rounding)):
+                digit *= 10
+            # temp = total_commission_amount / digit
+            # total_commission_amount = ceil(temp) * digit
+            # temp = tax_total_commission_amount / digit
+            # tax_total_commission_amount = ceil(temp) * digit
             # nta_agent_total_amount = sales_total_amount - total_commission_amount
+            abs_tax_total_commission_amount = abs(tax_total_commission_amount)
+            if com_rounding < 0:
+                temp = abs_tax_total_commission_amount / digit
+                tax_total_commission_amount = -1.0 * round(temp) * digit
+            else:
+                temp = abs_tax_total_commission_amount * digit
+                tax_total_commission_amount = -1.0 * round(temp) / digit
 
         # END
 
@@ -2334,12 +2356,16 @@ class AgentPricing(object):
                 tax_ho_commission_amount += com_tax_charge
             if com_tax_amount != 0 and com_tax_amount > 0:
                 tax_ho_commission_amount += com_tax_amount
-            if com_rounding > 0:
-                digit = 1
-                for i in range(com_rounding):
-                    digit *= 10
+            # if com_rounding > 0:
+            digit = 1
+            for i in range(abs(com_rounding)):
+                digit *= 10
+            if com_rounding < 0:
                 temp = tax_ho_commission_amount / digit
-                tax_ho_commission_amount = ceil(temp) * digit
+                tax_ho_commission_amount = round(temp) * digit
+            else:
+                temp = tax_ho_commission_amount * digit
+                tax_ho_commission_amount = round(temp) / digit
 
         tax_total_commission_amount = 0.0
         if rule_obj['ticketing'].get('commission', {}):
@@ -2357,15 +2383,22 @@ class AgentPricing(object):
             if com_tax_amount != 0 and com_tax_amount < 0:
                 tax_total_commission_amount += com_tax_amount
                 # total_commission_amount = total_commission_amount + com_tax_amount
-            if com_rounding > 0:
-                digit = 1
-                for i in range(com_rounding):
-                    digit *= 10
-                # temp = total_commission_amount / digit
-                # total_commission_amount = ceil(temp) * digit
-                temp = tax_total_commission_amount / digit
-                tax_total_commission_amount = ceil(temp) * digit
+            # if com_rounding > 0:
+            digit = 1
+            for i in range(abs(com_rounding)):
+                digit *= 10
+            # temp = total_commission_amount / digit
+            # total_commission_amount = ceil(temp) * digit
+            # temp = tax_total_commission_amount / digit
+            # tax_total_commission_amount = ceil(temp) * digit
             # nta_agent_total_amount = sales_total_amount - total_commission_amount
+            abs_tax_total_commission_amount = abs(tax_total_commission_amount)
+            if com_rounding < 0:
+                temp = abs_tax_total_commission_amount / digit
+                tax_total_commission_amount = -1.0 * round(temp) * digit
+            else:
+                temp = abs_tax_total_commission_amount * digit
+                tax_total_commission_amount = -1.0 * round(temp) / digit
 
         # END
         payload = {
@@ -2462,12 +2495,17 @@ class AgentPricing(object):
                 tax_ho_commission_amount += com_tax_charge
             if com_tax_amount != 0 and com_tax_amount > 0:
                 tax_ho_commission_amount += com_tax_amount
-            if com_rounding > 0:
-                digit = 1
-                for i in range(com_rounding):
-                    digit *= 10
+            # if com_rounding > 0:
+            digit = 1
+            for i in range(abs(com_rounding)):
+                digit *= 10
+            if com_rounding < 0:
                 temp = tax_ho_commission_amount / digit
-                tax_ho_commission_amount = ceil(temp) * digit
+                tax_ho_commission_amount = round(temp) * digit
+            else:
+                temp = tax_ho_commission_amount * digit
+                tax_ho_commission_amount = round(temp) / digit
+
 
         tax_total_commission_amount = 0.0
         if rule_obj['reservation'].get('commission', {}):
@@ -2485,15 +2523,22 @@ class AgentPricing(object):
             if com_tax_amount != 0 and com_tax_amount < 0:
                 tax_total_commission_amount += com_tax_amount
                 # total_commission_amount = total_commission_amount + com_tax_amount
-            if com_rounding > 0:
-                digit = 1
-                for i in range(com_rounding):
-                    digit *= 10
-                # temp = total_commission_amount / digit
-                # total_commission_amount = ceil(temp) * digit
-                temp = tax_total_commission_amount / digit
-                tax_total_commission_amount = ceil(temp) * digit
+            # if com_rounding > 0:
+            digit = 1
+            for i in range(abs(com_rounding)):
+                digit *= 10
+            # temp = total_commission_amount / digit
+            # total_commission_amount = ceil(temp) * digit
+            # temp = tax_total_commission_amount / digit
+            # tax_total_commission_amount = ceil(temp) * digit
             # nta_agent_total_amount = sales_total_amount - total_commission_amount
+            abs_tax_total_commission_amount = abs(tax_total_commission_amount)
+            if com_rounding < 0:
+                temp = abs_tax_total_commission_amount / digit
+                tax_total_commission_amount = -1.0 * round(temp) * digit
+            else:
+                temp = abs_tax_total_commission_amount * digit
+                tax_total_commission_amount = -1.0 * round(temp) / digit
 
         # END
 
@@ -3035,12 +3080,19 @@ class CustomerPricing(object):
                 tax_total_commission_amount += com_tax_charge
             if com_tax_amount != 0 and com_tax_amount < 0:
                 tax_total_commission_amount += com_tax_amount
-            if com_rounding > 0:
-                digit = 1
-                for i in range(com_rounding):
-                    digit *= 10
-                temp = tax_total_commission_amount / digit
-                tax_total_commission_amount = ceil(temp) * digit
+            # if com_rounding > 0:
+            digit = 1
+            for i in range(abs(com_rounding)):
+                digit *= 10
+            # temp = tax_total_commission_amount / digit
+            # tax_total_commission_amount = ceil(temp) * digit
+            abs_tax_total_commission_amount = abs(tax_total_commission_amount)
+            if com_rounding < 0:
+                temp = abs_tax_total_commission_amount / digit
+                tax_total_commission_amount = -1.0 * round(temp) * digit
+            else:
+                temp = abs_tax_total_commission_amount * digit
+                tax_total_commission_amount = -1.0 * round(temp) / digit
         # END
 
         payload = {
@@ -3119,15 +3171,22 @@ class CustomerPricing(object):
             if com_tax_amount != 0:
                 tax_total_commission_amount += com_tax_amount
                 # total_commission_amount = total_commission_amount + com_tax_amount
-            if com_rounding > 0:
-                digit = 1
-                for i in range(com_rounding):
-                    digit *= 10
-                # temp = total_commission_amount / digit
-                # total_commission_amount = ceil(temp) * digit
-                temp = tax_total_commission_amount / digit
-                tax_total_commission_amount = ceil(temp) * digit
+            # if com_rounding > 0:
+            digit = 1
+            for i in range(abs(com_rounding)):
+                digit *= 10
+            # temp = total_commission_amount / digit
+            # total_commission_amount = ceil(temp) * digit
+            # temp = tax_total_commission_amount / digit
+            # tax_total_commission_amount = ceil(temp) * digit
             # nta_agent_total_amount = sales_total_amount - total_commission_amount
+            abs_tax_total_commission_amount = abs(tax_total_commission_amount)
+            if com_rounding < 0:
+                temp = abs_tax_total_commission_amount / digit
+                tax_total_commission_amount = -1.0 * round(temp) * digit
+            else:
+                temp = abs_tax_total_commission_amount * digit
+                tax_total_commission_amount = -1.0 * round(temp) / digit
         # END
 
         payload = {
