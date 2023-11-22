@@ -518,7 +518,7 @@ class ResUsers(models.Model):
 
         user_obj.pin = data['pin']
         user_obj.is_using_pin = True
-        self.env['tt.pin.log'].create_pin_log(self, 'set')
+        self.env['tt.pin.log'].create_pin_log(user_obj, 'set')
         return ERR.get_no_error()
 
     def turn_off_pin_api(self, data, context):
