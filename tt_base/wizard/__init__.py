@@ -1,6 +1,7 @@
 from . import res_users_duplicate_permissions_wizard
 from . import frontend_security_assign_wizard
 from . import tt_upload_center_wizard
+from . import archive_dupe_customer_wizard
 from . import create_user_wizard
 from . import create_ho_agent_wizard
 from . import create_customer_parent_wizard
@@ -8,3 +9,4 @@ from . import notification_pop_up_wizard
 from . import create_ho_transport_carrier_search_config_wizard
 from . import create_provider_ho_data_wizard
 from . import move_agent_ho_wizard
+from . import tt_input_pin_wizard

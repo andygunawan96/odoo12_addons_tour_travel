@@ -459,9 +459,29 @@ class TtVisa(models.Model):
             _logger.error(traceback.format_exc(e))
             return Response().get_error(error_message='contact b2b', error_code=500)
 
-    def action_in_process_visa(self):
+    def action_in_process_visa_button(self):
+        return self.action_in_process_visa()
+
+    def action_in_process_visa(self, pin=''):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 329')
+        if self.env.user.is_using_pin and not pin:
+            view = self.env.ref('tt_base.tt_input_pin_wizard_form_view')
+            return {
+                'name': 'Input Pin Wizard',
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'tt.input.pin.wizard',
+                'views': [(view.id, 'form')],
+                'view_id': view.id,
+                'target': 'new',
+                'context': {
+                    'default_res_model': self._name,
+                    'default_res_id': self.id
+                }
+            }
+
         data = {
             'order_number': self.name,
             'member': self.is_member,
@@ -481,6 +501,10 @@ class TtVisa(models.Model):
         if self.is_using_point_reward and website_use_point_reward == 'True':
             data.update({
                 'use_point': self.is_using_point_reward
+            })
+        if self.env.user.is_using_pin:
+            data.update({
+                'pin': pin
             })
         ctx = {
             'co_agent_type_id': self.agent_type_id.id,
@@ -884,7 +908,7 @@ class TtVisa(models.Model):
                     if len(pax.channel_service_charge_ids.ids) > 0:
                         channel_service_charges = pax.get_channel_service_charges()
                     sale_service_charges = pax.get_service_charges()
-
+                    service_charge_details = pax.get_service_charge_details()
 
                     """ Requirements """
                     for require in pax.to_requirement_ids:
@@ -956,6 +980,7 @@ class TtVisa(models.Model):
                         },
                         'channel_service_charges': channel_service_charges,
                         'sale_service_charges': sale_service_charges,
+                        'service_charge_details': service_charge_details,
                         'pax_type': pax_type,
                         'sequence': idx
                     })
@@ -1316,8 +1341,9 @@ class TtVisa(models.Model):
             currency = ''
             currency_obj = None
             for provider in sell_visa['provider_bookings']:
-                for svc in provider['service_charges']:
-                    currency = svc['currency']
+                for svc_summary in provider['service_charge_summary']:
+                    for svc in svc_summary['service_charges']:
+                        currency = svc['currency']
             if currency:
                 currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
                 # if currency_obj:
@@ -1366,7 +1392,7 @@ class TtVisa(models.Model):
                                 visa_list.append({
                                     'id': visa['id'],
                                     'pax_count': 1,
-                                    'service_charges': visa['service_charges']
+                                    'service_charge_summary': visa['service_charge_summary']
                                 })
                                 break
 
@@ -1383,20 +1409,21 @@ class TtVisa(models.Model):
                     })
 
                 for visa in visa_list:
-                    for svc in visa['service_charges']:
-                        ## currency di skip default ke company
-                        service_charges_val.append({
-                            "pax_type": svc['pax_type'],
-                            "pax_count": visa['pax_count'],
-                            "amount": svc['amount'],
-                            "total_amount": svc['amount'] * visa['pax_count'],
-                            "foreign_amount": svc['foreign_amount'],
-                            "charge_code": svc['charge_code'],
-                            "charge_type": svc['charge_type'],
-                            "commission_agent_id": svc.get('commission_agent_id', False),
-                            "price_list_code": svc.get('visa_id')
-                        })
-                        total_price += svc['amount'] * visa['pax_count']
+                    for svc_summary in visa['service_charge_summary']:
+                        for svc in svc_summary['service_charges']:
+                            ## currency di skip default ke company
+                            service_charges_val.append({
+                                "pax_type": svc['pax_type'],
+                                "pax_count": visa['pax_count'],
+                                "amount": svc['amount'],
+                                "total_amount": svc['amount'] * visa['pax_count'],
+                                "foreign_amount": svc['foreign_amount'],
+                                "charge_code": svc['charge_code'],
+                                "charge_type": svc['charge_type'],
+                                "commission_agent_id": svc.get('commission_agent_id', False),
+                                "price_list_code": visa.get('id')
+                            })
+                            total_price += svc['amount'] * visa['pax_count']
 
                 provider_obj.create_service_charge(service_charges_val)
                 provider_obj.total_price = total_price

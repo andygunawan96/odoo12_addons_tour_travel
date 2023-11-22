@@ -81,8 +81,8 @@ class AgentInvoiceInh(models.Model):
             pdf_report_bytes = invoice_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'HO Invoice %s.pdf' % self.name,
-                    'file_reference': 'HO Invoice for %s' % self.name,
+                    'filename': '%s.pdf' % self.name,
+                    'file_reference': 'HO Invoice',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },

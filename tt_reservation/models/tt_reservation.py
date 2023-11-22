@@ -818,24 +818,23 @@ class TtReservation(models.Model):
             include_total_nta = context['co_agent_id'] == context['co_ho_id']
         payment_acquirer_number = {}
         if self.payment_acquirer_number_id:
-            if self.payment_acquirer_number_id.state in ['close', 'process', 'waiting']: ## agar process & waiting tetap muncul di frontend
-                if self.payment_acquirer_number_id.time_limit:
-                    different_time = self.payment_acquirer_number_id.time_limit - datetime.now()
-                    if different_time > timedelta(seconds=0) and self.payment_acquirer_number_id.state in ['close']:  ## LEBIH DARI 1 JAM TIMELIMIT 55 MENIT
-                        payment_acquirer_number = {
-                            'create_date': self.payment_acquirer_number_id.create_date.strftime("%Y-%m-%d %H:%M:%S"),
-                            'time_limit': self.payment_acquirer_number_id.time_limit and self.payment_acquirer_number_id.time_limit.strftime("%Y-%m-%d %H:%M:%S") or (self.payment_acquirer_number_id.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
-                            'nomor_rekening': self.payment_acquirer_number_id.payment_acquirer_id.account_number,
-                            'account_name': self.payment_acquirer_number_id.payment_acquirer_id.account_name,
-                            'va_number': self.payment_acquirer_number_id.va_number,
-                            'url': self.payment_acquirer_number_id.url,
-                            'amount': self.payment_acquirer_number_id.get_total_amount(),
-                            'order_number': self.payment_acquirer_number_id.number,
-                            'currency': self.payment_acquirer_number_id.currency_id.name,
-                            'state': self.payment_acquirer_number_id.state
-                        }
-                    else:
-                        self.cancel_payment_method()
+            if self.payment_acquirer_number_id.state in ['close']: ## hanya state close yg di check timelimit
+                if not self.payment_acquirer_number_id.time_limit:
+                    self.cancel_payment_method()
+                different_time = self.payment_acquirer_number_id.time_limit - datetime.now()
+                if different_time > timedelta(seconds=0):  ## LEBIH DARI 1 JAM TIMELIMIT 55 MENIT
+                    payment_acquirer_number = {
+                        'create_date': self.payment_acquirer_number_id.create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                        'time_limit': self.payment_acquirer_number_id.time_limit and self.payment_acquirer_number_id.time_limit.strftime("%Y-%m-%d %H:%M:%S") or (self.payment_acquirer_number_id.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
+                        'nomor_rekening': self.payment_acquirer_number_id.payment_acquirer_id.account_number,
+                        'account_name': self.payment_acquirer_number_id.payment_acquirer_id.account_name,
+                        'va_number': self.payment_acquirer_number_id.va_number,
+                        'url': self.payment_acquirer_number_id.url,
+                        'amount': self.payment_acquirer_number_id.get_total_amount(),
+                        'order_number': self.payment_acquirer_number_id.number,
+                        'currency': self.payment_acquirer_number_id.currency_id.name,
+                        'state': self.payment_acquirer_number_id.state
+                    }
                 else:
                     self.cancel_payment_method()
         if self.voucher_code and self.state in ['booked']: ##SETIAP GETBOOKING STATUS BOOKED CHECK VOUCHER VALID/TIDAK, YG EXPIRED DI LEPAS LEWAT CRON
@@ -1503,17 +1502,27 @@ class TtReservation(models.Model):
             except:
                 raise RequestException(1008)
 
-            if user_obj.ho_id.is_agent_required_otp and not user_obj.is_using_otp and user_obj.ho_id.is_agent_required_pin and not user_obj.is_using_pin:
-                raise RequestException(1046)
-            elif user_obj.ho_id.is_agent_required_otp and not user_obj.is_using_otp:
-                raise RequestException(1043)
-            elif user_obj.ho_id.is_agent_required_pin and not user_obj.is_using_pin:
-                raise RequestException(1045)
-            #### CHECK PIN HERE ####
-            if user_obj.is_using_pin and not book_obj.payment_acquirer_number_id or user_obj.is_using_pin and book_obj.payment_acquirer_number_id and book_obj.payment_acquirer_number_id.state not in ['process', 'waiting']:
-                if table_name not in ['visa', 'offline']:
+            ## 2 tab bayar pakai payment gateway, lalu tab ke 2 bayar pakai cash/transfer
+            if book_obj.payment_acquirer_number_id and book_obj.payment_acquirer_number_id.state not in ['process', 'waiting'] or not book_obj.payment_acquirer_number_id:
+                ## FIXME BTBO 2 SKIP CHECK OTP & PIN
+                if context:
+                    is_need_check_required = True
+                    if context.get('co_user_login') and context.get('user_login'):
+                        if context['co_user_login'] == context['user_login']:
+                            is_need_check_required = False
+                    if is_need_check_required:
+                        # tambah sudo karena kalo offline / visa bukan gateway user yang akses
+                        if user_obj.ho_id.sudo().is_agent_required_otp == 'required' and not user_obj.is_using_otp and user_obj.ho_id.sudo().is_agent_required_pin == 'required' and not user_obj.is_using_pin:
+                            raise RequestException(1046)
+                        elif user_obj.ho_id.sudo().is_agent_required_otp == 'required' and not user_obj.is_using_otp:
+                            raise RequestException(1043)
+                        elif user_obj.ho_id.sudo().is_agent_required_pin == 'required' and not user_obj.is_using_pin:
+                            raise RequestException(1045)
+                #### CHECK PIN HERE ####
+                if user_obj.is_using_pin:
+                    # if table_name not in ['visa', 'offline']:
                     ### ASUMSI KLO DI SET TIDAK MUNGKIN KOSONG
-                    user_obj._check_pin(req.get('pin', ''))
+                    user_obj.check_pin_api('check', req.get('pin', ''))
 
             if agent_obj.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids:
                 book_obj.write({
@@ -1553,7 +1562,7 @@ class TtReservation(models.Model):
                     agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
 
                 is_use_point = False
-                website_use_point_reward = book_obj.agent_id.ho_id.is_use_point_reward
+                website_use_point_reward = book_obj.agent_id.ho_id.sudo().is_use_point_reward
                 if website_use_point_reward:
                     is_use_point = req.get('use_point')
 

@@ -116,9 +116,9 @@ class ResUsersInherit(models.Model):
                 for otp_obj in otp_objs:
                     otp_obj.update({
                         "is_connect": True,
-                        "duration": req.get('otp_type','never'),
                         "connect_date": now,
-                        "description": 'Turn On'
+                        "description": 'Turn On',
+                        "duration": req['otp_type'] if req.get('otp_type') and req['otp_type'] != '' else 'never'
                     })
                 return True
             raise RequestException(1041)
@@ -158,9 +158,9 @@ class ResUsersInherit(models.Model):
             for otp_obj in otp_objs:
                 otp_obj.update({
                     "is_connect": True,
-                    "duration": req.get('otp_type', 'never'),
                     "connect_date": now,
-                    "description": 'Turn On'
+                    "description": 'Turn On',
+                    "duration": req['otp_type'] if req.get('otp_type') and req['otp_type'] != '' else 'never'
                 })
             user_obj.is_using_otp = True
             return ERR.get_no_error()
@@ -334,8 +334,8 @@ class TtMachine(models.Model):
         else:
             return self.create({
                 "code": req['machine_code'],
-                "platform": req['platform'],
-                "browser": req['browser'],
+                "platform": req.get('platform', ''),
+                "browser": req.get('browser', ''),
                 "timezone": req.get('timezone', ''),
             })
 
@@ -345,7 +345,7 @@ class TtOtp(models.Model):
     _order = "id desc"
     _description = "OTP User"
 
-    machine_id = fields.Many2one('tt.machine', 'Machine ID')
+    machine_id = fields.Many2one('tt.machine', 'Machine ID', ondelete='cascade')
     user_id = fields.Many2one('res.users', 'User', readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', related='user_id.agent_id', readonly=True)
     otp = fields.Char('OTP')

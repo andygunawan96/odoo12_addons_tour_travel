@@ -33,6 +33,11 @@
 
 <!--                        <button string="Update Identity" name="test_vals_cleaner" type="object"-->
 <!--                                groups="base.group_user"/>-->
+                    <button string="Archive Dupe Customers" name="%(tt_base.archive_dupe_customer_wizard_action_view)d" type="action"
+                        groups="tt_base.group_customer_level_3"
+                        context="{
+                            'default_customer_id': id
+                        }"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

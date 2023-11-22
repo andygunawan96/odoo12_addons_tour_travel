@@ -28,12 +28,12 @@ Key Features
         'data/ir_send_email.xml',
 
         'data/res.social.media.type.csv',
-        'data/tt_pnr_quota_price_list.xml',
         'views/menu_item_base.xml',
         'views/tt_agent_views.xml',
         'data/agent_type_orbis_data.xml',
         'data/tt_agent_ho_data.xml',
         'data/agent_b2c_data.xml',
+        'data/tt_pnr_quota_price_list.xml',
         'data/payment_acquirer_ho_data.xml',
         'data/user_template.xml',
 
@@ -43,6 +43,7 @@ Key Features
         'wizard/res_users_duplicate_permissions_wizard_view.xml',
         'wizard/frontend_security_assign_wizard_view.xml',
         'wizard/tt_upload_center_wizard_view.xml',
+        'wizard/archive_dupe_customer_wizard_view.xml',
 
         'views/res_country_views.xml',
         'views/res_country_state_views.xml',
@@ -101,6 +102,7 @@ Key Features
         'wizard/create_ho_transport_carrier_search_config_wizard_view.xml',
         'wizard/create_provider_ho_data_wizard_view.xml',
         'wizard/move_agent_ho_wizard_view.xml',
+        'wizard/tt_input_pin_wizard_view.xml',
         'views/tt_upload_center_views.xml',
         'views/tt_vendor_views.xml',
         'views/ir_model_data_views.xml',
@@ -113,6 +115,7 @@ Key Features
         'views/tt_letter_guarantee_lines_views.xml',
         'views/tt_agent_notification_views.xml',
         'views/tt_otp_views.xml',
+        'views/tt_pin_log_views.xml',
         'views/webclient_templates.xml'
     ],
     'demo': [],

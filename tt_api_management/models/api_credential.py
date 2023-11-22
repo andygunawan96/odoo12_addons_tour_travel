@@ -97,15 +97,15 @@ class ApiManagement(models.Model):
                 raise Exception('User and Password is not match')
             _user = self.env['res.users'].sudo().browse(uid)
 
-            if _user.is_banned:
-                additional_msg = ""
-                try:
-                    additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime+timedelta(hours=7), '%Y-%m-%d %I %p')
-                except:
-                    pass
-                raise RequestException(1029,additional_message=additional_msg)
-            if not _user.is_api_user:
-                raise Exception('User is not allowed to access API')
+            # if _user.is_banned:
+            #     additional_msg = ""
+            #     try:
+            #         additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime+timedelta(hours=7), '%Y-%m-%d %I %p')
+            #     except:
+            #         pass
+            #     raise RequestException(1029,additional_message=additional_msg)
+            # if not _user.is_api_user:
+            #     raise Exception('User is not allowed to access API')
 
             _obj = self.sudo().search([('user_id', '=', uid), ('api_key', '=', data['api_key']),
                                        ('active', '=', 1)], limit=1)
@@ -128,46 +128,27 @@ class ApiManagement(models.Model):
                     raise Exception('User Role is not allowed to do Co User login')
                 auth_db_res = _DB_CON.authenticate(data['co_user'], data['co_password'], data['otp_params'])
 
-                if isinstance(auth_db_res, dict):
+                if type(auth_db_res) == dict:
                     return auth_db_res
-                elif isinstance(auth_db_res, int):
+                elif type(auth_db_res) == int:
                     _co_user = self.env['res.users'].sudo().browse(auth_db_res)
                 else:
                     raise Exception('Co User and Co Password is not match')
 
                 #generate OTP info for frontend
-                values.update({
-                    "co_is_using_otp": _co_user.is_using_otp,
-                    'co_otp_list_machine': [],
-                    'co_is_using_pin': _co_user.is_using_pin,
-                    'co_ho_is_using_pin': _co_user.ho_id.is_agent_required_pin,
-                    'co_ho_is_using_otp': _co_user.ho_id.is_agent_required_otp
-                })
-                if _co_user.is_using_otp:
-                    otp_objs = self.env['tt.otp'].search([
-                        ('user_id.id', '=', _co_user.id),
-                        ('is_connect','=', True),
-                        ('is_disconnect','=', False),
-                        ('purpose_type','=', 'turn_on')
-                    ])
-                    for otp_obj in otp_objs:
-                        values['co_otp_list_machine'].append({
-                            "machine_id": otp_obj.machine_id.code,
-                            "platform": otp_obj.platform,
-                            "browser": otp_obj.browser,
-                            "timezone": otp_obj.timezone
-                        })
+                values.update(_co_user.get_machine_otp_pin())
 
-                if _co_user.is_banned:
-                    additional_msg = ""
-                    try:
-                        additional_msg = 'Until %s.' % datetime.strftime(
-                            self.env['tt.ban.user'].search([('user_id', '=', _co_user.id)],
-                                                           limit=1).end_datetime+timedelta(hours=7),
-                            '%Y-%m-%d %I %p')
-                    except:
-                        pass
-                    raise RequestException(1029, additional_message=additional_msg)
+
+                # if _co_user.is_banned:
+                #     additional_msg = ""
+                #     try:
+                #         additional_msg = 'Until %s.' % datetime.strftime(
+                #             self.env['tt.ban.user'].search([('user_id', '=', _co_user.id)],
+                #                                            limit=1).end_datetime+timedelta(hours=7),
+                #             '%Y-%m-%d %I %p')
+                #     except:
+                #         pass
+                #     raise RequestException(1029, additional_message=additional_msg)
 
                 values.update(_co_user.get_credential(prefix='co_'))
             if data.get('co_uid'):
@@ -214,17 +195,30 @@ class ApiManagement(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
+    def update_context_machine_otp_pin_api(self, context):
+        try:
+            response = {}
+            _co_user = self.env['res.users'].sudo().browse(context['co_uid'])
+            response.update(_co_user.get_machine_otp_pin())
+            res = Response().get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
     def get_userid_credential(self, data):
         try:
             _user = self.env['res.users'].sudo().browse(int(data['user_id']))
 
-            if _user.is_banned:
-                additional_msg = ""
-                try:
-                    additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime+timedelta(hours=7), '%Y-%m-%d %I %p')
-                except:
-                    pass
-                raise RequestException(1029,additional_message=additional_msg)
+            # if _user.is_banned:
+            #     additional_msg = ""
+            #     try:
+            #         additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime+timedelta(hours=7), '%Y-%m-%d %I %p')
+            #     except:
+            #         pass
+            #     raise RequestException(1029,additional_message=additional_msg)
 
             # July 13, 2023 - SAM
             # Update untuk support OCN gateway
@@ -302,9 +296,9 @@ class TtAgentApiInherit(models.Model):
             '%sagent_id' % prefix: self.id,
             '%sagent_name' % prefix: self.name,
         }
-        if not prefix:
+        if prefix:
             res.update({
-                "pricing_breakdown": self.pricing_breakdown
+                "pricing_breakdown": self.ho_id.pricing_breakdown
             })
         if self.agent_type_id:
             res.update(self.agent_type_id.get_credential(prefix))

@@ -173,10 +173,16 @@
                         </group>
                         <group>
                             <field name="state" widget="radio"/>
+                            <field name="pricing_type" widget="radio"/>
                         </group>
                     </group>
                     <div>
                         <pre>NOTES:
+[ Pricing Type ]
+Standard : Using total ticket price from vendor.
+From NTA : Start pricing from NTA price from pricing provider.
+From Sales : Start pricing from Sales price from pricing provider.
+
 [Currency]
 If not set (empty), it will be applied for all currencies.</pre>
                     </div>

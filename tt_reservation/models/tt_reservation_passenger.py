@@ -2,6 +2,8 @@ from dateutil.relativedelta import relativedelta
 from odoo import api,models,fields
 from ...tools import variables
 from datetime import datetime
+from decimal import Decimal
+
 
 class TtReservationCustomer(models.Model):
     _name = 'tt.reservation.passenger'
@@ -131,7 +133,110 @@ class TtReservationCustomer(models.Model):
                 'pax_type': p_sc.pax_type,
                 'foreign_amount': p_sc.foreign_amount,
             })
-        return sc_value
+
+        result = []
+        for pnr, pnr_data in sc_value.items():
+            base_fare = Decimal("0.0")
+            base_tax = Decimal("0.0")
+            base_roc = Decimal("0.0")
+            base_commission = Decimal("0.0")
+            base_commission_charge = Decimal("0.0")
+            base_discount = Decimal("0.0")
+            base_commission_upline = Decimal("0.0")
+            base_commission_provider_ho = Decimal("0.0")
+            base_commission_provider_vat = Decimal("0.0")
+            base_commission_ho = Decimal("0.0")
+            base_fee_ho = Decimal("0.0")
+            base_vat_ho = Decimal("0.0")
+            base_vat_provider = Decimal("0.0")
+            pax_type = ''
+
+            for charge_type, service_charges in pnr_data.items():
+                for sc in service_charges:
+                    sc_amount = Decimal(str(sc['amount']))
+                    '''
+                        FARE, TAX, ROC, RAC, DISC, RACUA, ROCUA,
+                        RACHSP, RACHVP, RACAVP, ROCHSP, ROCHVP, ROCAVP,
+                        RACHSA, RACHVA, RACAVA, ROCHSA, ROCHVA, ROCAVA,
+                        RACHSC, RACHVC, RACAVC, ROCHSC, ROCHVC, ROCAVC,
+                    '''
+                    if charge_type == 'FARE':
+                        base_fare += sc_amount
+                    elif charge_type == 'TAX':
+                        base_tax += sc_amount
+                    elif charge_type == 'ROC':
+                        base_roc += sc_amount
+                    elif charge_type == 'RAC':
+                        base_commission += sc_amount
+                    elif charge_type == 'DISC':
+                        base_discount += sc_amount
+                    elif charge_type == 'RACUA':
+                        base_commission_upline += sc_amount
+                    elif charge_type == 'ROCUA':
+                        pass
+                    elif charge_type == 'RACHSP':
+                        base_commission_provider_ho += sc_amount
+                        base_commission_ho += sc_amount
+                    elif charge_type == 'RACHVP':
+                        base_commission_ho += sc_amount
+                    elif charge_type == 'RACAVP':
+                        base_commission_provider_vat += sc_amount
+                    elif charge_type == 'ROCHSP':
+                        base_fee_ho += sc_amount
+                    elif charge_type == 'ROCHVP':
+                        base_vat_ho += sc_amount
+                    elif charge_type == 'ROCAVP':
+                        base_vat_provider += sc_amount
+                    elif charge_type == 'ROCCHG':
+                        pass
+                    elif charge_type == 'RACCHG':
+                        base_commission_charge += sc_amount
+                    elif charge_type in ['RACHSA', 'RACHVA', 'RACAVA', 'RACHSC', 'RACHVC', 'RACAVC']:
+                        base_commission_ho += sc_amount
+                    elif charge_type in ['ROCHSA', 'ROCHSC']:
+                        base_fee_ho += sc_amount
+                    elif charge_type in ['ROCHVA', 'ROCAVA', 'ROCHVC', 'ROCAVC']:
+                        base_vat_ho += sc_amount
+                    else:
+                        base_roc += sc_amount
+                    if not pax_type:
+                        pax_type = sc['pax_type']
+
+            # base_tax_total = base_tax + base_roc + base_vat_ho
+            base_tax_total = base_tax + base_roc
+            base_price_ori = base_fare + base_tax
+            # base_price = base_fare + base_tax + base_roc + base_discount + base_vat_ho
+            base_price = base_fare + base_tax + base_roc + base_discount
+            base_commission_airline = base_commission + base_commission_upline + base_commission_provider_ho + base_commission_provider_vat + base_commission_charge
+            base_nta = base_price + base_commission
+            base_nta_airline = base_price_ori + base_commission_airline
+
+            pax_values = {
+                'pnr': pnr,
+                'service_charges': pnr_data,
+                'pax_type': pax_type,
+                'pax_count': 1,
+                'base_fare': float(base_fare),
+                'base_tax': float(base_tax_total),
+                'base_discount': float(base_discount),
+                'base_fare_ori': float(base_fare),
+                'base_tax_ori': float(base_tax),
+                'base_commission': float(base_commission),
+                'base_commission_ho': float(base_commission_ho),
+                'base_commission_upline': float(base_commission_upline),
+                'base_commission_provider_vat': float(base_commission_provider_vat),
+                'base_commission_charge': float(base_commission_charge),
+                'base_commission_vendor': float(base_commission_airline),
+                'base_fee_ho': float(base_fee_ho),
+                'base_vat_ho': float(base_vat_ho),
+                'base_vat_provider': float(base_vat_provider),
+                'base_price': float(base_price),
+                'base_price_ori': float(base_price_ori),
+                'base_nta': float(base_nta),
+                'base_nta_vendor': float(base_nta_airline),
+            }
+            result.append(pax_values)
+        return result
 
     #butuh field channel_service_charge_ids
     def get_channel_service_charges(self):

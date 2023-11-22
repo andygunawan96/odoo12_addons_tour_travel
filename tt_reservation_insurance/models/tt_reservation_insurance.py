@@ -295,8 +295,12 @@ class ReservationInsurance(models.Model):
             ## GET CURRENCY CODE
             currency = ''
             currency_obj = None
-            for svc in book_data['service_charges']:
-                currency = svc['currency']
+            for svc_summary in book_data['service_charge_summary']:
+                for svc in svc_summary['service_charges']:
+                    currency = svc['currency']
+                    break
+                break
+
             if currency:
                 currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
                 # if currency_obj:
@@ -323,20 +327,21 @@ class ReservationInsurance(models.Model):
             for provider_obj in provider_ids:
                 provider_obj.create_ticket_api(passengers)
                 service_charges_val = []
-                for svc in book_data['service_charges']:
-                    ## currency di skip default ke company
-                    service_charges_val.append({
-                        "pax_type": svc['pax_type'],
-                        "pax_count": svc['pax_count'],
-                        "currency": svc['currency'],
-                        "amount": svc['amount'],
-                        "total_amount": svc['total'],
-                        "foreign_currency": svc['foreign_currency'],
-                        "foreign_amount": svc['amount'],
-                        "charge_code": svc['charge_code'],
-                        "charge_type": svc['charge_type'],
-                        "commission_agent_id": svc.get('commission_agent_id', False)
-                    })
+                for svc_summary in book_data['service_charge_summary']:
+                    for svc in svc_summary['service_charges']:
+                        ## currency di skip default ke company
+                        service_charges_val.append({
+                            "pax_type": svc['pax_type'],
+                            "pax_count": svc['pax_count'],
+                            "currency": svc['currency'],
+                            "amount": svc['amount'],
+                            "total_amount": svc['total'],
+                            "foreign_currency": svc['foreign_currency'],
+                            "foreign_amount": svc['amount'],
+                            "charge_code": svc['charge_code'],
+                            "charge_type": svc['charge_type'],
+                            "commission_agent_id": svc.get('commission_agent_id', False)
+                        })
 
                 provider_obj.create_service_charge(service_charges_val)
 

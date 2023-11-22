@@ -54,3 +54,4 @@ class TtBanUser(models.Model):
         for rec in self.search([('user_id','=',user_id)]):
             rec.user_id.is_banned = False
             rec.active = False
+            self.env["tt.pin.log"].ban_user_bypass_pin_log(user_id)

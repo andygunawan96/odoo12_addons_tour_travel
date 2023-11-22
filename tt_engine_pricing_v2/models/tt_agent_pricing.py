@@ -297,6 +297,11 @@ class AgentPricingLine(models.Model):
     date_from = fields.Datetime('Date From')
     date_to = fields.Datetime('Date To')
     pricing_breakdown = fields.Boolean('Pricing Breakdown', related='pricing_id.pricing_breakdown', store=True)
+    pricing_type = fields.Selection([
+        ('standard', 'Standard'),
+        ('from_nta', 'From NTA'),
+        ('from_sales', 'From Sales'),
+    ], 'Pricing Type', default='standard')
 
     origin_name = fields.Char('Origin Name')
     origin_access_type = fields.Selection(ACCESS_TYPE, 'Origin Access Type', default='all', required=True)
@@ -914,6 +919,7 @@ class AgentPricingLine(models.Model):
             },
             'pricing_breakdown': self.pricing_breakdown,
             'state': self.state,
+            'pricing_type': self.pricing_type,
         }
         return res
 
