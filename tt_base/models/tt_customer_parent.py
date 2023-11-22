@@ -485,7 +485,7 @@ class TtCustomerParent(models.Model):
             notes += 'Accounting Email: %s\n' % data['accounting_email']
             # notes += 'Accounting KTP URL: %s\n' % data_img['img_accounting_ktp']['url']
 
-            notes += 'PIC Name: %s %s %s\n' % (data['pic_title'], data['pic_first_name'], data['pic_last_name'])
+            notes += 'PIC Name: %s %s %s\n' % (data['pic_title'], data['pic_first_name'], data.get('pic_last_name', ''))
             notes += 'PIC Position: %s\n' % data['pic_position']
             notes += 'PIC Birth Date: %s\n' % data['pic_birth_date']
             notes += 'PIC Phone Number: %s - %s\n' % (data['pic_phone']['calling_code'], data['pic_phone']['calling_number'])
@@ -503,7 +503,7 @@ class TtCustomerParent(models.Model):
 
             customer_obj = self.env['tt.customer'].create({
                 "first_name": data['pic_first_name'],
-                "last_name": data['pic_last_name'],
+                "last_name": data.get('pic_last_name', ''),
                 "birth_date": data['pic_birth_date'],
                 "phone_ids": [(4, phone_obj.id)],
                 "email": data['pic_email'],
