@@ -62,9 +62,10 @@ class SplitInvoice(models.TransientModel):
 
     #file is encoded in base64
     def upload(self,filename,file_reference,file,context,delete_time=False):
-        pattern = re.compile('^[a-zA-Z0-9](?:[a-zA-Z0-9 ()._-]*[a-zA-Z0-9)])?\.[a-zA-Z0-9_-]+$')
-        if not pattern.match(filename):
-            raise UserError('Filename Is Not Valid')
+        # old regex checker, deprecated
+        # pattern = re.compile('^[a-zA-Z0-9](?:[a-zA-Z0-9 ()._-]*[a-zA-Z0-9 )])?\.[a-zA-Z0-9_-]+$')
+        prohibited_pattern = r'[\\/:*?"<>|]'
+        filename = re.sub(prohibited_pattern,'_',filename)
         try:
             path,url = self.create_directory_structure(filename)
             # path = '/home/rodex-it-05/Documents/test/upload_odoo/%s' % (self.filename)
