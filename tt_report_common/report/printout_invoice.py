@@ -3003,7 +3003,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
                     if hasattr(psg, 'fee_ids'):
                         for ssr_sc in psg.fee_ids:
                             ssr_journey_code = ssr_sc.journey_code.split(';')
-                            ssr_seg_applied = ';' + ssr_journey_code[0].split(',')[2] + '-' + ssr_journey_code[-1].split(',')[4] if ssr_journey_code else ""
+                            ssr_seg_applied = ';' + ssr_journey_code[0].split(',')[2] + '-' + ssr_journey_code[-1].split(',')[4] if len(ssr_journey_code) != 1 else ""
                             ssr_descs.append({'name': ssr_sc.name + ssr_seg_applied, 'value': ssr_sc.value, 'category_icon': ssr_sc.category_icon})
                             if is_break_down_price:
                                 if ssr_sc.category not in price_breakdown:
