@@ -43,6 +43,7 @@ class TtBanUser(models.Model):
                 'ho_id': ho_agent_obj.id if ho_agent_obj else ''
             })
         user_obj.is_banned = True
+        self.env.cr.commit()
 
     def unban_user_from_button(self):
         if not ({self.env.ref('tt_base.group_banned_users_level_4').id,
