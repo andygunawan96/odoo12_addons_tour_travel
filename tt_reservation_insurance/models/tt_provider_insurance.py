@@ -31,7 +31,7 @@ class TtProviderInsurance(models.Model):
     master_trip = fields.Selection([('1', 'Single Trip (Tunggal)'), ('2', 'Annual (Tahunan)')], 'Master Trip', readonly=True, states={'draft': [('readonly', False)]})
     master_area = fields.Selection([('1', 'Asia Pacific (Asia Pasifik)'), ('2', 'World Wide (Seluruh Dunia)'),
                                     ('3', 'Schengen Countries (Negara Schengen)'), ('4', 'Domestic (Domestik)')], 'Master Area', readonly=True, states={'draft': [('readonly', False)]})
-    plan_trip = fields.Selection([('1', 'DINAS'), ('2', 'LAINNYA'), ('3', 'WISATA')], 'Plan Trip', readonly=True, states={'draft': [('readonly', False)]})
+    plan_trip = fields.Selection([('1', 'DINAS/Individual'), ('2', 'LAINNYA/Family'), ('3', 'WISATA'), ('8', 'Duo Plus'), ('7', 'Group')], 'Plan Trip', readonly=True, states={'draft': [('readonly', False)]})
     carrier_id = fields.Many2one('tt.transport.carrier', 'Product')
     carrier_code = fields.Char('Product Code')
     carrier_name = fields.Char('Product Name')
