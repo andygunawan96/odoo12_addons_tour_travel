@@ -283,14 +283,14 @@ class ResUsers(models.Model):
             vals.pop('is_using_pin')
         if 'is_using_otp' in vals:
             # kalau tidak punya admin atau user data level 5 tidak bisa edit field ini
-            if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_user_data_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
+            if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_user_data_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
                 vals.pop('is_using_otp')
             # kalau bukan admin tidak bisa mematikan OTP
             elif not self.env.user.has_group('base.group_system') and not vals['is_using_otp']:
                 vals.pop('is_using_otp')
         if 'is_banned' in vals:
             # kalau tidak punya admin atau user data level 5 tidak bisa edit field ini
-            if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_user_data_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
+            if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_user_data_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
                 vals.pop('is_banned')
         if vals.get('password'):
             self._check_password(vals['password'])
@@ -518,7 +518,7 @@ class ResUsers(models.Model):
 
         user_obj.pin = data['pin']
         user_obj.is_using_pin = True
-        self.env['tt.log.pin'].create_pin_log(self, 'set')
+        self.env['tt.pin.log'].create_pin_log(self, 'set')
         return ERR.get_no_error()
 
     def turn_off_pin_api(self, data, context):

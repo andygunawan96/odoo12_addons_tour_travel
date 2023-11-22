@@ -7,7 +7,7 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="unban_user_from_button" string="Unban" type="object" groups="tt_base.group_banned_users_level_5,base.group_erp_manager"/>
+                        <button name="unban_user_from_button" string="Unban" type="object" groups="tt_base.group_banned_users_level_4,base.group_erp_manager"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">

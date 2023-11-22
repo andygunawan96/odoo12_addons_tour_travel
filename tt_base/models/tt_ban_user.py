@@ -45,7 +45,7 @@ class TtBanUser(models.Model):
         user_obj.is_banned = True
 
     def unban_user_from_button(self):
-        if not ({self.env.ref('tt_base.group_banned_users_level_5').id,
+        if not ({self.env.ref('tt_base.group_banned_users_level_4').id,
                      self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 57')
         self.unban_user(self.user_id.id)
