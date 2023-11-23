@@ -11,12 +11,15 @@ class TtTicketInsurance(models.Model):
     ticket_number = fields.Char('Ticket Number', default='')
     ticket_url = fields.Char('Ticket URL', default='')
 
+    printout_quotation_ids = fields.Many2many('tt.upload.center', 'quotation_insurance_attachment_rel', 'quotation_ticket_id','attachment_id', string='Attachments')
+
     def to_dict(self):
         res = {
             'passenger': self.passenger_id.name,
             'pax_type': self.pax_type,
             'ticket_number': self.ticket_number,
             'ticket_url': self.ticket_url,
+            'printout_quotation': [rec.url for rec in self.printout_quotation_ids] if self.printout_quotation_ids else [],
             'sequence': self.passenger_id and self.passenger_id.sequence or '',
             'passenger_number': int(self.passenger_id.sequence) if self.passenger_id else '',
         }

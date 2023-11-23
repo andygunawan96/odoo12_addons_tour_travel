@@ -35,7 +35,11 @@ class TtProviderInsurance(models.Model):
     carrier_id = fields.Many2one('tt.transport.carrier', 'Product')
     carrier_code = fields.Char('Product Code')
     carrier_name = fields.Char('Product Name')
-    product_type = fields.Selection([('1', 'Individual'), ('2', 'Family'), ('8', 'Duo Plus'), ('7', 'Group')], 'Product Type', readonly=True, states={'draft': [('readonly', False)]}, compute='compute_product_type', store=True) ## 7,8 ngikut zurich
+    product_type = fields.Selection([
+        ('1', 'Individual'), ('2', 'Family'), ('8', 'Duo Plus'), ('7', 'Group'), ## 8 & 7 DATA LAMA
+        ('individual', 'Individual'), ('family', 'Family'), ('wisata', 'Wisata'),
+        ('duo_plus', 'Duo Plus'), ('group', 'Group')
+     ], 'Product Type', readonly=True, states={'draft': [('readonly', False)]}, compute='compute_product_type', store=True) ## 7,8 ngikut zurich
     sid_issued = fields.Char('SID Issued', readonly=True, states={'draft': [('readonly', False)]})#signature generate sendiri
     sid_cancel = fields.Char('SID Cancel', readonly=True, states={'draft': [('readonly', False)]})#signature generate sendiri
     total_price = fields.Float('Total Price', default=0, readonly=True, states={'draft': [('readonly', False)]})
@@ -70,12 +74,11 @@ class TtProviderInsurance(models.Model):
     @api.depends('carrier_id')
     @api.onchange('carrier_id')
     def compute_product_type(self):
-        if self.carrier_id.code in ['1', '2', '3', '4', '8', '9']:
-            self.product_type = '1'
-        elif self.carrier_id.code in ['5', '6', '7']:
-            self.product_type = '2'
-        else:
-            self.product_type = False
+        if not self.product_type: ## otomatis hanya untuk bca insurance
+            if self.carrier_id.code in ['1', '2', '3', '4', '8', '9']:
+                self.product_type = 'individual'
+            elif self.carrier_id.code in ['5', '6', '7']:
+                self.product_type = 'family'
 
     ##button function
     def action_change_is_hold_date_sync(self):
@@ -530,10 +533,32 @@ class TtProviderInsurance(models.Model):
             for ticket in self.ticket_ids:
                 psg_name = ticket.passenger_id.name.replace(' ', '').lower()
                 if (psg['passenger']).replace(' ', '').lower() in [psg_name, psg_name * 2] and not ticket.ticket_number:
-                    ticket.write({
+                    data_update = {
                         'ticket_number': psg.get('ticket_number', ''),
                         'ticket_url': psg.get('ticket_url', '')
-                    })
+                    }
+                    if psg.get('quotation'):
+                        attachments = []
+                        for response in psg['quotation']:
+                            res = self.booking_id.env['tt.upload.center.wizard'].upload_file_api(
+                                {
+                                    'filename': 'Insurance Quotation %s %s.pdf' % (
+                                    self.booking_id.name, self.pnr),
+                                    'file_reference': 'Insurance Quotation',
+                                    'file': response['base64'],
+                                    'delete_date': self.booking_id.hold_date + timedelta(days=7)
+                                },
+                                {
+                                    'co_agent_id': self.booking_id.agent_id.id,
+                                    'co_uid': self.booking_id.booked_uid.id
+                                }
+                            )
+                            attachments.append(self.booking_id.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1).id)
+                        data_update.update({
+                            'printout_quotation_ids': [(6, 0, attachments)]
+                        })
+
+                    ticket.write(data_update)
                     ticket_found = True
                     ticket.passenger_id.is_ticketed = True
                     if psg.get('fees'):
