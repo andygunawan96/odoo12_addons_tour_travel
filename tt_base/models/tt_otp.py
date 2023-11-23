@@ -38,8 +38,8 @@ class ResUsersInherit(models.Model):
                 #     otp_obj.active = False
                 if otp_obj.duration == 'never':
                     is_machine_connect = True
-                elif len(otp_obj.duration) == 1: ## DAYS
-                    if datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration)) > datetime.strptime(datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S"):
+                elif len(otp_obj.duration) == 1 and 49 <= ord(otp_obj.duration[0]) <= 57: ## DAYS
+                    if otp_obj.create_date.replace(hour=0,minute=0,second=0,tzinfo=pytz.timezone('Asia/Jakarta')) + timedelta(days=int(otp_obj.duration)) > datetime.now(pytz.timezone('Asia/Jakarta')):
                         is_machine_connect = True
                     else:
                         otp_obj.active = False
