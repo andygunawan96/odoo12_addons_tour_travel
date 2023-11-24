@@ -441,7 +441,9 @@ class ResUsers(models.Model):
             })
 
     def _check_pin(self, pin):
-        assert pin
+        if not pin:
+            raise RequestException(1042)
+
         self.env.cr.execute(
             "SELECT COALESCE(pin, '') FROM res_users WHERE id=%s",
             [self.id]
