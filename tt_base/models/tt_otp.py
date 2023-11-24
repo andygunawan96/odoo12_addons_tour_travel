@@ -57,7 +57,7 @@ class ResUsersInherit(models.Model):
 
         machine_objs = self.env['tt.machine'].sudo().search([
             ('code', '=', req['machine_code']),
-            ('user_id.id', '=', self.id)
+            ('user_ids.id', '=', self.id)
         ])
 
         if not machine_objs:
@@ -311,7 +311,7 @@ class TtMachine(models.Model):
     platform = fields.Char('Platform')
     browser = fields.Char('Browser')
     timezone = fields.Char('Timezone')
-    user_id = fields.Many2one('res.users')
+    user_ids = fields.Many2many('res.users', 'tt_machine_split_rel', 'res_user_id', 'machine_id', 'User')
     otp_ids = fields.One2many('tt.otp', 'machine_id', 'OTP', readonly=True)
 
     def create_or_get_machine_api(self, req):

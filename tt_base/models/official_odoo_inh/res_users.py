@@ -93,7 +93,7 @@ class ResUsers(models.Model):
 
     ##security section
     is_using_otp = fields.Boolean('Is Using OTP', default=False)
-    machine_ids = fields.One2many('tt.machine', 'user_id', 'Machine IDs', readonly=True)
+    machine_ids = fields.Many2many('tt.machine', 'tt_machine_split_rel', 'machine_id', 'res_user_id', 'Machine IDs', readonly=True)
     is_using_pin = fields.Boolean("Is Using Pin", default=False)
     pin_log_ids = fields.One2many('tt.pin.log', 'user_id', 'Pin Log IDs', readonly=True)
     pin = fields.Char("PIN", compute='_compute_pin', inverse='_set_pin', invisible=True, copy=False, store=True)
@@ -441,7 +441,9 @@ class ResUsers(models.Model):
             })
 
     def _check_pin(self, pin):
-        assert pin
+        if not pin:
+            raise RequestException(1042)
+
         self.env.cr.execute(
             "SELECT COALESCE(pin, '') FROM res_users WHERE id=%s",
             [self.id]
