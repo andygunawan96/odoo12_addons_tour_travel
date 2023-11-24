@@ -65,7 +65,7 @@
 			<field name="reply_to">${object.get_email_reply_to()}</field>
 			<field name="subject">Bills Paid: ${object.name}</field>
 			<field name="email_to">${object.booker_id.email}</field>
-            <field name="email_cc"/>
+            <field name="email_cc">${object.customer_parent_id.check_send_email_cc()}</field>
 			<field name="model_id" ref="tt_reservation_ppob.model_tt_reservation_ppob"/>
 			<field name="auto_delete" eval="False"/>
 			<field name="lang"/>
