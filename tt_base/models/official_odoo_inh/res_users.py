@@ -2,7 +2,7 @@ from odoo import api, fields, models, _, SUPERUSER_ID
 from ....tools.db_connector import GatewayConnector
 from odoo.exceptions import UserError, AccessDenied
 import time,re
-import logging
+import logging, traceback, pytz
 from ....tools.ERR import RequestException
 from ....tools import ERR
 from odoo.http import request
@@ -643,21 +643,24 @@ class ResUsers(models.Model):
                 ('purpose_type', '=', 'turn_on')
             ])
             for otp_obj in otp_objs:
-                is_need_add_otp = False
-                if otp_obj.duration and len(otp_obj.duration) == 1:
-                    if datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'),'%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration)) > datetime.now():
+                try:
+                    is_need_add_otp = False
+                    if otp_obj.duration and len(otp_obj.duration) == 1 and 49 <= ord(otp_obj.duration[0]) <= 57:
+                        if otp_obj.create_date.replace(hour=0, minute=0, second=0,tzinfo=pytz.timezone('Asia/Jakarta')) + timedelta(days=int(otp_obj.duration)) > datetime.now(pytz.timezone('Asia/Jakarta')):
+                            is_need_add_otp = True
+                    elif otp_obj.duration == 'never':
                         is_need_add_otp = True
-                elif otp_obj.duration == 'never':
-                    is_need_add_otp = True
-                else:
-                    is_need_add_otp = True
-                if is_need_add_otp:
-                    res['co_otp_list_machine'].append({
-                        "machine_id": otp_obj.machine_id.code,
-                        "platform": otp_obj.platform,
-                        "browser": otp_obj.browser,
-                        "timezone": otp_obj.timezone,
-                        "valid_date": (datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration))).strftime('%Y-%m-%d %H:%M:%S') if otp_obj.duration != 'never' else 'Never ask again for this browser',
-                        "connect_date_utc": datetime.strptime(otp_obj.connect_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
-                    })
+                    else:
+                        is_need_add_otp = True
+                    if is_need_add_otp:
+                        res['co_otp_list_machine'].append({
+                            "machine_id": otp_obj.machine_id.code,
+                            "platform": otp_obj.platform,
+                            "browser": otp_obj.browser,
+                            "timezone": otp_obj.timezone,
+                            "valid_date": (datetime.strptime("%s 00:00:00" % otp_obj.create_date.strftime('%Y-%m-%d'), '%Y-%m-%d %H:%M:%S') + timedelta(days=int(otp_obj.duration))).strftime('%Y-%m-%d %H:%M:%S') if otp_obj.duration != 'never' else 'Never ask again for this browser',
+                            "connect_date_utc": otp_obj.connect_date.strftime('%Y-%m-%d %H:%M:%S')
+                        })
+                except Exception as e:
+                    _logger.error("%s, %s" % (str(e), traceback.format_exc()))
         return res

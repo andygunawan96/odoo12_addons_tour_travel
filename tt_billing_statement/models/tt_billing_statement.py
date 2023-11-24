@@ -122,10 +122,19 @@ class TtBillingStatement(models.Model):
     #     return today_date
 
     def fill_start_end_date(self):
-        last_billing_obj = self.search([('id','!=',self.id or -1),
-                                        ('customer_parent_id','=',self.customer_parent_id.id),
-                                        ('transaction_end_date','!=',False)],
-                                       order='transaction_end_date desc', limit=1)
+        ## untuk billing agent invoice corporate
+        if self.customer_parent_id:
+            last_billing_obj = self.search([('id','!=',self.id or -1),
+                                            ('customer_parent_id','=',self.customer_parent_id.id),
+                                            ('transaction_end_date','!=',False)],
+                                           order='transaction_end_date desc', limit=1)
+        ## untuk billing ho invoice agent, yg customer parentny kosong
+        elif self.agent_id:
+            last_billing_obj = self.search([('id', '!=', self.id or -1),
+                                            ('agent_id','=',self.agent_id.id),
+                                            ('customer_parent_id', '=', False),
+                                            ('transaction_end_date', '!=', False)],
+                                           order='transaction_end_date desc', limit=1)
 
         # cycle_list = [str(rec1.name) for rec1 in self.customer_parent_id.billing_cycle_ids]
 
