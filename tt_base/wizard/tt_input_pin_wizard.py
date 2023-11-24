@@ -18,5 +18,7 @@ class TtInputPinWizard(models.TransientModel):
             resv_obj.action_validate(encrypted_pin)
         elif self.res_model == 'tt.reservation.visa':
             resv_obj.action_in_process_visa(encrypted_pin)
+        elif self.res_model == 'tt.get.booking.from.vendor.review':
+            resv_obj.save_booking(encrypted_pin)
         else:
             raise UserError('Invalid Model!')

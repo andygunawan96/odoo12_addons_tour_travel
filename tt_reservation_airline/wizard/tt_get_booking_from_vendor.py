@@ -424,12 +424,33 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             _logger.error('Error save booking from vendor frontend, %s' % traceback.format_exc())
             return ERR.get_error(500, additional_message=e.args[0])
 
-    def save_booking(self):
+    def save_booking_button(self):
+        temp = self.save_booking()
+        return temp
+
+    def save_booking(self, pin=''):
         booking_res = json.loads(self.get_booking_json)
         signature = booking_res['signature']
         retrieve_res = booking_res['response']
         pax_type_res = json.loads(self.pax_type_data)
         booker_res = json.loads(self.booker_data)
+
+        if retrieve_res['status'] == 'ISSUED' and self.env.user.is_using_pin and not pin:
+            view = self.env.ref('tt_base.tt_input_pin_wizard_form_view')
+            return {
+                'name': 'Input Pin Wizard',
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'tt.input.pin.wizard',
+                'views': [(view.id, 'form')],
+                'view_id': view.id,
+                'target': 'new',
+                'context': {
+                    'default_res_model': self._name,
+                    'default_res_id': self.id
+                }
+            }
 
         searchRQ_journey_list = []
         # journey_req_list = []
@@ -592,14 +613,19 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             'error_msg': ''
         }
         if retrieve_res['status'] == 'ISSUED' and self.env['ir.config_parameter'].sudo().get_param('create.ledger.issued.get.booking') in ['True', 'true', '1']:
+            if self.env.user.is_using_pin:
+                update_req.update({
+                    'pin': pin
+                })
             payment_res = self.env['tt.reservation.airline'].payment_reservation_api('airline', update_req,context={
-                'co_uid': self.user_id.id,
-                'co_user_name': self.user_id.name,
+                'co_uid': self.env.user.id,
+                'co_user_name': self.env.user.name,
                 'co_ho_id': self.agent_id.ho_id.id,
                 'co_agent_id': self.agent_id.id,
                 'co_agent_name': self.agent_id.name,
                 'signature': signature
             })
+            # co_uid diisi self.env.user.id supaya staff yg click yang di check pin, dan kalau salah pin yang di ban staff yang click
 
         # END
 
