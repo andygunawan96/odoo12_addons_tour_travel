@@ -507,7 +507,8 @@ class TtCustomerParent(models.Model):
                 "birth_date": data['pic_birth_date'],
                 "phone_ids": [(4, phone_obj.id)],
                 "email": data['pic_email'],
-                "marital_status": "married" if data['pic_title'] else "single"
+                "marital_status": "married" if data['pic_title'] else "single",
+                "agent_id": context['co_agent_id']
             })
 
             if data.get('airline'):

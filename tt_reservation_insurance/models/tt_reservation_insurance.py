@@ -789,7 +789,7 @@ class ReservationInsurance(models.Model):
             'master_area': book_data['master_area_id'],
             'plan_trip': book_data['plan_trip_id'],
             'master_trip': book_data['master_trip_id'],
-            'product_type': book_data['product_type_id'],
+            'product_type': book_data.get('product_type_code', ''),
             'balance_due': book_data['total'],
             'total_price': book_data['total'],
             'hold_date': (datetime.strptime(book_data['date_start'], '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d') + ' 23:00:00',
@@ -802,6 +802,8 @@ class ReservationInsurance(models.Model):
         res.append(provider_insurance_obj.create(values))
         name['provider'] = list(set(name['provider']))
         name['carrier'] = list(set([book_data['carrier_name']]))
+        if book_data.get('product_type_code'):
+            res[-1].product_type = book_data['product_type_code']
         return res, name
 
     #to generate sale service charge

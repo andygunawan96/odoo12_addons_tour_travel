@@ -68,6 +68,7 @@
                             <field name="passenger_id"/>
                             <field name="ticket_number"/>
                             <field name="ticket_url"/>
+                            <field name="printout_quotation_ids"/>
                         </tree>
                     </field>
                     <separator string="Service Charges"/>
