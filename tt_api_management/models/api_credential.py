@@ -126,8 +126,7 @@ class ApiManagement(models.Model):
             if data.get('co_user') and data.get('co_password'):
                 if response['api_role'] == 'operator':
                     raise Exception('User Role is not allowed to do Co User login')
-                auth_db_res = _DB_CON.authenticate(data['co_user'], data['co_password'], data['otp_params'])
-
+                auth_db_res = _DB_CON.authenticate(data['co_user'], data['co_password'], data.get('otp_params',False))
                 if type(auth_db_res) == dict:
                     return auth_db_res
                 elif type(auth_db_res) == int:
