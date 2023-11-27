@@ -509,8 +509,9 @@ class TtVisa(models.Model):
         ctx = {
             'co_agent_type_id': self.agent_type_id.id,
             'co_agent_id': self.agent_id.id,
-            'co_uid': self.booked_uid.id
+            'co_uid': self.env.user.id
         }
+        # co_uid diisi self.env.user.id supaya staff yg click yang di check pin, dan kalau salah pin yang di ban staff yang click
 
         payment_res = self.payment_reservation_api('visa', data, ctx) #visa, member, payment_seq_id
         if payment_res['error_code'] != 0:
