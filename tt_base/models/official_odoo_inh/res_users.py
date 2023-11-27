@@ -660,7 +660,7 @@ class ResUsers(models.Model):
                             "platform": otp_obj.platform,
                             "browser": otp_obj.browser,
                             "timezone": otp_obj.timezone,
-                            "valid_date": (otp_obj.create_date.replace(hour=0,minute=0,second=0) + timedelta(days=int(otp_obj.duration))).strftime('%Y-%m-%d %H:%M:%S') if len(otp_obj.duration)==1 else dict(otp_obj._fields['duration'].selection).get(otp_obj.duration),
+                            "valid_date": (otp_obj.create_date.replace(hour=0,minute=0,second=0) + timedelta(days=int(otp_obj.duration))).strftime('%Y-%m-%d %H:%M:%S') if len(otp_obj.duration)==1 else dict(otp_obj._fields['duration'].selection).get(otp_obj.duration,False),
                             "connect_date_utc": otp_obj.connect_date.strftime('%Y-%m-%d %H:%M:%S')
                         })
                 except Exception as e:
