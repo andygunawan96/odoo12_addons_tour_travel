@@ -373,7 +373,7 @@ class TtOtp(models.Model):
 
     duration = fields.Selection([
         ('always', 'Always'), ('1', '1 Days'), ('3', '3 Days'),
-        ('7', '7 Days'), ('never', 'First time only')], string='Duration', default='never')
+        ('7', '7 Days'), ('never', 'First time only')], string='Duration', default='1')
 
 
     disconnect_date = fields.Datetime('Disconnect Time', readonly=True)
