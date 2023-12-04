@@ -93,6 +93,8 @@
                                             <field name="identity_type"/>
                                             <field name="identity_number"/>
                                             <field name="identity_expdate"/>
+                                            <field name="identity_first_name"/>
+                                            <field name="identity_last_name"/>
                                             <field name="identity_country_of_issued_id"/>
                                             <field name="identity_image_ids" options="{'no_create': True}"/>
                                         </tree>
@@ -228,6 +230,8 @@
                         <group>
                             <field name="identity_number"/>
                             <field name="identity_expdate"/>
+                            <field name="identity_first_name"/>
+                            <field name="identity_last_name"/>
                         </group>
                         <group>
                             <field name="identity_country_of_issued_id"/>
@@ -258,6 +262,8 @@
                         <field name="identity_type"/>
                         <field name="identity_number"/>
                         <field name="identity_expdate"/>
+                        <field name="identity_first_name"/>
+                        <field name="identity_last_name"/>
                         <field name="identity_country_of_issued_id"/>
                         <field name="identity_image_ids" options="{'no_create': True}"/>
                     </tree>

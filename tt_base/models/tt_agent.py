@@ -105,7 +105,6 @@ class TtAgent(models.Model):
     point_reward = fields.Monetary(string="Point Reward")
     actual_point_reward = fields.Monetary(string="Actual Point Reward")
     unprocessed_point_reward = fields.Monetary(string="Unprocess Point Reward")
-    is_use_point_reward = fields.Boolean('Is Use Point Reward', default=False)
 
     state = fields.Selection([("draft", "Draft"), ("done", "Done")],'State', default='done')
 
@@ -262,6 +261,9 @@ class TtAgent(models.Model):
             return self.env.user.ho_id.id
         except:
             return False
+
+    def get_is_use_point_reward(self):
+        return False
 
     def get_balance_agent_api(self,context):
         customer_parent_id = context.get('co_customer_parent_id')

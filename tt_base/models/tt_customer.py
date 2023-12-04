@@ -285,6 +285,11 @@ class TtCustomer(models.Model):
                 result_psg = psg_obj
                 if psg.get('identity'):
                     for identity_key, identity in psg['identity'].items():
+                        if not identity.get('identity_first_name'):
+                            identity.update({
+                                'identity_first_name': psg['first_name'],
+                                'identity_last_name': psg['last_name']
+                            })
                         psg_obj.add_or_update_identity(identity)
                 if psg.get('ff_numbers'):
                     psg_obj.add_or_ff_number(psg['ff_numbers'])
@@ -390,16 +395,12 @@ class TtCustomer(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error()
 
-    def add_identity_button(self):
-        self.add_or_update_identity('sim',time.time(),157,'2024-09-01')
-
     def test_vals_cleaner(self):
         self.write({
             'nationality_id': 101,
             'gender': 'male',
             'email': 'twesting@gmail.com'
         })
-        # self.add_or_update_identity('sim','BBBBB',157,'2024-09-01')
 
     def add_or_ff_number(self, ff_list):
         not_exist = True
@@ -434,10 +435,12 @@ class TtCustomer(models.Model):
                 })
 
     def add_or_update_identity(self,data):
-        not_exist =True
+        not_exist = True
         try:
             number = data['identity_number']
             type = data['identity_type']
+            first_name = util.get_without_empty(data,'identity_first_name', '')
+            last_name = util.get_without_empty(data,'identity_last_name', '')
             expdate = util.get_without_empty(data,'identity_expdate',False)
             c_issued_id = util.get_without_empty(data,'identity_country_of_issued_code',False)
             image_seqs = data.get('identity_image',[])
@@ -481,6 +484,8 @@ class TtCustomer(models.Model):
             create_vals = {
                 'identity_type': type,
                 'identity_number': number,
+                'identity_first_name': first_name,
+                'identity_last_name': last_name,
                 'identity_country_of_issued_id': c_issued_id,
                 'identity_expdate': expdate,
                 'customer_id': self.id,
@@ -501,6 +506,15 @@ class TtCustomer(models.Model):
             if expdate != exixting_identity.identity_expdate:
                 update_vals.update({
                     'identity_expdate': expdate
+                })
+            if first_name and first_name != exixting_identity.identity_first_name:
+                update_vals.update({
+                    'identity_first_name': first_name
+                })
+            # cek first_name supaya bisa hapus last_name
+            if first_name and last_name != exixting_identity.identity_last_name:
+                update_vals.update({
+                    'identity_last_name': last_name
                 })
             if image_ids:
                 update_vals.update({'identity_image_ids':image_ids})
@@ -669,10 +683,12 @@ class TtCustomerIdentityNumber(models.Model):
     _description = "Customer Identity Type"
     _rec_name = "identity_type"
 
+    identity_first_name = fields.Char('First Name')
+    identity_last_name = fields.Char('Last Name')
     identity_type = fields.Selection(variables.IDENTITY_TYPE,'Type',required=True)
     identity_number = fields.Char('Number',required=True)
     identity_expdate = fields.Date('Expire Date')
-    identity_country_of_issued_id = fields.Many2one('res.country','Issued  Country')
+    identity_country_of_issued_id = fields.Many2one('res.country','Issued Country')
     identity_image_ids = fields.Many2many('tt.upload.center','tt_customer_identity_upload_center_rel','identity_id','upload_id','Uploads')
 
     customer_id = fields.Many2one('tt.customer','Owner',required=True)
@@ -698,6 +714,8 @@ class TtCustomerIdentityNumber(models.Model):
         return {
             self.identity_type:{
                 'identity_number': self.identity_number,
+                'identity_first_name': self.identity_first_name and self.identity_first_name or '',
+                'identity_last_name': self.identity_last_name and self.identity_last_name or '',
                 'identity_expdate': self.identity_expdate and self.identity_expdate.strftime('%Y-%m-%d') or '',
                 'identity_country_of_issued_name': self.identity_country_of_issued_id and self.identity_country_of_issued_id.name or '',
                 'identity_country_of_issued_code': self.identity_country_of_issued_id and self.identity_country_of_issued_id.code or '',

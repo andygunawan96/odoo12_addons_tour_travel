@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_agent_form_view_inherit_point_reward" model="ir.ui.view">
+        <field name="name">tt.agent.form.view.inherit.point.reward</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
+        <field name="arch" type="xml">
+            <field name="website_default_color" position="after">
+                <field name="is_use_point_reward" attrs="{'invisible': [('is_ho_agent','=',False)]}" />
+            </field>
+        </field>
+    </record>
+</odoo>

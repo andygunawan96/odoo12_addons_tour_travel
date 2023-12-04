@@ -111,7 +111,6 @@
                             <field name="btc_agent_type_id" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
                             <field name="redirect_url_signup" readonly="1" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
                             <field name="website_default_color" attrs="{'invisible': [('is_ho_agent','=',False)]}" />
-                            <field name="is_use_point_reward" attrs="{'invisible': [('is_ho_agent','=',False)]}" />
                             <field name="email_server_id" attrs="{'invisible': [('is_ho_agent','=',False)]}" />
                         </group>
 
