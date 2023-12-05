@@ -290,6 +290,8 @@ class TtTopUp(models.Model):
 
             new_top_up.payment_id = new_payment.id
 
+            new_top_up.request_top_up()
+
             return ERR.get_no_error({
                 'name': new_top_up.name
             })
@@ -380,6 +382,42 @@ class TtTopUp(models.Model):
             return ERR.get_no_error({
                 'amount':top_up_obj.total_with_fees,
                 'payment_acquirer':top_up_obj.payment_id.acquirer_id.name,
+                'next_cron': next_cron
+            })
+
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1018)
+
+    def request_top_up(self):
+        try:
+            self.action_request_top_up({}) # ubah ke status cancel
+            next_cron = False
+            try:
+                next_cron = False
+                is_get_bank_transaction = False
+                if self.acquirer_id.is_specific_time:
+                    if self.acquirer_id.start_time <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < self.acquirer_id.end_time:
+                        is_get_bank_transaction = True
+                else:
+                    is_get_bank_transaction = True
+                if is_get_bank_transaction:
+                    cron_bank_transaction_obj = self.env.ref("tt_bank_transaction.cron_auto_get_bank_transaction")
+                    if cron_bank_transaction_obj.active:
+                        d_time = cron_bank_transaction_obj.nextcall - datetime.now()
+                        if d_time < timedelta():
+                            d_time = timedelta()
+                        list_d_time = str(d_time).split(':')
+                        next_cron = "{} minutes {} seconds".format(int(list_d_time[1]),int(list_d_time[2][:2]))
+            except Exception as e:
+                _logger.error("{}\n{}".format("Top Up Request Next Cron Call Error",traceback.format_exc()))
+
+            return ERR.get_no_error({
+                'amount': self.total_with_fees,
+                'payment_acquirer': self.payment_id.acquirer_id.name,
                 'next_cron': next_cron
             })
 
