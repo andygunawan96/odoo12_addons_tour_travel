@@ -6,6 +6,9 @@ from datetime import datetime, timedelta
 from ...tools.ERR import RequestException
 from ...tools import ERR
 import pytz
+import logging, traceback
+
+_logger = logging.getLogger(__name__)
 
 class TtPinLog(models.Model):
     _name = "tt.pin.log"
@@ -37,6 +40,10 @@ class TtPinLog(models.Model):
                 wrong_pin_counter += 1
         if wrong_pin_counter >= user_obj.ho_id.max_wrong_pin:
             self.env['tt.ban.user'].sudo().ban_user(user_obj.id, 1576800, {})
+            try:
+                self.env['tt.api.con'].send_ban_user_error_notification(user_obj.name, 'wrong pin %s times' % user_obj.ho_id.max_wrong_pin, user_obj.ho_id.id)
+            except Exception as e:
+                _logger.info(str(e), traceback.format_exc())
             raise RequestException(4030)
 
     def ban_user_bypass_pin_log(self, user_id):
