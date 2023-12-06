@@ -615,8 +615,7 @@ class TtAgent(models.Model):
             if req.get('provider'):
                 dom.append(('provider_name', 'ilike', req['provider']))
 
-            _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
-            if not _co_user.has_group('base.group_erp_manager'):
+            if not user_obj.has_group('base.group_erp_manager'):
                 dom.append(('ho_id','=', agent_obj.ho_id.id))
 
             if req.get('state'):
