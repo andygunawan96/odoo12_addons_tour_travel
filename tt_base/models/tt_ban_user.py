@@ -4,6 +4,7 @@ from datetime import datetime,timedelta
 from ...tools import ERR
 
 class TtBanUser(models.Model):
+    _inherit = ['tt.history']
     _name = 'tt.ban.user'
     _description = 'Ban User'
 

@@ -8,9 +8,14 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="purpose_type"/>
-                        <field name="is_bypass_check"/>
-                        <field name="datetime_bypass_check"/>
+                        <group>
+                            <field name="purpose_type"/>
+                            <field name="create_date"/>
+                        </group>
+                        <group>
+                            <field name="is_bypass_check"/>
+                            <field name="datetime_bypass_check"/>
+                        </group>
                     </group>
                 </sheet>
             </form>
@@ -23,6 +28,7 @@
         <field name="arch" type="xml">
             <tree string="TT Pin Log">
                 <field name="purpose_type"/>
+                <field name="create_date"/>
                 <field name="is_bypass_check"/>
                 <field name="datetime_bypass_check"/>
             </tree>
