@@ -290,11 +290,12 @@ class TtTopUp(models.Model):
 
             new_top_up.payment_id = new_payment.id
 
-            new_top_up.request_top_up()
-
-            return ERR.get_no_error({
+            res = {
                 'name': new_top_up.name
-            })
+            }
+            res.update(new_top_up.request_top_up())
+
+            return ERR.get_no_error(res)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()

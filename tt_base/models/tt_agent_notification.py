@@ -54,10 +54,14 @@ class TtReservationNotification(models.Model):
         except:
             raise RequestException(1001)
 
-        if self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
-            dom = []
-        else:
-            dom = [('agent_id', '=', agent_obj.id)]
+        dom = []
+
+        if self.env.ref('tt_base.group_erp_manager').id not in user_obj.groups_id.ids:
+            dom.append(('ho_id', '=', agent_obj.ho_id.id))
+
+        if self.env.ref('tt_base.group_tt_process_channel_bookings').id not in user_obj.groups_id.ids:
+            dom.append(('agent_id', '=', agent_obj.id))
+
 
         # req_provider = util.get_without_empty(req, 'provider_type')
         #
@@ -95,13 +99,7 @@ class TtReservationNotification(models.Model):
         except:
             raise RequestException(1001)
 
-        if self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
-            dom = []
-        else:
-            dom = [('agent_id', '=', agent_obj.id)]
-        dom.append(('name','=',req['order_number']))
-        dom.append(('active','=',True))
-        notif_list = self.search(dom, limit=1)
+        notif_list, dom = self.get_notif_with_order_number(user_obj, agent_obj, req)
         if notif_list:
             if len(dom) == 3: ## agent yg read
                 notif_list.is_read = True
@@ -120,6 +118,14 @@ class TtReservationNotification(models.Model):
         except:
             raise RequestException(1001)
 
+        notif_list, dom = self.get_notif_with_order_number(user_obj, agent_obj, req)
+        if notif_list:
+            if len(dom) == 3: ## agent yg read
+                notif_list.snooze_days = req['days']
+            return ERR.get_no_error()
+        return ERR.get_error(500, additional_message='Notification not found')
+
+    def get_notif_with_order_number(self, user_obj, agent_obj, req):
         if self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
             dom = []
         else:
@@ -127,11 +133,7 @@ class TtReservationNotification(models.Model):
         dom.append(('name','=',req['order_number']))
         dom.append(('active','=',True))
         notif_list = self.search(dom, limit=1)
-        if notif_list:
-            if len(dom) == 3: ## agent yg read
-                notif_list.snooze_days = req['days']
-            return ERR.get_no_error()
-        return ERR.get_error(500, additional_message='Notification not found')
+        return notif_list, dom
 
     def set_false_all_record(self):
         agent_notif_objs = self.search([('active', '=', True)])
