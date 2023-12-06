@@ -3621,6 +3621,8 @@ class ReservationAirline(models.Model):
                     psg_vals = {
                         'identity_type': identity and identity['identity_type'] or '',
                         'identity_number': identity and identity['identity_number'] or '',
+                        'identity_first_name': identity and identity['identity_first_name'] or '',
+                        'identity_last_name': identity and identity['identity_last_name'] or '',
                         'identity_expdate': identity and identity['identity_expdate'] or False,
                         'identity_country_of_issued_id': identity and country_obj.search([('code', '=ilike', identity['identity_country_of_issued_code'])], limit=1).id or False,
                         'is_valid_identity': True,
@@ -3630,6 +3632,8 @@ class ReservationAirline(models.Model):
                         psg_vals.update({
                             'passport_type': identity_passport['identity_type'],
                             'passport_number': identity_passport['identity_number'],
+                            'passport_first_name': identity_passport['identity_first_name'],
+                            'passport_last_name': identity_passport['identity_last_name'],
                             'passport_expdate': identity_passport['identity_expdate'],
                             'passport_country_of_issued_id': country_obj.search([('code', '=ilike', identity_passport['identity_country_of_issued_code'])], limit=1).id,
                         })

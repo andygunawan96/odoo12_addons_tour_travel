@@ -1,5 +1,5 @@
 from odoo import api,models,fields
-from ...tools import variables
+from ...tools import variables, util
 import logging,traceback
 from datetime import datetime,timedelta
 import pytz
@@ -100,7 +100,7 @@ class TtCronLogInhResv(models.Model):
                     if values['illegal']:
                         ctr += 1
                         temp_lion_msg = '%s. %s PAX\n%s\n' % (ctr,values['pax'], '\n'.join(values['pax_code_list']))#ctr, pax count, pnr code list
-                        self.manage_msg_length(messages_lion_dict,temp_lion_msg,"Hidden Group\n")
+                        util.manage_msg_length(messages_lion_dict,temp_lion_msg,"Hidden Group\n")
 
                 messages_gds_dict = {
                     "ctr": 0
@@ -119,7 +119,7 @@ class TtCronLogInhResv(models.Model):
                     if dupes_msg:
                         ctr += 1
                         temp_gds_msg = '%s. %s%s\n\n' % (ctr, pax_code, dupes_msg)#counter, pax name, pnr code list
-                        self.manage_msg_length(messages_gds_dict, temp_gds_msg,"GDS\n")
+                        util.manage_msg_length(messages_gds_dict, temp_gds_msg,"GDS\n")
                 ## tambah context
                 ## kurang test
                 if messages_lion_dict:
@@ -133,25 +133,6 @@ class TtCronLogInhResv(models.Model):
                 self.write_cron_log('cron notify duplicate booking', ho_id=ho_obj.id)
 
         _logger.info("CRON NOTIFY DUPLICATE BOOKING - END")
-    def manage_msg_length(self,msg_dict,param_msg,add_msg):
-        TELEGRAM_MSG_LIMIT = 3800
-        if msg_dict['ctr'] not in msg_dict:
-            msg_dict[msg_dict['ctr']] = add_msg
-        len_msg = len(param_msg)
-        len_d_msg = len(msg_dict[msg_dict['ctr']])
-        if len_msg + len_d_msg > TELEGRAM_MSG_LIMIT: ## OUT OF BOUND
-            ## SPLIT MSG INTO 2, still within limit and leftover passed into recursive
-            n_index = param_msg[:TELEGRAM_MSG_LIMIT-len_d_msg].rfind('\n')
-            kept_msg = param_msg[:n_index]
-            leftover_msg = param_msg[n_index:]
-            ##
-
-            msg_dict[msg_dict['ctr']] += kept_msg
-            msg_dict['ctr'] += 1
-            self.manage_msg_length(msg_dict,leftover_msg,add_msg)##send leftover msg to recrursive
-        else:
-            msg_dict[msg_dict['ctr']] += param_msg
-
 
     def cron_check_segment_booking_amadeus(self):
         _logger.info('Cron Check Segment Booking Amadeus : START')

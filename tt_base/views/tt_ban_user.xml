@@ -20,10 +20,15 @@
                         <group>
                             <field name="name"/>
                             <field name="ho_id" groups="base.group_erp_manager"/>
+                            <field name="agent_id"/>
                             <field name="user_id"/>
                             <field name="end_datetime"/>
                         </group>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -35,6 +40,8 @@
                 <tree>
                     <field name="name"/>
                     <field name="user_id"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
+                    <field name="agent_id"/>
                     <field name="end_datetime"/>
                 </tree>
             </field>

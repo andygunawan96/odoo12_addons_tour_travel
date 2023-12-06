@@ -20,4 +20,15 @@
             </xpath>
         </field>
     </record>
+
+    <record id="tt_customer_parent_form_view_inh_accounting_cust" model="ir.ui.view">
+        <field name="name">tt.customer.parent.form.view.inh.accounting.cust</field>
+        <field name="model">tt.customer.parent</field>
+        <field name="inherit_id" ref="tt_base.tt_customer_parent_form_view_customer"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_agent_id']" position="after">
+                <field name="accounting_uid"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
