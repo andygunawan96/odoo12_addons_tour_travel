@@ -12,6 +12,7 @@ class TtBanUser(models.Model):
     end_datetime = fields.Datetime('End Time')
     active = fields.Boolean('Active',default=True)
     ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)])
+    agent_id = fields.Many2one('tt.agent', 'Agent', related='user_id.agent_id')
 
     def ban_user_api(self,req,context):
         self.ban_user(req['user_id'], req['duration_minutes'], context)

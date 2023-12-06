@@ -2,6 +2,7 @@ from odoo import api,models,fields
 import os,traceback,pytz,logging
 from datetime import datetime,timedelta
 from dateutil.relativedelta import relativedelta
+from ...tools import util
 
 _logger = logging.getLogger(__name__)
 
@@ -167,3 +168,8 @@ class TtCronLog(models.Model):
             except:
                 self.create_cron_log_folder()
                 self.write_cron_log('cron_auto_create_notification_agent', ho_id=ho_obj.id)
+
+    def cron_inactive_dormant_users(self):
+        ho_objs = self.env['tt.agent'].search([('is_ho_agent', '=', True)])
+        for ho_obj in ho_objs:
+            self.env['res.users'].inactive_all_dormant_users(ho_obj.id, ho_obj.dormant_days_inactive)

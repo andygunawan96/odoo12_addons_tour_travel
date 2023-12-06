@@ -193,8 +193,8 @@ class TtAdjustment(models.Model):
             data = {
                 'code': 9901,
                 'title': 'ADJUSTMENT',
-                'message': 'Adjustment Approved: %s\nUser: %s\n' % (
-                self.name, self.env.user.name)
+                'message': 'Adjustment Approved: %s\nUser: %s\nAction: (%s) %s %s\n' % (
+                self.name, self.env.user.name, self.adjust_side, self.currency_id.name, str(self.adjust_amount))
             }
             context = {
                 "co_ho_id": self.ho_id.id
