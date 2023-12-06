@@ -1718,7 +1718,7 @@ class TtReservation(models.Model):
                 book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc() + '\n'
             except:
                 _logger.error('Creating Notes Error')
-            return ERR.get_error(1011)
+            return ERR.get_error(1011,additional_message="Please refresh the page and sync status first.")
 
     def use_pnr_quota_api(self, req, context):
         user_obj = self.env['res.users'].browse(context['co_uid'])
