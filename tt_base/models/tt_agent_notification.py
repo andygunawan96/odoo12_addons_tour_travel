@@ -56,7 +56,7 @@ class TtReservationNotification(models.Model):
 
         dom = []
 
-        if self.env.ref('tt_base.group_erp_manager').id not in user_obj.groups_id.ids:
+        if self.env.ref('base.group_erp_manager').id not in user_obj.groups_id.ids:
             dom.append(('ho_id', '=', agent_obj.ho_id.id))
 
         if self.env.ref('tt_base.group_tt_process_channel_bookings').id not in user_obj.groups_id.ids:
