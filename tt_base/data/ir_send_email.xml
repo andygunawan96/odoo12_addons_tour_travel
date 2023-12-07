@@ -63,10 +63,6 @@
 			</field>
 		</record>
 
-
-    </data>
-
-	<data>
 		<record model="mail.template" id="template_mail_turn_off_otp">
 			<field name="name">Template OTP</field>
 			<field name="email_from">${object.user_id.ho_id.email_server_id.smtp_user}</field>
@@ -99,10 +95,6 @@
 			</field>
 		</record>
 
-
-    </data>
-
-	<data>
 		<record model="mail.template" id="template_mail_turn_off_machine_otp">
 			<field name="name">Template OTP</field>
 			<field name="email_from">${object.user_id.ho_id.email_server_id.smtp_user}</field>
@@ -135,10 +127,6 @@
 			</field>
 		</record>
 
-
-    </data>
-
-	<data>
 		<record model="mail.template" id="template_mail_turn_off_other_machine_otp">
 			<field name="name">Template OTP</field>
 			<field name="email_from">${object.user_id.ho_id.email_server_id.smtp_user}</field>
@@ -172,10 +160,6 @@
 			</field>
 		</record>
 
-
-    </data>
-
-	<data>
 		<record model="mail.template" id="template_mail_change_pin">
 			<field name="name">Template OTP</field>
 			<field name="email_from">${object.user_id.ho_id.email_server_id.smtp_user}</field>
@@ -207,7 +191,5 @@
 ]]>
 			</field>
 		</record>
-
-
     </data>
 </odoo>
