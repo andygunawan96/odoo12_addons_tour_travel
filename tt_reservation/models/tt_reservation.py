@@ -581,14 +581,14 @@ class TtReservation(models.Model):
                 if not psg['identity'].get('identity_first_name'):
                     psg['identity'].update({
                         'identity_first_name': psg['first_name'],
-                        'identity_last_name': psg['last_name']
+                        'identity_last_name': psg.get('last_name', '')
                     })
                 psg_obj.add_or_update_identity(psg['identity'])
             if psg.get('identity_passport'):
                 if not psg['identity_passport'].get('identity_first_name'):
                     psg['identity_passport'].update({
                         'identity_first_name': psg['first_name'],
-                        'identity_last_name': psg['last_name']
+                        'identity_last_name': psg.get('last_name', '')
                     })
                 psg_obj.add_or_update_identity(psg['identity_passport'])
             if psg.get('ff_numbers'):
