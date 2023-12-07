@@ -1813,7 +1813,7 @@ class ReservationGroupBooking(models.Model):
             # if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
             _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
-            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_erp_manager'):
                 res_dict = book_obj.sudo().to_dict(context)
                 ticket_list = []
                 provider_booking_list = []

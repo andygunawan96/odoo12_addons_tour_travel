@@ -1,7 +1,5 @@
 from odoo import api,models,fields,_
-from ...tools import util,ERR
 import logging,traceback
-import json
 
 _logger = logging.getLogger(__name__)
 

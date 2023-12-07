@@ -390,3 +390,22 @@ def get_tree_data(tree_data, keys, is_list=False):
         elif not isinstance(data, list):
             data = [data]
     return data
+
+def manage_msg_length(msg_dict,param_msg,add_msg):
+    TELEGRAM_MSG_LIMIT = 3800
+    if msg_dict['ctr'] not in msg_dict:
+        msg_dict[msg_dict['ctr']] = add_msg
+    len_msg = len(param_msg)
+    len_d_msg = len(msg_dict[msg_dict['ctr']])
+    if len_msg + len_d_msg > TELEGRAM_MSG_LIMIT: ## OUT OF BOUND
+        ## SPLIT MSG INTO 2, still within limit and leftover passed into recursive
+        n_index = param_msg[:TELEGRAM_MSG_LIMIT-len_d_msg].rfind('\n')
+        kept_msg = param_msg[:n_index]
+        leftover_msg = param_msg[n_index:]
+        ##
+
+        msg_dict[msg_dict['ctr']] += kept_msg
+        msg_dict['ctr'] += 1
+        manage_msg_length(msg_dict,leftover_msg,add_msg) ##send leftover msg to recrursive
+    else:
+        msg_dict[msg_dict['ctr']] += param_msg

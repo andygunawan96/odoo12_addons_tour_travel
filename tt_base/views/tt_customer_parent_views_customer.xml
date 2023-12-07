@@ -93,6 +93,12 @@
                         <page string="Users">
                             <field name="user_ids" readonly="1"/>
                         </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                        <page string="Attachment">
+                            <field name="document_ids"/>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

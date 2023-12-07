@@ -1176,7 +1176,7 @@ class ReservationActivity(models.Model):
             #     if book_obj.agent_id.id != context.get('co_agent_id', -1):
             #         raise RequestException(1001)
             _co_user = self.env['res.users'].browse(int(context['co_uid']))
-            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_erp_manager'):
                 book_option_ids = []
                 for rec in book_obj.option_ids:
                     book_option_ids.append({
