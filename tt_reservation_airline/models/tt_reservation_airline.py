@@ -1490,7 +1490,7 @@ class ReservationAirline(models.Model):
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
             # if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:## mestinya AND jika b2c maka userny harus sma
             _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
-            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_erp_manager'):
                 res = book_obj.to_dict(context)
                 psg_list = []
                 for rec_idx, rec in enumerate(book_obj.sudo().passenger_ids):
@@ -3621,6 +3621,8 @@ class ReservationAirline(models.Model):
                     psg_vals = {
                         'identity_type': identity and identity['identity_type'] or '',
                         'identity_number': identity and identity['identity_number'] or '',
+                        'identity_first_name': identity and identity['identity_first_name'] or '',
+                        'identity_last_name': identity and identity['identity_last_name'] or '',
                         'identity_expdate': identity and identity['identity_expdate'] or False,
                         'identity_country_of_issued_id': identity and country_obj.search([('code', '=ilike', identity['identity_country_of_issued_code'])], limit=1).id or False,
                         'is_valid_identity': True,
@@ -3630,6 +3632,8 @@ class ReservationAirline(models.Model):
                         psg_vals.update({
                             'passport_type': identity_passport['identity_type'],
                             'passport_number': identity_passport['identity_number'],
+                            'passport_first_name': identity_passport['identity_first_name'],
+                            'passport_last_name': identity_passport['identity_last_name'],
                             'passport_expdate': identity_passport['identity_expdate'],
                             'passport_country_of_issued_id': country_obj.search([('code', '=ilike', identity_passport['identity_country_of_issued_code'])], limit=1).id,
                         })

@@ -4,7 +4,7 @@ from odoo.exceptions import UserError, AccessDenied
 import time,re
 import logging, traceback, pytz
 from ....tools.ERR import RequestException
-from ....tools import ERR
+from ....tools import ERR, util
 from odoo.http import request
 from datetime import datetime, timedelta
 
@@ -666,3 +666,40 @@ class ResUsers(models.Model):
                 except Exception as e:
                     _logger.error("%s, %s" % (str(e), traceback.format_exc()))
         return res
+
+    def inactive_all_dormant_users(self, ho_id, dormant_days_amount):
+        target_date = datetime.today() - timedelta(days=dormant_days_amount)
+        first_query = """
+                      select
+                      distinct on (u_log.create_uid)
+                      u_log.create_uid as user_id, us.login as user_login
+                      from res_users_log u_log
+                      LEFT JOIN res_users us ON us.id = u_log.create_uid
+                      where u_log.create_date < '%s' AND us.active=True AND us.is_user_template=False AND us.ho_id = %s
+                      order by u_log.create_uid,u_log.create_date desc;
+                      """ % (target_date, ho_id)
+
+        self.env.cr.execute(first_query)
+        result_list = self.env.cr.dictfetchall()
+        user_id_list = []
+        ctr = 0
+        messages_dict = {
+            "ctr": ctr
+        }
+        for rec in result_list:
+            if rec.get('user_id'):
+                user_id_list.append(int(rec['user_id']))
+                ctr += 1
+                user_str = rec.get('user_login') and rec['user_login'] or rec['user_id']
+                temp_tele_msg = '%s. %s\n\n' % (ctr, user_str)
+                util.manage_msg_length(messages_dict, temp_tele_msg, "")
+
+        if user_id_list:
+            sql_query = """
+                        update res_users set active = False where id in %s;
+                        """ % (str(user_id_list).replace('[', '(').replace(']', ')'))
+            self.env.cr.execute(sql_query)
+
+            if messages_dict:
+                self.env['res.users.api.con'].send_inactive_dormant_users_notification(messages_dict, ho_id)
+            self.env.cr.commit()

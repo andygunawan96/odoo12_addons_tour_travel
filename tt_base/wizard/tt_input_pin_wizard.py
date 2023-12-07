@@ -7,7 +7,7 @@ class TtInputPinWizard(models.TransientModel):
     _name = "tt.input.pin.wizard"
     _description = 'Input Pin Wizard'
 
-    pin = fields.Char('PIN', required=True)
+    pin = fields.Char('PIN', required=True, size=6)
     res_model = fields.Char('Related Model Name', index=True, readonly=True)
     res_id = fields.Integer('Related Model ID', index=True, help='Id of the followed resource', readonly=True)
 

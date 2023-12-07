@@ -4,7 +4,7 @@
         <record model="ir.cron" id="cron_send_accounting_to_vendor">
             <field name='name'>Auto-Send Accounting Data to Vendor</field>
             <field name="user_id" ref="base.user_root"/>
-            <field name='interval_number'>30</field>
+            <field name='interval_number'>10</field>
             <field name='interval_type'>minutes</field>
             <field name="numbercall">-1</field>
             <field name="nextcall" eval="(datetime.now().isoformat())"/>

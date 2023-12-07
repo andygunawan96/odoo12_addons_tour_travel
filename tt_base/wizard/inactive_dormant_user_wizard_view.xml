@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="inactive_dormant_user_wizard_form_view" model="ir.ui.view">
+        <field name="name">Inactive Dormant User Wizard</field>
+        <field name="model">inactive.dormant.user.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Inactive Dormant User Wizard">
+                <group>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
+                    <field name="dormant_days_amount"/>
+                </group>
+                <footer>
+                    <button name="inactive_dormant_user" string="Submit" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="inactive_dormant_user_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Inactive Dormant User Wizard Action</field>
+        <field name="res_model">inactive.dormant.user.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_inactive_dormant_user_wizard"
+              parent="tt_base.top_tour_travel_administration"
+              groups="tt_base.group_user_data_level_4,base.group_erp_manager"
+              name="Inactive Dormant Users"
+              sequence="10"
+              action="inactive_dormant_user_wizard_action_view"/>
+</odoo>

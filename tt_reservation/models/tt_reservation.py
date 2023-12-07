@@ -578,8 +578,18 @@ class TtReservation(models.Model):
                     psg_obj.add_behavior(provider_type.lower(), psg['behaviors'][provider_type])
 
             if psg.get('identity'):
+                if not psg['identity'].get('identity_first_name'):
+                    psg['identity'].update({
+                        'identity_first_name': psg['first_name'],
+                        'identity_last_name': psg['last_name']
+                    })
                 psg_obj.add_or_update_identity(psg['identity'])
             if psg.get('identity_passport'):
+                if not psg['identity_passport'].get('identity_first_name'):
+                    psg['identity_passport'].update({
+                        'identity_first_name': psg['first_name'],
+                        'identity_last_name': psg['last_name']
+                    })
                 psg_obj.add_or_update_identity(psg['identity_passport'])
             if psg.get('ff_numbers'):
                 psg_obj.add_or_ff_number(psg['ff_numbers'])
@@ -604,10 +614,15 @@ class TtReservation(models.Model):
             nationality_id = country_obj.search([('code','=ilike',rec['nationality_code'])],limit=1).id
             identity = rec.get('identity')
             is_valid_identity = identity and identity.get('is_valid_identity', True) or True
+            idt_first_name = ''
+            idt_last_name = ''
+            if identity:
+                idt_first_name = identity.get('identity_first_name') and identity['identity_first_name'] or ''
+                idt_last_name = identity.get('identity_last_name') and identity['identity_last_name'] or ''
             pax_data = (0,0,{
                 'name': "%s %s" % (rec['first_name'],rec['last_name']),
-                'first_name': rec['first_name'],
-                'last_name': rec['last_name'],
+                'first_name': idt_first_name if idt_first_name else rec['first_name'],
+                'last_name': idt_last_name if idt_first_name else rec['last_name'],
                 'gender': rec['gender'],
                 'title': rec['title'],
                 'birth_date': rec.get('birth_date',False),
@@ -1562,7 +1577,7 @@ class TtReservation(models.Model):
                     agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
 
                 is_use_point = False
-                website_use_point_reward = book_obj.agent_id.ho_id.sudo().is_use_point_reward
+                website_use_point_reward = book_obj.agent_id.ho_id.sudo().get_is_use_point_reward()
                 if website_use_point_reward:
                     is_use_point = req.get('use_point')
 
