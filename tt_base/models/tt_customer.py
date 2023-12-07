@@ -288,7 +288,7 @@ class TtCustomer(models.Model):
                         if not identity.get('identity_first_name'):
                             identity.update({
                                 'identity_first_name': psg['first_name'],
-                                'identity_last_name': psg['last_name']
+                                'identity_last_name': psg.get('last_name', '')
                             })
                         psg_obj.add_or_update_identity(identity)
                 if psg.get('ff_numbers'):
