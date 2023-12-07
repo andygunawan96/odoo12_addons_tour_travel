@@ -190,6 +190,15 @@ class TtTopUp(models.Model):
         except Exception as e:
             _logger.error("Send TOP UP Approve Notification Telegram Error")
 
+        ## KIRIM EMAIL KE AGENT
+        template = self.env.ref('tt_accounting.template_mail_approve_top_up', raise_if_not_found=False)
+        template.send_mail(self.id, force_send=True)
+
+
+    def get_company_name(self):
+        company_obj = self.env['res.company'].search([],limit=1)
+        return company_obj.name
+
     def action_va_top_up(self, data, context, payment_acq_number_id=False):
         #update pay
         top_up = self.search([('name', '=', data['name'])])
@@ -416,11 +425,11 @@ class TtTopUp(models.Model):
             except Exception as e:
                 _logger.error("{}\n{}".format("Top Up Request Next Cron Call Error",traceback.format_exc()))
 
-            return ERR.get_no_error({
+            return {
                 'amount': self.total_with_fees,
                 'payment_acquirer': self.payment_id.acquirer_id.name,
                 'next_cron': next_cron
-            })
+            }
 
         except RequestException as e:
             _logger.error(traceback.format_exc())

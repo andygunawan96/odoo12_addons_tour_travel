@@ -170,5 +170,31 @@
 			</field>
 		</record>
 
+		<record model="mail.template" id="template_mail_approve_top_up">
+			<field name="name">Template Mail Approve Top Up</field>
+			<field name="subject">Top Up</field>
+			<field name="email_to">${object.agent_id.email}</field>
+			<field name="email_cc">${object.agent_id.email_cc}</field>
+			<field name="model_id" ref="tt_accounting.model_tt_top_up"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear Agent ${object.agent_id.name},</p>
+<br/>
+<p>Your Top Up has been approved:</p>
+<p>Total Amount: ${object.currency_id.name} ${object.validated_amount}</p>
+<br/>
+<p>Your balance has been update to your account. </p>
+<p>If you have not received your balance, please contact us immediately. </p>
+<p>Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Regards,</p>
+<p>${object.get_company_name()}</p>
+]]>
+			</field>
+		</record>
+
     </data>
 </odoo>
