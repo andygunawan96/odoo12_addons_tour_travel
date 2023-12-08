@@ -7,7 +7,11 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
     _name = 'get.merchant.info.payment.acquirer'
     _description = 'Get Merchant Info Payment Acquirer'
 
-    provider = fields.Selection(PROVIDER_PAYMENT,'Provider', help="Please turn on cron Auto-top-up-validator")
+    def get_domain(self):
+        domain_id = self.env.ref('tt_base.tt_provider_type_payment').id
+        return [('provider_type_id.id', '=', int(domain_id))]
+
+    provider_id = fields.Many2one('tt.provider', 'Provider', readonly=False, domain=get_domain)
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     def sync_info(self):
@@ -16,22 +20,9 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
                 ho_obj = self.ho_id
             else:
                 ho_obj = self.env.user.agent_id.ho_id
-            res = self.env['tt.payment.api.con'].get_merchant_info({'provider':self.provider, 'type': 'close'}, ho_obj.id)
+            res = self.env['tt.payment.api.con'].get_merchant_info({'provider':self.provider_id.code, 'type': 'close'}, ho_obj.id)
             _logger.info(json.dumps(res))
             if res['error_code'] == 0:
-                provider_obj = self.env['tt.provider'].search([('code','=',self.provider)], limit=1)
-                if not provider_obj:
-                    provider_name = ''
-                    for rec in PROVIDER_PAYMENT:
-                        if rec[0] == self.provider:
-                            provider_name = rec[1]
-                            break
-                    provider_obj = self.env['tt.provider'].create({
-                        "code": self.provider,
-                        "name": provider_name
-                    })
-                else:
-                    provider_obj = provider_obj[0]
                 for bank_res in res['response']:
                     bank_obj = self.env['tt.bank'].search([('code','=',bank_res['bankCode'])], limit=1)
                     existing_payment_acquirer = self.env['payment.acquirer'].search([
@@ -50,25 +41,12 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
                             'agent_id': ho_obj.id,
                             'ho_id': ho_obj.id,
                             'website_published': True,
-                            'provider_id': provider_obj.id
+                            'provider_id': self.provider_id.id
                         })
 
-            res = self.env['tt.payment.api.con'].get_merchant_info({'provider': self.provider, 'type': 'open'}, ho_obj.id)
+            res = self.env['tt.payment.api.con'].get_merchant_info({'provider': self.provider_id.code, 'type': 'open'}, ho_obj.id)
             _logger.info(json.dumps(res))
             if res['error_code'] == 0:
-                provider_obj = self.env['tt.provider'].search([('code', '=', self.provider)], limit=1)
-                if not provider_obj:
-                    provider_name = ''
-                    for rec in PROVIDER_PAYMENT:
-                        if rec[0] == self.provider:
-                            provider_name = rec[1]
-                            break
-                    provider_obj = self.env['tt.provider'].create({
-                        "code": self.provider,
-                        "name": provider_name
-                    })
-                else:
-                    provider_obj = provider_obj[0]
                 bank_code_list = [x['bankCode'] for x in res['response']]
                 bank_code_list = set(bank_code_list)
                 bank_code_list.discard('503')
@@ -79,7 +57,7 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
                             ('agent_id', '=', ho_obj.id),
                             ('type', '=', 'va'),
                             ('bank_id', '=', bank_obj.id),
-                            ('provider_id.code', '=', self.provider)
+                            ('provider_id', '=', self.provider_id.id)
                         ])
                         if not existing_payment_acquirer:
                             self.env['payment.acquirer'].create({
@@ -89,7 +67,7 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
                                 'ho_id': ho_obj.id,
                                 'website_published': False,
                                 'name': 'Your Virtual Account at %s' % (bank_obj.name),
-                                'provider_id': provider_obj.id
+                                'provider_id': self.provider_id.id
                             })
         except Exception as e:
             _logger.error(traceback.format_exc())

@@ -51,11 +51,6 @@ class PaymentAcquirer(models.Model):
     def set_payment_provider(self):
         ### UPDATE DATA LAMA KE ESPAY
         provider_obj = self.env['tt.provider'].search([('code', '=', 'espay')], limit=1)
-        if not provider_obj:
-            provider_obj = self.env['tt.provider'].create({
-                "code": 'espay',
-                "name": 'Espay'
-            })
         payment_acq_objs = self.search([('type','in',['va', 'payment_gateway', 'creditcard_topup'])])
         for payment_acq_obj in payment_acq_objs:
             payment_acq_obj.provider_id = provider_obj.id
