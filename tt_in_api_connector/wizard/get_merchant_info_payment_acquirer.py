@@ -35,7 +35,7 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
                 for bank_res in res['response']:
                     bank_obj = self.env['tt.bank'].search([('code','=',bank_res['bankCode'])], limit=1)
                     existing_payment_acquirer = self.env['payment.acquirer'].search([
-                        ('provider_id.code', '=', self.provider)
+                        ('provider_id.code', '=', self.provider),
                         ('type','=','payment_gateway'),
                         ('agent_id','=',ho_obj.id),
                         ('bank_id','=',bank_obj.id),
