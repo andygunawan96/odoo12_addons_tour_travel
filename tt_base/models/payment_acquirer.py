@@ -163,6 +163,7 @@ class PaymentAcquirer(models.Model):
                 'fee': fee,
                 'unique_amount': uniq,
             },
+            'provider': self.provider.code if self.provider else '',
             'online_wallet': self.online_wallet,
             'save_url': self.save_url,
             'show_device_type': self.show_device_type,
