@@ -276,6 +276,7 @@ class TtCustomer(models.Model):
                             'calling_number': phone['calling_number'],
                             'phone_number': '%s%s' % (phone['calling_code'], phone['calling_number']),
                             'country_id': country and country[0].id or False,
+                            'ho_id': context['co_ho_id']
                         }))
                     psg.pop('phone')
                     psg.update({
