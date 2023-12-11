@@ -25,6 +25,7 @@ class TtReservationCustomer(models.Model):
             break
         res.update({
             'sale_service_charges': sale_service_charges,
+            'service_charge_details': self.get_service_charge_details(),
             'pax_type': pax_type
         })
         if len(self.channel_service_charge_ids.ids)>0:

@@ -19,6 +19,7 @@ class TtReservationCustomer(models.Model):
         res = super(TtReservationCustomer, self).to_dict()
         res.update({
             'sale_service_charges': self.get_service_charges(),
+            'service_charge_details': self.get_service_charge_details(),
             'pax_type': self.pax_type
         })
         if len(self.channel_service_charge_ids.ids)>0:
