@@ -27,6 +27,9 @@ Key Features
         'data/ir_cron_data.xml',
         'data/ir_send_email.xml',
 
+        'data/tt_provider_type_data.xml',
+        'data/tt_provider_payment.xml',
+
         'data/res.social.media.type.csv',
         'views/menu_item_base.xml',
         'views/tt_agent_views.xml',

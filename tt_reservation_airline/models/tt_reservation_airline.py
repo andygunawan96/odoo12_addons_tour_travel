@@ -466,7 +466,7 @@ class ReservationAirline(models.Model):
                 currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
                 # if currency_obj:
                 #     book_obj.currency_id = currency_obj.id
-
+            contact_phone_obj = contact_obj.phone_ids and contact_obj.phone_ids.sorted(lambda x: x.last_updated_time)[-1] or False
             values.update({
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
@@ -475,7 +475,7 @@ class ReservationAirline(models.Model):
                 'contact_id': contact_obj.id,
                 'contact_name': contact_obj.name,
                 'contact_email': contact_obj.email,
-                'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number) or '-',
+                'contact_phone': contact_phone_obj and "%s - %s" % (contact_phone_obj.calling_code,contact_phone_obj.calling_number) or '-',
                 'passenger_ids': list_passenger_value,
                 # April 21, 2020 - SAM
                 'is_force_issued': is_force_issued,
