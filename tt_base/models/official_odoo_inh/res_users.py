@@ -675,7 +675,7 @@ class ResUsers(models.Model):
                       u_log.create_uid as user_id, us.login as user_login
                       from res_users_log u_log
                       LEFT JOIN res_users us ON us.id = u_log.create_uid
-                      where u_log.create_date < '%s' AND us.active=True AND us.is_user_template=False AND us.ho_id = %s
+                      where u_log.create_date < '%s' AND us.active=True AND us.is_user_template=False AND us.ho_id = %s AND us.id > 5
                       order by u_log.create_uid,u_log.create_date desc;
                       """ % (target_date, ho_id)
 
