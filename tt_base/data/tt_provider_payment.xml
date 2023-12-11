@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_provider_payment_espay" model="tt.provider">
+            <field name="name">Espay</field>
+            <field name="code">espay</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_payment"/>
+        </record>
+        <record id="tt_provider_payment_snapespay" model="tt.provider">
+            <field name="name">Snap Espay </field>
+            <field name="code">snapespay</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_payment"/>
+        </record>
+    </data>
+</odoo>

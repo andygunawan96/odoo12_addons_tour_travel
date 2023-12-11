@@ -123,6 +123,9 @@
             <field name="priority">10</field>
             <field name="arch" type="xml">
                 <form string="Provider">
+                    <header>
+                        <!--<button string="Set Payment Provider" name="set_payment_provider" groups="base.group_system" type="object"/>-->
+                    </header>
                     <sheet>
                         <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;}"/>
                         <div class="oe_title">
