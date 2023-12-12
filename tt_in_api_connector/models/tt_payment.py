@@ -269,7 +269,7 @@ class TtPaymentApiCon(models.Model):
             'name': req['name'],
             'email': req['email'],
             'bank_code_list': req['bank_code_list'],
-            'provider': 'espay',
+            'provider': req['provider'],
             'currency': req['currency']
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_va', timeout=600, ho_id=ho_id)
@@ -286,7 +286,7 @@ class TtPaymentApiCon(models.Model):
     def delete_VA(self, req, ho_id):
         data = {
             'phone_number': req['number'],
-            'provider': 'espay',
+            'provider': req['provider'],
             'email': req['email'],
             'name': req['name'],
             'bank_code_list': req['bank_code_list'],

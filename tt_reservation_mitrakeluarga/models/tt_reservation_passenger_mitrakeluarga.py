@@ -42,6 +42,7 @@ class TtReservationCustomer(models.Model):
             break
         res.update({
             'sale_service_charges': sale_service_charges,
+            'service_charge_details': self.get_service_charge_details(),
             'pax_type': pax_type,
             'email': self.email,
             'phone_number': self.phone_number,

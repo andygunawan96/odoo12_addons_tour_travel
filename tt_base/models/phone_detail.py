@@ -93,9 +93,13 @@ class PhoneDetail(models.Model):
         if len(check_number) == 0 and len(agent_open_payment_acqurier) == 0 and agent_obj.email and agent_obj.name:
             ho_obj = agent_obj.ho_id
             bank_code_list = []
+            provider_payment_list = []
             existing_payment_acquirer_open = self.env['payment.acquirer'].search([('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
             for rec in existing_payment_acquirer_open:
                 bank_code_list.append(rec.bank_id.code)
+                if rec.provider_id:
+                    if rec.provider_id.code not in provider_payment_list:
+                        provider_payment_list.append(rec.provider_id.code)
             currency_obj = self.agent_id.ho_id.currency_id
             data = {
                 'number': self.calling_number[-8:],
@@ -104,43 +108,47 @@ class PhoneDetail(models.Model):
                 'bank_code_list': bank_code_list,
                 'currency': currency_obj.name
             }
-            res = self.env['tt.payment.api.con'].set_VA(data, ho_obj.id)
-            # res = self.env['tt.payment.api.con'].test(data)
-            # res = self.env['tt.payment.api.con'].delete_VA(data)
-            # res = self.env['tt.payment.api.con'].set_invoice(data)
-            # res = self.env['tt.payment.api.con'].merchant_info(data)
-            if res['error_code'] == 0:
-                if len(res['response']) > 0:
-                    for rec in res['response']:
-                        bank_obj = self.env['tt.bank'].search([('code', '=', rec['code'])],limit=1)
-                        existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_obj.id), ('type','=','va'), ('bank_id','=',bank_obj.id)])
-                        if not existing_payment_acquirer:
-                            existing_payment_acquirer = self.env['payment.acquirer'].create({
-                                'type': 'va',
-                                'bank_id': bank_obj.id,
-                                'agent_id': ho_obj.id,
-                                'provider': 'manual',
-                                'website_published': False,
-                                'name': 'Your Virtual Account at %s' % (bank_obj.name),
+            for provider_payment in provider_payment_list:
+                data.update({
+                    "provider": provider_payment
+                })
+                res = self.env['tt.payment.api.con'].set_VA(data, ho_obj.id)
+                # res = self.env['tt.payment.api.con'].test(data)
+                # res = self.env['tt.payment.api.con'].delete_VA(data)
+                # res = self.env['tt.payment.api.con'].set_invoice(data)
+                # res = self.env['tt.payment.api.con'].merchant_info(data)
+                if res['error_code'] == 0:
+                    if len(res['response']) > 0:
+                        for rec in res['response']:
+                            bank_obj = self.env['tt.bank'].search([('code', '=', rec['code'])],limit=1)
+                            existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_obj.id), ('type','=','va'), ('bank_id','=',bank_obj.id)])
+                            if not existing_payment_acquirer:
+                                existing_payment_acquirer = self.env['payment.acquirer'].create({
+                                    'type': 'va',
+                                    'bank_id': bank_obj.id,
+                                    'agent_id': ho_obj.id,
+                                    'provider': 'manual',
+                                    'website_published': False,
+                                    'name': 'Your Virtual Account at %s' % (bank_obj.name),
+                                })
+                            self.env['payment.acquirer.number'].create({
+                                'agent_id': agent_obj.id,
+                                'payment_acquirer_id': existing_payment_acquirer.id,
+                                'state': 'open',
+                                'number': rec['number'],
+                                'email': agent_obj.email,
+                                'currency_id': currency_obj.id,
+                                'ho_id': agent_obj.ho_id.id
                             })
-                        self.env['payment.acquirer.number'].create({
-                            'agent_id': agent_obj.id,
-                            'payment_acquirer_id': existing_payment_acquirer.id,
-                            'state': 'open',
-                            'number': rec['number'],
-                            'email': agent_obj.email,
-                            'currency_id': currency_obj.id,
-                            'ho_id': agent_obj.ho_id.id
-                        })
-                else:
-                    raise UserError(_("Phone number has been use, please change first phone number"))
-                for rec in agent_obj.phone_ids:
-                    rec.va_create = False
-                self.va_create = True
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'reload',
-                }
+                    else:
+                        raise UserError(_("Phone number has been use, please change first phone number"))
+                    for rec in agent_obj.phone_ids:
+                        rec.va_create = False
+                    self.va_create = True
+                    return {
+                        'type': 'ir.actions.client',
+                        'tag': 'reload',
+                    }
             else:
                 raise UserError(_(res['error_msg']))
         elif not agent_obj.email:
@@ -157,9 +165,13 @@ class PhoneDetail(models.Model):
         agent_obj = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
         ho_obj = agent_obj.ho_id
         bank_code_list = []
+        provider_payment_list = []
         existing_payment_acquirer_open = self.env['payment.acquirer'].search([('ho_id','=', ho_obj.id),('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
         for rec in existing_payment_acquirer_open:
             bank_code_list.append(rec.bank_id.code)
+            if rec.provider_id:
+                if rec.provider_id.code not in provider_payment_list:
+                    provider_payment_list.append(rec.provider_id.code)
         currency_name = self.agent_id.ho_id.currency_id.name
         data = {
             "number": self.calling_number[-8:],
@@ -171,16 +183,20 @@ class PhoneDetail(models.Model):
         self.va_create = False
         self.env.cr.commit()
         if len(data) != 0:
-            res = self.env['tt.payment.api.con'].delete_VA(data, agent_obj.ho_id.id)
-            if res['error_code'] == 0:
-                for rec in self.env['tt.agent'].search([('id', '=', self.agent_id.id)]).payment_acq_ids.filtered(lambda x: x.state == 'open'):
-                    rec.unlink()
-                self.va_create = False
-                self.env.cr.commit()
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'reload',
-                }
+            for provider_payment in provider_payment_list:
+                data.update({
+                    "provider": provider_payment
+                })
+                res = self.env['tt.payment.api.con'].delete_VA(data, agent_obj.ho_id.id)
+                if res['error_code'] == 0:
+                    for rec in self.env['tt.agent'].search([('id', '=', self.agent_id.id)]).payment_acq_ids.filtered(lambda x: x.state == 'open'):
+                        rec.unlink()
+                    self.va_create = False
+                    self.env.cr.commit()
+                    return {
+                        'type': 'ir.actions.client',
+                        'tag': 'reload',
+                    }
             else:
                 raise UserError(_("Error delete VA !"))
         else:
