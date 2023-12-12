@@ -390,7 +390,8 @@ class TtCustomerParent(models.Model):
             customer_parent_type_obj = self.env.ref('tt_base.customer_type_cor')
             address_obj = self.env['address.detail'].create({
                 'type': 'work',
-                'address': data['company_address']
+                'address': data['company_address'],
+                'ho_id': context['co_ho_id']
             })
             phone_ids = []
             calling_code = data['company_phone']['calling_code']
@@ -398,7 +399,8 @@ class TtCustomerParent(models.Model):
             phone_obj = self.env['phone.detail'].create({
                 'type': 'work',
                 'calling_code': calling_code,
-                'calling_number': calling_number
+                'calling_number': calling_number,
+                'ho_id': context['co_ho_id']
             })
             phone_ids.append(phone_obj.id)
 
@@ -407,7 +409,8 @@ class TtCustomerParent(models.Model):
             phone_obj = self.env['phone.detail'].create({
                 'type': 'work',
                 'calling_code': calling_code,
-                'calling_number': calling_number
+                'calling_number': calling_number,
+                'ho_id': context['co_ho_id']
             })
             phone_ids.append(phone_obj.id)
 
@@ -416,7 +419,8 @@ class TtCustomerParent(models.Model):
             phone_obj = self.env['phone.detail'].create({
                 'type': 'work',
                 'calling_code': calling_code,
-                'calling_number': calling_number
+                'calling_number': calling_number,
+                'ho_id': context['co_ho_id']
             })
             phone_ids.append(phone_obj.id)
 
@@ -425,7 +429,8 @@ class TtCustomerParent(models.Model):
             phone_obj = self.env['phone.detail'].create({
                 'type': 'work',
                 'calling_code': calling_code,
-                'calling_number': calling_number
+                'calling_number': calling_number,
+                'ho_id': context['co_ho_id']
             })
             phone_ids.append(phone_obj.id)
             data_img = {}
@@ -497,7 +502,8 @@ class TtCustomerParent(models.Model):
             phone_obj = self.env['phone.detail'].create({
                 'type': 'work',
                 'calling_code': calling_code,
-                'calling_number': calling_number
+                'calling_number': calling_number,
+                'ho_id': context['co_ho_id']
             })
             phone_ids.append(phone_obj.id)
 
@@ -508,7 +514,8 @@ class TtCustomerParent(models.Model):
                 "phone_ids": [(4, phone_obj.id)],
                 "email": data['pic_email'],
                 "marital_status": "married" if data['pic_title'] else "single",
-                "agent_id": context['co_agent_id']
+                "agent_id": context['co_agent_id'],
+                'ho_id': context['co_ho_id']
             })
 
             if data.get('airline'):
@@ -545,7 +552,7 @@ class TtCustomerParent(models.Model):
                 "phone_ids": [(6, 0, phone_ids)],
                 "notes": notes,
                 "customer_parent_type_id": customer_parent_type_obj.id,
-                'ho_id': context['ho_id'],
+                'ho_id': context['co_ho_id'],
                 "parent_agent_id": context['co_agent_id'],
                 "customer_ids": [(6, 0, [customer_obj.id])],
                 "billing_due_date": 5 if '5' in data['pay_time_top'] else 7,

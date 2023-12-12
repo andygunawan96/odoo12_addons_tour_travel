@@ -619,8 +619,12 @@ class TtReservation(models.Model):
             if identity:
                 idt_first_name = identity.get('identity_first_name') and identity['identity_first_name'] or ''
                 idt_last_name = identity.get('identity_last_name') and identity['identity_last_name'] or ''
+            if idt_first_name:
+                name_tuple = (idt_first_name, idt_last_name)
+            else:
+                name_tuple = (rec['first_name'],rec['last_name'])
             pax_data = (0,0,{
-                'name': "%s %s" % (rec['first_name'],rec['last_name']),
+                'name': "%s %s" % name_tuple,
                 'first_name': idt_first_name if idt_first_name else rec['first_name'],
                 'last_name': idt_last_name if idt_first_name else rec['last_name'],
                 'gender': rec['gender'],
