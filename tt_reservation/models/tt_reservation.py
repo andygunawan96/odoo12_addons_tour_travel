@@ -797,6 +797,7 @@ class TtReservation(models.Model):
             name = ''
             email = ''
             bank_name = ''
+            provider = ''
             if book_obj.payment_acquirer_number_id:
                 if book_obj.payment_acquirer_number_id.payment_acquirer_id.account_number == '' or book_obj.payment_acquirer_number_id.payment_acquirer_id.account_number == False: # ESPAY
                     payment_acq_number = book_obj.payment_acquirer_number_id.number
@@ -807,11 +808,14 @@ class TtReservation(models.Model):
                     name = book_obj.contact_title
                     phone_number = book_obj.contact_phone
                     email = book_obj.contact_email
+                    if book_obj.payment_acquirer_number_id.provider_id:
+                        provider = book_obj.payment_acquirer_number_id.provider_id.code
                 book_obj.payment_acquirer_number_id.state = 'cancel2'
                 book_obj.payment_acquirer_number_id = False
             return ERR.get_no_error({
                 "order_number": book_obj.name,
                 "payment_acq_number": payment_acq_number,
+                "provider": provider,
                 "bank_code": bank_code,
                 "bank_name": bank_name,
                 'url': url,

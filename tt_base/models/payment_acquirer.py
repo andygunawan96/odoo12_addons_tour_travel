@@ -611,6 +611,7 @@ class PaymentAcquirerNumber(models.Model):
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True) # buat VA open biar ngga kembar
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
+    provider_id = fields.Many2one('tt.provider', 'Provider')
     number = fields.Char('Number')
     va_number = fields.Char('VA Number')
     url = fields.Char('URL')
@@ -736,6 +737,7 @@ class PaymentAcquirerNumber(models.Model):
             'res_model': provider_type,
             'res_id': booking_obj.id,
             'time_limit': hold_date,
+            'provider_id': payment_acq_obj.provider_id.id if payment_acq_obj.provider_id else False,
             'is_using_point_reward': is_use_point,
             'point_reward_amount': point_amount,
             'agent_id': booking_obj.agent_id.id,
