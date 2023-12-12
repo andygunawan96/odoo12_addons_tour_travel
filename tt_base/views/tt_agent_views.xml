@@ -19,17 +19,17 @@
                 <filter string="Today" name="today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
                 <filter string="Yesterday" name="yesterday"
                         domain="[
-                            ('date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
-                            ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                            ('create_date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                            ('create_date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
                         ]"/>
                 <filter name="week" string="This Week"
                         domain="[
                             '&amp;',
-                            ('date', '&gt;=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
-                            ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ('create_date', '&gt;=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                            ('create_date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
                         ]"/>
-                <filter name="thismonth" string="This Month" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
-                <filter name="thisyear" string="This Year" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+                <filter name="thismonth" string="This Month" domain="[('create_date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter name="thisyear" string="This Year" domain="[('create_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
                 <filter name="lastyear" string="Last Year"
                         domain="[
                                 '&amp;',
