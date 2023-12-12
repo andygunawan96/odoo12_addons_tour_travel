@@ -150,7 +150,7 @@
                                 <field name="payment_ids"
                                        context="{
                                        'tree_view_ref':'tt_agent_sales.tt_payment_invoice_rel_invoice_tree_view',
-                                       'default_invoice_id': id
+                                       'default_invoice_id': id,
                                        }"/>
                             </page>
                             <page string="Ledgers">

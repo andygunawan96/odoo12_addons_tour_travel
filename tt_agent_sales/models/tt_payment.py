@@ -11,6 +11,7 @@ class TtPaymentInvoiceRel(models.Model):
     invoice_id = fields.Many2one('tt.agent.invoice', 'Invoice', readonly="True")
     ho_invoice_id = fields.Many2one('tt.ho.invoice', 'HO Invoice', readonly="True")
     inv_customer_parent_id = fields.Many2one('tt.customer.parent','Invoice Customer Parent',related='invoice_id.customer_parent_id',store=True)
+    agent_id = fields.Many2one('tt.agent','Agent',related='invoice_id.agent_id')
     # payment_id = fields.Many2one('tt.payment', 'Payment', required=True,
     #                              domain="[('is_full','=',False),('state','=','approved'),('customer_parent_id','!=',False),('customer_parent_id', '=', inv_customer_parent_id)]")
     payment_id = fields.Many2one('tt.payment', 'Payment', required=True,
