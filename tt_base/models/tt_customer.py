@@ -131,10 +131,8 @@ class TtCustomer(models.Model):
         identity_dict = {}
         for rec in self.identity_ids:
             identity_dict.update(rec.to_dict())
-            if not is_id_alt_name:
-                id_name = rec.identity_first_name
-                if rec.identity_last_name:
-                    id_name += ' %s' % rec.identity_last_name
+            if not is_id_alt_name and rec.identity_first_name:
+                id_name = '%s%s' % (rec.identity_first_name, rec.identity_last_name and ' ' + rec.identity_last_name or '')
                 if id_name != cust_name:
                     is_id_alt_name = True
 
@@ -319,6 +317,7 @@ class TtCustomer(models.Model):
             dom = [('agent_id','in',agent_id_list), ('is_search_allowed','=',True)]
 
             is_cor_login = util.get_without_empty(context,'co_customer_parent_id')
+            cust_id_list_obj = []
             if util.get_without_empty(req,'name'):
                 if util.get_without_empty(req,'search_type') == 'cor_name' and not is_cor_login:
                     cust_booker_objs = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id.name', 'ilike', req['name'])])
@@ -338,6 +337,8 @@ class TtCustomer(models.Model):
                 elif util.get_without_empty(req,'search_type') == 'birth_date':
                     dom.append(('birth_date', '=', datetime.strptime(req['name'],'%Y-%m-%d')))
                 else:
+                    cust_id_list_obj = self.env['tt.customer.identity'].search(
+                        [('identity_name', 'ilike', req['name'])])
                     dom.append(('name','ilike',req['name']))
             if req.get('email'):
                 dom.append(('email','=',req['email']))
@@ -359,24 +360,35 @@ class TtCustomer(models.Model):
             ## KARENA RECORD YG INF TIDAK MASUK KE CUSTOMER_LIST_OBJ, KENA LIMIT JADI RECORD
             customer_list = []
 
-
             if req.get('departure_date'):
                 upper = datetime.strptime(req['departure_date'], '%Y-%m-%d').date() - relativedelta(years=req.get('upper',200))
                 lower = datetime.strptime(req['departure_date'], '%Y-%m-%d').date() - relativedelta(years=req.get('lower', 12))
             else:
                 upper = date.today() - relativedelta(years=req.get('upper', 200))
                 lower = date.today() - relativedelta(years=req.get('lower', 12))
-            for cust in customer_list_obj:
-                ###fixme kalau tidak pbirth_date gimana? di asumsikan adult?
-                if cust.birth_date:
-                    if not (upper <= cust.birth_date <= lower):
-                        continue
-                else:
-                    if req.get('type') == 'psg' and req['upper']<=12:
-                        continue
-                values = cust.to_dict(get_customer_parent=True)
 
-                customer_list.append(values)
+            def filter_cust_age(cust_obj):
+                ###fixme kalau tidak pbirth_date gimana? di asumsikan adult?
+                if cust_obj.birth_date:
+                    if not (upper <= cust_obj.birth_date <= lower):
+                        return {}
+                else:
+                    if req.get('type') == 'psg' and req['upper'] <= 12:
+                        return {}
+                return cust_obj.to_dict(get_customer_parent=True)
+
+            cust_blacklist_ids = []
+            for cust in customer_list_obj:
+                values = filter_cust_age(cust)
+                if values:
+                    cust_blacklist_ids.append(cust.id)
+                    customer_list.append(values)
+            for cust_id_obj in cust_id_list_obj:
+                if cust_id_obj.customer_id.id not in cust_blacklist_ids:
+                    values = filter_cust_age(cust_id_obj.customer_id)
+                    if values:
+                        cust_blacklist_ids.append(cust_id_obj.customer_id.id)
+                        customer_list.append(values)
             return ERR.get_no_error(customer_list)
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -699,6 +711,7 @@ class TtCustomerIdentityNumber(models.Model):
 
     identity_first_name = fields.Char('First Name')
     identity_last_name = fields.Char('Last Name')
+    identity_name = fields.Char('Name', compute='_compute_identity_name', store=True)
     identity_type = fields.Selection(variables.IDENTITY_TYPE,'Type',required=True)
     identity_number = fields.Char('Number',required=True)
     identity_expdate = fields.Date('Expire Date')
@@ -722,6 +735,11 @@ class TtCustomerIdentityNumber(models.Model):
                     raise UserError ('%s|%s Already Exists.' % (id1.id,id1.identity_type))
 
         return new_identity
+
+    @api.depends('identity_first_name', 'identity_last_name')
+    def _compute_identity_name(self):
+        for rec in self:
+            rec.identity_name = '%s%s' % (rec.identity_first_name, rec.identity_last_name and ' ' + rec.identity_last_name or '')
 
     def to_dict(self):
         image_list = [(rec.url,rec.seq_id,rec.file_reference, rec.create_date.strftime('%Y-%m-%d %H:%M:%S')) for rec in self.identity_image_ids]
