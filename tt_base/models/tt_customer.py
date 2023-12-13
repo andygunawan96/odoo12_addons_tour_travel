@@ -124,9 +124,19 @@ class TtCustomer(models.Model):
         phone_list = []
         for rec in self.phone_ids:
             phone_list.append(rec.to_dict())
+        is_id_alt_name = False
+        cust_name = self.first_name
+        if self.last_name:
+            cust_name += ' %s' % self.last_name
         identity_dict = {}
         for rec in self.identity_ids:
             identity_dict.update(rec.to_dict())
+            if not is_id_alt_name:
+                id_name = rec.identity_first_name
+                if rec.identity_last_name:
+                    id_name += ' %s' % rec.identity_last_name
+                if id_name != cust_name:
+                    is_id_alt_name = True
 
         behavior_dict = self.get_behavior()
 
@@ -148,7 +158,8 @@ class TtCustomer(models.Model):
             'identities': identity_dict,
             'behaviors': behavior_dict,
             'original_agent': self.agent_id and self.agent_id.name or '',
-            'frequent_flyers': ff_list_dict
+            'frequent_flyers': ff_list_dict,
+            'is_id_alt_name': is_id_alt_name
         }
         if get_customer_parent:
             customer_parent_list = []
@@ -316,6 +327,8 @@ class TtCustomer(models.Model):
                         if rec_book.customer_id.id not in cust_dom_ids:
                             cust_dom_ids.append(rec_book.customer_id.id)
                     dom.append(('id', 'in', cust_dom_ids))
+                elif util.get_without_empty(req,'search_type') == 'seq_id':
+                    dom.append(('seq_id', '=', req['name']))
                 elif util.get_without_empty(req,'search_type') == 'mobile':
                     dom.append(('phone_ids.phone_number', '=', req['name']))
                 elif util.get_without_empty(req,'search_type') == 'email':
