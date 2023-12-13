@@ -30,7 +30,7 @@ class TtReservationCustomer(models.Model):
             'first_name': self.first_name,
             'last_name': self.last_name and self.last_name or '',
             'cust_first_name': self.customer_id.first_name,
-            'cust_last_name': self.customer_id.last_name,
+            'cust_last_name': self.customer_id.last_name and self.customer_id.last_name or '',
             'gender': self.gender,
             'title': self.title,
             'birth_date': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
