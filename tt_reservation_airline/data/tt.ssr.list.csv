@@ -1200,3 +1200,21 @@ tt_ssr_list_id_1198,Excess 2 Pieces Baggage,BBAG,tt_ssr_category_baggage,tt_rese
 tt_ssr_list_id_1199,Excess 3 Pieces Baggage,CBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1200,Excess 4 Pieces Baggage,DBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1201,Excess 5 Pieces Baggage,EBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1202,Baggage 20 Kg,BG20,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1203,Baggage 25 Kg,BG25,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1204,Baggage 30 Kg,BG30,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1205,Baggage 35 Kg,BG35,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1206,Baggage 40 Kg,BG40,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1207,Baggage 5 Kg,XB05,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_citilink,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1208,Baggage 10 Kg,XB10,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_citilink,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1209,Baggage 20 Kg,XB20,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_citilink,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1210,Baggage 30 Kg,XB30,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_citilink,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1211,Baggage 40 Kg,XB40,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_citilink,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1212,Baggage 5 Kg,BG05,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_jetstar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1213,Baggage 10 Kg,BG10,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_jetstar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1214,Baggage 15 Kg,BG15,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_jetstar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1215,Baggage 20 Kg,BG20,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_jetstar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1216,Baggage 25 Kg,BG25,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_jetstar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1217,Baggage 30 Kg,BG30,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_jetstar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1218,Baggage 35 Kg,BG35,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_jetstar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1219,Baggage 40 Kg,BG40,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_jetstar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
