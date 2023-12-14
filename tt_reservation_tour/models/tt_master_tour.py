@@ -113,7 +113,7 @@ class MasterTour(models.Model):
 
     tour_code = fields.Char('Tour Code', readonly=True, copy=False)
     tour_slug = fields.Char('Tour Slug', readonly=True, copy=False)
-    tour_route = fields.Char('Route', compute='_compute_tour_route', readonly=True)
+    tour_route = fields.Char('Route', compute='_compute_tour_route', readonly=True, store=True)
     tour_category = fields.Selection([('group', 'For All Agents'), ('private', 'For Selected Agent')],
                                      'Tour Category', required=True, default='group')
     tour_type_id = fields.Many2one('tt.master.tour.type', 'Tour Type', required=True, domain="[('ho_id', '=', owner_ho_id)]")
