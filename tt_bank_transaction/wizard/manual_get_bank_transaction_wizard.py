@@ -10,7 +10,7 @@ class ManualGetBankTransactionWizard(models.TransientModel):
     _description = 'Manual Get Bank Transaction Wizard'
 
     bank_accounts_id = fields.Many2one('tt.bank.accounts','Bank Account', readonly=True, required=True)
-    transaction_date = fields.Date('Transaction Date', required=True)
+    transaction_date = fields.Date('Transaction Date', required=True, default=fields.Date.context_today)
 
     def get_bank_mutation_wizard(self):
         transaction_date = self.transaction_date.strftime("%Y-%m-%d")
