@@ -53,7 +53,7 @@
                                 <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" style="max-height: 80px; margin-top: 9px;"/>
                             </t>
                             <t t-else="">
-                                <span t-field="doc.agent_id.name" style="margin-top: 9px; font-size: 28px;"/>
+                                <span t-field="doc.agent_id.name" style="margin-top: 9px; font-size: 18px;"/>
                             </t>
                         </t>
                     </div>
@@ -317,7 +317,7 @@
                                             <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" style="max-height: 80px; margin-top: 9px;"/>
                                         </t>
                                         <t t-else="">
-                                            <span t-field="doc.agent_id.name" style="margin-top: 9px; font-size: 28px;"/>
+                                            <span t-field="doc.agent_id.name" style="margin-top: 9px; font-size: 186px;"/>
                                         </t>
                                     </t>
                                 </div>
