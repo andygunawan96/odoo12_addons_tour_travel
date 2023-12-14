@@ -137,6 +137,15 @@ class ApiManagement(models.Model):
                 #generate OTP info for frontend
                 values.update(_co_user.get_machine_otp_pin())
 
+                payment_acq_open_ho = self.env['payment.acquirer'].search([('type', '=', 'va'), ('ho_id', '=', _co_user.ho_id.id)])
+                if payment_acq_open_ho:
+                    values.update({
+                        "is_ho_have_open_top_up": True
+                    })
+                else:
+                    values.update({
+                        "is_ho_have_open_top_up": False
+                    })
 
                 # if _co_user.is_banned:
                 #     additional_msg = ""
