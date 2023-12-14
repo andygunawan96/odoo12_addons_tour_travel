@@ -22,6 +22,7 @@
                         <field name="ho_invoice_id" readonly="1"/>
                         <field name="payment_id"/>
                         <field name="inv_customer_parent_id" invisible="1"/>
+                        <field name="agent_id" invisible="1"/>
                         <field name="payment_state"/>
                         <field name="available_amount"/>
                         <field name="pay_amount"/>
@@ -55,9 +56,10 @@
         <field name="priority">21</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
-                <field name="payment_id" options="{'create_edit': True}"/>
+                <field name="payment_id" options="{'create_edit': True}" context="{'default_agent_id': agent_id, 'default_customer_parent_id': inv_customer_parent_id,}"/>
                 <field name="invoice_id" invisible="1"/>
                 <field name="inv_customer_parent_id" invisible="1"/>
+                <field name="agent_id" invisible="1"/>
                 <field name="payment_acquirer"/>
                 <field name="available_amount"/>
                 <field name="pay_amount"/>

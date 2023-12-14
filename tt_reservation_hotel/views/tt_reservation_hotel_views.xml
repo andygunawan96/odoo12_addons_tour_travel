@@ -38,7 +38,7 @@
                 <filter string="Sale Today" name="sale_today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
                 <filter name="sale_week" string="Sale This Week"
                         domain="['&amp;',
-                                ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('date', '&gt;=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
                                 ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
                             ]"/>
                 <filter string="Sale This Month" name="sale_this_month" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
@@ -47,7 +47,7 @@
                 <filter string="Check In Today" name="today" domain="[('checkin_date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
                 <filter name="week" string="Check In This Week"
                         domain="['&amp;',
-                                ('checkin_date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('checkin_date', '&gt;=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
                                 ('checkin_date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
                             ]"/>
                 <filter string="Check In This Month" name="thismonth" domain="[('checkin_date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>

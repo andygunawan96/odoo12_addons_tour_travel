@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="manual_get_bank_transaction_wizard_form_view" model="ir.ui.view">
+        <field name="name">Manual Get Bank Transaction Wizard</field>
+        <field name="model">manual.get.bank.transaction.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Manual Get Bank Transaction Wizard">
+                <group>
+                    <field name="bank_accounts_id"/>
+                    <field name="transaction_date" options="{'datepicker': {'maxDate': 'now'}}"/>
+                </group>
+                <footer>
+                    <button name="get_bank_mutation_wizard" string="Get Transaction" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="manual_get_bank_transaction_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Manual Get Bank Transaction Wizard</field>
+        <field name="res_model">manual.get.bank.transaction.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

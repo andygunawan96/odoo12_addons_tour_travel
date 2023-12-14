@@ -79,7 +79,7 @@
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['edc'])]}"/>
                                 <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                                 <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc', 'creditcard_topup'])]}"/>
-                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['payment_gateway', 'edc', 'creditcard_topup'])]}"/>
+                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc', 'creditcard_topup'])]}"/>
                                 <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc', 'creditcard_topup'])]}"/>
                                 <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc', 'creditcard_topup'])]}"/>
                                 <field name="is_calculate_credit_card_fee" attrs="{'invisible': [('type','not in',['payment_gateway', 'creditcard_topup'])]}"/>
@@ -123,6 +123,9 @@
             <field name="priority">10</field>
             <field name="arch" type="xml">
                 <form string="Provider">
+                    <header>
+                        <!--<button string="Set Payment Provider" name="set_payment_provider" groups="base.group_system" type="object"/>-->
+                    </header>
                     <sheet>
                         <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;}"/>
                         <div class="oe_title">

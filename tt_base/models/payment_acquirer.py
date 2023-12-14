@@ -48,6 +48,13 @@ class PaymentAcquirer(models.Model):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('pay.acq')
         return super(PaymentAcquirer, self).create(vals_list)
 
+    def set_payment_provider(self):
+        ### UPDATE DATA LAMA KE ESPAY
+        provider_obj = self.env['tt.provider'].search([('code', '=', 'espay')], limit=1)
+        payment_acq_objs = self.search([('type','in',['va', 'payment_gateway', 'creditcard_topup'])])
+        for payment_acq_obj in payment_acq_objs:
+            payment_acq_obj.provider_id = provider_obj.id
+
     # FUNGSI
     def generate_unique_amount_api(self, vals, context):
         return self.env['unique.amount'].create_unique_amount_api(vals, context)
@@ -151,6 +158,7 @@ class PaymentAcquirer(models.Model):
                 'fee': fee,
                 'unique_amount': uniq,
             },
+            'provider': self.provider_id.code if self.provider_id else '',
             'online_wallet': self.online_wallet,
             'save_url': self.save_url,
             'show_device_type': self.show_device_type,
@@ -603,6 +611,7 @@ class PaymentAcquirerNumber(models.Model):
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True) # buat VA open biar ngga kembar
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
+    provider_id = fields.Many2one('tt.provider', 'Provider')
     number = fields.Char('Number')
     va_number = fields.Char('VA Number')
     url = fields.Char('URL')
@@ -728,6 +737,7 @@ class PaymentAcquirerNumber(models.Model):
             'res_model': provider_type,
             'res_id': booking_obj.id,
             'time_limit': hold_date,
+            'provider_id': payment_acq_obj.provider_id.id if payment_acq_obj.provider_id else False,
             'is_using_point_reward': is_use_point,
             'point_reward_amount': point_amount,
             'agent_id': booking_obj.agent_id.id,

@@ -19,10 +19,17 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Get Bank Mutation" name="get_bank_mutation" groups="base.group_user" type="object" attrs="{'invisible':[('is_get_transaction','=',True)]}"/>
+                    <button string="Get Bank Mutation"
+                            name="%(tt_bank_transaction.manual_get_bank_transaction_wizard_action_view)d"
+                            groups="base.group_user" type="action"
+                            attrs="{'invisible':[('is_get_transaction','=',True)]}"
+                            context="{'default_bank_accounts_id': id,}"
+                    />
+
                 </header>
                 <sheet>
                     <group>
+                        <field name="id" invisible="1"/>
 			            <field name="ho_id" groups="base.group_erp_manager"/>
                         <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         <field name="bank_id"/>

@@ -619,8 +619,12 @@ class TtReservation(models.Model):
             if identity:
                 idt_first_name = identity.get('identity_first_name') and identity['identity_first_name'] or ''
                 idt_last_name = identity.get('identity_last_name') and identity['identity_last_name'] or ''
+            if idt_first_name:
+                name_tuple = (idt_first_name, idt_last_name)
+            else:
+                name_tuple = (rec['first_name'],rec['last_name'])
             pax_data = (0,0,{
-                'name': "%s %s" % (rec['first_name'],rec['last_name']),
+                'name': "%s %s" % name_tuple,
                 'first_name': idt_first_name if idt_first_name else rec['first_name'],
                 'last_name': idt_last_name if idt_first_name else rec['last_name'],
                 'gender': rec['gender'],
@@ -793,6 +797,7 @@ class TtReservation(models.Model):
             name = ''
             email = ''
             bank_name = ''
+            provider = ''
             if book_obj.payment_acquirer_number_id:
                 if book_obj.payment_acquirer_number_id.payment_acquirer_id.account_number == '' or book_obj.payment_acquirer_number_id.payment_acquirer_id.account_number == False: # ESPAY
                     payment_acq_number = book_obj.payment_acquirer_number_id.number
@@ -803,11 +808,14 @@ class TtReservation(models.Model):
                     name = book_obj.contact_title
                     phone_number = book_obj.contact_phone
                     email = book_obj.contact_email
+                    if book_obj.payment_acquirer_number_id.provider_id:
+                        provider = book_obj.payment_acquirer_number_id.provider_id.code
                 book_obj.payment_acquirer_number_id.state = 'cancel2'
                 book_obj.payment_acquirer_number_id = False
             return ERR.get_no_error({
                 "order_number": book_obj.name,
                 "payment_acq_number": payment_acq_number,
+                "provider": provider,
                 "bank_code": bank_code,
                 "bank_name": bank_name,
                 'url': url,

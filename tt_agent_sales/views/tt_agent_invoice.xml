@@ -28,11 +28,17 @@
                 <filter name="week" string="This Week"
                         domain="[
                                 '&amp;',
-                                ('date_invoice', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('date_invoice', '&gt;=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
                                 ('date_invoice', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
                             ]"/>
-                <filter string="This Month" name="thismonth" domain="[('date_invoice','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
-                <filter string="This Year" name="thisyear" domain="[('date_invoice','&gt;=',time.strftime('%%Y-01-01'))]"/>
+                <filter name="thismonth" string="This Month" domain="[('date_invoice','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter name="thisyear" string="This Year" domain="[('date_invoice','&gt;=',time.strftime('%%Y-01-01'))]"/>
+                <filter name="lastyear" string="Last Year"
+                        domain="[
+                                '&amp;',
+                                ('date_invoice', '&gt;=', (context_today() + relativedelta(years=-1,month=1,day=1,hour=0,minute=1,second=0)).strftime('%Y-%m-%d')),
+                                ('date_invoice','&lt;',time.strftime('%%Y-01-01')),
+                            ]"/>
 
                 <group expand="0" string="Group By">
                     <filter name="group_by_ho_id" string="Head Office" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
@@ -150,7 +156,7 @@
                                 <field name="payment_ids"
                                        context="{
                                        'tree_view_ref':'tt_agent_sales.tt_payment_invoice_rel_invoice_tree_view',
-                                       'default_invoice_id': id
+                                       'default_invoice_id': id,
                                        }"/>
                             </page>
                             <page string="Ledgers">

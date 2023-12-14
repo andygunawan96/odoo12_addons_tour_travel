@@ -83,7 +83,8 @@ class PaymentTransaction(models.Model):
 
     @api.onchange('agent_id')
     def _onchange_agent(self):
-        self.customer_parent_id = False
+        if self.customer_parent_id.parent_agent_id.id != self.agent_id.id:
+            self.customer_parent_id= False
         self.acquirer_id = False
 
     @api.onchange('customer_parent_id')

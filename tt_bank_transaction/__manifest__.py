@@ -17,6 +17,7 @@ Key Features
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         'data/ir_cron_data.xml',
+        'wizard/manual_get_bank_transaction_wizard.xml',
         'views/bank_accounts_views.xml',
         'views/bank_transaction_views.xml',
         'views/bank_transaction_date_views.xml',

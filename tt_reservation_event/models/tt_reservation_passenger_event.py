@@ -23,6 +23,7 @@ class TtReservationCustomer(models.Model):
         res.update({
             'pax_type': self.pax_type and self.pax_type or '',
             'sale_service_charges': self.get_service_charges(),
+            'service_charge_details': self.get_service_charge_details(),
             'option': self.option_id.to_dict(),
         })
         if len(self.channel_service_charge_ids.ids) > 0:
