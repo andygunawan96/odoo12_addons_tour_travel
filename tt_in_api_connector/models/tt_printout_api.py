@@ -93,6 +93,8 @@ class TtPrintoutApiCon(models.Model):
 
         elif action == 'set_color_printout':
             res = self.env['tt.report.common.setting'].set_color_printout_api(data, context)
+        elif action == 'get_color_printout':
+            res = self.env['tt.agent'].get_printout_agent_color(context)
         elif action == 'get_list_report_footer':
             res = self.env['tt.report.common.setting'].get_list_report_footer_api(data, context)
         elif action == 'set_report_footer':
