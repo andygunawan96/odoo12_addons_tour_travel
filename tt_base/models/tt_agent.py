@@ -880,9 +880,12 @@ class TtAgent(models.Model):
             email_cc = ",".join(email_cc_list)
         return email_cc
 
-    def get_printout_agent_color(self):
+    def get_printout_agent_color(self, context={}):
         base_color = '#CDCDCD'
-        agent_ho_obj = self.ho_id.sudo()
+        if not context:
+            agent_ho_obj = self.ho_id.sudo()
+        elif context.get('co_ho_id'):
+            agent_ho_obj = self.browse(context['co_ho_id'])
         if agent_ho_obj.website_default_color:
             base_color = agent_ho_obj.website_default_color if agent_ho_obj.website_default_color[0] == '#' else '#%s' % agent_ho_obj.website_default_color
         return base_color
