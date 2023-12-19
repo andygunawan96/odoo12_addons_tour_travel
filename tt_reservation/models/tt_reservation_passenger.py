@@ -213,8 +213,8 @@ class TtReservationCustomer(models.Model):
             base_commission_airline = base_commission + base_commission_upline + base_commission_provider_ho + base_commission_provider_vat + base_commission_charge
             base_nta = base_price + base_commission
             # base_nta_airline = base_price_ori + base_commission_airline
-            base_convenience_fee = base_price - base_price_ori - base_fee_ho - base_vat_ho
-            base_nta_airline = base_price_ori + base_commission_airline + base_convenience_fee
+            base_upsell = base_price - base_price_ori - base_fee_ho - base_vat_ho
+            base_nta_airline = base_price_ori + base_commission_airline + base_upsell
 
             pax_values = {
                 'pnr': pnr,
@@ -223,7 +223,7 @@ class TtReservationCustomer(models.Model):
                 'pax_count': 1,
                 'base_fare': float(base_fare),
                 'base_tax': float(base_tax_total),
-                'base_convenience_fee': float(base_convenience_fee),
+                'base_upsell': float(base_upsell),
                 'base_discount': float(base_discount),
                 'base_fare_ori': float(base_fare),
                 'base_tax_ori': float(base_tax),
