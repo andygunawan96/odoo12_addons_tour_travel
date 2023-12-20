@@ -464,9 +464,9 @@ class AccountingConnectorITM(models.Model):
                         "Arrival": ''
                     }]
                     for room_idx, room in enumerate(prov['rooms']):
-                        temp_sales = prov_setup['agent_nta'] / len(prov['rooms'])
+                        temp_sales = prov_setup['agent_nta'] / len(prov['rooms']) / request['nights']
                         if is_ho_transaction:
-                            temp_sales += ho_prof / len(prov['rooms'])
+                            temp_sales += ho_prof / len(prov['rooms']) / request['nights']
                         provider_dict = {
                             "ItemNo": idx + 1,
                             "ProductCode": supplier_obj.product_code or '',
@@ -478,10 +478,10 @@ class AccountingConnectorITM(models.Model):
                             "Hotel_ServiceType": room.get('meal_type') and room['meal_type'] or '',
                             "Hotel_CityCD": prov.get('hotel_city') and prov['hotel_city'] or '',
                             "Quantity": 1,
-                            "Cost": prov_setup['total_nta'] / len(prov['rooms']),
-                            "Profit": (prov_setup['ho_profit'] - vat) / len(prov['rooms']),
+                            "Cost": prov_setup['total_nta'] / len(prov['rooms']) / request['nights'],
+                            "Profit": (prov_setup['ho_profit'] - vat) / len(prov['rooms']) / request['nights'],
                             "ServiceFee": 0,
-                            "VAT": vat / len(prov['rooms']),
+                            "VAT": vat / len(prov['rooms']) / request['nights'],
                             "Sales": temp_sales,
                             "Itin": journey_list,
                             "Pax": pax_list
@@ -491,7 +491,7 @@ class AccountingConnectorITM(models.Model):
                             for sct in prov['tax_service_charges']:
                                 service_tax_list.append({
                                     "ServiceTax_string": sct['charge_code'],
-                                    "ServiceTax_amount": sct['amount'] / len(prov['rooms'])
+                                    "ServiceTax_amount": sct['amount'] / len(prov['rooms']) / request['nights']
                                 })
                             provider_dict.update({
                                 "ServiceTaxes": service_tax_list
