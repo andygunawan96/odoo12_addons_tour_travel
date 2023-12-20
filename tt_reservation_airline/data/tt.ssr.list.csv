@@ -1194,7 +1194,7 @@ tt_ssr_list_id_1192,VEGETARIAN LACTO-OVO MEAL (VLML),VLML,tt_ssr_category_meal,t
 tt_ssr_list_id_1193,VEGETARIAN ORIENTAL MEAL (VOML),VOML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1194,WHEELCHAIR TO AIRCRAFT DOOR REQUEST (WCHR),WCHR,tt_ssr_category_wheelchair,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1195,UNACCOMPANIED MINOR (PDUM),PDUM,,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
-tt_ssr_list_id_1196,Baggage XBAG,XWBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1196,Baggage XBAG,XWBG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1197,Excess 1 Piece Baggage,ABAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1198,Excess 2 Pieces Baggage,BBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1199,Excess 3 Pieces Baggage,CBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
