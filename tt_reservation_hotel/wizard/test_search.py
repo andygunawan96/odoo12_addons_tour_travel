@@ -1154,6 +1154,7 @@ class TestSearch(models.Model):
                             "amount": svc_csc[pnr]['CSC']['amount'],
                             "currency": svc_csc[pnr]['CSC']['currency']
                         }
+                passengers[0]['service_charge_details'] = self.sudo().prepare_service_charge_detils(resv_obj.sale_service_charge_ids, resv_obj.pnr or resv_obj.name)
                 provider_bookings = []
                 for provider_booking in resv_obj.provider_booking_ids:
                     provider_bookings.append(provider_booking.to_dict())
