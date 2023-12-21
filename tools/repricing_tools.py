@@ -5506,7 +5506,7 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'RACAVP',
+                                                'charge_type': 'RACHVP',
                                                 'charge_code': 'rachorsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,
@@ -5521,7 +5521,7 @@ class RepricingToolsV2(object):
                                             else:
                                                 sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
-                                                'charge_type': 'ROCAVP',
+                                                'charge_type': 'ROCHVP',
                                                 'charge_code': 'rochorsvvat',
                                                 'pax_type': pcd_pax_type,
                                                 'pax_count': pcd_pax_count,

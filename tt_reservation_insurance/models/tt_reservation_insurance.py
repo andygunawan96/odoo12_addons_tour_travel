@@ -277,6 +277,21 @@ class ReservationInsurance(models.Model):
             contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
 
             list_passenger_value = self.create_passenger_value_api(passengers)
+            for pax in passengers:
+                ## CREATE PAX AGAR BISA TEROPONG UNTUK NEXT BOOKING, BELUM COBA LINK TAKUT ADA BUG
+                ## TODO LINK PAX TANPA PRICE
+                if pax.get('data_insurance'):
+                    if pax['data_insurance'].get('relation'):
+                        try:
+                            self.create_customer_api(pax['data_insurance']['relation'], context, booker_obj.seq_id, contact_obj.seq_id)
+                        except Exception as e:
+                            _logger.error("%s, %s" % (str(e), traceback.format_exc()))
+                    if pax['data_insurance'].get('beneficiary'):
+                        try:
+                            self.create_customer_api([pax['data_insurance']['beneficiary']], context, booker_obj.seq_id,contact_obj.seq_id)
+                        except Exception as e:
+                            _logger.error("%s, %s" % (str(e), traceback.format_exc()))
+
             list_customer_id = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id)
 
             #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']

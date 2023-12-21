@@ -121,7 +121,7 @@ class PhoneDetail(models.Model):
                     if len(res['response']) > 0:
                         for rec in res['response']:
                             bank_obj = self.env['tt.bank'].search([('code', '=', rec['code'])],limit=1)
-                            existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_obj.id), ('type','=','va'), ('bank_id','=',bank_obj.id)])
+                            existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_obj.id), ('type','=','va'), ('bank_id','=',bank_obj.id)], limit=1)
                             if not existing_payment_acquirer:
                                 existing_payment_acquirer = self.env['payment.acquirer'].create({
                                     'type': 'va',

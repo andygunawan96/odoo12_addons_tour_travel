@@ -17,12 +17,15 @@ class TtReservationCustomer(models.Model):
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
-        # fee_list = []
+        fee_list = []
         # for rec in self.fee_ids:
         #     fee_list.append(rec.to_dict())
+        sale_service_charges = self.get_service_charges()
+        service_charge_details = self.get_service_charge_details()
         res.update({
-            'sale_service_charges': [],
-            'fees': []
+            'sale_service_charges': sale_service_charges,
+            'service_charge_details': service_charge_details,
+            'fees': fee_list
         })
         # if len(self.channel_service_charge_ids.ids)>0:
         #     res['channel_service_charges'] = self.get_channel_service_charges()
