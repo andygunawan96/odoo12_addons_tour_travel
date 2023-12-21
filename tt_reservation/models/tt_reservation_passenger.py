@@ -242,6 +242,8 @@ class TtReservationCustomer(models.Model):
             base_nta_vendor = base_nta_vendor_real - base_hidden_commission_ho
             base_price_ott = base_fare + base_tax
             base_upsell = base_upsell_ori + base_hidden_commission_ho
+            if base_upsell < 0:
+                base_upsell = 0
 
             pax_values = {
                 'pnr': pnr,
