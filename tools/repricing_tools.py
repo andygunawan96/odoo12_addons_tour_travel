@@ -1743,6 +1743,9 @@ class ProviderPricing(object):
             'section': 'reservation',
             'route_count': route_count,
             'segment_count': segment_count,
+            'sales_amount': sales_total_amount,
+            'nta_amount': nta_total_amount,
+            'nta_agent_amount': nta_agent_total_amount,
             'upsell_amount': total_upsell_amount,
             'commission_amount': total_commission_amount,
             'ho_commission_amount': ho_commission_amount,
@@ -2322,7 +2325,7 @@ class AgentPricing(object):
         if rule_obj.get('pricing_type'):
             if rule_obj['pricing_type'] == 'from_nta':
                 if tkt_res:
-                    fare_amount = tkt_res['nta_amount']
+                    fare_amount = tkt_res['nta_agent_amount']
                     tax_amount = 0.0
                     if rac_amount:
                         fare_amount -= rac_amount
@@ -2452,7 +2455,19 @@ class AgentPricing(object):
         }
         return payload
 
-    def get_reservation_calculation(self, rule_obj, total_amount, route_count=0, segment_count=0, upsell_by_amount_charge=True, **kwargs):
+    def get_reservation_calculation(self, rule_obj, total_amount, route_count=0, segment_count=0, upsell_by_amount_charge=True, tkt_rsv_res=None, roc_amount=0.0, rac_amount=0.0, **kwargs):
+        if rule_obj.get('pricing_type'):
+            if rule_obj['pricing_type'] == 'from_nta':
+                if tkt_rsv_res:
+                    total_amount = tkt_rsv_res['nta_agent_amount']
+                    if rac_amount:
+                        total_amount -= rac_amount
+            elif rule_obj['pricing_type'] == 'from_sales':
+                if tkt_rsv_res:
+                    total_amount = tkt_rsv_res['sales_amount']
+                    if roc_amount:
+                        total_amount += roc_amount
+
         sales_data = rule_obj['reservation']['sales']
         sales_res = self.calculate_price(sales_data, total_amount, 0.0, '', route_count, segment_count, upsell_by_amount_charge)
         total_upsell_amount = sales_res['upsell_amount']
@@ -4258,6 +4273,7 @@ class RepricingToolsV2(object):
         # Flow 2
         is_agent_commission_applied = False
         tkt_res_lib = {}
+        tkt_rsv_res_lib = {}
         for pricing_idx in range(3):
             for pax_type, sc_sum in sc_summary_dict.items():
                 pax_count = pax_count_dict[pax_type]
@@ -5322,6 +5338,7 @@ class RepricingToolsV2(object):
             if pricing_idx == 0:
                 if rule_obj:
                     tkt_rsv_res = self.provider_pricing.get_reservation_calculation(rule_obj, total_reservation_amount, route_count, segment_count)
+                    tkt_rsv_res_lib = tkt_rsv_res
                     if tkt_rsv_res['upsell_amount']:
                         # # June 16, 2022 - SAM
                         # total_reservation_amount += tkt_rsv_res['upsell_amount']
@@ -5702,7 +5719,7 @@ class RepricingToolsV2(object):
 
             if pricing_idx == 1:
                 if agent_obj:
-                    agent_rsv_res = self.agent_pricing.get_reservation_calculation(agent_obj, total_reservation_amount, route_count, segment_count)
+                    agent_rsv_res = self.agent_pricing.get_reservation_calculation(agent_obj, total_reservation_amount, route_count, segment_count, tkt_rsv_res=tkt_rsv_res_lib)
                     if agent_rsv_res['upsell_amount']:
                         # # June 16, 2022 - SAN
                         # total_reservation_amount += agent_rsv_res['upsell_amount']
