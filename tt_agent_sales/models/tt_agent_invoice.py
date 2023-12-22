@@ -370,9 +370,10 @@ class AgentInvoice(models.Model):
                 if not invoice.invoice_id.printout_invoice_id or is_dynamic_print or data.get('is_force_get_new_printout', False):
                     datas['included_detail_ids'] = []
                     for inv_det in invoice.invoice_line_detail_ids:
-                        if inv_det.desc in included_pax_names:
+                        ### ini split by \n karena didalam invoice line desc ada nama & ticket number di pisah by \n kalau di ganti by space harus ganti split klo tidak ter print semua
+                        if inv_det.desc.split('\n')[0] in included_pax_names:
                             datas['included_detail_ids'].append(inv_det.id)
-                            included_pax_names.remove(inv_det.desc)
+                            included_pax_names.remove(inv_det.desc.split('\n')[0])
                     print_count = invoice.invoice_id.dynamic_print_count + 1
                     if is_dynamic_print:
                         invoice.invoice_id.write({
