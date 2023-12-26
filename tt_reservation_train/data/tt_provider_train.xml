@@ -14,8 +14,8 @@
             <field name="provider_type_id" ref="tt_provider_type_train"/>
         </record>
         <record id="tt_provider_train_pointer" model="tt.provider">
-            <field name="name">Pointer Train</field>
-            <field name="code">pointer_train</field>
+            <field name="name">Ptr Train</field>
+            <field name="code">ptr_train</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_train"/>
         </record>
