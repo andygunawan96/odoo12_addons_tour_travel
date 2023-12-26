@@ -21,6 +21,8 @@
 <p>Attached in this email is your e-Billing Statement for your transaction in ${object.agent_id.name} from ${object.transaction_start_date} until ${object.transaction_end_date}.</p>
 <p>Thank you for your trust and support in using our service.</p>
 <br/>
+<p>Due Date ${object.due_date}</p>
+<br/>
 <p>${object.customer_parent_id.check_credit_limit_usage()}</p>
 <br/>
 <p>Regards,</p>
@@ -49,6 +51,8 @@
 <br/>
 <p>Attached in this email is your e-Billing Statement for your transaction in ${object.get_company_name()} from ${object.transaction_start_date} until ${object.transaction_end_date}.</p>
 <p>Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Due Date ${object.due_date}</p>
 <br/>
 <p>${object.agent_id.check_credit_limit_usage()}</p>
 <br/>

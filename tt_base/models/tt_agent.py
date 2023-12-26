@@ -330,10 +330,13 @@ class TtAgent(models.Model):
             'is_show_point_reward': is_show_point_reward
         })
 
-    def get_corpor_list_agent_api(self, context):
+    def get_corpor_list_agent_api(self, data, context):
+        search_dom = [('parent_agent_id', '=', context['co_agent_id']), ('customer_parent_type_id', 'in', [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id]), ('state', '=', 'done')]
+        if data.get('name'):
+            search_dom.append(('name', 'ilike', data['name']))
+        customer_parent_list = self.env['tt.customer.parent'].search(search_dom)
         customer_parent_data = {}
-        agent_obj = self.browse(context['co_agent_id'])
-        for rec in agent_obj.customer_parent_ids.filtered(lambda x: x.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id] and (x.credit_limit != 0 or x.check_use_ext_credit_limit()) and x.state == 'done'):
+        for rec in customer_parent_list.filtered(lambda x: x.credit_limit != 0 or x.check_use_ext_credit_limit()):
             booker_data = {}
             for rec2 in rec.booker_customer_ids:
                 booker_data.update({

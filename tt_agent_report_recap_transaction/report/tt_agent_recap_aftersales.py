@@ -204,7 +204,9 @@ class AgentReportRecapAfterSales(models.Model):
 
     def _prepare_values(self, data_form):
         data_form['state'] = 'issued'
-        data_form['is_ho'] = self.env.user.agent_id.is_ho_agent
+        data_form['is_ho'] = (self.env.user.has_group('tt_base.group_tt_tour_travel') and self.env.user.agent_id.is_ho_agent) or self.env.user.has_group('base.group_erp_manager')
+        if self.env.user.has_group('tt_base.group_tt_corpor_user'):
+            data_form['is_corpor'] = True
         ho_obj = False
         if data_form.get('ho_id'):
             ho_obj = self.env['tt.agent'].sudo().browse(int(data_form['ho_id']))

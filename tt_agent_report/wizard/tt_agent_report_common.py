@@ -13,7 +13,7 @@ class AgentReportCommon(models.TransientModel):
         return self.env.user.has_group('base.group_erp_manager')
 
     def _check_ho_user(self):
-        return self.env.user.has_group('base.group_erp_manager') or self.env.user.has_group('tt_base.group_tt_tour_travel')
+        return self.env.user.has_group('base.group_erp_manager') or (self.env.user.has_group('tt_base.group_tt_tour_travel') and self.env.user.agent_id.is_ho_agent)
 
     def _check_not_corpor_user(self):
         return self.env.user.has_group('base.group_erp_manager') or not self.env.user.has_group('tt_base.group_tt_corpor_user')

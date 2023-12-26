@@ -27,7 +27,7 @@ class CustomerReportBirthday(models.TransientModel):
         return self.env.user.has_group('base.group_erp_manager')
 
     def _check_ho_user(self):
-        return self.env.user.has_group('base.group_erp_manager') or self.env.user.agent_id.is_ho_agent
+        return self.env.user.has_group('base.group_erp_manager') or (self.env.user.has_group('tt_base.group_tt_tour_travel') and self.env.user.agent_id.is_ho_agent)
 
     month_from = fields.Selection(months_list, default='01')
     month_to = fields.Selection(months_list, default='01')
