@@ -366,7 +366,7 @@ class AgentReportRecapTransacion(models.Model):
         data_form['title'] = 'Recap Transaction Report: ' + data_form['subtitle']
 
     def _prepare_values(self, data_form):
-        data_form['is_ho'] = self.env.user.agent_id.is_ho_agent or self.env.user.has_group('base.group_erp_manager')
+        data_form['is_ho'] = (self.env.user.has_group('tt_base.group_tt_tour_travel') and self.env.user.agent_id.is_ho_agent) or self.env.user.has_group('base.group_erp_manager')
         if self.env.user.has_group('tt_base.group_tt_corpor_user'):
             data_form['is_corpor'] = True
         ho_obj = False

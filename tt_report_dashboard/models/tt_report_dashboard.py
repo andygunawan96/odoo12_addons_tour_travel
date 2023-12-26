@@ -289,7 +289,7 @@ class TtReportDashboard(models.Model):
 
         # is_ho = 1
         # check if agent is ho
-        is_ho = context['co_agent_id'] == context['co_ho_id'] or is_admin
+        is_ho = (logged_user.has_group('tt_base.group_tt_tour_travel') and context['co_agent_id'] == context['co_ho_id']) or is_admin
         if is_ho and data['agent_seq_id'] == "":
             data['agent_seq_id'] = False
         elif is_ho and data['agent_seq_id'] != "":
