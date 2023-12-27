@@ -269,7 +269,7 @@ class AccountingConnectorITM(models.Model):
                                 pax_tick = ''
                         pax_list = [{
                             "PassangerName": pax['passenger'],
-                            "TicketNumber": pax_tick,
+                            "TicketNumber": pax_tick.replace(' ', ''),
                             "Gender": 1,
                             "Nationality": "ID"
                         }]
@@ -627,7 +627,7 @@ class AccountingConnectorITM(models.Model):
                             pax_tick = ''
                     pax_list.append({
                         "PassangerName": pax['passenger'],
-                        "TicketNumber": pax_tick,
+                        "TicketNumber": pax_tick.replace(' ', ''),
                         "Gender": 1,
                         "Nationality": "ID"
                     })
