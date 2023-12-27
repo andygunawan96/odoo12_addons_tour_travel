@@ -201,6 +201,8 @@
             <tree create="false">
                 <field name="name"/>
                 <field name="customer_parent_type_id"/>
+                <field name="actual_balance"/>
+                <field name="currency_id" invisible="1"/>
                 <field name="parent_agent_id"/>
                 <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="state"/>

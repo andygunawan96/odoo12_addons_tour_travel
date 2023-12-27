@@ -129,7 +129,7 @@
         <field name="priority">30</field>
         <field name="arch" type="xml">
             <tree create="false">
-                <field name="date"/>
+                <field name="create_date"/>
                 <field name="ref"/>
                 <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id"/>
@@ -155,7 +155,7 @@
         <field name="priority">20</field>
         <field name="arch" type="xml">
             <tree create="false">
-                <field name="date"/>
+                <field name="create_date"/>
                 <field name="ref"/>
                 <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="pnr"/>
@@ -206,7 +206,7 @@
         <field name="priority">11</field>
         <field name="arch" type="xml">
             <tree create="false">
-                <field name="date"/>
+                <field name="create_date"/>
                 <field name="ref"/>
                 <field name="display_provider_name"/>
                 <field name="pnr"/>
