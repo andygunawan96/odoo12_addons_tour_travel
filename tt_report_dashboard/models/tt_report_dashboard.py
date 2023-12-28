@@ -727,8 +727,12 @@ class TtReportDashboard(models.Model):
     def get_report_group_by_customer(self, data, profit, is_ho, context):
         try:
             agent_name_context = None
+            is_not_corpor = True
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
                 # prepare data to get channel base on reservation performance in database
             temp_dict = {
                 'start_date': data['start_date'],
@@ -884,6 +888,10 @@ class TtReportDashboard(models.Model):
                     revenue_data.append(i['revenue'])
                     reservation_data.append(i['reservation'])
                     average_data.append(i['revenue'] / i['reservation'])
+                    if not is_not_corpor:
+                        i.update({
+                            'profit': 0
+                        })
                     profit_data.append(i['profit'])
             else:
                 for i in range(20):
@@ -891,6 +899,10 @@ class TtReportDashboard(models.Model):
                     revenue_data.append(summary_customer[i]['revenue'])
                     reservation_data.append(summary_customer[i]['reservation'])
                     average_data.append(summary_customer[i]['revenue'] / summary_customer[i]['reservation'])
+                    if not is_not_corpor:
+                        summary_customer[i].update({
+                            'profit': 0
+                        })
                     profit_data.append(summary_customer[i]['profit'])
 
             # lets populate list to return
@@ -900,6 +912,10 @@ class TtReportDashboard(models.Model):
                     revenue_data2.append(i['revenue'])
                     reservation_data2.append(i['reservation'])
                     average_data2.append(i['revenue'] / i['reservation'])
+                    if not is_not_corpor:
+                        i.update({
+                            'profit': 0
+                        })
                     profit_data2.append(i['profit'])
             else:
                 for i in range(20):
@@ -907,6 +923,10 @@ class TtReportDashboard(models.Model):
                     revenue_data2.append(summary_customer_parent[i]['revenue'])
                     reservation_data2.append(summary_customer_parent[i]['reservation'])
                     average_data2.append(summary_customer_parent[i]['revenue'] / summary_customer_parent[i]['reservation'])
+                    if not is_not_corpor:
+                        summary_customer_parent[i].update({
+                            'profit': 0
+                        })
                     profit_data2.append(summary_customer_parent[i]['profit'])
 
             # lets built to return
@@ -945,8 +965,12 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_id_context = None
+            is_not_corpor = True
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # prepare data to get channel base on reservation performance in database
             temp_dict = {
                 'start_date': data['start_date'],
@@ -1052,6 +1076,10 @@ class TtReportDashboard(models.Model):
                     revenue_data.append(i['revenue'])
                     reservation_data.append(i['reservation'])
                     average_data.append(i['revenue']/i['reservation'])
+                    if not is_not_corpor:
+                        i.update({
+                            'profit': 0
+                        })
                     profit_data.append(i['profit'])
             else:
                 for i in range(20):
@@ -1059,6 +1087,10 @@ class TtReportDashboard(models.Model):
                     revenue_data.append(summary_chanel[i]['revenue'])
                     reservation_data.append(summary_chanel[i]['reservation'])
                     average_data.append(summary_chanel[i]['revenue'] / summary_chanel[i]['reservation'])
+                    if not is_not_corpor:
+                        summary_chanel[i].update({
+                            'profit': 0
+                        })
                     profit_data.append(summary_chanel[i]['profit'])
 
             # lets built to return
@@ -1092,8 +1124,12 @@ class TtReportDashboard(models.Model):
             # the default of sql query is to search by created date
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id','=', data['agent_seq_id'])], limit=1).name
             if data['provider']:
@@ -1213,7 +1249,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -1267,19 +1303,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
 
             reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
@@ -1344,12 +1381,14 @@ class TtReportDashboard(models.Model):
                         if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                             summary_provider[provider_index]['total_commission'] += i['debit'] - i['credit']
                             ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
+                if not is_not_corpor:
+                    summary_provider[provider_index].update({
+                        'total_commission': 0
+                    })
                 #revenue
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
                     summary_provider[provider_index]['total_price'] += i['amount']
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
-
-
 
             ##
 
@@ -1716,7 +1755,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     # shift to next month yey
                     first_counter += 1
             else:
@@ -1738,7 +1778,10 @@ class TtReportDashboard(models.Model):
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -1795,10 +1838,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -2457,7 +2504,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -2926,19 +2973,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
 
             # grouping data
@@ -3110,7 +3158,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     first_counter += 1
 
             else:
@@ -3135,8 +3184,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # adding overview in graph
             departure_graph = {}
@@ -3238,10 +3290,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -3624,7 +3680,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -3832,19 +3888,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
 
             # grouping data
@@ -3965,7 +4022,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     # shift to next month yey
                     first_counter += 1
 
@@ -3990,8 +4048,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
                                 'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             to_return = {
                 'first_graph': {
@@ -4054,10 +4115,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -4332,7 +4397,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -4478,19 +4543,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
 
             # for every section in summary
@@ -4651,7 +4717,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     # shift to next month yey
                     first_counter += 1
 
@@ -4676,8 +4743,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             # this data actually printed in frontend console.log so for debugging if it's easier then there's that
@@ -4736,10 +4806,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -4944,7 +5018,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -5024,19 +5098,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -5139,7 +5214,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     # shift to next month yey
                     first_counter += 1
 
@@ -5164,8 +5240,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -5221,10 +5300,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -5426,7 +5509,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -5504,19 +5587,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -5619,7 +5703,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     # shift to next month yey
                     first_counter += 1
 
@@ -5644,8 +5729,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -5701,10 +5789,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -5903,7 +5995,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -5981,19 +6073,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -6098,7 +6191,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     # shift to next month yey
                     first_counter += 1
 
@@ -6123,8 +6217,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -6178,10 +6275,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -6375,7 +6476,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -6445,19 +6546,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -6562,7 +6664,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     # shift to next month yey
                     first_counter += 1
 
@@ -6642,10 +6745,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -6840,7 +6947,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -6908,19 +7015,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -7023,7 +7131,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     # shift to next month yey
                     first_counter += 1
 
@@ -7049,8 +7158,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -7106,10 +7218,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -7303,7 +7419,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -7372,19 +7488,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -7487,7 +7604,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     first_counter += 1
 
             else:
@@ -7512,8 +7630,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
                                 'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -7569,10 +7690,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -7764,7 +7889,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -7818,19 +7943,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -7933,7 +8059,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     first_counter += 1
 
             else:
@@ -7959,8 +8086,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -8013,10 +8143,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -8211,7 +8345,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -8280,19 +8414,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -8395,7 +8530,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     first_counter += 1
 
             else:
@@ -8420,8 +8556,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -8474,10 +8613,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -8671,7 +8814,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -8741,19 +8884,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -8856,7 +9000,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     first_counter += 1
 
             else:
@@ -8881,8 +9026,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -8935,10 +9083,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -9132,7 +9284,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -9202,19 +9354,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -9317,7 +9470,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     first_counter += 1
 
             else:
@@ -9342,8 +9496,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -9396,10 +9553,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -9780,7 +9941,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -9989,19 +10150,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # grouping data
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
@@ -10121,7 +10283,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     # shift to next month yey
                     first_counter += 1
 
@@ -10146,8 +10309,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             to_return = {
                 'first_graph': {
@@ -10207,10 +10373,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -10404,7 +10574,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -10474,19 +10644,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -10589,7 +10760,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     first_counter += 1
 
             else:
@@ -10614,8 +10786,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -10668,10 +10843,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -10865,7 +11044,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -10935,19 +11114,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -11050,7 +11230,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     first_counter += 1
 
             else:
@@ -11075,8 +11256,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -11129,10 +11313,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -11326,7 +11514,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -11396,19 +11584,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -11511,7 +11700,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     first_counter += 1
 
             else:
@@ -11536,8 +11726,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -11590,10 +11783,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -11787,7 +11984,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -11857,19 +12054,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -11972,7 +12170,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     first_counter += 1
 
             else:
@@ -11997,8 +12196,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
@@ -12051,10 +12253,14 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
+            is_not_corpor = True
             if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
+                logged_user = self.env['res.users'].browse(int(context['co_uid']))
+                is_admin = logged_user.has_group('base.group_erp_manager')
+                is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -12248,7 +12454,7 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    if not i['is_upsell_in_service_charge']:
+                    if not i['is_upsell_in_service_charge'] and is_not_corpor:
                         profit_total += i['channel_profit']
                         profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
@@ -12318,19 +12524,20 @@ class TtReportDashboard(models.Model):
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if is_ho and i['ledger_agent_type_name'] == 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
-                            if is_ho:
+                        if is_not_corpor:
+                            if is_ho and i['ledger_agent_type_name'] == 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                            profit_agent_parent += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
+                            elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                                if is_ho:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                profit_agent_parent += i['debit'] - i['credit']
                     ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
@@ -12433,7 +12640,8 @@ class TtReportDashboard(models.Model):
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
-                        profit_data[i['month']] += j['profit']
+                        if is_not_corpor:
+                            profit_data[i['month']] += j['profit']
                     first_counter += 1
 
             else:
@@ -12458,8 +12666,11 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
                                 i['year'])] = j['revenue']
-                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'profit']
+                            if is_not_corpor:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                    'profit']
+                            else:
+                                profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             # build to return data
             to_return = {
