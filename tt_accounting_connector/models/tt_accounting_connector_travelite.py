@@ -269,13 +269,13 @@ class AccountingConnectorTravelite(models.Model):
 
             source_type_id = source_type_id_obj.variable_value
             is_create_inv = is_create_inv_obj and is_create_inv_obj.variable_value or False
-            customer_id = 0
+            customer_id = ''
             customer_seq_id = ''
             customer_name = ''
             if request.get('customer_parent_id'):
                 customer_obj = self.env['tt.customer.parent'].browse(int(request['customer_parent_id']))
                 if customer_obj.accounting_uid:
-                    customer_id = int(customer_obj.accounting_uid)
+                    customer_id = customer_obj.accounting_uid
                 if customer_obj.seq_id:
                     customer_seq_id = customer_obj.seq_id
                 if customer_obj.name:

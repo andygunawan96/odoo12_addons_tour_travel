@@ -21,7 +21,16 @@ class TtReservationCustomer(models.Model):
         for rec in self.fee_ids:
             fee_list.append(rec.to_dict())
         sale_service_charges = self.get_service_charges()
-        service_charge_details = self.get_service_charge_details()
+
+        if self.booking_id and self.booking_id.ho_id:
+            pricing_breakdown = self.booking_id.ho_id.get_ho_pricing_breakdown()
+            if pricing_breakdown:
+                service_charge_details = self.get_service_charge_details_breakdown()
+            else:
+                service_charge_details = self.get_service_charge_details_no_breakdown()
+        else:
+            service_charge_details = self.get_service_charge_details()
+
         pax_type = ''
         for pnr in sale_service_charges:
             for svc in sale_service_charges[pnr]:

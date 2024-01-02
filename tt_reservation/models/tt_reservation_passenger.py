@@ -109,6 +109,172 @@ class TtReservationCustomer(models.Model):
         return sc_value
 
     def get_service_charge_details(self):
+        if hasattr(self, 'booking_id') and hasattr(self.booking_id, 'ho_id'):
+            pricing_breakdown = self.booking_id.ho_id.get_ho_pricing_breakdown()
+            if pricing_breakdown:
+                result = self.get_service_charge_details_breakdown()
+            else:
+                result = self.get_service_charge_details_no_breakdown()
+        else:
+            breakdown_type_list = [
+                'RACCHG',
+                'ROCCHG',
+                'RACUA',
+                'ROCUA',
+                'RACHSP',
+                'ROCHSP',
+                'RACHVP',
+                'ROCHVP',
+                'RACAVP',
+                'ROCAVP',
+                'RACHSA',
+                'ROCHSA',
+                'RACHVA',
+                'ROCHVA',
+                'RACAVA',
+                'ROCAVA',
+                'RACAVC',
+                'ROCAVC',
+            ]
+            if any(p_sc.charge_type in breakdown_type_list for p_sc in self.cost_service_charge_ids):
+                result = self.get_service_charge_details_breakdown()
+            else:
+                result = self.get_service_charge_details_no_breakdown()
+        return result
+
+    def get_service_charge_details_no_breakdown(self):
+        sc_value = {}
+        for p_sc in self.cost_service_charge_ids:
+            p_charge_type = p_sc.charge_type
+            pnr = p_sc.description
+            commission_agent_id = p_sc.commission_agent_id
+
+            # if p_charge_type == 'RAC' and p_sc.charge_code != 'rac':
+            #     if p_charge_type == 'RAC' and 'csc' not in p_sc.charge_code:
+            #         continue
+
+            if p_charge_type == 'RAC' and commission_agent_id:
+                continue
+
+            if not sc_value.get(pnr):
+                sc_value[pnr] = {}
+            if not sc_value[pnr].get(p_charge_type):
+                sc_value[pnr][p_charge_type] = []
+
+            sc_value[pnr][p_charge_type].append({
+                'charge_code': p_sc.charge_code,
+                'currency': p_sc.currency_id.name,
+                'foreign_currency': p_sc.foreign_currency_id.name,
+                'amount': p_sc.amount,
+                'pax_type': p_sc.pax_type,
+                'foreign_amount': p_sc.foreign_amount,
+            })
+
+        result = []
+        for pnr, pnr_data in sc_value.items():
+            base_fare_ori = Decimal("0.0")
+            base_tax_ori = Decimal("0.0")
+            base_upsell_ori = Decimal("0.0")
+            base_upsell_adj = Decimal("0.0")
+            base_discount_ori = Decimal("0.0")
+            base_agent_commission = Decimal("0.0")
+            base_agent_commission_ori = Decimal("0.0")
+            base_agent_commission_charge = Decimal("0.0")
+            base_commission_vendor_real = Decimal("0.0")
+            base_hidden_commission_ho = Decimal("0.0")
+            base_hidden_fee_ho = Decimal("0.0")
+            base_hidden_vat_ho = Decimal("0.0")
+            base_vendor_vat = Decimal("0.0")
+            base_fee_ho = Decimal("0.0")
+            base_vat_ho = Decimal("0.0")
+            base_no_hidden_commission_ho = Decimal("0.0")
+
+            pax_type = ''
+
+            for charge_type, service_charges in pnr_data.items():
+                for sc in service_charges:
+                    sc_amount = Decimal(str(sc['amount']))
+                    '''
+                        GENERAL     |   PROVIDER    |   AGENT   |   CUSTOMER    |   Pricing notes
+                        FARE        |   ROC         |   ROC     |   ROC         |
+                        TAX         |   RAC         |   RAC     |   RAC         |
+                        ROC         |   RACHSP      |   RACHSA  |   -           |
+                        DISC        |   ROCHSP      |   ROCHSA  |   -           |   HO service fee
+                        RAC         |   RACHVP      |   RACHVA  |   -           |
+                        RACCHG      |   ROCHVP      |   ROCHVA  |   -           |   HO tax of service fee
+                        ROCCHG      |   RACAVP      |   RACAVA  |   RACAVC      |
+                        RACUA       |   ROCAVP      |   ROCAVA  |   ROCAVC      |   HO tax of commission fee
+                        ROCUA       |               |           |   
+                    '''
+                    charge_code = sc.get('charge_code', '')
+                    if charge_type == 'FARE':
+                        base_fare_ori += sc_amount
+                    elif charge_type == 'TAX':
+                        base_tax_ori += sc_amount
+                    elif charge_type == 'RAC':
+                        base_agent_commission += sc_amount
+                        base_commission_vendor_real += sc_amount
+                        base_agent_commission_ori += sc_amount
+                    elif charge_type in ['RACUA', 'RACCHG']:
+                        base_commission_vendor_real += sc_amount
+                        base_agent_commission_ori += sc_amount
+                        base_agent_commission_charge += sc_amount
+                    elif charge_type in ['ROCUA', 'ROCCHG']:
+                        pass
+                    elif charge_type == 'DISC':
+                        base_discount_ori += sc_amount
+                    elif charge_type in ['RACHSP', 'RACHVP']:
+                        base_commission_vendor_real += sc_amount
+                        base_hidden_commission_ho += sc_amount
+                    elif charge_type == 'ROCHSP':
+                        base_hidden_fee_ho += sc_amount
+                    elif charge_type == 'ROCHVP':
+                        base_hidden_vat_ho += sc_amount
+                    elif charge_type == 'RACAVP':
+                        base_commission_vendor_real += sc_amount
+                    elif charge_type == 'ROCAVP':
+                        base_vendor_vat += sc_amount
+                    elif charge_type in ['RACHSA', 'RACHVA', 'RACAVA']:
+                        base_no_hidden_commission_ho += sc_amount
+                    elif charge_type in ['ROCHVA', 'ROCAVA']:
+                        base_vat_ho += sc_amount
+                    elif charge_type == 'ROCHSA':
+                        base_fee_ho += sc_amount
+                    elif charge_type == 'RACAVC':
+                        base_no_hidden_commission_ho += sc_amount
+                    elif charge_type == 'ROCAVC':
+                        base_vat_ho += sc_amount
+                    elif charge_type == 'ROC' and charge_code[-3:] == 'adj':
+                        base_upsell_adj += sc_amount
+                    else:
+                        base_upsell_ori += sc_amount
+
+                    if not pax_type:
+                        pax_type = sc['pax_type']
+
+            base_price_ori = base_fare_ori + base_tax_ori
+            base_price = base_price_ori + base_upsell_ori + base_discount_ori + base_upsell_adj
+
+            base_fare = base_fare_ori
+            base_tax = base_tax_ori + base_upsell_ori + base_discount_ori + base_upsell_adj
+
+            base_nta = base_price - abs(base_agent_commission)
+
+            pax_values = {
+                'pnr': pnr,
+                'service_charges': pnr_data,
+                'pax_type': pax_type,
+                'pax_count': 1,
+                'base_fare': float(base_fare),
+                'base_tax': float(base_tax),
+                'base_nta': float(base_nta),
+                'base_price': float(base_price),
+                'base_commission': float(base_agent_commission),
+            }
+            result.append(pax_values)
+        return result
+
+    def get_service_charge_details_breakdown(self):
         sc_value = {}
         for p_sc in self.cost_service_charge_ids:
             p_charge_type = p_sc.charge_type
