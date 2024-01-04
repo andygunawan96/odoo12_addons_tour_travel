@@ -573,3 +573,13 @@ class TtCustomerParent(models.Model):
             _logger.error("%s, %s", (str(e), traceback.format_exc()))
             return ERR.get_error()
 
+    def get_upline_user_customer_parent(self, booker_sequence):
+        upline_sequence_list = [rec.sequence for rec in self.job_hierarchy_ids.filtered(lambda x: x.sequence < booker_sequence)]
+        max_sequence = max(upline_sequence_list)
+        upline_obj = self.job_position_ids.filtered(lambda x: x.hierarchy_id.sequence == max_sequence)
+        upline_id_list = [rec.customer_id.id for rec in self.booker_customer_ids.filtered(lambda x: x.job_position_id.id == upline_obj.id)]
+        upline_user_objs = self.env['res.users'].search([('customer_parent_id','=', self.id), ('customer_id','in', upline_id_list)])
+        return [rec.id for rec in upline_user_objs]
+
+
+
