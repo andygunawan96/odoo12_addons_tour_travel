@@ -1373,19 +1373,25 @@ class TtReservation(models.Model):
             else:
                 booker_obj = book_obj.booker_id
             booking_booker_obj = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', context.get('co_customer_parent_id', book_obj.customer_parent_id.id)), ('customer_id', '=', booker_obj.id)], limit=1)
+            upline_user_list_id = []
             if booking_booker_obj:
                 booker_hierarchy = booking_booker_obj.job_position_id and booking_booker_obj.job_position_id.hierarchy_id.sequence or 10
+                upline_user_list_id = book_obj.customer_parent_id.get_upline_user_customer_parent(booker_hierarchy)
             else:
                 booker_hierarchy = 10
             request_obj = self.env['tt.reservation.request'].create({
                 'res_model': book_obj._name,
                 'res_id': book_obj.id,
                 'booker_id': booker_obj.id,
+                'user_id': context['co_uid'],
                 'ho_id': context.get('co_ho_id', book_obj.ho_id.id),
                 'agent_id': context.get('co_agent_id', book_obj.agent_id.id),
                 'customer_parent_id': context.get('co_customer_parent_id', book_obj.customer_parent_id.id),
-                'cur_approval_seq': context.get('co_hierarchy_sequence', booker_hierarchy)
+                'cur_approval_seq': context.get('co_hierarchy_sequence', booker_hierarchy),
+                'upline_ids': [(6,0,upline_user_list_id)]
             })
+
+            request_obj.send_email_to_upline()
             response = {
                 'request_id': request_obj.id,
                 'request_number': request_obj.name

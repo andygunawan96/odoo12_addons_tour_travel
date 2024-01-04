@@ -16,6 +16,7 @@ TT_TRANSPORT
         'views/menu_item_base.xml',
 
         'data/ir_sequence_data.xml',
+        'data/ir_send_email.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 

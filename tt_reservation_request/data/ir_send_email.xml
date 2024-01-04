@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record model="mail.template" id="template_mail_request_issued">
+			<field name="name">Template Mail Request Issued</field>
+			<field name="email_from">${object.get_reservation_data().agent_id.email}</field>
+			<field name="subject">${object.get_reservation_data().agent_id.name} New Request Issued</field>
+			<field name="email_to">${object.login}</field>
+			<field name="model_id" ref="tt_reservation_request.model_res_users"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.name},</p>
+<br/>
+<p>${object.reservation_request_id.user_id.name} has reservation at ${object.get_reservation_data().agent_id.name} has been booked with the following information:</p>
+<p>Order Number: ${object.get_reservation_data().name}</p>
+<p>Booked Date: ${object.get_reservation_data().get_btc_booked_date()}</p>
+<p>Booker Name: ${object.get_reservation_data().booker_id.name}</p>
+<p>Booking Url:</p> <a href='${object.reservation_request_id.get_reservation_request_url()}'>${object.reservation_request_id.get_reservation_request_url()}</a><br/>
+<p>Please complete your new request permission to issued by ${object.get_reservation_data().get_btc_hold_date()}, otherwise your reservation will be expired. Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Regards,</p>
+<p>${object.get_reservation_data().agent_id.name}</p>
+]]>
+			</field>
+		</record>
+
+        <record model="mail.template" id="template_mail_approval_issued">
+			<field name="name">Template Mail Request Issued</field>
+			<field name="email_from">${object.get_reservation_data().agent_id.email}</field>
+			<field name="subject">${object.get_reservation_data().agent_id.name} Approval Issued</field>
+			<field name="email_to">${object.user_id.login}</field>
+			<field name="model_id" ref="tt_reservation_request.model_tt_reservation_request"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.user_id.name},</p>
+<br/>
+<p>Your has reservation approve with the following information:</p>
+<p>Order Number: ${object.get_reservation_data().name}</p>
+<p>Booked Date: ${object.get_reservation_data().get_btc_booked_date()}</p>
+<p>Booker Name: ${object.get_reservation_data().booker_id.name}</p>
+<p>Booking Url:</p> <a href='${object.get_btc_url()}'>${object.get_btc_url()}</a><br/>
+<p>Please complete your payment by ${object.get_reservation_data().get_btc_hold_date()}, otherwise your reservation will be expired. Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Regards,</p>
+<p>${object.get_reservation_data().agent_id.name}</p>
+]]>
+			</field>
+		</record>
+
+    </data>
+</odoo>
