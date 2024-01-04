@@ -90,62 +90,65 @@ class ReportSellingXls(models.TransientModel):
         ]
         summary_by_date = []
         result = []
+        current_order_number = ''
         for i in values['lines']:
-            #count for date
-            try:
-                month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'], 'month': month[int(i['booked_month'])-1]})
-                if month_index == -1:
-                    temp_dict = {
-                        'year': i['booked_year'],
-                        'month': month[int(i['booked_month'])-1],
-                        'detail': self.add_month_detail()
-                    }
-                    #seperate book date
-                    try:
-                        splits = i['reservation_booked_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['booked_counter'] += 1
-                    except:
-                        pass
-                    if i['reservation_state'] == 'issued':
-                        try:
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['issued_counter'] += 1
-                        except:
-                            pass
-
-                    summary_by_date.append(temp_dict)
-                else:
-                    try:
-                        splits = i['reservation_booked_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
-                    except:
-                        pass
-                    if i['reservation_state'] == 'issued':
-                        try:
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
-                        except:
-                            pass
-            except:
-                pass
-            provider_index = self.check_index(result, "provider", i['provider_type_name'])
-            if provider_index == -1:
-                temp_dict = {
-                    'provider': i['provider_type_name'],
-                    'counter': 1,
-                    i['reservation_state']: 1
-                }
-                result.append(temp_dict)
-            else:
-                result[provider_index]['counter'] += 1
+            if current_order_number != i['reservation_order_number']:
+                current_order_number = i['reservation_order_number']
+                #count for date
                 try:
-                    result[provider_index][i['reservation_state']] += 1
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'], 'month': month[int(i['booked_month'])-1]})
+                    if month_index == -1:
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month': month[int(i['booked_month'])-1],
+                            'detail': self.add_month_detail()
+                        }
+                        #seperate book date
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        if i['reservation_state'] == 'issued':
+                            try:
+                                splits = i['reservation_issued_date'].split("-")
+                                day_index = int(splits[2]) - 1
+                                temp_dict['detail'][day_index]['issued_counter'] += 1
+                            except:
+                                pass
+
+                        summary_by_date.append(temp_dict)
+                    else:
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        if i['reservation_state'] == 'issued':
+                            try:
+                                splits = i['reservation_issued_date'].split("-")
+                                day_index = int(splits[2]) - 1
+                                summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                            except:
+                                pass
                 except:
-                    result[provider_index][i['reservation_state']] = 1
+                    pass
+                provider_index = self.check_index(result, "provider", i['provider_type_name'])
+                if provider_index == -1:
+                    temp_dict = {
+                        'provider': i['provider_type_name'],
+                        'counter': 1,
+                        i['reservation_state']: 1
+                    }
+                    result.append(temp_dict)
+                else:
+                    result[provider_index]['counter'] += 1
+                    try:
+                        result[provider_index][i['reservation_state']] += 1
+                    except:
+                        result[provider_index][i['reservation_state']] = 1
 
         row_data = 8
         sheet.write(row_data, 0, 'No.', style.table_head_center)
@@ -332,6 +335,7 @@ class ReportSellingXls(models.TransientModel):
         for i in values['lines']:
 
             if current_order_number != i['reservation_order_number']:
+                current_order_number = i['reservation_order_number']
                 if not i['destination']:
                     no_destination += " {}".format(i['reservation_order_number'])
                 if not i['departure']:
@@ -1974,7 +1978,7 @@ class ReportSellingXls(models.TransientModel):
         country_summary = []
         tour_route_summary = []
         provider_summary = []
-        temp_order_number = ''
+        current_order_number = ''
         # row_data = 8
         # for i in values['lines']:
         #     row_data += 1
@@ -2029,8 +2033,8 @@ class ReportSellingXls(models.TransientModel):
             except:
                 pass
 
-            if temp_order_number != i['reservation_order_number']:
-                temp_order_number = i['reservation_order_number']
+            if current_order_number != i['reservation_order_number']:
+                current_order_number = i['reservation_order_number']
                 #count every country in tour
                 #filter the respected order number, then count the country
                 country_filtered = list(filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'], values['lines']))
