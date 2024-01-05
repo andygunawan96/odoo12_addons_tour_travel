@@ -32,12 +32,15 @@ class TtReservationRequest(models.Model):
     booker_job_position_id = fields.Many2one('tt.customer.job.position', 'Booker Job Position', readonly=1, compute='_compute_booker_job_position')
     state = fields.Selection([('draft', 'Draft'), ('on_process', 'On Process'), ('approved', 'Approved'),
                               ('rejected', 'Rejected'), ('cancel', 'Cancelled')], 'State', default='draft')
+    user_id = fields.Many2one('res.users', 'Create By', readonly=True)
     cancel_uid = fields.Many2one('res.users', 'Cancelled By', readonly=True)
     cancel_cuid = fields.Many2one('tt.customer', 'Cancelled By Customer', readonly=True)
     cancel_date = fields.Datetime('Cancelled Date', readonly=True)
     reject_uid = fields.Many2one('res.users', 'Rejected By', readonly=True)
     reject_cuid = fields.Many2one('tt.customer', 'Rejected By Customer', readonly=True)
     reject_date = fields.Datetime('Rejected Date', readonly=True)
+
+    upline_ids = fields.One2many('res.users', 'reservation_request_id', 'Upline', readonly=True)
 
     @api.model
     def create(self, vals_list):
@@ -46,6 +49,38 @@ class TtReservationRequest(models.Model):
         except:
             pass
         return super(TtReservationRequest, self).create(vals_list)
+
+    def get_reservation_data(self):
+        return self.env[self.res_model].browse(self.res_id)
+
+    def send_email_to_upline(self):
+        for rec in self.upline_ids:
+             rec.send_email_upline_request_issued()
+
+    def get_reservation_request_url(self):
+        try:
+            if self.ho_id:
+                base_url = self.ho_id.redirect_url_signup
+            else:
+                base_url = self.agent_id.ho_id.redirect_url_signup
+            final_url = base_url + '/reservation_request/' + (base64.b64encode(str(self.name).encode())).decode()
+        except Exception as e:
+            _logger.info(str(e))
+            final_url = '#'
+        return final_url
+
+    def get_btc_url(self):
+        try:
+            if self.ho_id:
+                base_url = self.ho_id.redirect_url_signup
+            else:
+                base_url = self.agent_id.ho_id.redirect_url_signup
+            book_obj = self.env[self.res_model].browse(self.res_id)
+            final_url = base_url + '/' + str(book_obj.provider_type_id.code) + '/booking/' + (base64.b64encode(str(book_obj.name).encode())).decode()
+        except Exception as e:
+            _logger.info(str(e))
+            final_url = '#'
+        return final_url
 
     @api.depends('booker_id', 'customer_parent_id')
     @api.onchange('booker_id', 'customer_parent_id')
@@ -232,9 +267,26 @@ class TtReservationRequest(models.Model):
         next_hierarchy = self.env['tt.customer.job.hierarchy'].search([
             ('sequence', '<', self.cur_approval_seq)], order='sequence desc', limit=1)
         if not next_hierarchy:
+            if self.state != 'approved':
+                ### email yg request permission to approve, hanya email 1x
+                self.send_email_approval_to_user()
             self.state = 'approved'
         elif self.state == 'draft':
             self.state = 'on_process'
+            if min_approval == -1:
+                ## jumlah approval sudah sesuai & request approval ke job yg lebih tinggi
+                book_obj = self.env[self.res_model].browse(self.res_id)
+                upline_user_list_id = book_obj.customer_parent_id.get_upline_user_customer_parent(next_hierarchy)
+                self.update({
+                    "upline_ids": [(6,0, upline_user_list_id)]
+                })
+                self.env.cr.commit()
+                self.send_email_to_upline()
+                ## send email to upline
+
+    def send_email_approval_to_user(self):
+        template = self.env.ref('tt_reservation_request.template_mail_approval_issued', raise_if_not_found=False)
+        template.send_mail(self.id, force_send=True)
 
     def cancel_issued_request_api(self, req, context):
         try:
@@ -343,3 +395,15 @@ class TtReservationRequestApproval(models.Model):
             'approved_cust_seq_id': self.approved_cuid and self.approved_cuid.seq_id or '',
             'action': 'Approved'
         }
+
+class ResUsersApiInherit(models.Model):
+    _inherit = 'res.users'
+
+    reservation_request_id = fields.Many2one('tt.reservation.request', 'Reservation Request', readonly=1)
+
+    def send_email_upline_request_issued(self):
+        template = self.env.ref('tt_reservation_request.template_mail_request_issued', raise_if_not_found=False)
+        template.send_mail(self.id, force_send=True)
+
+    def get_reservation_data(self):
+        return self.env[self.reservation_request_id.res_model].browse(self.reservation_request_id.res_id)
