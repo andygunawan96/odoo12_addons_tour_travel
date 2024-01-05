@@ -1388,8 +1388,13 @@ class TtReservation(models.Model):
                 'agent_id': context.get('co_agent_id', book_obj.agent_id.id),
                 'customer_parent_id': context.get('co_customer_parent_id', book_obj.customer_parent_id.id),
                 'cur_approval_seq': context.get('co_hierarchy_sequence', booker_hierarchy),
-                'upline_ids': [(6,0,upline_user_list_id)]
+                # 'upline_ids': [(6,0,upline_user_list_id)]
             })
+            for rec in upline_user_list_id:
+                self.env['tt.reservation.request.res.users.rel'].create({
+                    "reservation_request_id": request_obj.id,
+                    "user_id": rec
+                })
 
             request_obj.send_email_to_upline()
             response = {
