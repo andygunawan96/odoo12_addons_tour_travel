@@ -29,6 +29,8 @@
 <br/>
 <p>Please confirm with your customer(s) if the information provided above are true, and inform us immediately if you find one or more of the information is not true. Thank you for your trust and support in using our service.</p>
 <br/>
+<p>Warning If you didn't issue this reservation, please contact helpdesk</p>
+<br/>
 <p>Regards,</p>
 <p>${object.get_company_name()}</p>
 <br/><br/>
@@ -87,6 +89,8 @@ ${object.get_terms_conditions_email() | safe}
 <p>Booker Name: ${object.booker_id.name}</p>
 <p>Booking Url:</p> <a href='${object.get_btc_url()}'>${object.get_btc_url()}</a><br/>
 <p>Please complete your payment by ${object.get_btc_hold_date(True)}, otherwise your reservation will be expired. Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Warning If you didn't make this reservation, please contact helpdesk</p>
 <br/>
 <p>Regards,</p>
 <p>${object.get_company_name()}</p>
