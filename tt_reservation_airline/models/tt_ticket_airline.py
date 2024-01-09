@@ -23,6 +23,7 @@ class TtTicketAirline(models.Model):
     identity_expdate = fields.Char('Identity Expdate', default='')
     identity_country_of_issued_code = fields.Char('Identity Country of Issued Code', default='')
     ticket_number_list = fields.Char('Ticket Number List', default='')
+    riz_text = fields.Char('RIZ Text', default='')
 
     @api.depends('ff_number', 'passenger_id', 'passenger_id.frequent_flyer_ids')
     def _compute_loyalty_program(self):
@@ -67,5 +68,6 @@ class TtTicketAirline(models.Model):
             'identity_expdate': self.identity_expdate if self.identity_expdate else '',
             'identity_country_of_issued_code': self.identity_country_of_issued_code if self.identity_country_of_issued_code else '',
             'ticket_number_list': ticket_number_list,
+            'riz_text': self.riz_text if self.riz_text else '',
         }
         return res
