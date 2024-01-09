@@ -9,7 +9,7 @@
         </record>
 
         <record id="tt_provider_ppob_espay" model="tt.provider">
-            <field name="name">Espay</field>
+            <field name="name">Espay PPOB</field>
             <field name="code">ppob_espay</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_ppob"/>
