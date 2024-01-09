@@ -191,5 +191,28 @@
 ]]>
 			</field>
 		</record>
+
+		<record model="mail.template" id="template_mail_login">
+			<field name="name">Template Login</field>
+			<field name="email_from">${object.ho_id.email_server_id.smtp_user}</field>
+			<field name="subject">Login System</field>
+			<field name="email_to">${object.agent_id.email}</field>
+			<field name="model_id" ref="tt_base.model_res_users"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.agent_id.name}</p>
+<br/>
+<p>We have received a request from user ${object.login} to Login at ${object.get_time_now()} GMT+0.</p>
+<p>If you didn't make this request, please contact helpdesk or change your password</p>
+
+<br/>
+<p>Regards,</p>
+<p>${object.get_company_name()}</p>
+]]>
+			</field>
+		</record>
     </data>
 </odoo>

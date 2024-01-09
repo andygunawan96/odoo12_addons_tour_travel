@@ -440,6 +440,10 @@ class ResUsers(models.Model):
                 'is_resend_otp': otp_params.get('is_resend_otp', False),
             })
 
+        ## SEND EMAIL
+        if not self.is_api_user and self.agent_id and self.agent_id.email:
+            self.sudo().send_email_login() ## KENA PERMISSION DOCUMENT TT AGENT
+
     def _check_pin(self, pin):
         if not pin:
             raise RequestException(1042)
@@ -703,3 +707,15 @@ class ResUsers(models.Model):
             if messages_dict:
                 self.env['res.users.api.con'].send_inactive_dormant_users_notification(messages_dict, ho_id)
             self.env.cr.commit()
+
+
+    def get_company_name(self):
+        company_obj = self.env['res.company'].search([],limit=1)
+        return company_obj.name
+
+    def send_email_login(self):
+        template = self.env.ref('tt_base.template_mail_login', raise_if_not_found=False)
+        template.send_mail(self.id, force_send=True)
+
+    def get_time_now(self):
+        return datetime.now().strftime('%Y-%m-%d %H:%M:%S')

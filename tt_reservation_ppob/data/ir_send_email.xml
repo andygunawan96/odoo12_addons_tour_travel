@@ -25,6 +25,8 @@
 <br/>
 <p>Your Receipt and Invoice are attached in this E-mail. Thank you for your trust and support in using our service.</p>
 <br/>
+<p>Warning If you didn't issue this reservation, please contact helpdesk</p>
+<br/>
 <p>Regards,</p>
 <p>${object.get_company_name()}</p>
 ]]>
@@ -52,6 +54,8 @@
 <p>Registered Name: ${object.booker_id.name}</p>
 <p>Registration Url: ${object.get_btc_url()}</p><br/>
 <p>Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Warning If you didn't make this reservation, please contact helpdesk</p>
 <br/>
 <p>Regards,</p>
 <p>${object.get_company_name()}</p>

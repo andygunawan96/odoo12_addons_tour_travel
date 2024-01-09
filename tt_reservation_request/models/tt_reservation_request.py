@@ -40,7 +40,7 @@ class TtReservationRequest(models.Model):
     reject_cuid = fields.Many2one('tt.customer', 'Rejected By Customer', readonly=True)
     reject_date = fields.Datetime('Rejected Date', readonly=True)
 
-    upline_ids = fields.One2many('res.users', 'reservation_request_id', 'Upline', readonly=True)
+    upline_ids = fields.One2many('tt.reservation.request.res.users.rel', 'reservation_request_id', 'Upline', readonly=True)
 
     @api.model
     def create(self, vals_list):
@@ -55,7 +55,9 @@ class TtReservationRequest(models.Model):
 
     def send_email_to_upline(self):
         for rec in self.upline_ids:
-             rec.send_email_upline_request_issued()
+            if rec.state == 'draft':
+                rec.send_email_upline_request_issued()
+                rec.state = 'done'
 
     def get_reservation_request_url(self):
         try:
@@ -277,9 +279,12 @@ class TtReservationRequest(models.Model):
                 ## jumlah approval sudah sesuai & request approval ke job yg lebih tinggi
                 book_obj = self.env[self.res_model].browse(self.res_id)
                 upline_user_list_id = book_obj.customer_parent_id.get_upline_user_customer_parent(next_hierarchy)
-                self.update({
-                    "upline_ids": [(6,0, upline_user_list_id)]
-                })
+                for rec in upline_user_list_id:
+                    self.env['tt.reservation.request.res.users.rel'].create({
+                        "reservation_request_id": self.id,
+                        "user_id": rec
+                    })
+
                 self.env.cr.commit()
                 self.send_email_to_upline()
                 ## send email to upline
@@ -399,7 +404,18 @@ class TtReservationRequestApproval(models.Model):
 class ResUsersApiInherit(models.Model):
     _inherit = 'res.users'
 
-    reservation_request_id = fields.Many2one('tt.reservation.request', 'Reservation Request', readonly=1)
+    reservation_request_id = fields.One2many('tt.reservation.request.res.users.rel', 'user_id', 'Reservation Request', readonly=True)
+
+
+class TtReservationRequestResUsersRel(models.Model):
+    _name = 'tt.reservation.request.res.users.rel'
+    _description = 'Tour & Travel - Customer Parent Booker Rel'
+
+    reservation_request_id = fields.Many2one('tt.reservation.request', 'Reservation Request', required=True)
+    user_id = fields.Many2one('res.users', 'Reservation Request', required=True)
+    agent_id = fields.Many2one('tt.agent', 'Agent Type', related='reservation_request_id.agent_id', readonly=True)
+    state = fields.Selection([('draft','Draft'), ('done','Done')], default='draft') ## STATE UNTUK KIRIM EMAIL
+
 
     def send_email_upline_request_issued(self):
         template = self.env.ref('tt_reservation_request.template_mail_request_issued', raise_if_not_found=False)
