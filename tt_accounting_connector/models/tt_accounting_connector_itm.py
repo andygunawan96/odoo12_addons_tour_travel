@@ -187,11 +187,15 @@ class AccountingConnectorITM(models.Model):
         item_key_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'item_key')], limit=1)
         if not item_key_obj:
             raise Exception('Please provide a variable with the name "item_key" in ITM Accounting Setup!')
+        always_use_contactcd = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'always_use_contactcd')], limit=1)
 
         live_id = live_id_obj.variable_value
         trans_id = trans_id_obj.variable_value
         item_key = item_key_obj.variable_value
-        use_contact_cd = False
+        if always_use_contactcd and always_use_contactcd.variable_value:
+            use_contact_cd = True
+        else:
+            use_contact_cd = False
         customer_name = ''
         if customer_code_obj.variable_value == 'dynamic_customer_code':
             customer_code = ''
