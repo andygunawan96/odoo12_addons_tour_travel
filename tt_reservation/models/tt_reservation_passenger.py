@@ -22,6 +22,7 @@ class TtReservationCustomer(models.Model):
     identity_country_of_issued_id = fields.Many2one('res.country','Identity Issued  Country')
     is_valid_identity = fields.Boolean('Is Valid Identity', default=True)
     customer_id = fields.Many2one('tt.customer','Customer Reference')
+    description = fields.Char('Description')
     sequence = fields.Integer('Sequence')
 
     def to_dict(self):
@@ -40,7 +41,8 @@ class TtReservationCustomer(models.Model):
             'identity_number': self.identity_number and self.identity_number or '',
             'identity_expdate': self.identity_expdate and self.identity_expdate.strftime('%Y-%m-%d'),
             'sequence': self.sequence,
-            'is_valid_identity': self.is_valid_identity
+            'is_valid_identity': self.is_valid_identity,
+            'description': self.description
         }
         return res
 

@@ -302,6 +302,10 @@ class ReservationInsurance(models.Model):
                     'phone_number': passengers_data[idx]['phone_number'],
                     'insurance_data': passengers_data[idx].get('data_insurance') and json.dumps(passengers_data[idx]['data_insurance']) or ''
                 })
+                if passengers_data[idx].get('description'):
+                    rec[2].update({
+                        'description': passengers_data[idx]['description']
+                    })
 
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
