@@ -14,7 +14,7 @@ class TtReservationCustomer(models.Model):
     fee_ids = fields.One2many('tt.fee.airline', 'passenger_id', 'SSR')
     booking_id = fields.Many2one('tt.reservation.airline')
     is_ticketed = fields.Boolean('Ticketed')
-    riz_text = fields.Char('Endorsement Box (RIZ)')
+    riz_text = fields.Char('Endorsement Box (RIZ)', default='')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
