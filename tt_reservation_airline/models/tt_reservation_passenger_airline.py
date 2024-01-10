@@ -45,7 +45,7 @@ class TtReservationCustomer(models.Model):
             'behaviors': self.customer_id.get_behavior(),
             'seq_id': self.customer_id.seq_id,
             'pax_type': pax_type,
-            'riz_text': self.riz_text
+            'riz_text': self.riz_text if self.riz_text else ''
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()
