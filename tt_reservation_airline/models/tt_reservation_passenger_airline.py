@@ -14,6 +14,7 @@ class TtReservationCustomer(models.Model):
     fee_ids = fields.One2many('tt.fee.airline', 'passenger_id', 'SSR')
     booking_id = fields.Many2one('tt.reservation.airline')
     is_ticketed = fields.Boolean('Ticketed')
+    riz_text = fields.Char('Endorsement Box (RIZ)')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
@@ -44,6 +45,7 @@ class TtReservationCustomer(models.Model):
             'behaviors': self.customer_id.get_behavior(),
             'seq_id': self.customer_id.seq_id,
             'pax_type': pax_type,
+            'riz_text': self.riz_text
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()

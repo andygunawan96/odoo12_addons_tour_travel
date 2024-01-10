@@ -348,6 +348,11 @@ class Reservationphc(models.Model):
                     'pcr_data': passengers_data[idx].get('pcr_data') and json.dumps(passengers_data[idx].get('pcr_data')) or passengers_data[idx].get('pcr_data','')
                 })
 
+                if passengers_data['idx'].get('description'):
+                    rec[2].update({
+                        "description": passengers_data[idx]['description']
+                    })
+
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
 

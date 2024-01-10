@@ -447,6 +447,15 @@ class ReservationAirline(models.Model):
                     'customer_id': list_customer_id[idx].id,
                     'is_valid_identity': is_valid_identity,
                 })
+                if passengers[idx].get('description'):
+                    rec[2].update({
+                        'description': passengers[idx]['description']
+                    })
+
+                if passengers[idx].get('riz_text'):
+                    rec[2].update({
+                        'riz_text': passengers[idx]['riz_text']
+                    })
 
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2], ['is_valid_identity'])

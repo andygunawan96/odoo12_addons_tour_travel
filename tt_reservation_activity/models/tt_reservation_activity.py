@@ -18,6 +18,7 @@ import base64
 import logging
 import traceback
 import requests
+import copy
 
 # from Ap
 _logger = logging.getLogger(__name__)
@@ -543,6 +544,9 @@ class ReservationActivity(models.Model):
             booker_data = req.get('booker_data') and req['booker_data'] or False
             contacts_data = req.get('contacts_data') and req['contacts_data'] or False
             passengers = req.get('passengers_data') and req['passengers_data'] or False
+
+            passengers_data = copy.deepcopy(req['passengers'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
+
             option = req.get('option') and req['option'] or False
             search_request = req.get('search_request') and req['search_request'] or False
             file_upload = req.get('file_upload') and req['file_upload'] or False
@@ -609,6 +613,11 @@ class ReservationActivity(models.Model):
                     'activity_sku_id': temp_sku_id,
                     'option_ids': [(6, 0, pax_options)],
                 })
+
+                if passengers_data[idx].get('description'):
+                    list_passenger_value[idx][2].update({
+                        'description': passengers_data[idx]['description']
+                    })
 
                 if not sku_ids_dict.get(str(temp_pax['sku_id'])):
                     sku_ids_dict.update({

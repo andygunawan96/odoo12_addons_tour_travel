@@ -9,7 +9,7 @@ import logging,traceback
 from datetime import datetime, timedelta, time
 import base64
 import json
-
+import copy
 
 _logger = logging.getLogger(__name__)
 
@@ -337,6 +337,7 @@ class ReservationSentraMedika(models.Model):
         booker = req['booker']
         contacts = req['contacts']
         passengers = req['passengers']
+        passengers_data = copy.deepcopy(req['passengers'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
         booking_data = req['provider_bookings']
 
         try:
@@ -355,6 +356,10 @@ class ReservationSentraMedika(models.Model):
                     'phone_number': passengers[idx]['phone_number'],
                     'address_ktp': passengers[idx]['address_ktp'],
                 })
+                if passengers_data[idx].get('description'):
+                    rec[2].update({
+                        "description": passengers_data[idx]['description']
+                    })
 
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])

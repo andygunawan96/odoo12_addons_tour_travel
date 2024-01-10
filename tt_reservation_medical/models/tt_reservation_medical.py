@@ -407,6 +407,10 @@ class Reservationmedical(models.Model):
                     'phone_number': passengers_data[idx]['phone_number'],
                     'address_ktp': passengers_data[idx]['address_ktp'],
                 })
+                if passengers_data[idx].get('description'):
+                    rec[2].update({
+                        "description": passengers_data[idx]['description']
+                    })
 
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
