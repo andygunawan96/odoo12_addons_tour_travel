@@ -187,7 +187,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         # let's iterate the data YEY!
         for idx, i in enumerate(datas):
             if not values['data_form']['is_ho']:
-                if i['ledger_agent_name'] == values['data_form']['ho_name']:
+                if i['ledger_agent_name'] == values['data_form']['ho_name'] and values['data_form']['ho_name'] != values['data_form']['agent_name']:
                     continue
             if i.get('ledger_pnr'):
                 # check if order number == current number
