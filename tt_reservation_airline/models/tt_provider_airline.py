@@ -651,6 +651,7 @@ class TtProviderAirline(models.Model):
                     'identity_expdate': psg.get('identity_expdate'),
                     'identity_country_of_issued_code': psg.get('identity_country_of_issued_code'),
                     'ticket_number_list': ticket_number_list,
+                    'riz_text': psg.get('riz_text'),
                 }
                 ticket_list.append((0, 0, ticket_vals))
                 psg_obj.is_ticketed = True
@@ -839,6 +840,7 @@ class TtProviderAirline(models.Model):
                 'identity_expdate': '',
                 'identity_country_of_issued_code': '',
                 'ticket_number_list': '',
+                'riz_text': rec.get('riz_text', ''),
             }
             if rec.get('identity'):
                 ticket_vals.update({

@@ -108,6 +108,7 @@
                                         <field name="ff_number"/>
                                         <field name="ff_code"/>
                                         <field name="ticket_number_list"/>
+                                        <field name="riz_text"/>
                                     </group>
                                 </group>
                             </sheet>
@@ -120,6 +121,7 @@
                             <field name="identity_number"/>
                             <field name="ff_number"/>
                             <field name="ticket_number"/>
+                            <field name="riz_text"/>
                             <field name="passenger_id"/>
                         </tree>
                     </field>
