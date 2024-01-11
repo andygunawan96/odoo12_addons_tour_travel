@@ -419,7 +419,7 @@ class ReservationTour(models.Model):
             booker_data = data.get('booker_data') and data['booker_data'] or False
             contacts_data = data.get('contacts_data') and data['contacts_data'] or False
             passengers = data.get('passengers_data') and data['passengers_data'] or False
-            passengers_data = copy.deepcopy(data['passengers'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
+            passengers_data = copy.deepcopy(data['passengers_data'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
             temp_provider_code = data.get('provider') and data['provider'] or 0
             temp_tour_code = data.get('tour_code') and data['tour_code'] or ''
             temp_tour_line_code = data.get('tour_line_code') and data['tour_line_code'] or ''
