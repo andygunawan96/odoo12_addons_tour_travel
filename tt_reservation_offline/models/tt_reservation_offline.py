@@ -2224,7 +2224,7 @@ class IssuedOffline(models.Model):
         booker = data['booker']  # self.param_booker
         data_reservation_offline = data['issued_offline_data']  # self.param_issued_offline_data
         passengers = data['passenger']  # self.param_passenger
-        passengers_data = copy.deepcopy(data['passengers'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
+        passengers_data = copy.deepcopy(data['passenger'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
         contact = data['contact']  # self.param_contact
         context = context  # self.param_context
         lines = data['issued_offline_data']['line_ids']  # data_reservation_offline['line_ids']
