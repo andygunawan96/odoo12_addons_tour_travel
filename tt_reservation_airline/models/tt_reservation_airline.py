@@ -447,6 +447,15 @@ class ReservationAirline(models.Model):
                     'customer_id': list_customer_id[idx].id,
                     'is_valid_identity': is_valid_identity,
                 })
+                if passengers[idx].get('description'):
+                    rec[2].update({
+                        'description': passengers[idx]['description']
+                    })
+
+                if passengers[idx].get('riz_text'):
+                    rec[2].update({
+                        'riz_text': passengers[idx]['riz_text']
+                    })
 
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2], ['is_valid_identity'])
@@ -2327,7 +2336,7 @@ class ReservationAirline(models.Model):
                 c_code = ''
                 c_type = ''
                 if p_charge_type != 'RAC':
-                    if p_charge_code == 'csc':
+                    if 'csc' in p_charge_code.split('.'):
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
                         sc_value[p_pax_type][c_type] = {
                             'amount': 0,

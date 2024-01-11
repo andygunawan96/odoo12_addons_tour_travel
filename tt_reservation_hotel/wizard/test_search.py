@@ -632,6 +632,8 @@ class TestSearch(models.Model):
         cancellation_policy = req.get('cancellation_policy', '')
         norm_str = req.get('norm_str', '')
 
+        passengers_data = copy.deepcopy(req['passengers']) # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
+
         context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
         context['ho_id'] = context.get('co_ho_id') and context['co_ho_id'] or self.sudo().env['res.users'].browse(context['co_uid']).ho_id.id
 
@@ -651,6 +653,10 @@ class TestSearch(models.Model):
             rec[2].update({
                 'customer_id': list_customer_id[idx].id
             })
+            if passengers_data[idx].get('description'):
+                rec[2].update({
+                    'description': passengers_data[idx]['description']
+                })
 
         for psg in list_passenger_value:
             util.pop_empty_key(psg[2])

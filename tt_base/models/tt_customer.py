@@ -57,6 +57,8 @@ class TtCustomer(models.Model):
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
     is_search_allowed = fields.Boolean("Search Allowed", default=True)
 
+    riz_text = fields.Char('Endorsement Box (RIZ)')
+
     register_uid = fields.Many2one('res.users', 'Register UID', default=lambda self: self.env.user)
 
     @api.depends('first_name', 'last_name')
@@ -157,7 +159,8 @@ class TtCustomer(models.Model):
             'behaviors': behavior_dict,
             'original_agent': self.agent_id and self.agent_id.name or '',
             'frequent_flyers': ff_list_dict,
-            'is_id_alt_name': is_id_alt_name
+            'is_id_alt_name': is_id_alt_name,
+            'riz_text': self.riz_text if self.riz_text else ''
         }
         if get_customer_parent:
             customer_parent_list = []
@@ -259,6 +262,10 @@ class TtCustomer(models.Model):
                             current_passenger.face_image_id.unlink()
                     if psg.get('title') == 'MRS':
                         psg['marital_status'] = 'married'
+
+                    if psg.get('riz_text'):
+                        psg['riz_text'] = psg['riz_text']
+
                     current_passenger.write(psg)
                     result_psg = current_passenger
                     if psg.get('identity'):
@@ -291,6 +298,12 @@ class TtCustomer(models.Model):
                     psg.update({
                         'phone_ids': phone_list
                     })
+
+                if psg.get('riz_text'):
+                    psg.update({
+                        'riz_text': psg['riz_text']
+                    })
+
                 psg_obj = passenger_obj.create(psg)
                 result_psg = psg_obj
                 if psg.get('identity'):

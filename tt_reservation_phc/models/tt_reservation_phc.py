@@ -348,6 +348,11 @@ class Reservationphc(models.Model):
                     'pcr_data': passengers_data[idx].get('pcr_data') and json.dumps(passengers_data[idx].get('pcr_data')) or passengers_data[idx].get('pcr_data','')
                 })
 
+                if passengers_data['idx'].get('description'):
+                    rec[2].update({
+                        "description": passengers_data[idx]['description']
+                    })
+
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
 
@@ -935,7 +940,7 @@ class Reservationphc(models.Model):
                 c_code = ''
                 c_type = ''
                 if p_charge_type != 'RAC':
-                    if p_charge_code == 'csc':
+                    if 'csc' in p_charge_code.split('.'):
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
                         sc_value[p_pax_type][c_type] = {
                             'amount': 0,

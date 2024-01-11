@@ -16,6 +16,7 @@
                                 }"/>
             </xpath>
             <xpath expr="//group[@name='basic_info']" position="after">
+                <field name="riz_text"/>
                 <separator string="Frequent Flyers"/>
                 <field name="frequent_flyer_ids"/>
                 <separator string="Service Charges"/>

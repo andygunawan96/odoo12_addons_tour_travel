@@ -7,6 +7,7 @@ import copy
 import json
 import base64
 import pytz
+import copy
 from ...tools.api import Response
 from ...tools.ERR import RequestException
 from ...tools import variables, ERR
@@ -991,7 +992,7 @@ class IssuedOffline(models.Model):
                 c_code = ''
                 c_type = ''
                 if p_charge_type != 'RAC':
-                    if p_charge_code == 'csc':
+                    if 'csc' in p_charge_code.split('.'):
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
                         sc_value[p_pax_type][c_type] = {
                             'amount': 0,
@@ -2223,6 +2224,7 @@ class IssuedOffline(models.Model):
         booker = data['booker']  # self.param_booker
         data_reservation_offline = data['issued_offline_data']  # self.param_issued_offline_data
         passengers = data['passenger']  # self.param_passenger
+        passengers_data = copy.deepcopy(data['passengers'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
         contact = data['contact']  # self.param_contact
         context = context  # self.param_context
         lines = data['issued_offline_data']['line_ids']  # data_reservation_offline['line_ids']
@@ -2253,6 +2255,10 @@ class IssuedOffline(models.Model):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id
                 })
+                if passengers_data[idx].get('description'):
+                    rec[2].update({
+                        'description': passengers_data[idx]['description']
+                    })
             user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
             utc_tz = pytz.timezone('UTC')
             header_val = {

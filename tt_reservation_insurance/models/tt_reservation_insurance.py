@@ -302,6 +302,10 @@ class ReservationInsurance(models.Model):
                     'phone_number': passengers_data[idx]['phone_number'],
                     'insurance_data': passengers_data[idx].get('data_insurance') and json.dumps(passengers_data[idx]['data_insurance']) or ''
                 })
+                if passengers_data[idx].get('description'):
+                    rec[2].update({
+                        'description': passengers_data[idx]['description']
+                    })
 
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
@@ -840,7 +844,7 @@ class ReservationInsurance(models.Model):
                 c_code = ''
                 c_type = ''
                 if p_charge_type != 'RAC':
-                    if p_charge_code == 'csc':
+                    if 'csc' in p_charge_code.split('.'):
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
                         sc_value[p_pax_type][c_type] = {
                             'amount': 0,

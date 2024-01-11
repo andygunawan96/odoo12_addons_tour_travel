@@ -983,7 +983,8 @@ class TtVisa(models.Model):
                         'sale_service_charges': sale_service_charges,
                         'service_charge_details': service_charge_details,
                         'pax_type': pax_type,
-                        'sequence': idx
+                        'sequence': idx,
+                        'description': pax.description
                     })
                 state_visa = {}
                 for rec in STATE_VISA:
@@ -1308,6 +1309,7 @@ class TtVisa(models.Model):
         booker = req['booker']
         contacts = req['contacts']
         passengers = req['passengers']
+        passengers_data = copy.deepcopy(req['passengers'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
         booking_data = req['search']
         sell_visa = req['sell_visa']
         payment = req['acquirer_seq_id']  # self.param_payment
@@ -1408,6 +1410,10 @@ class TtVisa(models.Model):
                     psg.update({
                         'price_list_code': passengers[idx]['master_visa_Id']
                     })
+                    if passengers_data[idx].get('description'):
+                        psg.update({
+                            "description": passengers_data[idx]['description']
+                        })
 
                 for visa in visa_list:
                     for svc_summary in visa['service_charge_summary']:
@@ -1548,7 +1554,7 @@ class TtVisa(models.Model):
                 c_code = ''
                 c_type = ''
                 if p_charge_type != 'RAC':
-                    if p_charge_code == 'csc':
+                    if 'csc' in p_charge_code.split('.'):
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
                         sc_value[p_pax_type][c_type] = {
                             'amount': 0,

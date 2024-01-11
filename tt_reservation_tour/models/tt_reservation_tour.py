@@ -357,7 +357,7 @@ class ReservationTour(models.Model):
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 if p_charge_type != 'RAC':
-                    if p_charge_code == 'csc':
+                    if 'csc' in p_charge_code.split('.'):
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
                         sc_value[p_pax_type][c_type] = {
                             'amount': 0,
@@ -419,6 +419,7 @@ class ReservationTour(models.Model):
             booker_data = data.get('booker_data') and data['booker_data'] or False
             contacts_data = data.get('contacts_data') and data['contacts_data'] or False
             passengers = data.get('passengers_data') and data['passengers_data'] or False
+            passengers_data = copy.deepcopy(data['passengers'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
             temp_provider_code = data.get('provider') and data['provider'] or 0
             temp_tour_code = data.get('tour_code') and data['tour_code'] or ''
             temp_tour_line_code = data.get('tour_line_code') and data['tour_line_code'] or ''
@@ -463,6 +464,10 @@ class ReservationTour(models.Model):
                     'master_tour_id': tour_data and tour_data.id or False,
                     'master_tour_line_id': tour_line_data and tour_line_data.id or False
                 })
+                if passengers_data[idx].get('description'):
+                    list_passenger_value[idx][2].update({
+                        "description": passengers_data[idx]['description']
+                    })
 
             try:
                 agent_obj = self.env['tt.customer'].browse(int(booker_obj.id)).agent_id

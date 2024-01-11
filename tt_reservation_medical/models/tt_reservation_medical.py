@@ -407,6 +407,10 @@ class Reservationmedical(models.Model):
                     'phone_number': passengers_data[idx]['phone_number'],
                     'address_ktp': passengers_data[idx]['address_ktp'],
                 })
+                if passengers_data[idx].get('description'):
+                    rec[2].update({
+                        "description": passengers_data[idx]['description']
+                    })
 
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
@@ -979,7 +983,7 @@ class Reservationmedical(models.Model):
                 c_code = ''
                 c_type = ''
                 if p_charge_type != 'RAC':
-                    if p_charge_code == 'csc':
+                    if 'csc' in p_charge_code.split('.'):
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
                         sc_value[p_pax_type][c_type] = {
                             'amount': 0,

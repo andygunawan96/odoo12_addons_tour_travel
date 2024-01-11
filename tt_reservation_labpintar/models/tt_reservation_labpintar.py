@@ -9,6 +9,7 @@ import logging,traceback
 from datetime import datetime, timedelta, time
 import base64
 import json
+import copy
 
 
 _logger = logging.getLogger(__name__)
@@ -354,6 +355,7 @@ class ReservationLabPintar(models.Model):
         _logger.info("Create\n" + json.dumps(req))
         booker = req['booker']
         contacts = req['contacts']
+        passengers_data = copy.deepcopy(req['passengers']) # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
         passengers = req['passengers']
         booking_data = req['provider_bookings']
 
@@ -373,6 +375,10 @@ class ReservationLabPintar(models.Model):
                     'phone_number': passengers[idx]['phone_number'],
                     'address_ktp': passengers[idx]['address_ktp'],
                 })
+                if passengers_data[idx].get('description'):
+                    rec[2].update({
+                        'description': passengers_data[idx]['description']
+                    })
 
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
@@ -717,7 +723,7 @@ class ReservationLabPintar(models.Model):
                 c_code = ''
                 c_type = ''
                 if p_charge_type != 'RAC':
-                    if p_charge_code == 'csc':
+                    if 'csc' in p_charge_code.split('.'):
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
                         sc_value[p_pax_type][c_type] = {
                             'amount': 0,

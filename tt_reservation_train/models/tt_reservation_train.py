@@ -5,6 +5,7 @@ from ...tools.ERR import RequestException
 from ...tools import ERR,util,variables
 from datetime import date, datetime, timedelta
 import base64
+import copy
 
 _logger = logging.getLogger(__name__)
 
@@ -225,6 +226,7 @@ class TtReservationTrain(models.Model):
         booker = req['booker']
         contacts = req['contacts'][0]
         passengers = req['passengers']
+        passengers_data = copy.deepcopy(req['passengers'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
         schedules = req['schedules']
 
         try:
@@ -240,6 +242,10 @@ class TtReservationTrain(models.Model):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id
                 })
+                if passengers_data[idx].get('description'):
+                    rec[2].update({
+                        "description": passengers_data[idx]['description']
+                    })
 
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
@@ -793,7 +799,7 @@ class TtReservationTrain(models.Model):
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 if p_charge_type != 'RAC':
-                    if p_charge_code == 'csc':
+                    if 'csc' in p_charge_code.split('.'):
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
                         sc_value[p_pax_type][c_type] = {
                             'amount': 0,
