@@ -257,7 +257,7 @@ class TtBillingStatement(models.Model):
                 zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
             # zip_file.writestr('qq' + str(inv_obj.name) + '.json', 'data_json')
         for inv_obj in self.invoice_ids:
-            if inv_obj.inv_obj.printout_invoice_id:
+            if inv_obj.printout_invoice_id:
                 zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
         zip_file.close()
 
