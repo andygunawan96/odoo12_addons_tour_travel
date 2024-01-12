@@ -441,8 +441,8 @@ class ResUsers(models.Model):
             })
 
         ## SEND EMAIL
-        if not self.is_api_user and self.agent_id and self.agent_id.email:
-            self.sudo().send_email_login() ## KENA PERMISSION DOCUMENT TT AGENT
+        # if not self.is_api_user and self.agent_id and self.agent_id.email:
+        #     self.sudo().send_email_login() ## KENA PERMISSION DOCUMENT TT AGENT
 
     def _check_pin(self, pin):
         if not pin:
