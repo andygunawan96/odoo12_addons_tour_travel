@@ -74,8 +74,6 @@
                             </field>
                         </page>
                         <page string="Job Positions">
-                            <separator string="Job Hierarchy"/>
-                            <field name="job_hierarchy_ids" context="{'default_customer_parent_id': id}"/>
                             <separator string="Job Positions"/>
                             <field name="job_position_ids" context="{'default_customer_parent_id': id}"/>
                         </page>

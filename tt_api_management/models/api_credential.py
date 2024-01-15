@@ -393,25 +393,8 @@ class TtCustomerJobPositionApiInherit(models.Model):
         res = {
             '%sjob_position_name' % prefix: self.name,
             '%sjob_position_sequence' % prefix: self.sequence,
+            '%sjob_position_min_approve_amt' % prefix: self.min_approve_amt,
             '%sjob_position_is_request_required' % prefix: self.is_request_required,
-            '%sjob_position_carrier_access_type' % prefix: self.carrier_access_type,
-            '%sjob_position_carrier_list' % prefix: self.get_carrier_code_list(),
-            '%sjob_position_currency_code' % prefix: self.currency_id.name,
-            '%sjob_position_max_price' % prefix: self.max_price,
-            '%sjob_position_max_hotel_stars' % prefix: self.max_hotel_stars,
-            '%sjob_position_max_cabin_class' % prefix: self.max_cabin_class,
-        }
-        if self.hierarchy_id:
-            res.update(self.hierarchy_id.get_credential(prefix))
-        return res
-
-
-class TtCustomerJobHierarchyApiInherit(models.Model):
-    _inherit = 'tt.customer.job.hierarchy'
-
-    def get_credential(self, prefix=''):
-        res = {
-            '%shierarchy_sequence' % prefix: self.sequence,
-            '%shierarchy_min_approve_amt' % prefix: self.min_approve_amt,
+            '%sjob_position_rules' % prefix: self.get_rules_dict()
         }
         return res

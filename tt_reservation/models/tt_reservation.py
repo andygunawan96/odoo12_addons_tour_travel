@@ -1375,7 +1375,7 @@ class TtReservation(models.Model):
             booking_booker_obj = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', context.get('co_customer_parent_id', book_obj.customer_parent_id.id)), ('customer_id', '=', booker_obj.id)], limit=1)
             upline_user_list_id = []
             if booking_booker_obj:
-                booker_hierarchy = booking_booker_obj.job_position_id and booking_booker_obj.job_position_id.hierarchy_id.sequence or 10
+                booker_hierarchy = booking_booker_obj.job_position_id and booking_booker_obj.job_position_id.sequence or 10
                 upline_user_list_id = book_obj.customer_parent_id.get_upline_user_customer_parent(booker_hierarchy)
             else:
                 booker_hierarchy = 10
@@ -1387,7 +1387,7 @@ class TtReservation(models.Model):
                 'ho_id': context.get('co_ho_id', book_obj.ho_id.id),
                 'agent_id': context.get('co_agent_id', book_obj.agent_id.id),
                 'customer_parent_id': context.get('co_customer_parent_id', book_obj.customer_parent_id.id),
-                'cur_approval_seq': context.get('co_hierarchy_sequence', booker_hierarchy),
+                'cur_approval_seq': context.get('co_job_position_sequence', booker_hierarchy),
                 # 'upline_ids': [(6,0,upline_user_list_id)]
             })
             for rec in upline_user_list_id:

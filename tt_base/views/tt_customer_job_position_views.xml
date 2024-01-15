@@ -16,28 +16,14 @@
                         <group>
                             <group>
                                 <field name="sequence"/>
-                                <field name="hierarchy_id"/>
-                                <field name="is_request_required"/>
+                                <field name="customer_parent_id" readonly="1"/>
                             </group>
                             <group>
-                                <field name="customer_parent_id" readonly="1"/>
+                                <field name="is_request_required"/>
                             </group>
                         </group>
                         <separator string="Rules"/>
-                        <group>
-                            <field name="carrier_access_type"/>
-                            <field name="carrier_ids"/>
-                        </group>
-                        <group>
-                            <group>
-                                <field name="currency_id"/>
-                                <field name="max_price"/>
-                            </group>
-                            <group>
-                                <field name="max_hotel_stars"/>
-                                <field name="max_cabin_class"/>
-                            </group>
-                        </group>
+                        <field name="job_rules_ids"/>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>
@@ -54,9 +40,8 @@
                 <tree>
                     <field name="sequence" widget="handle"/>
                     <field name="name"/>
-                    <field name="hierarchy_id"/>
                     <field name="is_request_required"/>
-                    <field name="customer_parent_id" readonly="1"/>
+                    <field name="customer_parent_id"/>
                 </tree>
             </field>
         </record>
@@ -74,52 +59,70 @@
             </field>
         </record>
 
-        <record id="tt_customer_job_hierarchy_form_view" model="ir.ui.view">
-            <field name="name">tt.customer.job.hierarchy.form.view</field>
-            <field name="model">tt.customer.job.hierarchy</field>
+        <record id="tt_customer_job_rules_form_view" model="ir.ui.view">
+            <field name="name">tt.customer.job.rules.form.view</field>
+            <field name="model">tt.customer.job.rules</field>
             <field name="arch" type="xml">
                 <form>
                     <sheet>
                         <group>
                             <group>
+                                <field name="name"/>
                                 <field name="sequence"/>
-                                <field name="min_approve_amt"/>
+                                <field name="currency_id"/>
                             </group>
                             <group>
-                                <field name="customer_parent_id" readonly="1"/>
+                                <field name="job_position_id" readonly="1"/>
+                                <field name="provider_type_id"/>
+                                <field name="max_price"/>
                             </group>
                         </group>
-                        <separator string="Job Positions"/>
                         <group>
-                            <field name="job_position_ids" readonly="1"/>
+                            <group>
+                                <separator string="Airline and Train Only"/>
+                                <field name="max_cabin_class"/>
+                            </group>
+                            <group>
+                                <separator string="Hotel Only"/>
+                                <field name="max_hotel_stars"/>
+                            </group>
+                        </group>
+<!--                        <separator string="Providers"/>-->
+<!--                        <group>-->
+<!--                            <field name="provider_access_type"/>-->
+<!--                            <field name="provider_ids"/>-->
+<!--                        </group>-->
+                        <separator string="Airline Only"/>
+                        <group>
+                            <field name="carrier_access_type"/>
+                            <field name="carrier_ids"/>
                         </group>
                     </sheet>
                 </form>
             </field>
         </record>
 
-        <record id="tt_customer_job_hierarchy_tree_view" model="ir.ui.view">
-            <field name="name">tt.customer.job.hierarchy.tree.view</field>
-            <field name="model">tt.customer.job.hierarchy</field>
+        <record id="tt_customer_job_rules_tree_view" model="ir.ui.view">
+            <field name="name">tt.customer.job.rules.tree.view</field>
+            <field name="model">tt.customer.job.rules</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="sequence" widget="handle"/>
                     <field name="name"/>
-                    <field name="min_approve_amt"/>
-                    <field name="customer_parent_id" readonly="1"/>
+                    <field name="provider_type_id"/>
                 </tree>
             </field>
         </record>
 
-        <record id="tt_customer_job_hierarchy_action_view" model="ir.actions.act_window">
-            <field name="name">Customer Job Hierarchy</field>
+        <record id="tt_customer_job_rules_action_view" model="ir.actions.act_window">
+            <field name="name">Customer Job Rules</field>
             <field name="view_type">form</field>
-            <field name="res_model">tt.customer.job.hierarchy</field>
+            <field name="res_model">tt.customer.job.rules</field>
             <field name="view_mode">tree,form</field>
             <field name="context">
                 {
-                'form_view_ref': 'tt_base.tt_customer_job_hierarchy_form_view',
-                'tree_view_ref': 'tt_base.tt_customer_job_hierarchy_tree_view'
+                'form_view_ref': 'tt_base.tt_customer_job_rules_form_view',
+                'tree_view_ref': 'tt_base.tt_customer_job_rules_tree_view'
                 }
             </field>
         </record>
