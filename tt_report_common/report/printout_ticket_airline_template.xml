@@ -204,7 +204,7 @@
                                             <span style="font-size: 16px; font-weight:500"><span t-field="segment_obj.origin_id.city"/> (<span t-field="segment_obj.origin_id.code"/>)</span><br/>
                                             <span style="font-size: 14px; font-weight:200"><span t-field="segment_obj.origin_id.name"/></span><br/>
                                             <span style="font-size: 14px; font-weight:200"><t t-if="segment_obj.origin_terminal">Terminal <span t-field="segment_obj.origin_terminal"/></t></span>
-                                        </div>
+                                        </div><br/>
                                         <span style="font-size: 14px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(segment_obj.departure_date[:10],'%Y-%m-%d'))"/></span><br/>
                                         <span style="font-size: 14px; font-weight:200"><span t-esc="segment_obj.departure_date[10:16]"/></span>
                                     </div>
@@ -218,7 +218,7 @@
                                             <span style="font-size: 16px; font-weight:500"><span t-field="segment_obj.destination_id.city"/> (<span t-field="segment_obj.destination_id.code"/>)</span><br/>
                                             <span style="font-size: 14px; font-weight:200"><span t-field="segment_obj.destination_id.name"/></span><br/>
                                             <span style="font-size: 14px; font-weight:200"><t t-if="segment_obj.destination_terminal">Terminal <span t-field="segment_obj.destination_terminal"/></t></span>
-                                        </div>
+                                        </div><br/>
                                         <span style="font-size: 14px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(segment_obj.arrival_date[:10],'%Y-%m-%d'))"/></span><br/>
                                         <span style="font-size: 14px; font-weight:200"><span t-esc="segment_obj.arrival_date[10:16]"/></span>
                                     </div>
