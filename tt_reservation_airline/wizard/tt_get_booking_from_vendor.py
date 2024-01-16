@@ -37,6 +37,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     is_bypass_pnr_validator = fields.Boolean('Is Bypass PNR Validator')
 
     pricing_date = fields.Date('Pricing Date')
+    last_name = fields.Char('Pax Last Name')
 
     @api.depends('agent_id')
     @api.onchange('agent_id')
@@ -137,6 +138,12 @@ class TtGetBookingFromVendor(models.TransientModel):
         if self.agent_id:
             req.update({
                 'ho_id': self.agent_id.ho_id.id
+            })
+        if self.last_name:
+            req.update({
+                'passengers': [{
+                    'last_name': self.last_name,
+                }]
             })
         res = self.env['tt.airline.api.con'].send_get_booking_from_vendor(req)
         if res['error_code'] != 0:

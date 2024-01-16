@@ -91,7 +91,8 @@ class TtAirlineApiCon(models.Model):
             'pnr': req.get('pnr'),
             'provider': req.get('provider'),
             'is_retrieved': req.get('is_retrieved',False),
-            'pricing_date': req.get('pricing_date',False)
+            'pricing_date': req.get('pricing_date',False),
+            'passengers': req.get('passengers', []),
         }
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
