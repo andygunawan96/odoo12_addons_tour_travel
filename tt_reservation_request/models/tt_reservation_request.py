@@ -164,7 +164,7 @@ class TtReservationRequest(models.Model):
 
     def get_issued_request_api(self,req,context):
         try:
-            if context.get('co_customer_parent_id') and context.get('co_hierarchy_sequence'):
+            if context.get('co_customer_parent_id') and context.get('co_job_position_sequence'):
                 if req.get('request_id'):
                     request_obj = self.browse(int(req['request_id']))
                 else:
@@ -185,16 +185,16 @@ class TtReservationRequest(models.Model):
 
     def get_issued_request_list_api(self, req, context):
         try:
-            if context.get('co_customer_parent_id') and context.get('co_hierarchy_sequence'):
+            if context.get('co_customer_parent_id') and context.get('co_job_position_sequence'):
                 search_params = [('agent_id', '=', context['co_agent_id']),
                                 ('customer_parent_id', '=', context['co_customer_parent_id'])]
                 if req.get('is_open'):
                     search_params += [('state', 'in', ['draft', 'on_process']),
-                                      ('cur_approval_seq', '>', context['co_hierarchy_sequence'])]
+                                      ('cur_approval_seq', '>', context['co_job_position_sequence'])]
                 request_list = self.search(search_params)
-                prev_hierarchy = self.env['tt.customer.job.hierarchy'].search([
-                    ('sequence', '>', context['co_hierarchy_sequence'])], order='sequence', limit=1)
-                prev_hi_seq = prev_hierarchy and prev_hierarchy[0].sequence or context['co_hierarchy_sequence'] + 1
+                prev_hierarchy = self.env['tt.customer.job.position'].search([
+                    ('sequence', '>', context['co_job_position_sequence'])], order='sequence', limit=1)
+                prev_hi_seq = prev_hierarchy and prev_hierarchy[0].sequence or context['co_job_position_sequence'] + 1
             else:
                 return ERR.get_error(1023)
             res = []
@@ -225,7 +225,7 @@ class TtReservationRequest(models.Model):
             if not request_obj:
                 return ERR.get_error(1003)
 
-            if context.get('co_customer_seq_id') and context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and request_obj.cur_approval_seq > context.get('co_hierarchy_sequence'):
+            if context.get('co_customer_seq_id') and context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and request_obj.cur_approval_seq > context.get('co_job_position_sequence'):
                 for rec in request_obj.approval_ids:
                     if rec.approved_cuid.seq_id == context['co_customer_seq_id']:
                         return ERR.get_error(1023, additional_message='You have already approved this request.')
@@ -260,13 +260,13 @@ class TtReservationRequest(models.Model):
             'approved_job_position_id': job_pos_obj and job_pos_obj.id or False,
         })
 
-        min_approval = context.get('co_hierarchy_min_approve_amt', 1)
+        min_approval = context.get('co_job_position_min_approve_amt', 1)
         for rec in self.approval_ids:
-            if rec.approved_job_position_id.hierarchy_id.sequence <= context['co_hierarchy_sequence']:
+            if rec.approved_job_position_id.sequence <= context['co_job_position_sequence']:
                 min_approval -= 1
         if min_approval < 1:
-            self.cur_approval_seq = context['co_hierarchy_sequence']
-        next_hierarchy = self.env['tt.customer.job.hierarchy'].search([
+            self.cur_approval_seq = context['co_job_position_sequence']
+        next_hierarchy = self.env['tt.customer.job.position'].search([
             ('sequence', '<', self.cur_approval_seq)], order='sequence desc', limit=1)
         if not next_hierarchy:
             if self.state != 'approved':
@@ -302,7 +302,7 @@ class TtReservationRequest(models.Model):
             if not request_obj:
                 return ERR.get_error(1003)
 
-            if context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and (request_obj.cur_approval_seq > context.get('co_hierarchy_sequence') or request_obj.booker_id.seq_id == context.get('co_customer_seq_id')):
+            if context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and (request_obj.cur_approval_seq > context.get('co_job_position_sequence') or request_obj.booker_id.seq_id == context.get('co_customer_seq_id')):
                 request_obj.action_cancel(context)
             else:
                 return ERR.get_error(1023)
@@ -325,7 +325,7 @@ class TtReservationRequest(models.Model):
             if not request_obj:
                 return ERR.get_error(1003)
 
-            if context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and request_obj.cur_approval_seq > context.get('co_hierarchy_sequence'):
+            if context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and request_obj.cur_approval_seq > context.get('co_job_position_sequence'):
                 for rec in request_obj.approval_ids:
                     if rec.approved_cuid.seq_id == context['co_customer_seq_id']:
                         return ERR.get_error(1023, additional_message='You have already approved this request.')

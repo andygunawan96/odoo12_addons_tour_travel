@@ -37,7 +37,6 @@ class TtCustomerParent(models.Model):
     customer_ids = fields.Many2many('tt.customer', 'tt_customer_customer_parent_rel','customer_parent_id','customer_id','Customer')
     # booker_ids = fields.Many2many('tt.customer', 'tt_customer_booker_customer_parent_rel', 'customer_parent_id','customer_id', 'Booker')
     booker_customer_ids = fields.One2many('tt.customer.parent.booker.rel', 'customer_parent_id', 'Booker')
-    job_hierarchy_ids = fields.One2many('tt.customer.job.hierarchy', 'customer_parent_id', 'Job Hierarchy')
     job_position_ids = fields.One2many('tt.customer.job.position', 'customer_parent_id', 'Job Positions')
     user_ids = fields.One2many('res.users', 'customer_parent_id', 'User')
     payment_acquirer_ids = fields.Char(string="Payment Acquirer", required=False, )  # payment_acquirer
@@ -258,19 +257,10 @@ class TtCustomerParent(models.Model):
                     res.update({
                         'job_position_name': booker_job.name,
                         'job_position_sequence': booker_job.sequence,
+                        'job_position_min_approve_amt': booker_job.min_approve_amt,
                         'job_position_is_request_required': booker_job.is_request_required,
-                        'job_position_carrier_access_type': booker_job.carrier_access_type,
-                        'job_position_carrier_list': booker_job.get_carrier_code_list(),
-                        'job_position_currency_code': booker_job.currency_id.name,
-                        'job_position_max_price': booker_job.max_price,
-                        'job_position_max_hotel_stars': booker_job.max_hotel_stars,
-                        'job_position_max_cabin_class': booker_job.max_cabin_class
+                        'job_position_rules': booker_job.get_rules_dict()
                     })
-                    if booker_job.hierarchy_id:
-                        res.update({
-                            'hierarchy_sequence': booker_job.hierarchy_id.sequence,
-                            'hierarchy_min_approve_amt': booker_job.hierarchy_id.min_approve_amt,
-                        })
             return ERR.get_no_error(res)
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -574,12 +564,9 @@ class TtCustomerParent(models.Model):
             return ERR.get_error()
 
     def get_upline_user_customer_parent(self, booker_sequence):
-        upline_sequence_list = [rec.sequence for rec in self.job_hierarchy_ids.filtered(lambda x: x.sequence < booker_sequence)]
+        upline_sequence_list = [rec.sequence for rec in self.job_position_ids.filtered(lambda x: x.sequence < booker_sequence)]
         max_sequence = max(upline_sequence_list)
-        upline_obj = self.job_position_ids.filtered(lambda x: x.hierarchy_id.sequence == max_sequence)
+        upline_obj = self.job_position_ids.filtered(lambda x: x.sequence == max_sequence)
         upline_id_list = [rec.customer_id.id for rec in self.booker_customer_ids.filtered(lambda x: x.job_position_id.id == upline_obj.id)]
         upline_user_objs = self.env['res.users'].search([('customer_parent_id','=', self.id), ('customer_id','in', upline_id_list)])
         return [rec.id for rec in upline_user_objs]
-
-
-
