@@ -114,7 +114,10 @@ class TtPaymentApiCon(models.Model):
                                     reservation_transaction_amount -= pay_acq_num.point_reward_amount
                             ##testing dulu
                             # if reservation_transaction_amount == float(data['transaction_amount']):
-                            if reservation_transaction_amount == float(data['amount']):
+                            ## AGENT OR BTC
+                            ## AGENT FEE FROM AGENT
+                            ## BTC FEE ABSORB BY HO
+                            if reservation_transaction_amount == float(data['amount']) or reservation_transaction_amount == float(data['amount'] + data['fee']) and book_obj.agent_id.agent_type_id == book_obj.ho_id.btc_agent_type_id:
                                 seq_id = ''
                                 if book_obj.payment_acquirer_number_id:
                                     seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
