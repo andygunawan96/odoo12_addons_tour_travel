@@ -41,3 +41,4 @@ from . import read_miki
 from . import read_mgjarvis
 from . import read_itank
 from . import read_tbo
+from . import read_hotellinx
