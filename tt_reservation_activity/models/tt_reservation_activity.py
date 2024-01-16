@@ -545,7 +545,7 @@ class ReservationActivity(models.Model):
             contacts_data = req.get('contacts_data') and req['contacts_data'] or False
             passengers = req.get('passengers_data') and req['passengers_data'] or False
 
-            passengers_data = copy.deepcopy(req['passengers'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
+            passengers_data = copy.deepcopy(req['passengers_data'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
 
             option = req.get('option') and req['option'] or False
             search_request = req.get('search_request') and req['search_request'] or False
