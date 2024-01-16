@@ -8,7 +8,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from odoo.exceptions import UserError
-import json
+import json, os.path
 from ...tools.ERR import RequestException
 import logging,traceback
 _logger = logging.getLogger(__name__)
@@ -46,13 +46,10 @@ class TestSearch(models.Model):
         city_cache = []
         if providers:
             provider_destination_ids = []
-            for provider in providers:
-                if not provider:
-                    continue
-                # provider = provider.split('_')[0]
-                provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
-                provider_id = provider_obj.id
-                provider_destination_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'tt.hotel.destination'), ('provider_id', '=', provider_id)]) if rec.res_id]
+            # provider = provider.split('_')[0]
+            provider_obj = self.env['tt.provider'].search(['|', ('alias', 'in', providers), ('code', 'in', providers)])
+            provider_ids = provider_obj.ids
+            provider_destination_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'tt.hotel.destination'), ('provider_id', 'in', provider_ids)]) if rec.res_id]
             domain.append(('id', 'in', provider_destination_ids))
         if country_name:
             country_ids = []
@@ -73,25 +70,128 @@ class TestSearch(models.Model):
 
     def render_cache_city_for_gw(self, country_name=[], city_name='', providers=[], limit=99999):
         city_ids = []
-        city_cache = []
         if providers:
-            for provider in providers:
-                if not provider:
-                    continue
-                # provider = provider.split('_')[0]
-                provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
-                provider_id = provider_obj.id
-                city_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'res.city'), ('provider_id', '=', provider_id)]) if rec.res_id and rec.res_id not in city_ids]
+            provider_obj = self.env['tt.provider'].search(['|', ('alias', 'in', providers), ('code', 'in', providers)])
+            provider_ids = provider_obj.ids
+            city_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'res.city'),('provider_id', 'in', provider_ids)]) if rec.res_id and rec.res_id not in city_ids]
 
         f2 = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'r')
         f2 = f2.read()
         catalog = json.loads(f2)
         catalog.sort(key=lambda k: k['index'])
 
-        destination_ids = self.render_cache_dest_for_gw(country_name, city_name, providers, limit)
-        for city in catalog:
-            if city['destination_id'] in destination_ids or city['city_id'] in city_ids:
-                city_cache.append(city)
+        folder_path = '/var/log/tour_travel/autocomplete_hotel/rendered_catalog.json'
+        folder_path_2 = '/var/log/tour_travel/autocomplete_hotel/destination_ids.json'
+        # if not os.path.exists(folder_path):
+        #     os.mkdir(folder_path)
+        # file = open(folder_path, 'w')
+        # file.write(json.dumps([]))
+        # file.close()
+
+        f2 = open(folder_path, 'r')
+        f2 = f2.read()
+        city_cache = json.loads(f2) if f2 else []
+        return city_cache
+
+        try:
+            f2 = open(folder_path_2, 'r')
+            f2 = f2.read()
+            destination_ids = self.env['tt.hotel.destination'].browse(json.loads(f2))
+        except:
+            destination_ids = self.render_cache_dest_for_gw(country_name, city_name, providers, limit)
+            f2 = open(folder_path_2, 'w')
+            f2.write(json.dumps(destination_ids.ids))
+            f2.close()
+
+        last_render = int(self.env['ir.config_parameter'].sudo().get_param('last.gw.render.idx'))
+        end = last_render + 5000
+        for city in catalog[last_render:end]: #catalog 45397
+            if city['index'] < last_render:
+                _logger.info(msg='Skip Render Cache for ' + city['name'] + ', ' + city['country_name'])
+                continue
+            city_fmt = False
+            for cache_destination_id in destination_ids:
+                if city['destination_id'] == cache_destination_id.id:
+                    destination_provider_dict = {}
+                    for x in cache_destination_id.provider_ids:
+                        destination_provider_dict.update({x.provider_id.code: {
+                            'provider_city_id': x.code,
+                            'provider_country_id': x.country_id.get_provider_code(x.country_id.id, x.provider_id.id),
+                        }})
+                    if cache_destination_id.city_id:
+                        for y in cache_destination_id.city_id.provider_code_ids:
+                            if y.provider_id.code not in destination_provider_dict.keys():
+                                destination_provider_dict.update({y.provider_id.code: {
+                                    'provider_city_id': y.code,
+                                    'provider_country_id': y.country_id.get_provider_code(y.country_id.id,y.provider_id.id),
+                                }})
+                    if destination_provider_dict:
+                        # destination_provider_dict.update({prov_rdx_hotel_obj.code: {
+                        #     'provider_city_id': cache_destination_id.name,
+                        #     'provider_country_id': '',
+                        # }})
+                        city_fmt = copy.deepcopy(city)
+                        city_fmt.update({
+                            'name': city_fmt['name'] + '; ' + city_fmt['country_name'],
+                            'provider_codes': destination_provider_dict
+                        })
+                        city_fmt.pop('city_name')  # Same with Name
+                        city_fmt.pop('country_code')  # Same with lredy in nme
+                        city_fmt.pop('country_name')  # Same with lredy in nme
+                        city_cache.append(city_fmt)
+                    break
+
+            if not city_fmt and city['city_id']:
+                for cache_city_id in city_ids:
+                    if city['city_id'] == cache_city_id:
+                        city_provider_dict = {}
+                        city_obj = self.env['res.city'].browse(cache_city_id)
+                        for x in city_obj.provider_code_ids:
+                            city_provider_dict.update({x.provider_id.code: {
+                                'provider_city_id': x.code,
+                                'provider_country_id': city_obj.country_id.get_provider_code(city_obj.country_id.id, x.provider_id.id),
+                            }})
+                        if city_provider_dict:
+                            # city_provider_dict.update({prov_rdx_hotel_obj.code: {
+                            #     'provider_city_id': city_obj.name,
+                            #     'provider_country_id': '',
+                            # }})
+                            city_fmt = copy.deepcopy(city)
+                            city_fmt.update({
+                                'name': city_fmt['name'] + '; ' + city_fmt['country_name'],
+                                'provider_codes': city_provider_dict
+                            })
+                            city_fmt.pop('city_name')  # Same with Name
+                            city_fmt.pop('country_code')  # Same with lredy in nme
+                            city_fmt.pop('country_name')  # Same with lredy in nme
+                            city_cache.append(city_fmt)
+                        break
+                if not city_fmt:
+                    _logger.info(msg=str(city['index']) + '. Skip Render Cache for ' + city['name'] + ' No City Found')
+                    continue
+                _logger.info(msg=str(city['index']) + '. Render Cache for ' + city_fmt['name'] + ' by City')
+            if not city_fmt and not city['city_id']:
+                _logger.info(msg=str(city['index']) + '. Skip Render Cache for ' + city['name'])
+            else:
+                _logger.info(msg=str(city['index']) + '. Render Cache for ' + city_fmt['name'] + ' by Destination')
+            # self.env['ir.config_parameter'].sudo().set_param('last.gw.render.idx', 0 if len(catalog) < city['index'] else city['index'])
+
+        if len(catalog) < end:
+            self.env['ir.config_parameter'].sudo().set_param('last.gw.render.idx', 0)
+            # file = open(folder_path, 'w')
+            # file.write(json.dumps([]))
+            # file.close()
+        else:
+            self.env['ir.config_parameter'].sudo().set_param('last.gw.render.idx', end)
+            _logger.info(msg="Done Rendering City (" + str(end) + "/" + str(len(catalog)) + ") will re render during next cron")
+            file = open(folder_path, 'w')
+            file.write(json.dumps(city_cache))
+            file.close()
+            return [] #Blocker kirim ke GW di fungsi stelh ini
+
+        _logger.info(msg='=================')
+        _logger.info(msg='=====  END  =====')
+        _logger.info(msg='=================')
         return city_cache
 
     def create_cache_city(self):
@@ -742,7 +842,7 @@ class TestSearch(models.Model):
                             'total': scs['amount'] * scs['pax_count'],
                             'currency_id': self.env['res.currency'].get_id(scs.get('currency'), default_param_idr=True),
                             'foreign_currency_id': self.env['res.currency'].get_id(scs.get('foreign_currency'), default_param_idr=True),
-                            'description': '',
+                            'description': '0',
                             'ho_id': context.get('co_ho_id') and context['co_ho_id'] or (resv_id.ho_id.id if resv_id.ho_id else '')
                         })
                         self.env['tt.service.charge'].create(scs)
@@ -1475,7 +1575,8 @@ class TestSearch(models.Model):
             vendor_ids = [rec for rec in vendor_ids]
             # vendor_ids += [rec.provider_id for rec in prov_dest_ids if rec if rec.provider_id.name]
         else:
-            vendor_ids = self.env['tt.provider.ho.data'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False), ('ho_id', '=', context['co_ho_id'])])
+            provider_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
+            vendor_ids = self.env['tt.provider.ho.data'].search([('provider_id', 'in', provider_ids.ids), ('ho_id', '=', context['co_ho_id'])])
 
         for rec in vendor_ids:
             a = provider_to_dic(rec, city_id)
