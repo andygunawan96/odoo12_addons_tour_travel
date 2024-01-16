@@ -302,6 +302,8 @@ class TtGetBookingFromVendorReview(models.TransientModel):
 
     pax_type_data = fields.Text("Pax Type Data")
 
+    is_mail = fields.Boolean('Mail if reservation issued', default=True)
+
     def create_data_by_api(self, req, context):
 
         res = req['response']
@@ -408,7 +410,8 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                 'total_commission': abs(commission),
                 'get_booking_json': json.dumps(res),
                 'pax_type_data': json.dumps(pax_count),
-                'payment_method_to_ho': req.get('payment_method_to_ho', False)
+                'payment_method_to_ho': req.get('payment_method_to_ho', False),
+                "is_mail": True
             }
             new = view_id.create(vals)
             return new
@@ -434,6 +437,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
         retrieve_res = booking_res['response']
         pax_type_res = json.loads(self.pax_type_data)
         booker_res = json.loads(self.booker_data)
+        is_mail = self.is_mail
 
         if retrieve_res['status'] == 'ISSUED' and self.env.user.is_using_pin and not pin:
             view = self.env.ref('tt_base.tt_input_pin_wizard_form_view')
@@ -597,7 +601,8 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "provider_bookings": provider_bookings_req,
             "agent_payment_method": self.payment_method_to_ho,
             "member": False,
-            "acquirer_seq_id": ""
+            "acquirer_seq_id": "",
+            "is_mail": is_mail
         }
 
         if self.customer_parent_id.id != self.agent_id.customer_parent_walkin_id.id:

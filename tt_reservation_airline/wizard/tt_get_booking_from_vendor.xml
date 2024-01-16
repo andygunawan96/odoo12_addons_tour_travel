@@ -67,6 +67,7 @@
                     <group>
                         <field name="pnr" readonly="1"/>
                         <field name="status" readonly="1"/>
+                        <field name="is_mail" />
                     </group>
                     <group>
                         <field name="user_id" readonly="1"/>
