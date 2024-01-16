@@ -18,7 +18,7 @@ class AccountingConnectorITM(models.Model):
     _description = 'Accounting Connector ITM'
 
     def add_customer(self, vals):
-        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
+        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'customer_url')], limit=1)
         if not url_obj:
             raise Exception('Please provide a variable with the name "url" in ITM Accounting Setup!')
 
@@ -262,7 +262,7 @@ class AccountingConnectorITM(models.Model):
 
                     for pax_idx, pax in enumerate(prov['tickets']):
                         if pax.get('ticket_number'):
-                            if len(pax['ticket_number']) >= 13:
+                            if '-' not in pax['ticket_number'] and len(pax['ticket_number']) >= 13:
                                 pax_tick = '%s-%s' % (pax['ticket_number'][:3], pax['ticket_number'][3:])
                             else:
                                 pax_tick = pax['ticket_number']

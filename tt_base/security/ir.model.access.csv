@@ -34,11 +34,11 @@ access_tt_customer_job_position_for_customer_level_3,tt.customer.job.position.fo
 access_tt_customer_job_position_for_customer_level_4,tt.customer.job.position.for.customer.level.4,model_tt_customer_job_position,tt_base.group_customer_level_4,1,1,1,1
 access_tt_customer_job_position_for_customer_level_5,tt.customer.job.position.for.customer.level.5,model_tt_customer_job_position,tt_base.group_customer_level_5,1,1,1,1
 ,,,,,,,
-access_tt_customer_job_hierarchy_for_customer_level_1,tt.customer.job.hierarchy.for.customer.level.1,model_tt_customer_job_hierarchy,tt_base.group_customer_level_1,1,0,0,0
-access_tt_customer_job_hierarchy_for_customer_level_2,tt.customer.job.hierarchy.for.customer.level.2,model_tt_customer_job_hierarchy,tt_base.group_customer_level_2,1,0,1,0
-access_tt_customer_job_hierarchy_for_customer_level_3,tt.customer.job.hierarchy.for.customer.level.3,model_tt_customer_job_hierarchy,tt_base.group_customer_level_3,1,1,1,1
-access_tt_customer_job_hierarchy_for_customer_level_4,tt.customer.job.hierarchy.for.customer.level.4,model_tt_customer_job_hierarchy,tt_base.group_customer_level_4,1,1,1,1
-access_tt_customer_job_hierarchy_for_customer_level_5,tt.customer.job.hierarchy.for.customer.level.5,model_tt_customer_job_hierarchy,tt_base.group_customer_level_5,1,1,1,1
+access_tt_customer_job_rules_for_customer_level_1,tt.customer.job.rules.for.customer.level.1,model_tt_customer_job_rules,tt_base.group_customer_level_1,1,0,0,0
+access_tt_customer_job_rules_for_customer_level_2,tt.customer.job.rules.for.customer.level.2,model_tt_customer_job_rules,tt_base.group_customer_level_2,1,0,1,0
+access_tt_customer_job_rules_for_customer_level_3,tt.customer.job.rules.for.customer.level.3,model_tt_customer_job_rules,tt_base.group_customer_level_3,1,1,1,1
+access_tt_customer_job_rules_for_customer_level_4,tt.customer.job.rules.for.customer.level.4,model_tt_customer_job_rules,tt_base.group_customer_level_4,1,1,1,1
+access_tt_customer_job_rules_for_customer_level_5,tt.customer.job.rules.for.customer.level.5,model_tt_customer_job_rules,tt_base.group_customer_level_5,1,1,1,1
 ,,,,,,,
 access_tt_customer_for_public,tt.customer.for.public,model_tt_customer,,1,0,0,0
 ,,,,,,,
