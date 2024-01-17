@@ -12,6 +12,7 @@
                         <field name="is_bypass_pnr_validator"/>
                         <field name="agent_id"/>
                         <field name="provider_ho_data_id" attrs="{'invisible': [('agent_id','=',False)]}" />
+                        <field name="last_name (For NDC Qatar)"/>
                     </group>
                     <group attrs="{'invisible': ['|',('provider_ho_data_id','=',False),('pnr', '=', False)]}">
                         <field name="ho_id" groups="base.group_erp_manager"/>
@@ -67,6 +68,7 @@
                     <group>
                         <field name="pnr" readonly="1"/>
                         <field name="status" readonly="1"/>
+                        <field name="is_mail" />
                     </group>
                     <group>
                         <field name="user_id" readonly="1"/>

@@ -199,7 +199,8 @@ class ReservationAirline(models.Model):
             'acquirer_id': req['acquirer_id'],
             'payment_reference': req.get('payment_reference', ''),
             'payment_ref_attachment': req.get('payment_ref_attachment', []),
-            'is_split': req.get('is_split')
+            'is_split': req.get('is_split'),
+            'is_mail': req.get('is_mail')
         }
         self.action_issued_airline(data)
 
@@ -233,7 +234,7 @@ class ReservationAirline(models.Model):
         self.write(values)
 
         try:
-            if self.agent_type_id.is_send_email_issued:
+            if self.agent_type_id.is_send_email_issued and data['is_mail']:
                 mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_airline')], limit=1)
                 if not mail_created:
                     temp_data = {
@@ -1763,6 +1764,7 @@ class ReservationAirline(models.Model):
                 'customer_parent_id': customer_parent_id,
                 'payment_reference': req.get('payment_reference', ''),
                 'payment_ref_attachment': req.get('payment_ref_attachment', []),
+                'is_mail': req.get('is_mail', True)
             }
             if req.get('is_split'):
                 issued_req.update({
