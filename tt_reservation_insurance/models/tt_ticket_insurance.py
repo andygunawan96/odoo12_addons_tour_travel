@@ -10,6 +10,7 @@ class TtTicketInsurance(models.Model):
     pax_type = fields.Selection(variables.PAX_TYPE, 'Pax Type')
     ticket_number = fields.Char('Ticket Number', default='')
     ticket_url = fields.Char('Ticket URL', default='')
+    policy_number = fields.Char('Policy Number', default='')
 
     printout_quotation_ids = fields.Many2many('tt.upload.center', 'quotation_insurance_attachment_rel', 'quotation_ticket_id','attachment_id', string='Attachments')
 
