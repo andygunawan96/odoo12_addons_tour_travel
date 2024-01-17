@@ -535,7 +535,8 @@ class TtProviderInsurance(models.Model):
                 if (psg['passenger']).replace(' ', '').lower() in [psg_name, psg_name * 2] and not ticket.ticket_number:
                     data_update = {
                         'ticket_number': psg.get('ticket_number', ''),
-                        'ticket_url': psg.get('ticket_url', '')
+                        'ticket_url': psg.get('ticket_url', ''),
+                        'policy_number': psg.get('policy_number', '')
                     }
                     if psg.get('quotation'):
                         attachments = []
@@ -564,6 +565,11 @@ class TtProviderInsurance(models.Model):
                     if psg.get('fees'):
                         ticket.passenger_id.create_ssr(psg['fees'], self.pnr,self.id)
                     break
+                elif not ticket.policy_number and psg.get('policy_number'):
+                    ticket.write({
+                        'policy_number': psg.get('policy_number', '')
+                    })
+                    ticket_found = True
                 elif (psg['passenger']).replace(' ', '').lower() in [psg_name, psg_name * 2] and ticket.ticket_number == psg.get('ticket_number', ''): ##zurich sudah ada ticket_number waktu booked agar tidak create passenger ticket dengan nama kosong
                     ticket_found = True
                     break
