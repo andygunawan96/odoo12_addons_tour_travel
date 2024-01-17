@@ -136,7 +136,7 @@ class ReservationVisa(models.Model):
                         (psg.pricelist_id.entry_type.capitalize() if psg.pricelist_id.entry_type else '') + ' ' + \
                         (psg.pricelist_id.visa_type.capitalize() if psg.pricelist_id.visa_type else '') + ' ' + \
                         (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
-                        ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)'
+                        ' (processed in ' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' working days)'
             price = 0
             for srvc in psg.cost_service_charge_ids:
                 if srvc.charge_type not in ['RAC', 'DISC']:
@@ -162,7 +162,8 @@ class ReservationVisa(models.Model):
                         ' (' + (psg.passenger_type if psg.passenger_type else '') + ') ' + \
                         (psg.pricelist_id.entry_type.capitalize() if psg.pricelist_id.entry_type else '') + ' ' + \
                         (psg.pricelist_id.visa_type.capitalize() if psg.pricelist_id.visa_type else '') + ' ' + \
-                        (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '')
+                        (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
+                        ' (processed in ' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' working days)'
             price_unit = 0
             for cost_charge in psg.cost_service_charge_ids:
                 if cost_charge.charge_type not in ['DISC', 'RAC'] and cost_charge.charge_code != 'csc':
