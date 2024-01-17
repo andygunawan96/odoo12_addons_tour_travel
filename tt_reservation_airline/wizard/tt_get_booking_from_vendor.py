@@ -37,7 +37,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     is_bypass_pnr_validator = fields.Boolean('Is Bypass PNR Validator')
 
     pricing_date = fields.Date('Pricing Date')
-    last_name = fields.Char('Pax Last Name')
+    last_name = fields.Char('Pax Last Name (QR NDC)')
 
     @api.depends('agent_id')
     @api.onchange('agent_id')
