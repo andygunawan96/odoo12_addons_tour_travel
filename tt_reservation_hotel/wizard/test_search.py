@@ -1037,7 +1037,7 @@ class TestSearch(models.Model):
         sc_value = {}
         for p_sc in cost_sc:
             p_charge_type = p_sc.charge_type
-            pnr = p_sc.description or obj_pnr
+            pnr = obj_pnr if not p_sc.description or p_sc.description == '0' else p_sc.description
             if not sc_value.get(pnr):
                 sc_value[pnr] = {}
             if not sc_value[pnr].get(p_charge_type):
