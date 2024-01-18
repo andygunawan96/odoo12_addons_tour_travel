@@ -20,7 +20,7 @@ class AccountingConnectorITM(models.Model):
     def add_customer(self, vals):
         url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'customer_url')], limit=1)
         if not url_obj:
-            raise Exception('Please provide a variable with the name "url" in ITM Accounting Setup!')
+            raise Exception('Please provide a variable with the name "customer_url" in ITM Accounting Setup!')
 
         url = url_obj.variable_value
         headers = {
@@ -65,7 +65,7 @@ class AccountingConnectorITM(models.Model):
             "Params": [
                 {
                     "ParamName": "ContactCd",
-                    "ParamValue": request.get('seq_id') and request['seq_id'] or ""
+                    "ParamValue": request.get('seq_id') and "'%s'" % request['seq_id'] or ""
                 },
                 {
                     "ParamName": "Name",
@@ -77,7 +77,7 @@ class AccountingConnectorITM(models.Model):
                 },
                 {
                     "ParamName": "UniqueCd",
-                    "ParamValue": request.get('seq_id') and request['seq_id'] or ""
+                    "ParamValue": request.get('seq_id') and "'%s'" % request['seq_id'] or ""
                 }
             ]
         }
