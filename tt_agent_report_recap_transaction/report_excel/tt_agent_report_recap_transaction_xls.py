@@ -78,7 +78,10 @@ class AgentReportRecapTransactionXls(models.TransientModel):
 
         # ======= TITLE & SUBTITLE ============
         # write to file in cols and row
-        sheet.merge_range('A1:G2', values['data_form']['agent_name'], style.title)  # set merge cells for agent name
+        if values['data_form'].get('is_corpor'):
+            sheet.merge_range('A1:G2', values['data_form']['customer_parent_name'], style.title)  # set merge cells for COR name
+        else:
+            sheet.merge_range('A1:G2', values['data_form']['agent_name'], style.title)  # set merge cells for agent name
         sheet.merge_range('A3:G4', values['data_form']['title'], style.title2)  # set merge cells for title
         sheet.write('G5', 'Printing Date :' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
                     style.print_date)  # print date print
@@ -325,7 +328,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                     airline_recaps[data_index]['pax_non_GDS'] += i['child']
                                     airline_recaps[data_index]['pax_non_GDS'] += i['infant']
 
-                    if i['ledger_transaction_type'] in [3, 10] and current_ledger != i['ledger_id']:
+                    if i['ledger_transaction_type'] in [3, 10] and current_ledger != i['ledger_id'] and not values['data_form'].get('is_corpor'):
                         current_ledger = i['ledger_id']
 
                         row_data += 1
@@ -537,7 +540,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
 
-                    if i['ledger_transaction_type'] in [3, 10] and current_ledger != i['ledger_id']:
+                    if i['ledger_transaction_type'] in [3, 10] and current_ledger != i['ledger_id'] and not values['data_form'].get('is_corpor'):
                         current_ledger = i['ledger_id']
 
                         row_data += 1
