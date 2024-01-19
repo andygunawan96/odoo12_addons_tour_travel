@@ -151,10 +151,13 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_column('J:J', 12)
         sheet.set_column('K:V', 15)
         if values['data_form']['is_ho']:
+            sheet.set_column('AE:AE', 25)
             sheet.set_column('AH:AH', 30)
         elif not values['data_form'].get('is_corpor'):
+            sheet.set_column('AC:AC', 25)
             sheet.set_column('AF:AF', 30)
         else:
+            sheet.set_column('Y:Y', 25)
             sheet.set_column('AB:AB', 30)
 
         # ============ void start() ======================
@@ -391,10 +394,19 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     ord_number_popped = False
 
                     upsell = 0
+                    psg_id_list = []
+                    psg_name_list = []
                     for svc_csc in channel_pricing:
-                        if svc_csc['order_number'] == temp_order_number and svc_csc['charge_type'] == 'CSC' and isinstance(
-                                svc_csc['service_charge_amount'], float):  # check order number sama & upsell int
-                            upsell += svc_csc['service_charge_amount']
+                        if svc_csc['order_number'] == temp_order_number:
+                            if svc_csc['charge_type'] == 'CSC' and isinstance(svc_csc['service_charge_amount'], float):  # check order number sama & upsell int
+                                upsell += svc_csc['service_charge_amount']
+                            if svc_csc['psg_id'] not in psg_id_list:
+                                psg_id_list.append(svc_csc['psg_id'])
+                                psg_name = '%s %s' % (svc_csc['psg_title'], svc_csc['name'])
+                                if svc_csc.get('psg_free_text'):
+                                    psg_name += ' (%s)' % svc_csc['psg_free_text']
+                                psg_name_list.append(psg_name)
+
                     # lets do some preparation to print the first line (data basically)
                     counter += 1
                     row_data += 1
@@ -483,7 +495,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_commission'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['grand_total'], sty_amount)
-                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), 'Passengers: %s' % ', '.join(psg_name_list), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
@@ -848,9 +860,18 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     ord_number_popped = False
 
                     upsell = 0
+                    psg_id_list = []
+                    psg_name_list = []
                     for svc_csc in channel_pricing:
-                        if svc_csc['order_number'] == temp_order_number and svc_csc['charge_type'] == 'CSC' and isinstance(svc_csc['service_charge_amount'], float):  # check order number sama & upsell int
-                            upsell += svc_csc['service_charge_amount']
+                        if svc_csc['order_number'] == temp_order_number:
+                            if svc_csc['charge_type'] == 'CSC' and isinstance(svc_csc['service_charge_amount'], float):  # check order number sama & upsell int
+                                upsell += svc_csc['service_charge_amount']
+                            if svc_csc['psg_id'] not in psg_id_list:
+                                psg_id_list.append(svc_csc['psg_id'])
+                                psg_name = '%s %s' % (svc_csc['psg_title'], svc_csc['name'])
+                                if svc_csc.get('psg_free_text'):
+                                    psg_name += ' (%s)' % svc_csc['psg_free_text']
+                                psg_name_list.append(psg_name)
                     # lets do some preparation to print the first line (data basically)
                     counter += 1
                     row_data += 1
@@ -939,7 +960,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_commission'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['grand_total'], sty_amount)
-                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), 'Passengers: %s' % ', '.join(psg_name_list), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
