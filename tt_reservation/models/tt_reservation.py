@@ -708,7 +708,7 @@ class TtReservation(models.Model):
         for rec in self:
             tax_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type in ['ROC', 'TAX','ADMIN_FEE_MEDICAL'] and sale.charge_code != 'csc':
+                if sale.charge_type in ['ROC', 'TAX','ADMIN_FEE_MEDICAL'] and 'csc' not in sale.charge_code.split('.'):
                     tax_total += sale.total
             rec.total_tax = tax_total
 
@@ -735,7 +735,7 @@ class TtReservation(models.Model):
         for rec in self:
             nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type != 'DISC' and sale.charge_code != 'csc': # don't count channel upsell
+                if sale.charge_type != 'DISC' and 'csc' not in sale.charge_code.split('.'): # don't count channel upsell
                     nta_total += sale.total
             rec.total_nta = nta_total
 
@@ -753,7 +753,7 @@ class TtReservation(models.Model):
         for rec in self:
             agent_nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                if (sale.charge_code != 'rac' and sale.charge_type == 'RAC') and sale.charge_code != 'csc':
+                if (sale.charge_code != 'rac' and sale.charge_type == 'RAC') and 'csc' not in sale.charge_code.split('.'):
                     agent_nta_total += sale.total * -1
             rec.agent_nta = agent_nta_total + rec.total_nta
 
@@ -1226,7 +1226,7 @@ class TtReservation(models.Model):
                     svc_list_to_save_backend.append((4, self.env['tt.service.charge'].create(svc).id))
                 ##update cost service charges passenger
                 for svc in rec.cost_service_charge_ids:
-                    if 'csc' in svc.charge_code and svc.charge_type in ['RAC', 'ROC']:
+                    if 'csc' in svc.charge_code.split('.') and svc.charge_type in ['RAC', 'ROC']:
                         svc_list_to_save_backend.append((2, svc.id))
                 rec.write({
                     'cost_service_charge_ids': svc_list_to_save_backend
@@ -1312,7 +1312,7 @@ class TtReservation(models.Model):
             if provider_obj.state in ['fail_booked']:
                 continue
             for sc in provider_obj.cost_service_charge_ids:
-                if sc.is_ledger_created or (sc.charge_type == 'RAC' and sc.charge_code not in ['rac', 'csc']):
+                if sc.is_ledger_created or (sc.charge_type == 'RAC' and sc.charge_code != 'rac' and 'csc' not in sc.charge_code.split('.')):
                     continue
                 unpaid_nta_amount += sc.total
         return unpaid_nta_amount
