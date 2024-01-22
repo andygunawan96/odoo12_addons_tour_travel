@@ -133,6 +133,7 @@ class PassportOrderPassengers(models.Model):
                                                 accepted = Accepted by the Immigration
                                                 rejected = Rejected by the Immigration
                                                 done = picked up by customer''')
+    description = fields.Char('Description')
 
     @api.depends('pricelist_id')
     @api.onchange('pricelist_id')

@@ -151,9 +151,9 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_column('D:I', 15)
         sheet.set_column('J:J', 12)
         sheet.set_column('K:P', 15)
-        sheet.set_column('Q:Q', 20)
+        sheet.set_column('Q:Q', 23)
         sheet.set_column('R:V', 15)
-        sheet.set_column('W:W', 18)
+        sheet.set_column('W:W', 28)
         if values['data_form']['is_ho']:
             sheet.set_column('AF:AF', 20)
             sheet.set_column('AI:AI', 30)

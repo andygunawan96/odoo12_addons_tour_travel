@@ -113,7 +113,10 @@ class TtProviderAirline(models.Model):
             ticket_number_list = []
             for ticket_obj in rec.ticket_ids:
                 if ticket_obj.ticket_number:
-                    ticket_number_list.append(ticket_obj.ticket_number)
+                    temp_tick_num = ticket_obj.ticket_number
+                    if ticket_obj.passenger_id and ticket_obj.passenger_id.name:
+                        temp_tick_num += ' (%s)' % ticket_obj.passenger_id.name
+                    ticket_number_list.append(temp_tick_num)
             rec.ticket_numbers = ','.join(ticket_number_list)
 
     ##button function
