@@ -82,9 +82,8 @@ class TtReservationCustomer(models.Model):
             p_charge_type = p_sc.charge_type
             pnr = p_sc.description
 
-            if p_charge_type == 'RAC' and p_sc.charge_code != 'rac':
-                if p_charge_type == 'RAC' and 'csc' not in p_sc.charge_code:
-                    continue
+            if p_charge_type == 'RAC' and p_sc.charge_code != 'rac' and 'csc' not in p_sc.charge_code.split('.'):
+                continue
 
             if not sc_value.get(pnr):
                 sc_value[pnr] = {}

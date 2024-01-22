@@ -352,7 +352,9 @@ class Ledger(models.Model):
         used_sc_list = []
         for sc in provider_obj.cost_service_charge_ids:
             # Pada lionair ada r.ac positif
-            if 'RAC' in sc.charge_type and not sc.is_ledger_created:
+            # if 'RAC' in sc.charge_type and not sc.is_ledger_created:
+            # 19 Jan 2024: ganti pengecekan ke exact 'RAC' karena kalo breakdown nyala ada RAC lain yang bukan commission
+            if sc.charge_type == 'RAC' and not sc.is_ledger_created:
                 ## FIXME TAMBAL DOWNSELL
                 if sc.charge_code == 'csc':
                     amount = sc.get_total_for_payment() * -1

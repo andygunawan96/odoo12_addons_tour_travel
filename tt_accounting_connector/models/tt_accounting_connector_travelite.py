@@ -266,6 +266,11 @@ class AccountingConnectorTravelite(models.Model):
                  ('accounting_setup_id.active', '=', True),
                  ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
                  ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
+            always_use_contactcd = self.env['tt.accounting.setup.variables'].search(
+                [('accounting_setup_id.accounting_provider', '=', 'travelite'),
+                 ('accounting_setup_id.active', '=', True),
+                 ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
+                 ('variable_name', '=', 'always_use_contactcd')], limit=1)
 
             source_type_id = source_type_id_obj.variable_value
             is_create_inv = is_create_inv_obj and is_create_inv_obj.variable_value or False
@@ -275,9 +280,12 @@ class AccountingConnectorTravelite(models.Model):
             if request.get('customer_parent_id'):
                 customer_obj = self.env['tt.customer.parent'].browse(int(request['customer_parent_id']))
                 if customer_obj.accounting_uid:
-                    customer_id = customer_obj.accounting_uid
-                    if customer_id.isdigit():
-                        customer_id = int(customer_id)
+                    if always_use_contactcd and always_use_contactcd.variable_value:
+                        customer_seq_id = customer_obj.accounting_uid
+                    else:
+                        customer_id = customer_obj.accounting_uid
+                        if customer_id.isdigit():
+                            customer_id = int(customer_id)
                 elif customer_obj.seq_id:
                     customer_seq_id = customer_obj.seq_id
 
