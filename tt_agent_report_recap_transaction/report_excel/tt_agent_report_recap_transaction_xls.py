@@ -108,6 +108,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('%s9' % incr.generate_ascii(), 'Adult', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'Child', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'Infant', style.table_head_center)
+        sheet.write('%s9' % incr.generate_ascii(), 'Passengers', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'Direction', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'State', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'PNR', style.table_head_center)
@@ -149,16 +150,19 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_column('C:C', 15)
         sheet.set_column('D:I', 15)
         sheet.set_column('J:J', 12)
-        sheet.set_column('K:V', 15)
+        sheet.set_column('K:P', 15)
+        sheet.set_column('Q:Q', 20)
+        sheet.set_column('R:V', 15)
+        sheet.set_column('W:W', 18)
         if values['data_form']['is_ho']:
-            sheet.set_column('AE:AE', 25)
-            sheet.set_column('AH:AH', 30)
+            sheet.set_column('AF:AF', 20)
+            sheet.set_column('AI:AI', 30)
         elif not values['data_form'].get('is_corpor'):
-            sheet.set_column('AC:AC', 25)
-            sheet.set_column('AF:AF', 30)
+            sheet.set_column('AD:AD', 20)
+            sheet.set_column('AG:AG', 30)
         else:
-            sheet.set_column('Y:Y', 25)
-            sheet.set_column('AB:AB', 30)
+            sheet.set_column('Z:Z', 20)
+            sheet.set_column('AC:AC', 30)
 
         # ============ void start() ======================
         # declare some constant dependencies
@@ -235,16 +239,19 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         row_data += 1
                         sty_table_data_center = style.table_data_center
                         sty_table_data = style.table_data
+                        sty_table_data_wrap = style.table_data_wrap
                         sty_datetime = style.table_data_datetime
                         sty_date = style.table_data_date
                         sty_amount = style.table_data_amount
                         if row_data % 2 == 0:
                             sty_table_data_center = style.table_data_center_even
                             sty_table_data = style.table_data_even
+                            sty_table_data_wrap = style.table_data_even_wrap
                             sty_datetime = style.table_data_datetime_even
                             sty_date = style.table_data_date_even
                             sty_amount = style.table_data_amount_even
 
+                        temp_ticket_numbs = i.get('ticket_numbers') and '\r\n'.join(i['ticket_numbers'].split(',')) or ''
                         incr.reset()
                         sheet.write(row_data, incr.get_number(), '', sty_table_data_center)
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
@@ -263,11 +270,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                         sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
                         sheet.write(row_data, incr.generate_number(), i['ledger_pnr'], sty_table_data)
                         sheet.write(row_data, incr.generate_number(), i['ledger_name'], sty_table_data)
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                        sheet.write(row_data, incr.generate_number(), i.get('ticket_numbers', ''), sty_table_data)
+                        sheet.write(row_data, incr.generate_number(), temp_ticket_numbs, sty_table_data_wrap)
                         sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
                         if not values['data_form'].get('is_corpor'):
                             sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
@@ -366,6 +374,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                         sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
                         sheet.write(row_data, incr.generate_number(), i['ledger_pnr'], sty_table_data)
                         sheet.write(row_data, incr.generate_number(), i['ledger_name'], sty_table_data)
@@ -412,12 +421,14 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     row_data += 1
                     sty_table_data_center = style.table_data_center_border
                     sty_table_data = style.table_data_border
+                    sty_table_data_wrap = style.table_data_border_wrap
                     sty_datetime = style.table_data_datetime_border
                     sty_date = style.table_data_date_border
                     sty_amount = style.table_data_amount_border
                     if row_data % 2 == 0:
                         sty_table_data_center = style.table_data_center_even_border
                         sty_table_data = style.table_data_even_border
+                        sty_table_data_wrap = style.table_data_even_border_wrap
                         sty_datetime = style.table_data_datetime_even_border
                         sty_date = style.table_data_date_even_border
                         sty_amount = style.table_data_amount_even_border
@@ -479,6 +490,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), i['adult'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['child'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['infant'], sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '%s' % '\r\n'.join(psg_name_list), sty_table_data_wrap)
                     sheet.write(row_data, incr.generate_number(), i.get('direction', '-'), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['pnr'], sty_table_data)
@@ -495,7 +507,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_commission'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['grand_total'], sty_amount)
-                    sheet.write(row_data, incr.generate_number(), 'Passengers: %s' % ', '.join(psg_name_list), sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
@@ -504,16 +516,19 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     row_data += 1
                     sty_table_data_center = style.table_data_center_border
                     sty_table_data = style.table_data_border
+                    sty_table_data_wrap = style.table_data_border_wrap
                     sty_datetime = style.table_data_datetime_border
                     sty_date = style.table_data_date_border
                     sty_amount = style.table_data_amount_border
                     if row_data % 2 == 0:
                         sty_table_data_center = style.table_data_center_even_border
                         sty_table_data = style.table_data_even_border
+                        sty_table_data_wrap = style.table_data_even_border_wrap
                         sty_datetime = style.table_data_datetime_even_border
                         sty_date = style.table_data_date_even_border
                         sty_amount = style.table_data_amount_even_border
 
+                    temp_ticket_numbs = i.get('ticket_numbers') and '\r\n'.join(i['ticket_numbers'].split(',')) or ''
                     incr.reset()
                     sheet.write(row_data, incr.get_number(), '', sty_table_data_center)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
@@ -532,11 +547,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['ledger_pnr'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['ledger_name'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                    sheet.write(row_data, incr.generate_number(), i.get('ticket_numbers', ''), sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), temp_ticket_numbs, sty_table_data_wrap)
                     sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
                     if not values['data_form'].get('is_corpor'):
                         sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
@@ -586,6 +602,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                         sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
                         sheet.write(row_data, incr.generate_number(), i['ledger_pnr'], sty_table_data)
@@ -753,16 +770,19 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     row_data += 1
                     sty_table_data_center = style.table_data_center
                     sty_table_data = style.table_data
+                    sty_table_data_wrap = style.table_data_wrap
                     sty_datetime = style.table_data_datetime
                     sty_date = style.table_data_date
                     sty_amount = style.table_data_amount
                     if row_data % 2 == 0:
                         sty_table_data_center = style.table_data_center_even
                         sty_table_data = style.table_data_even
+                        sty_table_data_wrap = style.table_data_even_wrap
                         sty_datetime = style.table_data_datetime_even
                         sty_date = style.table_data_date_even
                         sty_amount = style.table_data_amount_even
 
+                    temp_ticket_numbs = i.get('ticket_numbers') and '\r\n'.join(i['ticket_numbers'].split(',')) or ''
                     incr.reset()
                     sheet.write(row_data, incr.get_number(), '', sty_table_data_center)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
@@ -781,11 +801,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['provider_pnr'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['order_number'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                    sheet.write(row_data, incr.generate_number(), i.get('ticket_numbers', ''), sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), temp_ticket_numbs, sty_table_data_wrap)
                     sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
                     if not values['data_form'].get('is_corpor'):
                         sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
@@ -877,12 +898,14 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     row_data += 1
                     sty_table_data_center = style.table_data_center_border
                     sty_table_data = style.table_data_border
+                    sty_table_data_wrap = style.table_data_border_wrap
                     sty_datetime = style.table_data_datetime_border
                     sty_date = style.table_data_date_border
                     sty_amount = style.table_data_amount_border
                     if row_data % 2 == 0:
                         sty_table_data_center = style.table_data_center_even_border
                         sty_table_data = style.table_data_even_border
+                        sty_table_data_wrap = style.table_data_even_border_wrap
                         sty_datetime = style.table_data_datetime_even_border
                         sty_date = style.table_data_date_even_border
                         sty_amount = style.table_data_amount_even_border
@@ -944,6 +967,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), i['adult'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['child'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['infant'], sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '%s' % '\r\n'.join(psg_name_list), sty_table_data_wrap)
                     sheet.write(row_data, incr.generate_number(), i.get('direction', '-'), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['pnr'], sty_table_data)
@@ -960,7 +984,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_commission'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['grand_total'], sty_amount)
-                    sheet.write(row_data, incr.generate_number(), 'Passengers: %s' % ', '.join(psg_name_list), sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
@@ -969,16 +993,19 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     row_data += 1
                     sty_table_data_center = style.table_data_center_border
                     sty_table_data = style.table_data_border
+                    sty_table_data_wrap = style.table_data_border_wrap
                     sty_datetime = style.table_data_datetime_border
                     sty_date = style.table_data_date_border
                     sty_amount = style.table_data_amount_border
                     if row_data % 2 == 0:
                         sty_table_data_center = style.table_data_center_even_border
                         sty_table_data = style.table_data_even_border
+                        sty_table_data_wrap = style.table_data_even_border_wrap
                         sty_datetime = style.table_data_datetime_even_border
                         sty_date = style.table_data_date_even_border
                         sty_amount = style.table_data_amount_even_border
 
+                    temp_ticket_numbs = i.get('ticket_numbers') and '\r\n'.join(i['ticket_numbers'].split(',')) or ''
                     incr.reset()
                     sheet.write(row_data, incr.get_number(), '', sty_table_data_center)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
@@ -997,11 +1024,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['provider_pnr'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['order_number'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                    sheet.write(row_data, incr.generate_number(), i.get('ticket_numbers', ''), sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), temp_ticket_numbs, sty_table_data_wrap)
                     sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
                     if not values['data_form'].get('is_corpor'):
                         sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
@@ -1200,6 +1228,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), 'Total', sty_table_data_center)
         if not values['data_form'].get('is_corpor'):
             sheet.write(row_data, incr.generate_number(), total_all_agent_nta, sty_amount)
@@ -1239,6 +1268,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
