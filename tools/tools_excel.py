@@ -7,13 +7,17 @@ class XlsxwriterStyle:
 
         self._table_data = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': False, 'italic': False, 'font_size': 7.5})
         self._table_data_bold = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': True, 'italic': False, 'font_size': 7.5})
+        self._table_data_wrap = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': False, 'italic': False, 'font_size': 7.5, 'text_wrap': True})
         self._table_data_border = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': False, 'italic': False, 'font_size': 7.5, 'top': 1})
         self._table_data_border_bold = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': True, 'italic': False, 'font_size': 7.5, 'top': 1})
+        self._table_data_border_wrap = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': False, 'italic': False, 'font_size': 7.5, 'top': 1, 'text_wrap': True})
         self._table_data_total_footer = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': True, 'italic': False, 'font_size': 7.5, 'font_color': 'white', 'fg_color': '#205B95', 'top': 1})
         self._table_data_even = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': False, 'italic': False, 'font_size': 7.5, 'pattern': 1,'fg_color': '#F2F2F2'})
         self._table_data_even_bold = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': True, 'italic': False, 'font_size': 7.5, 'pattern': 1,'fg_color': '#F2F2F2'})
+        self._table_data_even_wrap = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': False, 'italic': False, 'font_size': 7.5, 'pattern': 1,'fg_color': '#F2F2F2', 'text_wrap': True})
         self._table_data_even_border = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': False, 'italic': False, 'font_size': 7.5, 'pattern': 1,'fg_color': '#F2F2F2', 'top': 1})
         self._table_data_even_border_bold = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': True, 'italic': False, 'font_size': 7.5, 'pattern': 1,'fg_color': '#F2F2F2', 'top': 1})
+        self._table_data_even_border_wrap = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': False, 'italic': False, 'font_size': 7.5, 'pattern': 1,'fg_color': '#F2F2F2', 'top': 1, 'text_wrap': True})
 
         self._table_data_red = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': False, 'italic': False, 'font_size': 7.5, 'font_color': 'red'})
         self._table_data_bold_red = self.workbook.add_format({'align': 'vcenter', 'font_name': 'Calibri', 'bold': True, 'italic': False, 'font_size': 7.5, 'font_color': 'red'})
@@ -267,11 +271,17 @@ class XlsxwriterStyle:
     def table_data_bold(self):
         return self._table_data_bold
     @property
+    def table_data_wrap(self):
+        return self._table_data_wrap
+    @property
     def table_data_border(self):
         return self._table_data_border
     @property
     def table_data_border_bold(self):
         return self._table_data_border_bold
+    @property
+    def table_data_border_wrap(self):
+        return self._table_data_border_wrap
     @property
     def table_data_total_footer(self):
         return self._table_data_total_footer
@@ -282,11 +292,17 @@ class XlsxwriterStyle:
     def table_data_even_bold(self):
         return self._table_data_even_bold
     @property
+    def table_data_even_wrap(self):
+        return self._table_data_even_wrap
+    @property
     def table_data_even_border(self):
         return self._table_data_even_border
     @property
     def table_data_even_border_bold(self):
         return self._table_data_even_border_bold
+    @property
+    def table_data_even_border_wrap(self):
+        return self._table_data_even_border_wrap
 
     @property
     def table_data_red(self):
