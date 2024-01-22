@@ -68,8 +68,8 @@ class AgentReportRecapTransacion(models.Model):
     def _select_join_channel_repricing():
         return """
                 rsv.id, rsv.name as order_number, rsv.pnr, rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.state,
-                passenger_ids.name as name, service_charges.charge_type as charge_type, service_charges.amount as service_charge_amount
-
+                passenger_ids.id as psg_id, passenger_ids.title as psg_title, passenger_ids.name as name, passenger_ids.description as psg_free_text, 
+                service_charges.charge_type as charge_type, service_charges.amount as service_charge_amount
                 """
 
     ################
