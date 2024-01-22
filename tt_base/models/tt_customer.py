@@ -333,7 +333,7 @@ class TtCustomer(models.Model):
             cust_id_list_obj = []
             if util.get_without_empty(req,'name'):
                 if util.get_without_empty(req,'search_type') == 'cor_name' and not is_cor_login:
-                    cust_booker_objs = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id.name', 'ilike', req['name'])])
+                    cust_booker_objs = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id.parent_agent_id', 'in', agent_id_list), ('customer_parent_id.name', 'ilike', req['name'])])
                     cust_dom_ids = []
                     for rec_book in cust_booker_objs:
                         if rec_book.customer_id.id not in cust_dom_ids:
@@ -351,7 +351,7 @@ class TtCustomer(models.Model):
                     dom.append(('birth_date', '=', datetime.strptime(req['name'],'%Y-%m-%d')))
                 else:
                     cust_id_list_obj = self.env['tt.customer.identity'].search(
-                        [('identity_name', 'ilike', req['name'])])
+                        [('customer_id.agent_id', 'in', agent_id_list), ('identity_name', 'ilike', req['name'])])
                     dom.append(('name','ilike',req['name']))
             if req.get('email'):
                 dom.append(('email','=',req['email']))
