@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_provider_ho_data_inherit_form_view" model="ir.ui.view">
+        <field name="name">tt.provider.ho.data.inherit.form.view</field>
+        <field name="model">tt.provider.ho.data</field>
+        <field name="mode">extension</field>
+        <field name="inherit_id" ref="tt_base.tt_provider_ho_data_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='provider_type_id']" position="after">
+                <field name="bank_account_id"/> <!--tidak tau cara pakai ref-->
+                <!--<field name="bank_account_id" attrs="{'invisible':[('provider_type_id.code','!=', 'bank')]}"/> &lt;!&ndash;tidak tau cara pakai ref&ndash;&gt;-->
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
