@@ -38,7 +38,7 @@ class ProviderType(models.Model):
         return super(ProviderType, self).unlink()
 
     def get_provider_type(self):
-        provider_type_obj = self.search([('id', '!=', self.env.ref('tt_base.tt_provider_type_payment').id)])
+        provider_type_obj = self.search([('id', '!=', self.env.ref('tt_base.tt_provider_type_payment').id), ('id', '!=', self.env.ref('tt_bank_transaction.tt_provider_type_bank').id)])
         provider_type = []
         for rec in provider_type_obj:
             provider_type.append(rec.code)

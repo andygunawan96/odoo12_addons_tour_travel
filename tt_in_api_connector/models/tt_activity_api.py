@@ -46,7 +46,7 @@ class TtActivityApiCon(models.Model):
 
         return res
 
-    def get_balance(self,provider, ho_id):
+    def get_balance(self, provider_ho_data_obj,provider, ho_id):
         return self.send_request_to_gateway('%s/account/activity' % (self.url),{'provider': provider},'get_vendor_balance', ho_id=ho_id)
 
     def resend_voucher(self, data):

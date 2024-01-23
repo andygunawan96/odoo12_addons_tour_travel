@@ -328,6 +328,8 @@ class TtProviderHOData(models.Model):
 
     name = fields.Char('Name')
     provider_id = fields.Many2one('tt.provider', 'Provider')
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', related='provider_id.provider_type_id', readonly=True)
+
     provider_ledger_ids = fields.One2many('tt.provider.ledger', 'provider_ho_data_id', 'Vendor Ledgers')
     currency_id = fields.Many2one('res.currency', 'Currency')
     address_ids = fields.One2many('address.detail', 'provider_ho_data_id', string='Addresses')
@@ -348,7 +350,7 @@ class TtProviderHOData(models.Model):
     def sync_balance(self, agent_obj=False):
         ##send request to gateway
         ho_id = self.ho_id.id
-        get_vendor_balance_dict = self.env['tt.%s.api.con' % (self.provider_id.provider_type_id.code)].get_balance(self.provider_id.code, ho_id)
+        get_vendor_balance_dict = self.env['tt.%s.api.con' % (self.provider_id.provider_type_id.code)].get_balance(self, self.provider_id.code, ho_id)
         if get_vendor_balance_dict['error_code'] == 0:
             self.create_provider_ledger(get_vendor_balance_dict['response']['balance'])
         else:

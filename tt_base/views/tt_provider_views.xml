@@ -166,6 +166,7 @@
                         <group>
                             <group>
                                 <field name="provider_id"/>
+                                <field name="provider_type_id"/>
                                 <field name="currency_id"/>
                                 <field name="is_using_balance"/>
                                 <field name="is_using_lg"/>
