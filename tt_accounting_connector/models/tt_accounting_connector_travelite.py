@@ -274,7 +274,7 @@ class AccountingConnectorTravelite(models.Model):
 
             source_type_id = source_type_id_obj.variable_value
             is_create_inv = is_create_inv_obj and is_create_inv_obj.variable_value or False
-            customer_id = ""
+            customer_id = 0
             customer_seq_id = ""
             customer_name = ""
             if request.get('customer_parent_id'):

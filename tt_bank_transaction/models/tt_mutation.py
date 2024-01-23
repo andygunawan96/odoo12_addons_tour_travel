@@ -25,6 +25,7 @@ class TtBankAccount(models.Model):
     bank_transaction_date_ids = fields.One2many('tt.bank.transaction.date', "bank_account_id")
     bank_transaction_ids = fields.One2many('tt.bank.transaction', 'bank_account_id')
     is_get_transaction = fields.Boolean('Do Get Transaction')
+    is_snap = fields.Boolean('Is using SNAP')
 
     def create_bank_account(self, req):
         result = self.env['tt.bank.accounts'].create({
@@ -43,6 +44,7 @@ class TtBankAccount(models.Model):
             'provider': self.bank_id.code,
             'startdate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
             'enddate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
+            'is_snap': self.is_snap
         }
         # called function to proceed data and input in bank transaction
         self.env['tt.bank.transaction'].get_data(data, self.ho_id.id)
@@ -271,3 +273,22 @@ class TtBankTransaction(models.Model):
                         "transaction_message": rec.transaction_message != '' and rec.transaction_message or rec.transaction_name
                     })
         return ERR.get_no_error(res)
+
+
+class TtProviderHOData(models.Model):
+    _inherit = 'tt.provider.ho.data'
+
+
+    def get_bank_account_domain(self):
+        if self.ho_id:
+            return [('ho_id', '=', self.ho_id.id)]
+        else:
+            return []
+
+    @api.onchange('ho_id')
+    def _onchange_domain_bank_account(self):
+        return {'domain': {
+            'bank_account_id': self.get_bank_account_domain()
+        }}
+
+    bank_account_id = fields.Many2one('tt.bank.accounts', 'Bank Account', domain=get_bank_account_domain)

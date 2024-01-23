@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_provider_type_bank" model="tt.provider.type">
+            <field name="name">Bank</field>
+            <field name="code">bank</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

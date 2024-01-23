@@ -19,7 +19,8 @@ class ManualGetBankTransactionWizard(models.TransientModel):
             'account_number': self.bank_accounts_id.bank_account_number_without_dot,
             'provider': self.bank_accounts_id.bank_id.code,
             'startdate': transaction_date,
-            'enddate': transaction_date
+            'enddate': transaction_date,
+            'is_snap': self.bank_accounts_id.is_snap
         }
         # called function to proceed data and input in bank transaction
         self.env['tt.bank.transaction'].get_data(data, self.bank_accounts_id.ho_id.id)
