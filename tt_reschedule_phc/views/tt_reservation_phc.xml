@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="tt_reservation_phc.tt_reservation_phc_form_views"/>
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_cancel']" position="after">
-                <button string="After Sales Request" name="%(tt_reschedule_phc.tt_reschedule_phc_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user"
+                <button string="After Sales Request" name="%(tt_reschedule_phc.tt_reschedule_phc_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user,tt_base.group_tt_corpor_user"
                         context="{
                 'default_res_model': res_model,
                 'default_res_id': id,
@@ -21,7 +21,7 @@
                 'default_new_picked_timeslot_id': picked_timeslot_id
                 }" attrs="{'invisible':['|', ('refundable','=',False), ('provider_type_id','!=', %(tt_reservation_phc.tt_provider_type_phc)d)]}"/>
 
-                <button string="After Sales Request" name="%(tt_reschedule_phc.tt_reschedule_phc_wizard_action_view_ho)d" type="action" groups="tt_base.group_after_sales_master_level_3"
+                <button string="After Sales Request" name="%(tt_reschedule_phc.tt_reschedule_phc_wizard_action_view_ho)d" type="action" groups="tt_base.group_after_sales_master_level_3,base.group_erp_manager"
                         context="{
                 'default_res_model': res_model,
                 'default_res_id': id,

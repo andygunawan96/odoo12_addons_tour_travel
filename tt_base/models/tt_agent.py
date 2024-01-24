@@ -341,7 +341,8 @@ class TtAgent(models.Model):
             for rec2 in rec.booker_customer_ids:
                 booker_data.update({
                     rec2.customer_id.seq_id: {
-                        'name': rec2.customer_id.name
+                        'name': rec2.customer_id.name,
+                        'job_position_name': rec2.job_position_id and rec2.job_position_id.name or ''
                     }
                 })
             customer_parent_data.update({
