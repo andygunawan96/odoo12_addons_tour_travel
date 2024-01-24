@@ -23,7 +23,7 @@
                         'default_currency_id': currency_id,
                         'default_adj_type': provider_type_id
                    }"/>
-                    <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user"
+                    <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user,tt_base.group_tt_corpor_user"
                             context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
@@ -36,7 +36,7 @@
                         'default_currency_id': currency_id,
                         'default_service_type': provider_type_id
                    }" attrs="{'invisible':[('refundable','=',False)]}"/>
-                    <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view_ho)d" type="action" groups="tt_base.group_after_sales_master_level_3"
+                    <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view_ho)d" type="action" groups="tt_base.group_after_sales_master_level_3,base.group_erp_manager"
                             context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
