@@ -534,7 +534,7 @@ class TtRefund(models.Model):
         return res
 
     def confirm_refund_from_button(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_corpor_user').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 6')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
@@ -584,7 +584,7 @@ class TtRefund(models.Model):
             _logger.info('Error Create Email Queue')
 
     def confirm_refund_from_button_ho(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 7')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
@@ -656,7 +656,7 @@ class TtRefund(models.Model):
         return res
 
     def send_refund_from_button_backend(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 8')
         self.send_refund_from_button()
 
@@ -764,7 +764,7 @@ class TtRefund(models.Model):
         return res
 
     def validate_refund_from_button(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_after_sales_master_level_3').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_corpor_user').id, self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 9')
         if self.state != 'sent':
             raise UserError("Cannot Validate because state is not 'Sent'.")
@@ -849,7 +849,7 @@ class TtRefund(models.Model):
         return res
 
     def finalize_refund_from_button_backend(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 10')
         self.finalize_refund_from_button()
 
@@ -956,7 +956,7 @@ class TtRefund(models.Model):
         return res
 
     def action_approve_backend(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_5'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_5').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 11')
         self.action_approve()
 
@@ -1114,7 +1114,7 @@ class TtRefund(models.Model):
                 rec.set_to_done()
 
     def create_profit_loss_ledger(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 12')
         value = self.real_refund_amount - self.refund_amount
         if self.real_refund_amount != 0 and value != 0 and not self.profit_loss_created:
@@ -1147,7 +1147,7 @@ class TtRefund(models.Model):
             raise UserError(_('Profit & Loss Ledger has already been created, or HO has no Profit/Loss.'))
 
     def set_to_approve(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_level_4'):
+        if not ({self.env.ref('tt_base.group_after_sales_level_4').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 13')
         for rec in self.refund_line_cust_ids:
             rec.sudo().unlink()
@@ -1159,7 +1159,7 @@ class TtRefund(models.Model):
         pass
 
     def action_payment(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_after_sales_master_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 14')
         if self.state != 'approve':
             raise UserError("Cannot process payment to customer because state is not 'approved'.")
@@ -1181,7 +1181,7 @@ class TtRefund(models.Model):
         })
 
     def action_approve_cust(self):
-        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('base.group_erp_manager').id, self.env.ref('tt_base.group_after_sales_master_level_5').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 15')
         if self.state != 'payment':
             raise UserError("Cannot process payment to customer because state is not 'approved'.")
@@ -1192,7 +1192,7 @@ class TtRefund(models.Model):
         })
 
     def action_done(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_after_sales_master_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('tt_base.group_tt_corpor_user').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 16')
         state_list = ['approve_cust']
         if self.customer_parent_id.customer_parent_type_id.id == self.env.ref('tt_base.customer_type_fpo').id:
@@ -1317,13 +1317,9 @@ class TtRefund(models.Model):
         }
 
     def toggle_is_vendor_received(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_5'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_5').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 18')
         self.is_vendor_received = not self.is_vendor_received
-
-    def get_company_name(self):
-        company_obj = self.env['res.company'].search([], limit=1)
-        return company_obj.name
 
     def print_refund_to_agent(self):
         datas = {

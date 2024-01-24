@@ -533,7 +533,7 @@ class TtReschedule(models.Model):
             rec.reschedule_type_str = temp_str and temp_str[:-2] or ''
 
     def set_to_draft(self):
-        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('tt_base.group_tt_agent_user').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_corpor_user').id, self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 465')
         self.write({
             'state': 'draft',
@@ -541,7 +541,7 @@ class TtReschedule(models.Model):
         })
 
     def set_to_confirm(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_5'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 78')
         self.write({
             'state': 'confirm',
@@ -551,7 +551,7 @@ class TtReschedule(models.Model):
         })
 
     def confirm_reschedule_from_button(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_corpor_user').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 79')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
@@ -569,7 +569,7 @@ class TtReschedule(models.Model):
             self.write({'confirm_uid': co_uid,})
 
     def confirm_reschedule_from_button_ho(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 80')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
@@ -581,7 +581,7 @@ class TtReschedule(models.Model):
         })
 
     def send_reschedule_from_button(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 81')
         if self.state != 'confirm':
             raise UserError("Cannot Send because state is not 'confirm'.")
@@ -596,7 +596,7 @@ class TtReschedule(models.Model):
         self.validate_reschedule_from_button()
 
     def validate_reschedule_from_button(self, agent_payment_method='balance'):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_after_sales_master_level_3').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_corpor_user').id, self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 82')
         if self.state != 'sent':
             raise UserError("Cannot Validate because state is not 'Sent'.")
@@ -708,7 +708,7 @@ class TtReschedule(models.Model):
         })
 
     def finalize_reschedule_from_button(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 83')
         if self.state != 'validate':
             raise UserError("Cannot Finalize because state is not 'Validated'.")
@@ -724,7 +724,7 @@ class TtReschedule(models.Model):
         })
 
     def set_to_final(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_5'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_4').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 84')
         self.write({
             'state': 'final',
@@ -742,7 +742,7 @@ class TtReschedule(models.Model):
         return required
 
     def action_done(self, bypass_po=False):
-        if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 85')
         if self.state != 'final':
             raise UserError("Cannot Approve because state is not 'Finalized'.")

@@ -63,19 +63,19 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="confirm_reschedule_from_button" string="Confirm" type="object" groups="tt_base.group_tt_agent_user,base.group_erp_manager" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="confirm_reschedule_from_button_ho" string="Confirm" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':['|', ('state','!=', 'draft'), ('agent_type_id','!=', %(tt_base.agent_type_btc)d)]}"/>
-                    <button name="send_reschedule_from_button" string="Send to Agent" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
-                    <button name="validate_reschedule_from_btn" string="Validate" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'sent')]}"/>
-                    <button name="finalize_reschedule_from_button" string="Finalize" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'validate')]}"/>
-                    <button name="action_done" string="Approve (Done)" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'final')]}"/>
-                    <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'cancel')]}"/>
-                    <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','not in', ['sent', 'validate'])]}"/>
-                    <button name="set_to_final" string="Set to Finalized" type="object" groups="tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','!=', 'done')]}"/>
+                    <button name="confirm_reschedule_from_button" string="Confirm" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_tt_corpor_user" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="confirm_reschedule_from_button_ho" string="Confirm" type="object" groups="tt_base.group_after_sales_master_level_3,base.group_erp_manager" attrs="{'invisible':['|', ('state','!=', 'draft'), ('agent_type_id','!=', %(tt_base.agent_type_btc)d)]}"/>
+                    <button name="send_reschedule_from_button" string="Send to Agent" type="object" groups="tt_base.group_after_sales_master_level_3,base.group_erp_manager" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
+                    <button name="validate_reschedule_from_btn" string="Validate" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_tt_corpor_user,tt_base.group_after_sales_master_level_3,base.group_erp_manager" attrs="{'invisible':[('state','!=', 'sent')]}"/>
+                    <button name="finalize_reschedule_from_button" string="Finalize" type="object" groups="tt_base.group_after_sales_master_level_3,base.group_erp_manager" attrs="{'invisible':[('state','!=', 'validate')]}"/>
+                    <button name="action_done" string="Approve (Done)" type="object" groups="tt_base.group_after_sales_master_level_3,base.group_erp_manager" attrs="{'invisible':[('state','!=', 'final')]}"/>
+                    <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_tt_corpor_user,tt_base.group_after_sales_master_level_3,base.group_erp_manager" attrs="{'invisible':[('state','!=', 'cancel')]}"/>
+                    <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_after_sales_master_level_3,base.group_erp_manager" attrs="{'invisible':[('state','not in', ['sent', 'validate'])]}"/>
+                    <button name="set_to_final" string="Set to Finalized" type="object" groups="tt_base.group_after_sales_master_level_4,base.group_erp_manager" attrs="{'invisible':[('state','!=', 'done')]}"/>
                     <button name="cancel_reschedule_from_button" string="Cancel (Reverse Ledger)" type="object" attrs="{'invisible':[('state','in', ['expired', 'cancel'])]}" confirm="Are you sure you want to cancel?"/>
                     <button name="compute_all_real_reschedule_amount" string="Compute All Real Reschedule Amount" type="object" groups="base.group_system,base.user_admin"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
-                            groups="tt_base.group_adjustment_level_3"
+                            groups="tt_base.group_adjustment_level_3,base.group_erp_manager"
                             context="{
                         'default_reschedule_model': 'tt.reschedule',
                         'default_reschedule_id': id,
