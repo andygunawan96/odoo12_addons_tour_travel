@@ -115,8 +115,8 @@
                                 <field name="check_date_HO" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager" invisible="1"/>
                             </tree>
                         </field>
-                        <field name="cost_service_charge_ids" string="Cost Service Charges"/>
-                        <field name="channel_service_charge_ids" string="Channel Service Charges" attrs="{'readonly': [('state', 'not in', ['draft','confirm','validate'])]}"/>
+                        <field name="cost_service_charge_ids" string="Cost Service Charges" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                        <field name="channel_service_charge_ids" string="Channel Service Charges" attrs="{'readonly': [('state', 'not in', ['draft','confirm','validate'])]}" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                     </group>
                     <group>
                         <field name="notes"/>

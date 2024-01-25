@@ -17,13 +17,13 @@
                         <field name="tour_room_seq"/>
                     </group>
                 </group>
-                <separator string="Service Charges"/>
-                <field name="cost_service_charge_ids"
+                <separator string="Service Charges" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="cost_service_charge_ids" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"
                 context="{
                     'form_view_ref': 'tt_reservation_tour.tt_service_charge_tour_inherit_form_view'
                 }"/>
-                <separator string="Channel Repricing"/>
-                <field name="channel_service_charge_ids"/>
+                <separator string="Channel Repricing" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="channel_service_charge_ids" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
             </xpath>
         </field>
     </record>
