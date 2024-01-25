@@ -771,9 +771,9 @@ New Provider Commission : 50,000 - 1,000 = 49,000
             <tree decoration-muted="active == False">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
+                <field name="pricing_type"/>
                 <field name="currency_id"/>
                 <field name="description"/>
-                <field name="pricing_type"/>
                 <field name="set_expiration_date"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
