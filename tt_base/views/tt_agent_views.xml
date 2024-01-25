@@ -184,6 +184,11 @@
                                 <field name="agent_credit_limit_provider_eligibility_ids"/>
                             </group>
                         </page>
+                        <page string="Train Logo" attrs="{'invisible': ['|',('train_logo','=',False),('is_ho_agent','=',False)]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
+                            <group>
+                                <field name="train_logo"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

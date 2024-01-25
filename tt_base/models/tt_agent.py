@@ -110,6 +110,7 @@ class TtAgent(models.Model):
     state = fields.Selection([("draft", "Draft"), ("done", "Done")],'State', default='done')
 
     pricing_breakdown = fields.Boolean('Pricing Breakdown', default=False)
+    train_logo = fields.Binary('Train Logo')
 
     def get_ho_pricing_breakdown(self):
         if not self.ho_id:
