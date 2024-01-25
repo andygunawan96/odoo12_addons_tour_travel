@@ -48,8 +48,9 @@ class ArchiveDupeCustomerWizard(models.TransientModel):
         if cust_filtered_ids:
             search_params.append(('id', 'in', cust_filtered_ids))
         cust_list = self.env['tt.customer'].search(search_params)
-        if cust_list:
-            sql_query = """
-                        update tt_customer set active = False where id in %s;
-                        """ % (str(cust_list.ids).replace('[', '(').replace(']', ')'))
-            self.env.cr.execute(sql_query)
+        if not cust_list:
+            raise UserError("No Duplicate User Found.")
+        sql_query = """
+                    update tt_customer set active = False where id in %s;
+                    """ % (str(cust_list.ids).replace('[', '(').replace(']', ')'))
+        self.env.cr.execute(sql_query)
