@@ -166,7 +166,7 @@
                                 <field name="commission"/>
                             </group>
 
-                            <group string="Service Charges">
+                            <group string="Service Charges" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user">
                                 <field name="cost_service_charge_ids" readonly="1">
                                     <tree>
                                         <field name="charge_code"/>

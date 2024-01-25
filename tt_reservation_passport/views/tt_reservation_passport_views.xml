@@ -142,7 +142,7 @@
                 <field name="done_date"/>
             </field>
             <field name="agent_nta" position="after">
-                <field name="total_channel_upsell" class="oe_subtotal_footer_separator"/>
+                <field name="total_channel_upsell" class="oe_subtotal_footer_separator" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
             </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <group>
@@ -158,7 +158,7 @@
                 </page>
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
-                <page string="Prices" name="prices" >
+                <page string="Prices" name="prices" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user">
                     <field name="sale_service_charge_ids" context="{'form_view_ref': 'tt_reservation_passport.tt_service_charge_passport_inherit_form_view'}" readonly="1">
                         <tree>
                             <field name="charge_code"/>

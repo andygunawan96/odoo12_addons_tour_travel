@@ -160,7 +160,7 @@
                         </field>
                         <field name="handling_information"/>
                     </group>
-                    <group string="Pricing">
+                    <group string="Pricing" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user">
                         <field name="cost_service_charge_ids" context="{'form_view_ref':'tt_reservation_visa.tt_service_charge_visa_inherit_form_view'}"/>
                         <field name="channel_service_charge_ids" attrs="{'readonly': [('state', 'not in', ['draft','confirm','validate'])]}"/>
                     </group>

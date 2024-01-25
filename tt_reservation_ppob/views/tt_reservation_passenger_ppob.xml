@@ -7,13 +7,13 @@
         <field name="inherit_id" ref="tt_reservation.tt_reservation_passenger_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='basic_info']" position="after">
-                <separator string="Service Charges"/>
-                <field name="cost_service_charge_ids"
+                <separator string="Service Charges" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="cost_service_charge_ids" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"
                 context="{
                     'form_view_ref': 'tt_reservation_ppob.tt_service_charge_ppob_inherit_form_view'
                 }"/>
-                <separator string="Channel Repricing"/>
-                <field name="channel_service_charge_ids"/>
+                <separator string="Channel Repricing" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="channel_service_charge_ids" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
             </xpath>
         </field>
     </record>

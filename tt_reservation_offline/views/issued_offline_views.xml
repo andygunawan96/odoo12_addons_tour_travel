@@ -204,7 +204,7 @@
                                 <field name="incentive_amount" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('state_offline', '=', 'draft')]}"/>
                                 <field name="nta_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 <field name="agent_nta_price"/>
-                                <field name="total_channel_upsell"/>
+                                <field name="total_channel_upsell" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                                 <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 <field name="admin_fee" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 <field name="admin_fee_ho" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
@@ -312,7 +312,7 @@
                             <page string="Passenger(s)">
                                 <field name="passenger_ids" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'sent', 'validate'])]}"/>  <!--context="{'default_agent_id': sub_agent_id}"-->
                             </page>
-                            <page string="Prices" name="prices" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">  <!--attrs="{'invisible': [('state', '=', 'draft')]}"-->
+                            <page string="Prices" name="prices" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user">  <!--attrs="{'invisible': [('state', '=', 'draft')]}"-->
                                 <field name="sale_service_charge_ids" readonly="1">
                                     <tree>
                                         <field name="charge_code"/>
