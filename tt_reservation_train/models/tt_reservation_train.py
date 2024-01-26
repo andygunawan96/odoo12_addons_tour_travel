@@ -741,13 +741,15 @@ class TtReservationTrain(models.Model):
                 if book_obj.third_party_ids:
                     if book_obj.third_party_ids[0].third_party_provider == 'ptr':
                         webhook_tools = ptr_tools.PointerTools('train')
+                        webhook_request = None
                         if book_obj.state == 'booked':
                             webhook_request = webhook_tools.request_webhook_booked(book_obj)
                         elif book_obj.state == 'issued':
                             webhook_request = webhook_tools.request_webhook_issued(book_obj)
-                        res.update({
-                            "webhook_request": webhook_request
-                        })
+                        if webhook_request:
+                            res.update({
+                                "webhook_request": webhook_request
+                            })
                 # _logger.info("Get resp\n" + json.dumps(res))
                 return ERR.get_no_error(res)
             else:
