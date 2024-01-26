@@ -105,7 +105,7 @@
                             string="Print Itinerary" type="object" icon="fa-print"/>
                 </xpath>
                 <field name="agent_nta" position="after">
-                    <field name="total_channel_upsell" class="oe_subtotal_footer_separator"/>
+                    <field name="total_channel_upsell" class="oe_subtotal_footer_separator" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                 </field>
                 <xpath expr="//group[@name='paxgroup']" position="before">
                     <separator string="Information"/>
@@ -150,7 +150,7 @@
                 </xpath>
 
                 <xpath expr="//page[@name='anchor']" position="before">
-                    <page string="Prices" name="prices">
+                    <page string="Prices" name="prices" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user">
                         <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
                         <!--                    <button name="test_error" type="object" string="test_error"/>-->
                         <field name="sale_service_charge_ids" context="{'form_view_ref':'tt_reservation_bus.tt_service_charge_bus_inherit_form_view'}">

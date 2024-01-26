@@ -673,3 +673,6 @@ access_tt_pin_log_for_public,tt.pin.log.for.public,model_tt_pin_log,,0,0,0,0
 ,,,,,,,
 access_tt_pin_log_for_admin,tt.pin.log.for.admin,model_tt_pin_log,base.group_system,1,1,1,1
 ,,,,,,,
+"base.access_ir_exports_group_system","ir_exports group_system","model_ir_exports","base.group_user",0,0,0,0
+"access_ir_exports_for_ho_user","access_ir_exports_for_ho_user","model_ir_exports","tt_base.group_tt_tour_travel",1,1,1,1
+"access_ir_exports_for_admin_user","access_ir_exports_for_admin_user","model_ir_exports","base.group_erp_manager",1,1,1,1

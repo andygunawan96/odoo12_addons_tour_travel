@@ -58,8 +58,8 @@
                             <field name="currency_id"/>
                         </group>
                     </group>
-                    <separator string="Service Charges"/>
-                    <field name="cost_service_charge_ids">
+                    <separator string="Service Charges" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                    <field name="cost_service_charge_ids" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user">
                         <tree>
                             <field name="charge_code"/>
                             <field name="charge_type"/>

@@ -37,8 +37,8 @@
                             </group>
                         </group>
                         <group>
-                            <field name="cost_service_charge_ids"/>
-                            <field name="channel_service_charge_ids"/>
+                            <field name="cost_service_charge_ids" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                            <field name="channel_service_charge_ids" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                         </group>
                     </sheet>
                 </form>

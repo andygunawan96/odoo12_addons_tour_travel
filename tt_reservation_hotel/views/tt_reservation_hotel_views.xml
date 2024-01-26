@@ -381,7 +381,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Prices" name="prices">
+                        <page string="Prices" name="prices" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user">
                             <field name="sale_service_charge_ids">
                                 <tree editable="bottom">
                                     <field name="charge_code"/>
@@ -466,7 +466,7 @@
                 <button name="print_itinerary" class="oe_stat_button" states="booked,issued,done,refund,rescheduled,reissue" string="Print Itinerary" type="object" icon="fa-print"/>
             </xpath>
             <field name="agent_nta" position="after">
-                <field name="total_channel_upsell" class="oe_subtotal_footer_separator"/>
+                <field name="total_channel_upsell" class="oe_subtotal_footer_separator" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
             </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <separator string="Trip Information"/>
@@ -529,7 +529,7 @@
                         </tree>
                     </field>
                 </page>
-                <page string="Prices" name="prices">
+                <page string="Prices" name="prices" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user">
                     <field name="sale_service_charge_ids">
                         <tree editable="bottom">
                             <field name="charge_code"/>
