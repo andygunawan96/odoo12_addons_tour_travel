@@ -187,6 +187,8 @@ class TtReservation(models.Model):
 
     estimated_currency = fields.Char('Estimated Currency')
 
+    third_party_ids = fields.Char('Agent View Service Charge')
+
     @api.model
     def create(self, vals_list):
         try:
