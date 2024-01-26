@@ -1067,6 +1067,15 @@ class MasterTour(models.Model):
                             'url': img.url and img.url or '',
                             'filename': img.filename and img.filename or '',
                         })
+                    flight_carrier_used_list = []
+                    flight_carrier_dict_list = []
+                    for segment in rec.flight_segment_ids:
+                        if segment.carrier_id and segment.carrier_id.code not in flight_carrier_used_list:
+                            flight_carrier_used_list.append(segment.carrier_id.code)
+                            flight_carrier_dict_list.append({
+                                'code': segment.carrier_id.code,
+                                'name': segment.carrier_id.name
+                            })
                     tour_line_qualify = False
                     tour_line_list = []
                     for rec2 in rec.tour_line_ids:
@@ -1097,6 +1106,7 @@ class MasterTour(models.Model):
                             'tour_category': rec.tour_category,
                             'tour_type': rec.tour_type_id.to_dict(),
                             'tour_type_str': rec.tour_type_id.name,
+                            'flight_carriers': flight_carrier_dict_list,
                             'description': rec.description,
                             'currency_code': rec.currency_id.name,
                             'carrier_code': rec.carrier_id.code,

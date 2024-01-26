@@ -534,58 +534,8 @@ class TtRefund(models.Model):
         return res
 
     def confirm_refund_from_button(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_corpor_user').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id, self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_corpor_user').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 6')
-        if self.state != 'draft':
-            raise UserError("Cannot Confirm because state is not 'draft'.")
-
-        estimate_refund_date = date.today() + relativedelta(days=self.refund_type_id.days)
-
-        self.write({
-            'state': 'confirm',
-            'confirm_uid': self.env.user.id,
-            'confirm_date': datetime.now(),
-            'refund_date_ho': estimate_refund_date,
-        })
-        for rec in self.refund_line_ids:
-            rec.set_to_confirm()
-
-        try:
-            mail_created = self.env['tt.email.queue'].sudo().search(
-                [('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'refund_confirmed')],
-                limit=1)
-            if not mail_created:
-                temp_data = {
-                    'provider_type': 'refund',
-                    'order_number': self.name,
-                    'type': 'confirmed',
-                }
-                temp_context = {
-                    'co_agent_id': self.agent_id.id
-                }
-                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
-                # jika book_obj provider ada rodextrip kirim
-                resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
-                for rec in resv_obj.provider_booking_ids:
-                    if 'rodextrip' in rec.provider_id.code:
-                        # tembak gateway
-                        data = {
-                            # 'referenced_document_external': 'AL.20120301695',
-                            'referenced_document_external': rec.pnr2,
-                            'res_model': self.res_model,
-                            'provider': rec.provider_id.code,
-                            'type': 'confirm'
-                        }
-                        self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.ho_id.id)
-            else:
-                _logger.info('Refund Confirmed email for {} is already created!'.format(self.name))
-                raise Exception('Refund Confirmed email for {} is already created!'.format(self.name))
-        except Exception as e:
-            _logger.info('Error Create Email Queue')
-
-    def confirm_refund_from_button_ho(self):
-        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 7')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
 

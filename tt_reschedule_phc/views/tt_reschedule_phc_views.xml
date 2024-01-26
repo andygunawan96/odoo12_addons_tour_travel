@@ -61,7 +61,6 @@
             <form create="false">
                 <header>
                     <button name="confirm_reschedule_from_button" string="Confirm" type="object" groups="tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="confirm_reschedule_from_button_ho" string="Confirm" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':['|', ('state','!=', 'draft'), ('agent_type_id','!=', %(tt_base.agent_type_btc)d)]}"/>
                     <button name="send_reschedule_from_button" string="Send to Agent" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
                     <button name="validate_reschedule_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'sent')]}"/>
                     <button name="finalize_reschedule_from_button" string="Finalize" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'validate')]}"/>
