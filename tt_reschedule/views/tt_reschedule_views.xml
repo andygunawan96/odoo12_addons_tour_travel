@@ -331,7 +331,7 @@
                             <field name="ledger_ids"
                                    context="{'tree_view_ref': 'tt_accounting.tt_ledger_adj_tree_view'}"/>
                         </page>
-                        <page string="HO Invoice" name="invoice_page">
+                        <page string="HO Invoice" name="invoice_page" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager">
                             <field name="ho_invoice_line_ids" readonly="1">
                                 <tree>
                                     <field name="name"/>
