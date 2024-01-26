@@ -551,7 +551,7 @@ class TtReschedule(models.Model):
         })
 
     def confirm_reschedule_from_button(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_corpor_user').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id, self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_corpor_user').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 79')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
@@ -567,18 +567,6 @@ class TtReschedule(models.Model):
         self.confirm_reschedule_from_button()
         if co_uid:
             self.write({'confirm_uid': co_uid,})
-
-    def confirm_reschedule_from_button_ho(self):
-        if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 80')
-        if self.state != 'draft':
-            raise UserError("Cannot Confirm because state is not 'draft'.")
-
-        self.write({
-            'state': 'confirm',
-            'confirm_uid': self.env.user.id,
-            'confirm_date': datetime.now(),
-        })
 
     def send_reschedule_from_button(self):
         if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):

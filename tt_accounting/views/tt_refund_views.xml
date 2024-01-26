@@ -64,8 +64,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="confirm_refund_from_button" string="Confirm" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_tt_corpor_user" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="confirm_refund_from_button_ho" string="Confirm" type="object" groups="tt_base.group_after_sales_master_level_3,base.group_erp_manager" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="confirm_refund_from_button" string="Confirm" type="object" groups="tt_base.group_after_sales_master_level_3,base.group_erp_manager,tt_base.group_tt_agent_user,tt_base.group_tt_corpor_user" attrs="{'invisible':[('state','!=', 'draft')]}"/>
                     <button name="send_refund_from_button_backend" string="Send to Agent" type="object" groups="tt_base.group_after_sales_master_level_3,base.group_erp_manager" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
                     <button name="validate_refund_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_3,tt_base.group_tt_corpor_user,base.group_erp_manager" attrs="{'invisible':[('state','!=', 'sent')]}"/>
                     <button name="finalize_refund_from_button_backend" string="Finalize" type="object" groups="tt_base.group_after_sales_master_level_3,base.group_erp_manager" attrs="{'invisible':[('state','!=', 'validate')]}"/>
