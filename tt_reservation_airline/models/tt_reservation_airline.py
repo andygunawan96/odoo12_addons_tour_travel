@@ -1557,7 +1557,7 @@ class ReservationAirline(models.Model):
                         webhook_tools = ptr_tools.PointerTools('airline')
                         if book_obj.state == 'booked':
                             webhook_request = webhook_tools.request_webhook_booked(book_obj)
-                        else:
+                        elif book_obj.state == 'issued':
                             webhook_request = webhook_tools.request_webhook_issued(book_obj)
                         res.update({
                             "webhook_request": webhook_request

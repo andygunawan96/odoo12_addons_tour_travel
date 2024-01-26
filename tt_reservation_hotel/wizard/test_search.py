@@ -1312,7 +1312,7 @@ class TestSearch(models.Model):
                         webhook_tools = ptr_tools.PointerTools('hotel')
                         if resv_obj.state == 'booked':
                             webhook_request = webhook_tools.request_webhook_booked(resv_obj)
-                        else:
+                        elif resv_obj.state == 'issued':
                             webhook_request = webhook_tools.request_webhook_issued(resv_obj)
                         new_vals.update({
                             "webhook_request": webhook_request
