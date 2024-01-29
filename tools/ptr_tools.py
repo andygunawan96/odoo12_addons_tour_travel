@@ -40,7 +40,7 @@ class PointerTools:
             "status": "issued" if book_obj.state in ['issued', 'done'] else '',
             "ticketcode": book_obj.pnr,
             "bookcode": book_obj.name,
-            "id_pegawai": book_obj.third_party_id.third_party_data['id_pegawai'],
+            "id_pegawai": book_obj.third_party_id.third_party_data['callback']['id_pegawai'],
             "name": book_obj.contact_name,
             "email": book_obj.contact_email,
             "issuedimg": invoice_url,
@@ -124,8 +124,8 @@ class PointerTools:
             train_identity += passenger_obj.identity_number
             break
         res = {
-            "document_key": json.loads(book_obj.third_party_ids[0].third_party_data).get('document_key') if book_obj.third_party_ids else '',
-            "id_pegawai": json.loads(book_obj.third_party_ids[0].third_party_data).get('id_pegawai') if book_obj.third_party_ids else '',
+            "document_key": json.loads(book_obj.third_party_ids[0].third_party_data)['callback'].get('document_key') if book_obj.third_party_ids else '',
+            "id_pegawai": json.loads(book_obj.third_party_ids[0].third_party_data)['callback'].get('id_pegawai') if book_obj.third_party_ids else '',
             "method": 'POST',
             "origin": book_obj.origin_id.code,
             "cityorigin": "%s %s" % (book_obj.origin_id.name, book_obj.origin_id.city),
@@ -184,22 +184,22 @@ class PointerTools:
                 for segment_obj in journey_obj.segment_ids:
                     ## CLASS
                     if segment_obj.cabin_class == 'Y':
-                        if 'Economy' in airline_cabin_class:
+                        if 'Economy' not in airline_cabin_class:
                             if airline_cabin_class:
                                 airline_cabin_class += ', '
                             airline_cabin_class += 'Economy'
                     elif segment_obj.cabin_class == 'W':
-                        if 'Premium Economy' in airline_cabin_class:
+                        if 'Premium Economy' not in airline_cabin_class:
                             if airline_cabin_class:
                                 airline_cabin_class += ', '
                             airline_cabin_class += 'Premium Economy'
                     elif segment_obj.cabin_class == 'C':
-                        if 'Business' in airline_cabin_class:
+                        if 'Business' not in airline_cabin_class:
                             if airline_cabin_class:
                                 airline_cabin_class += ', '
                             airline_cabin_class += 'Business'
                     elif segment_obj.cabin_class == 'F':
-                        if 'First Class' in airline_cabin_class:
+                        if 'First Class' not in airline_cabin_class:
                             if airline_cabin_class:
                                 airline_cabin_class += ', '
                             airline_cabin_class += 'First Class'
@@ -243,8 +243,8 @@ class PointerTools:
             break
 
         res = {
-            "document_key": json.loads(book_obj.third_party_ids[0].third_party_data)['document_key'] if book_obj.third_party_ids else '',
-            "id_pegawai": json.loads(book_obj.third_party_ids[0].third_party_data)['id_pegawai'] if book_obj.third_party_ids else '',
+            "document_key": json.loads(book_obj.third_party_ids[0].third_party_data)['callback'].get('document_key') if book_obj.third_party_ids else '',
+            "id_pegawai": json.loads(book_obj.third_party_ids[0].third_party_data)['callback'].get('id_pegawai') if book_obj.third_party_ids else '',
             "method": 'POST',
             "title": airline_passenger_title,
             "name": airline_passenger_name,
@@ -287,8 +287,8 @@ class PointerTools:
             hotel_passenger_identity += passenger_obj.identity_number
             break
         res = {
-            "document_key": json.loads(book_obj.third_party_ids[0].third_party_data)['document_key'] if book_obj.third_party_ids else '',
-            "id_pegawai": json.loads(book_obj.third_party_ids[0].third_party_data)['id_pegawai'] if book_obj.third_party_ids else '',
+            "document_key": json.loads(book_obj.third_party_ids[0].third_party_data)['callback'].get('document_key') if book_obj.third_party_ids else '',
+            "id_pegawai": json.loads(book_obj.third_party_ids[0].third_party_data)['callback'].get('id_pegawai') if book_obj.third_party_ids else '',
             "method": 'POST',
             "city": book_obj.hotel_city,
             "datefrom": book_obj.checkin_date,
