@@ -3,7 +3,7 @@ import copy
 from odoo import api, fields, models, _
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
-from ...tools import util,variables,ERR
+from ...tools import util,variables,ERR, ptr_tools
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from datetime import date, datetime, timedelta
 from decimal import Decimal
@@ -876,6 +876,19 @@ class TestSearch(models.Model):
         if req.get('voucher'):
             resv_id.voucher_code = req['voucher']['voucher_reference']
 
+        if context.get('co_job_position_rules'):
+            if context['co_job_position_rules'].get('source'):
+                if context['co_job_position_rules']['source'] == 'ptr':
+                    webhook_obj = self.env['tt.third.party.webhook'].create({
+                        "third_party_provider": context['co_job_position_rules']['source'],
+                        "third_party_data": json.dumps(context['co_job_position_rules']['hotel']),
+                        "res_id": resv_id.id,
+                        "res_model": resv_id._name
+                    })
+                    resv_id.update({
+                        "third_party_ids": [(6, 0, [webhook_obj.id])]
+                    })
+
         return self.get_booking_result(resv_id.id, context)
 
     def create_reservation_old(self, provider_name, hotel_id, cust_names, check_in, check_out, room_rates, cancellation_str, booker_detail, guest_count=0, os_res_no='', provider_data='', email='', mobile='', special_req=''):
@@ -1293,6 +1306,19 @@ class TestSearch(models.Model):
                     'provider_bookings': provider_bookings,
                     'total': resv_obj.total,
                 })
+
+                if resv_obj.third_party_ids:
+                    if resv_obj.third_party_ids[0].third_party_provider == 'ptr':
+                        webhook_tools = ptr_tools.PointerTools('hotel')
+                        webhook_request = None
+                        if resv_obj.state == 'booked':
+                            webhook_request = webhook_tools.request_webhook_booked(resv_obj)
+                        elif resv_obj.state == 'issued':
+                            webhook_request = webhook_tools.request_webhook_issued(resv_obj)
+                        if webhook_request:
+                            new_vals.update({
+                                "webhook_request": webhook_request
+                            })
             else:
                 raise RequestException(1035)
             return ERR.get_no_error(new_vals)

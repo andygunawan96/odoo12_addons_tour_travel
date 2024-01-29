@@ -1,6 +1,6 @@
 from odoo import api,models,fields, _
 from odoo.exceptions import UserError
-from ...tools import util,variables,ERR
+from ...tools import util,variables,ERR, ptr_tools
 from ...tools.ERR import RequestException
 from ...tools.api import Response
 import logging,traceback
@@ -53,6 +53,7 @@ class ReservationAirline(models.Model):
 
     flight_number_name = fields.Char('List of Flight number', readonly=True, compute='_compute_flight_number')
 
+    third_party_ids = fields.One2many('tt.third.party.webhook', 'booking_airline_id', 'Third Party Webhook', readonly=True)
 
     @api.multi
     @api.depends('provider_booking_ids.is_hold_date_sync')
@@ -495,6 +496,18 @@ class ReservationAirline(models.Model):
             })
 
             book_obj = self.create(values)
+
+
+            if context.get('co_job_position_rules'):
+                if context['co_job_position_rules'].get('source'):
+                    if context['co_job_position_rules']['source'] == 'ptr':
+                        webhook_obj = self.env['tt.third.party.webhook'].create({
+                            "third_party_provider": context['co_job_position_rules']['source'],
+                            "third_party_data": json.dumps(context['co_job_position_rules']['airline'])
+                        })
+                        book_obj.update({
+                            "third_party_ids": [(4, webhook_obj.id)]
+                        })
 
             provider_ids, name_ids = book_obj._create_provider_api(booking_states, context, fare_rule_provider)
 
@@ -1539,6 +1552,18 @@ class ReservationAirline(models.Model):
                     'expired_date': book_obj.expired_date and book_obj.expired_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                     # 'provider_type': book_obj.provider_type_id.code
                 })
+                if book_obj.third_party_ids:
+                    if book_obj.third_party_ids[0].third_party_provider == 'ptr':
+                        webhook_tools = ptr_tools.PointerTools('airline')
+                        webhook_request = None
+                        if book_obj.state == 'booked':
+                            webhook_request = webhook_tools.request_webhook_booked(book_obj)
+                        elif book_obj.state == 'issued':
+                            webhook_request = webhook_tools.request_webhook_issued(book_obj)
+                        if webhook_request:
+                            res.update({
+                                "webhook_request": webhook_request
+                            })
                 # _logger.info("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)
             else:

@@ -1,4 +1,5 @@
 from . import tt_service_charge_airline
+from . import tt_third_party_webhook_airline
 from . import tt_journey_airline
 from . import tt_provider_airline_pricing
 from . import tt_provider_airline

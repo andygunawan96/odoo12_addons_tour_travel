@@ -23,6 +23,6 @@ class TtBankApiCon(models.Model):
             'provider': req['provider'], #'bca',
             'startdate': req['startdate'], # '2019-11-01',
             'enddate': req['enddate'], #'2019-11-05',
-            'is_snap': req['is_snap']
+            'is_snap': req.get('is_snap')
         }
         return self.send_request_to_gateway('%s/bank' % (self.url), data, 'get_transaction',timeout=60, ho_id=ho_id)
