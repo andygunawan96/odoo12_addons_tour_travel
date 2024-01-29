@@ -37,6 +37,7 @@
                         <field name="bank_account_owner"/>
                         <field name="bank_account_number"/>
                         <field name="bank_account_number_without_dot"/>
+                        <field name="is_snap"/>
                         <field name="is_get_transaction"/>
                     </group>
                     <notebook string="Transactions List">
