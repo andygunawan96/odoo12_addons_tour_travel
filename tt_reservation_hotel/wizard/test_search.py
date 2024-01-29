@@ -877,17 +877,20 @@ class TestSearch(models.Model):
             resv_id.voucher_code = req['voucher']['voucher_reference']
 
         if context.get('co_job_position_rules'):
-            if context['co_job_position_rules'].get('source'):
-                if context['co_job_position_rules']['source'] == 'ptr':
-                    webhook_obj = self.env['tt.third.party.webhook'].create({
-                        "third_party_provider": context['co_job_position_rules']['source'],
-                        "third_party_data": json.dumps(context['co_job_position_rules']['hotel']),
-                        "res_id": resv_id.id,
-                        "res_model": resv_id._name
-                    })
-                    resv_id.update({
-                        "third_party_ids": [(6, 0, [webhook_obj.id])]
-                    })
+            if context['co_job_position_rules'].get('callback'):
+                if context['co_job_position_rules']['callback'].get('source'):
+                    if context['co_job_position_rules']['callback']['source'] == 'ptr':
+                        third_party_data = copy.deepcopy(context['co_job_position_rules']['hotel'])
+                        third_party_data.update({
+                            "callback": context['co_job_position_rules']['callback']
+                        })
+                        webhook_obj = self.env['tt.third.party.webhook'].create({
+                            "third_party_provider": context['co_job_position_rules']['callback']['source'],
+                            "third_party_data": json.dumps(third_party_data)
+                        })
+                        resv_id.update({
+                            "third_party_ids": [(4, webhook_obj.id)]
+                        })
 
         return self.get_booking_result(resv_id.id, context)
 

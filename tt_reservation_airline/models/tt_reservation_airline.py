@@ -499,15 +499,20 @@ class ReservationAirline(models.Model):
 
 
             if context.get('co_job_position_rules'):
-                if context['co_job_position_rules'].get('source'):
-                    if context['co_job_position_rules']['source'] == 'ptr':
-                        webhook_obj = self.env['tt.third.party.webhook'].create({
-                            "third_party_provider": context['co_job_position_rules']['source'],
-                            "third_party_data": json.dumps(context['co_job_position_rules']['airline'])
-                        })
-                        book_obj.update({
-                            "third_party_ids": [(4, webhook_obj.id)]
-                        })
+                if context['co_job_position_rules'].get('callback'):
+                    if context['co_job_position_rules']['callback'].get('source'):
+                        if context['co_job_position_rules']['callback']['source'] == 'ptr':
+                            third_party_data = copy.deepcopy(context['co_job_position_rules']['airline'])
+                            third_party_data.update({
+                                "callback": context['co_job_position_rules']['callback']
+                            })
+                            webhook_obj = self.env['tt.third.party.webhook'].create({
+                                "third_party_provider": context['co_job_position_rules']['callback']['source'],
+                                "third_party_data": json.dumps(third_party_data)
+                            })
+                            book_obj.update({
+                                "third_party_ids": [(4, webhook_obj.id)]
+                            })
 
             provider_ids, name_ids = book_obj._create_provider_api(booking_states, context, fare_rule_provider)
 
