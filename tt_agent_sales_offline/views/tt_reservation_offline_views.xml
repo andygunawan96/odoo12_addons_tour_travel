@@ -13,7 +13,7 @@
 <!--                <button string="CREATE INVOICE" name="action_create_invoice" states="paid,posted" type="object"/>-->
 <!--            </xpath>-->
             <xpath expr="//page[@name='attachment']" position="after">
-                <page string="HO Invoice" name="agent_invoice">
+                <page string="HO Invoice" name="ho_invoice" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager">
                     <field name="ho_invoice_line_ids" readonly="1">
                         <tree>
                             <field name="name"/>

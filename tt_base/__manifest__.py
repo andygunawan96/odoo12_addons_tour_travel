@@ -29,6 +29,7 @@ Key Features
 
         'data/tt_provider_type_data.xml',
         'data/tt_provider_payment.xml',
+        'data/tt_provider_bank.xml',
 
         'data/res.social.media.type.csv',
         'views/menu_item_base.xml',

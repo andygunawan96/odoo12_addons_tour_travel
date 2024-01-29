@@ -86,7 +86,7 @@
                         <group>
                             <!--<field name="room_rate_id"/>-->
                             <field name="sale_price"/>
-                            <field name="commission_amount"/>
+                            <field name="commission_amount" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="currency_id"/>
                             <!--<field name="is_package"/>-->
                         </group>
@@ -108,7 +108,7 @@
                                 <tree editable="bottom">
                                     <field name="date"/>
                                     <field name="sale_price"/>
-                                    <field name="commission_amount"/>
+                                    <field name="commission_amount" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                     <!--<field name="meal_type"/>-->
                                 </tree>
                             </field>
@@ -154,7 +154,7 @@
                         <group>
                             <field name="sale_price"/>
                             <field name="qty"/>
-                            <field name="commission_amount"/>
+                            <field name="commission_amount" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="total_sale_price" readonly="1"/>
                         </group>
                         <group>
