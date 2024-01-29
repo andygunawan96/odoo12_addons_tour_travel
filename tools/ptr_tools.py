@@ -22,15 +22,18 @@ class PointerTools:
                 else:
                     _logger.error('Invoice not found')
         ticket_number = ''
-        for provider_booking_obj in book_obj.provider_bookings_ids:
-            for ticket_obj in provider_booking_obj.ticket_ids:
-                if hasattr(ticket_obj,'ticket_number'):
-                    if ticket_obj.ticket_number:
-                        if ticket_number:
-                            ticket_number += ', '
-                        ticket_number += ticket_obj.ticket_number
+        try:
+            for provider_booking_obj in book_obj.provider_bookings_ids:
+                for ticket_obj in provider_booking_obj.ticket_ids:
+                    if hasattr(ticket_obj,'ticket_number'):
+                        if ticket_obj.ticket_number:
+                            if ticket_number:
+                                ticket_number += ', '
+                            ticket_number += ticket_obj.ticket_number
+                    break
                 break
-            break
+        except:
+            _logger.error('NO TICKET NUMBER')
         return {
             "amount": book_obj.total,
             "method": 'POST',
