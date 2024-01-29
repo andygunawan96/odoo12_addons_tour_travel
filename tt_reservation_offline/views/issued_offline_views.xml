@@ -203,7 +203,7 @@
                                 <field name="ho_commission" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" invisible="0"/>
                                 <field name="incentive_amount" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('state_offline', '=', 'draft')]}"/>
                                 <field name="nta_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
-                                <field name="agent_nta_price"/>
+                                <field name="agent_nta_price" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 <field name="total_channel_upsell" groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                                 <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 <field name="admin_fee" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
