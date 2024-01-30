@@ -71,17 +71,17 @@ class PointerTools:
                 for seat_obj in journey_obj.seat_ids:
                     if train_seat_number:
                         train_seat_number += ', '
-                    train_seat_number += seat_obj.seat.split(',')[1]
+                    train_seat_number += seat_obj.seat and seat_obj.seat.split(',')[1] or ''
                     break
                 if train_carrier_name:
                     train_carrier_name += ', '
                 if journey_obj.carrier_name not in train_carrier_name:
-                    train_carrier_name += journey_obj.carrier_name
+                    train_carrier_name += journey_obj.carrier_name and journey_obj.carrier_name or ''
 
                 if train_carrier_number:
                     train_carrier_number += ', '
                 if journey_obj.carrier_number not in train_carrier_number:
-                    train_carrier_name += journey_obj.carrier_number
+                    train_carrier_name += journey_obj.carrier_number and journey_obj.carrier_number or ''
 
                 if journey_obj.cabin_class == 'K':
                     if 'Economy' not in train_class:
@@ -102,11 +102,11 @@ class PointerTools:
 
             if train_departure_date:
                 train_departure_date += ', '
-            train_departure_date += provider_booking_obj.departure_date
+            train_departure_date += provider_booking_obj.departure_date and provider_booking_obj.departure_date or ''
 
             if train_arrival_date:
                 train_arrival_date += ', '
-            train_arrival_date += provider_booking_obj.arrival_date
+            train_arrival_date += provider_booking_obj.arrival_date and provider_booking_obj.arrival_date or ''
             break
 
         train_passenger_title = ''
@@ -115,13 +115,13 @@ class PointerTools:
         for passenger_obj in book_obj.passenger_ids:
             if train_passenger_title:
                 train_passenger_title += ', '
-            train_passenger_title += passenger_obj.title
+            train_passenger_title += passenger_obj.title and passenger_obj.title or ''
             if train_passenger_name:
                 train_passenger_name += ', '
-            train_passenger_name += passenger_obj.name
+            train_passenger_name += passenger_obj.name and passenger_obj.name or ''
             if train_identity:
                 train_identity += ', '
-            train_identity += passenger_obj.identity_number
+            train_identity += passenger_obj.identity_number and passenger_obj.identity_number or ''
             break
         res = {
             "document_key": json.loads(book_obj.third_party_ids[0].third_party_data)['callback'].get('document_key') if book_obj.third_party_ids else '',
@@ -160,13 +160,13 @@ class PointerTools:
         for passenger_obj in book_obj.passenger_ids:
             if airline_passenger_title:
                 airline_passenger_title += ', '
-            airline_passenger_title += passenger_obj.title
+            airline_passenger_title += passenger_obj.title and passenger_obj.title or ''
             if airline_passenger_name:
                 airline_passenger_name += ', '
-            airline_passenger_name += passenger_obj.name
+            airline_passenger_name += passenger_obj.name and passenger_obj.name or ''
             if airline_identity:
                 airline_identity += ', '
-            airline_identity += passenger_obj.identity_number
+            airline_identity += passenger_obj.identity_number and passenger_obj.identity_number or ''
             break
 
         airline_cabin_class = ''
@@ -214,32 +214,33 @@ class PointerTools:
                             airline_flight_number += ', '
                         airline_flight_number += "%s%s" % (segment_obj.carrier_code, segment_obj.carrier_number)
                     break
+                if journey_obj.departure_date not in airline_departure_date:
+                    if airline_departure_date:
+                        airline_departure_date += ', '
+                    airline_departure_date += journey_obj.departure_date
+
+                if journey_obj.arrival_date not in airline_arrival_date:
+                    if airline_arrival_date:
+                        airline_arrival_date += ', '
+                    airline_arrival_date += journey_obj.arrival_date
                 break
-            if provider_booking_obj.origin_id.code not in airline_origin:
-                if airline_origin:
-                    airline_origin += ', '
-                airline_origin += provider_booking_obj.origin_id.code
-                if airline_origin_city:
-                    airline_origin_city += ', '
-                airline_origin_city += provider_booking_obj.origin_id.name
+            if provider_booking_obj.origin_id:
+                if provider_booking_obj.origin_id.code not in airline_origin:
+                    if airline_origin:
+                        airline_origin += ', '
+                    airline_origin += provider_booking_obj.origin_id.code
+                    if airline_origin_city:
+                        airline_origin_city += ', '
+                    airline_origin_city += provider_booking_obj.origin_id.name
 
-            if provider_booking_obj.destination_id.code not in airline_destination:
-                if airline_destination:
-                    airline_destination += ', '
-                airline_destination += provider_booking_obj.destination_id.code
-                if airline_destination_city:
-                    airline_destination_city += ', '
-                airline_destination_city += provider_booking_obj.destination_id.name
-
-            if journey_obj.departure_date not in airline_departure_date:
-                if airline_departure_date:
-                    airline_departure_date += ', '
-                airline_departure_date += journey_obj.departure_date
-
-            if journey_obj.arrival_date not in airline_arrival_date:
-                if airline_arrival_date:
-                    airline_arrival_date += ', '
-                airline_arrival_date += journey_obj.arrival_date
+            if provider_booking_obj.destination_id:
+                if provider_booking_obj.destination_id.code not in airline_destination:
+                    if airline_destination:
+                        airline_destination += ', '
+                    airline_destination += provider_booking_obj.destination_id.code
+                    if airline_destination_city:
+                        airline_destination_city += ', '
+                    airline_destination_city += provider_booking_obj.destination_id.name
             break
 
         res = {
@@ -278,13 +279,13 @@ class PointerTools:
         for passenger_obj in book_obj.passenger_ids:
             if hotel_passenger_title:
                 hotel_passenger_title += ', '
-            hotel_passenger_title += passenger_obj.title
+            hotel_passenger_title += passenger_obj.title and passenger_obj.title or ''
             if hotel_passenger_name:
                 hotel_passenger_name += ', '
-            hotel_passenger_name += passenger_obj.name
+            hotel_passenger_name += passenger_obj.name and passenger_obj.name or ''
             if hotel_passenger_identity:
                 hotel_passenger_identity += ', '
-            hotel_passenger_identity += passenger_obj.identity_number
+            hotel_passenger_identity += passenger_obj.identity_number and passenger_obj.identity_number or ''
             break
         res = {
             "document_key": json.loads(book_obj.third_party_ids[0].third_party_data)['callback'].get('document_key') if book_obj.third_party_ids else '',
