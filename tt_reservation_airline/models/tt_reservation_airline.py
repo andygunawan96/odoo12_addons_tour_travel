@@ -1,6 +1,6 @@
 from odoo import api,models,fields, _
 from odoo.exceptions import UserError
-from ...tools import util,variables,ERR, ptr_tools
+from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
 from ...tools.api import Response
 import logging,traceback
@@ -1558,17 +1558,10 @@ class ReservationAirline(models.Model):
                     # 'provider_type': book_obj.provider_type_id.code
                 })
                 if book_obj.third_party_ids:
-                    if book_obj.third_party_ids[0].third_party_provider == 'ptr':
-                        webhook_tools = ptr_tools.PointerTools('airline')
-                        webhook_request = None
-                        if book_obj.state == 'booked':
-                            webhook_request = webhook_tools.request_webhook_booked(book_obj)
-                        elif book_obj.state == 'issued':
-                            webhook_request = webhook_tools.request_webhook_issued(book_obj)
-                        if webhook_request:
-                            res.update({
-                                "webhook_request": webhook_request
-                            })
+                    webhook_request = book_obj.third_party_ids[0].to_dict()
+                    res.update({
+                        "webhook_request": webhook_request
+                    })
                 # _logger.info("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)
             else:
