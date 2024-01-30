@@ -923,9 +923,24 @@ class TtReservation(models.Model):
             'use_point': self.is_using_point_reward,
             'signature_booked': self.sid_booked,
             'currency': self.currency_id.name,
-            'estimated_currency': json.loads(self.estimated_currency) if self.estimated_currency else {}
+            'estimated_currency': json.loads(self.estimated_currency) if self.estimated_currency else {},
+            'total': self.total
             # END
         }
+
+        if self.state in ['issued', 'done']:
+            invoices = []
+            if hasattr(self, 'invoice_line_ids'):
+                for rec in self.invoice_line_ids:
+                    if rec.state != 'cancel':
+                        inv_data = rec.invoice_id.print_invoice()
+                        if inv_data.get('url'):
+                            invoices.append(inv_data['url'])
+            if invoices:
+                res.update({
+                    "invoice_lines": invoices
+                })
+
         if self.booker_insentif:
             res['booker_insentif'] = self.booker_insentif
         if include_total_nta:

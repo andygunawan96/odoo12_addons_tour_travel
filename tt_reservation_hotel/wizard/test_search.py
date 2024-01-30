@@ -3,7 +3,7 @@ import copy
 from odoo import api, fields, models, _
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
-from ...tools import util,variables,ERR, ptr_tools
+from ...tools import util,variables,ERR
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from datetime import date, datetime, timedelta
 from decimal import Decimal
@@ -1311,17 +1311,10 @@ class TestSearch(models.Model):
                 })
 
                 if resv_obj.third_party_ids:
-                    if resv_obj.third_party_ids[0].third_party_provider == 'ptr':
-                        webhook_tools = ptr_tools.PointerTools('hotel')
-                        webhook_request = None
-                        if resv_obj.state == 'booked':
-                            webhook_request = webhook_tools.request_webhook_booked(resv_obj)
-                        elif resv_obj.state == 'issued':
-                            webhook_request = webhook_tools.request_webhook_issued(resv_obj)
-                        if webhook_request:
-                            new_vals.update({
-                                "webhook_request": webhook_request
-                            })
+                    webhook_request = resv_obj.third_party_ids[0].to_dict()
+                    new_vals.update({
+                        "webhook_request": webhook_request
+                    })
             else:
                 raise RequestException(1035)
             return ERR.get_no_error(new_vals)
