@@ -46,6 +46,7 @@ class PointerTools:
             "issuedimg": invoice_url,
             "ticket_number": ticket_number,
             "urlupdateissued": json.loads(book_obj.third_party_ids[0].third_party_data)['urlupdateissued'] if book_obj.third_party_ids else '',
+            "source": "orbis"
         }
 
     def request_webhook_booked(self, book_obj):
@@ -150,6 +151,7 @@ class PointerTools:
             "email": book_obj.contact_email,
             "urldetail": '%s/train/booking/%s' % (book_obj.ho_id.redirect_url_signup, base64.b64encode(book_obj.name.encode()).decode('utf-8')),
             "urlsavebook": json.loads(book_obj.third_party_ids[0].third_party_data)['urlsavebook'] if book_obj.third_party_ids else '',
+            "source": "orbis"
         }
         return res
 
@@ -269,6 +271,7 @@ class PointerTools:
             "booktimelimit": book_obj.hold_date,
             "bookingimg": '',
             "urlsavebook": json.loads(book_obj.third_party_ids[0].third_party_data)['urlsavebook'] if book_obj.third_party_ids else '',
+            "source": "orbis"
         }
         return res
 
@@ -313,5 +316,6 @@ class PointerTools:
             "email": book_obj.contact_email,
             "urldetail": '%s/hotel/booking/%s' % (book_obj.ho_id.redirect_url_signup, base64.b64encode(book_obj.name.encode()).decode('utf-8')),
             "urlsavebook": json.loads(book_obj.third_party_ids[0].third_party_data)['urlsavebook'] if book_obj.third_party_ids else '',
+            "source": "orbis"
         }
         return res
