@@ -111,6 +111,20 @@
                                     <field name="commission_amount" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                     <!--<field name="meal_type"/>-->
                                 </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="detail_id"/>
+                                            <field name="sale_price"/>
+                                            <field name="meal_type"/>
+                                        </group>
+                                        <group>
+                                            <field name="date"/>
+                                            <field name="commission_amount" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                                            <field name="currency_id"/>
+                                        </group>
+                                    </group>
+                                </form>
                             </field>
                         </page>
                         <page string="Service on Request">
