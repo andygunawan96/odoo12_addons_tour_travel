@@ -11,6 +11,8 @@ import logging
 import psycopg2
 import threading
 import re
+import copy
+from datetime import datetime, timedelta
 
 from collections import defaultdict
 from email.utils import formataddr
@@ -65,6 +67,21 @@ class MailMail(models.Model):
                     _logger.error("%s, %s" % (str(e), traceback.format_exc()))
             # mail_obj = self.env[]
 
+    @api.model
+    def process_email_queue(self, ids=None):
+        on_going_list = self.search([('state', '=', 'outgoing'), ('scheduled_date', '<', datetime.now() - timedelta(hours=12))])
+        if on_going_list:
+            sql_query = """
+                        update mail_mail set state = 'cancel' where id in %s;
+                        """ % (str(on_going_list.ids).replace('[', '(').replace(']', ')'))
+            self.env.cr.execute(sql_query)
+            self.env.cr.commit()
+        if ids:
+            fake_ids = copy.deepcopy(ids)
+            for idx, rec in enumerate(fake_ids):
+                if rec in on_going_list.ids:
+                    ids.pop(idx)
+        return super(MailMail, self).process_email_queue(ids)
 
     def send_smtp(self, server_id, batch_id, email_server_obj, auto_commit=False, raise_exception=False): ## update fungsi official odoo karena dibuat dynamic dengan google
         smtp_session = None
