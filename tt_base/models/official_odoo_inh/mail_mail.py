@@ -11,6 +11,7 @@ import logging
 import psycopg2
 import threading
 import re
+import copy
 from datetime import datetime, timedelta
 
 from collections import defaultdict
@@ -75,6 +76,11 @@ class MailMail(models.Model):
                         """ % (str(on_going_list.ids).replace('[', '(').replace(']', ')'))
             self.env.cr.execute(sql_query)
             self.env.cr.commit()
+        if ids:
+            fake_ids = copy.deepcopy(ids)
+            for idx, rec in enumerate(fake_ids):
+                if rec in on_going_list.ids:
+                    ids.pop(idx)
         return super(MailMail, self).process_email_queue(ids)
 
     def send_smtp(self, server_id, batch_id, email_server_obj, auto_commit=False, raise_exception=False): ## update fungsi official odoo karena dibuat dynamic dengan google
