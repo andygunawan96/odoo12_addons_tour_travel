@@ -14,7 +14,7 @@ class TtProvider(models.Model):
 
     name = fields.Char('Name', required=True)
     alias = fields.Char(string='Alias')
-    code = fields.Char('Code', required=True)
+    code = fields.Char('Code', required=False)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     provider_code_ids = fields.One2many('tt.provider.code', 'provider_id', 'Provider Codes') ## yg pakai baru hotel, asumsi code selalu sama untuk semua HO
     currency_id = fields.Many2one('res.currency', 'Currency')
@@ -44,6 +44,8 @@ class TtProvider(models.Model):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
                 'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 415')
+        if not vals.get('code'):
+            vals['code'] = vals['name'].lower().replace(' ','_')
         return super(TtProvider, self).create(vals)
 
     @api.multi

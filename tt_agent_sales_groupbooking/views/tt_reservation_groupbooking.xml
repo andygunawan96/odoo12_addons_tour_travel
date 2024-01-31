@@ -11,7 +11,7 @@
 <!--            </field>-->
             <xpath expr="//page[@name='prices']" position="after">
                 <page string="HO Invoice" name="ho_invoice" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager">
-                    <field name="ho_invoice_line_ids" readonly="1">
+                    <field name="ho_invoice_line_ids" readonly="1" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager">
                         <tree>
                             <field name="name"/>
                             <field name="invoice_id"/>

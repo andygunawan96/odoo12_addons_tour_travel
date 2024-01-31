@@ -324,6 +324,7 @@ class TransportBookingProvider(models.Model):
             "checkin_date": str(self.checkin_date)[:10],
             "checkout_date": str(self.checkout_date)[:10],
             "pnr": self.pnr,
+            'currency': self.currency_id.name,
             "total_price": self.total_price
         }
         return res
