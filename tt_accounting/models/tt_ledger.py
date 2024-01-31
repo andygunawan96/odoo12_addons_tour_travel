@@ -143,6 +143,17 @@ class Ledger(models.Model):
 
         if kwargs:
             vals.update(kwargs)
+
+        #bersihkan default context, bikin bug jika approve payment dari UI Invoice COR langsung. Ledger akan ter isi agent_id dan cor_id
+        wash_keys = ['agent_id','customer_parent_id']
+        for wash_key in wash_keys:
+            default_context_key = 'default_%s' % (wash_key)
+            if not vals.get(wash_key) and self.env.context.get(default_context_key):
+                new_context = dict(self.env.context).copy()
+                new_context.pop(default_context_key)
+                self.env.context = new_context
+
+
         new_ledger = self.create(vals)
         return new_ledger
 
