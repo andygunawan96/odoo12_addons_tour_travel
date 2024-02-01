@@ -1210,6 +1210,10 @@ class ReservationAirline(models.Model):
                     arr_date = seg['arrival_date'] if seg.get('arrival_date') else ''
                     com_arrival_date_list.append(arr_date)
 
+                    if seg.get('fare_basis_code'):
+                        fbs = seg['fare_basis_code']
+                        com_fare_basis_code_list.append(fbs)
+
                     for fare in seg.get('fares', []):
                         cos = fare['class_of_service'] if fare.get('class_of_service') else ''
                         com_class_of_service_list.append(cos)
@@ -1261,7 +1265,6 @@ class ReservationAirline(models.Model):
             process_update_segments_info = False
             if not is_same_journeys or not is_same_departure or not is_same_arrival or not is_same_class_of_service or not is_same_fare_basis_code or not is_same_journey_count:
                 process_update_segments_info = True
-
             if process_update_segments_info:
                 for prov_journey_obj in rsv_prov_obj.journey_ids:
                     for prov_seg_obj in prov_journey_obj.segment_ids:
@@ -1310,6 +1313,8 @@ class ReservationAirline(models.Model):
                             'class_of_service': '',
                             'cabin_class': '',
                             'sequence': seg.get('sequence', 0),
+                            'fare_basis_code': seg.get('fare_basis_code', ''),
+                            'tour_code': seg.get('tour_code',''),
                         }
                         if carrier_obj:
                             n_seg_values['carrier_id'] = carrier_obj.id
@@ -1325,11 +1330,14 @@ class ReservationAirline(models.Model):
                                 'fare_code': fare['fare_code'],
                                 'class_of_service': fare['class_of_service'],
                                 'cabin_class': fare['cabin_class'],
-                                'fare_basis_code': fare.get('fare_basis_code', ''),
                                 'tour_code': fare.get('tour_code', ''),
                                 'fare_class': fare.get('fare_class', ''),
                                 'fare_name': fare.get('fare_name', ''),
                             })
+                            if fare.get('fare_basis_code'):
+                                n_seg_values.update({
+                                    'fare_basis_code': fare.get('fare_basis_code', ''),
+                                })
                             # for sc in fare['service_charge_summary']:
                             #     total_amount += sc['total_price']
                             for fare_detail in fare.get('fare_details', []):
