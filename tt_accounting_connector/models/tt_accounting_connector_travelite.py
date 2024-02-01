@@ -388,7 +388,7 @@ class AccountingConnectorTravelite(models.Model):
                         temp_sales = pax_setup['agent_nta']
                         temp_upsell = pax_setup['total_upsell'] - pax_setup['agent_profit']
                         if is_ho_transaction:
-                            temp_sales += ho_prof
+                            temp_sales += ho_prof - pax_setup['total_upsell']
                             temp_upsell += pax_setup['agent_profit']
 
                         tax_details = {}
@@ -507,7 +507,7 @@ class AccountingConnectorTravelite(models.Model):
                         temp_sales = pax_setup['agent_nta']
                         temp_upsell = pax_setup['total_upsell'] - pax_setup['agent_profit']
                         if is_ho_transaction:
-                            temp_sales += ho_prof
+                            temp_sales += ho_prof - pax_setup['total_upsell']
                             temp_upsell += pax_setup['agent_profit']
 
                         if not vat_var_obj or not vat_perc_obj:
