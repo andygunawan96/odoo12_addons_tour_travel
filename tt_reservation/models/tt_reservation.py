@@ -1821,6 +1821,9 @@ class TtReservation(models.Model):
         return final_email
 
     def get_btc_hold_date(self, is_actual=False):
+        if not is_actual:
+            if self.agent_type_id != self.ho_id.btc_agent_type_id:
+                is_actual = True
         if (self.booked_date + timedelta(hours=1)) >= self.hold_date or is_actual:
             final_time = (self.hold_date + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
         else:
