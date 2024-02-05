@@ -1234,7 +1234,8 @@ class TestSearch(models.Model):
                 'base_nta_vendor_real': float(base_nta_vendor_real),  #
                 'base_commission_vendor': float(base_commission_vendor),
                 'base_nta_vendor': float(base_nta_vendor),
-                'base_price_ott': float(base_price_ott),
+                # 'base_price_ott': float(base_price_ott),
+                'base_price_ott': 0, #HardCode 0 by bunga 5 feb 2024 (OTT ini harga ori tiket dri vendor, hotel cannot cos markup)
                 'base_fare': float(base_fare),
                 'base_tax': float(base_tax),
                 'base_upsell_com': float(base_upsell_com),
