@@ -1245,7 +1245,7 @@ class TestSearch(models.Model):
         return result
 
     # TODO: ganti ke get_booking default
-    def get_booking_result(self, resv_id, context=False):
+    def get_booking_result(self, resv_id, context=False, get_invoice=False):
         try:
             if isinstance(resv_id, int):
                 resv_obj = self.env['tt.reservation.hotel'].browse(resv_id)
@@ -1309,6 +1309,19 @@ class TestSearch(models.Model):
                     'provider_bookings': provider_bookings,
                     'total': resv_obj.total,
                 })
+
+                if resv_obj.state in ['issued', 'done'] and get_invoice:
+                    invoices = []
+                    if hasattr(resv_obj, 'invoice_line_ids'):
+                        for rec in resv_obj.invoice_line_ids:
+                            if rec.state != 'cancel':
+                                inv_data = rec.invoice_id.print_invoice()
+                                if inv_data.get('url'):
+                                    invoices.append(inv_data['url'])
+                    if invoices:
+                        new_vals.update({
+                            "invoice_lines": invoices
+                        })
 
                 if resv_obj.third_party_ids:
                     webhook_request = resv_obj.third_party_ids[0].to_dict()
