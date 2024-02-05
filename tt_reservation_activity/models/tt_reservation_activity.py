@@ -1220,7 +1220,7 @@ class ReservationActivity(models.Model):
                 prov_list = []
                 for prov in book_obj.provider_booking_ids:
                     prov_list.append(prov.to_dict())
-                response = book_obj.to_dict(context)
+                response = book_obj.to_dict(context, req)
                 response.update({
                     'passengers': psg_list,
                     'provider_booking': prov_list,

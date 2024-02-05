@@ -722,7 +722,7 @@ class TtReservationTrain(models.Model):
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
             _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
             if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_erp_manager'):
-                res = book_obj.to_dict(context)
+                res = book_obj.to_dict(context, req)
                 psg_list = []
                 for rec in book_obj.sudo().passenger_ids:
                     psg_list.append(rec.to_dict())

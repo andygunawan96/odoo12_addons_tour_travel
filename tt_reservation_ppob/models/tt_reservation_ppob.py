@@ -518,7 +518,7 @@ class ReservationPpob(models.Model):
                 for rec in inq_obj.sudo().passenger_ids:
                     psg_list.append(rec.to_dict())
 
-                res = inq_obj.to_dict()
+                res = inq_obj.to_dict(context, data)
                 res.update({
                     'provider_booking': provider_list,
                     'passengers': psg_list,
