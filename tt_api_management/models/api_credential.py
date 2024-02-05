@@ -138,8 +138,10 @@ class ApiManagement(models.Model):
                 values.update(_co_user.get_machine_otp_pin())
 
                 payment_acq_open_ho = self.env['payment.acquirer'].search([('type', '=', 'va'), ('ho_id', '=', _co_user.ho_id.id)])
+                co_is_agent_btc = _co_user.ho_id.btc_agent_type_id == _co_user.agent_type_related_id
                 values.update({
-                    "is_ho_have_open_top_up": True if payment_acq_open_ho else False
+                    "is_ho_have_open_top_up": True if payment_acq_open_ho else False,
+                    "co_is_agent_btc": co_is_agent_btc
                 })
 
                 # if _co_user.is_banned:
