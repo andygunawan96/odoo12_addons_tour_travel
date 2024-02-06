@@ -1079,7 +1079,7 @@ class TestSearch(models.Model):
 
         return sc_value
 
-    # def get_service_charge_details(self): COPY dri
+    # COPY dri get_service_charge_details_breakdown
     def prepare_service_charge_detils(self, cost_sc, obj_pnr):
         sc_value = {}
         for p_sc in cost_sc:
@@ -1118,14 +1118,14 @@ class TestSearch(models.Model):
             base_agent_commission = Decimal("0.0")
             base_agent_commission_ori = Decimal("0.0")
             base_agent_commission_charge = Decimal("0.0")
-            base_commission_vendor = Decimal("0.0")
+            base_commission_vendor_real = Decimal("0.0")
             base_hidden_commission_ho = Decimal("0.0")
             base_hidden_fee_ho = Decimal("0.0")
             base_hidden_vat_ho = Decimal("0.0")
             base_vendor_vat = Decimal("0.0")
             base_fee_ho = Decimal("0.0")
             base_vat_ho = Decimal("0.0")
-            base_commission_ho = Decimal("0.0")
+            base_no_hidden_commission_ho = Decimal("0.0")
 
             pax_type = ''
 
@@ -1151,10 +1151,10 @@ class TestSearch(models.Model):
                         base_tax_ori += sc_amount
                     elif charge_type == 'RAC':
                         base_agent_commission += sc_amount
-                        base_commission_vendor += sc_amount
+                        base_commission_vendor_real += sc_amount
                         base_agent_commission_ori += sc_amount
                     elif charge_type in ['RACUA', 'RACCHG']:
-                        base_commission_vendor += sc_amount
+                        base_commission_vendor_real += sc_amount
                         base_agent_commission_ori += sc_amount
                         base_agent_commission_charge += sc_amount
                     elif charge_type in ['ROCUA', 'ROCCHG']:
@@ -1162,24 +1162,24 @@ class TestSearch(models.Model):
                     elif charge_type == 'DISC':
                         base_discount_ori += sc_amount
                     elif charge_type in ['RACHSP', 'RACHVP']:
-                        base_commission_vendor += sc_amount
+                        base_commission_vendor_real += sc_amount
                         base_hidden_commission_ho += sc_amount
                     elif charge_type == 'ROCHSP':
                         base_hidden_fee_ho += sc_amount
                     elif charge_type == 'ROCHVP':
                         base_hidden_vat_ho += sc_amount
                     elif charge_type == 'RACAVP':
-                        base_commission_vendor += sc_amount
+                        base_commission_vendor_real += sc_amount
                     elif charge_type == 'ROCAVP':
                         base_vendor_vat += sc_amount
                     elif charge_type in ['RACHSA', 'RACHVA', 'RACAVA']:
-                        base_commission_ho += sc_amount
+                        base_no_hidden_commission_ho += sc_amount
                     elif charge_type in ['ROCHVA', 'ROCAVA']:
                         base_vat_ho += sc_amount
                     elif charge_type == 'ROCHSA':
                         base_fee_ho += sc_amount
                     elif charge_type == 'RACAVC':
-                        base_commission_ho += sc_amount
+                        base_no_hidden_commission_ho += sc_amount
                     elif charge_type == 'ROCAVC':
                         base_vat_ho += sc_amount
                     elif charge_type == 'ROC' and charge_code[-3:] == 'adj':
@@ -1192,23 +1192,30 @@ class TestSearch(models.Model):
 
             base_price_ori = base_fare_ori + base_tax_ori
             base_price = base_price_ori + base_upsell_ori + base_discount_ori + base_upsell_adj
-            base_nta_vendor = base_price + base_commission_vendor + base_vendor_vat - base_upsell_adj
+            base_nta_vendor_real = base_price + base_commission_vendor_real + base_vendor_vat - base_upsell_adj
 
             base_fare = base_fare_ori
             base_tax = base_tax_ori
-            base_upsell = base_upsell_ori + base_upsell_adj
+            base_upsell_com = base_upsell_ori + base_upsell_adj
             base_discount = base_discount_ori
             if base_hidden_commission_ho != 0:
-                base_upsell -= abs(base_hidden_commission_ho)
+                base_upsell_com -= abs(base_hidden_commission_ho)
                 if base_tax != 0:
                     base_tax += abs(base_hidden_commission_ho)
                 else:
                     base_fare += abs(base_hidden_commission_ho)
-            if base_commission_ho != 0:
-                base_upsell -= abs(base_commission_ho)
+            if base_no_hidden_commission_ho != 0:
+                base_upsell_com -= abs(base_no_hidden_commission_ho)
 
             base_nta = base_price - abs(base_agent_commission)
-            base_commission_ho_ori = base_commission_ho + base_hidden_commission_ho
+            base_commission_ho = base_no_hidden_commission_ho + base_hidden_commission_ho
+
+            base_commission_vendor = base_commission_vendor_real - base_hidden_commission_ho
+            base_nta_vendor = base_nta_vendor_real - base_hidden_commission_ho
+            base_price_ott = base_fare + base_tax
+            base_upsell = base_upsell_ori + base_hidden_commission_ho
+            if base_upsell < 0:
+                base_upsell = 0
 
             pax_values = {
                 'pnr': pnr,
@@ -1222,11 +1229,16 @@ class TestSearch(models.Model):
                 'base_upsell_adj': float(base_upsell_adj),
                 'base_discount_ori': float(base_discount_ori),
                 'base_price': float(base_price),
-                'base_commission_vendor': float(base_commission_vendor),
+                'base_commission_vendor_real': float(base_commission_vendor_real),
                 'base_vendor_vat': float(base_vendor_vat),
-                'base_nta_vendor': float(base_nta_vendor),  #
+                'base_nta_vendor_real': float(base_nta_vendor_real),  #
+                'base_commission_vendor': float(base_commission_vendor),
+                'base_nta_vendor': float(base_nta_vendor),
+                # 'base_price_ott': float(base_price_ott),
+                'base_price_ott': 0, #HardCode 0 by bunga 5 feb 2024 (OTT ini harga ori tiket dri vendor, hotel cannot cos markup)
                 'base_fare': float(base_fare),
                 'base_tax': float(base_tax),
+                'base_upsell_com': float(base_upsell_com),
                 'base_upsell': float(base_upsell),
                 'base_discount': float(base_discount),
                 'base_fee_ho': float(base_fee_ho),
@@ -1235,17 +1247,17 @@ class TestSearch(models.Model):
                 'base_commission_ori': float(base_agent_commission_ori),
                 'base_commission_charge': float(base_agent_commission_charge),
                 'base_nta': float(base_nta),
-                'base_commission_ho': float(base_commission_ho),  #
+                'base_no_hidden_commission_ho': float(base_no_hidden_commission_ho),  #
                 'base_hidden_fee_ho': float(base_hidden_fee_ho),
                 'base_hidden_vat_ho': float(base_hidden_vat_ho),
                 'base_hidden_commission_ho': float(base_hidden_commission_ho),
-                'base_commission_ho_ori': float(base_commission_ho_ori),  #
+                'base_commission_ho': float(base_commission_ho),  #
             }
             result.append(pax_values)
         return result
 
     # TODO: ganti ke get_booking default
-    def get_booking_result(self, resv_id, context=False):
+    def get_booking_result(self, resv_id, context=False, get_invoice=False):
         try:
             if isinstance(resv_id, int):
                 resv_obj = self.env['tt.reservation.hotel'].browse(resv_id)
@@ -1309,6 +1321,19 @@ class TestSearch(models.Model):
                     'provider_bookings': provider_bookings,
                     'total': resv_obj.total,
                 })
+
+                if resv_obj.state in ['issued', 'done'] and get_invoice:
+                    invoices = []
+                    if hasattr(resv_obj, 'invoice_line_ids'):
+                        for rec in resv_obj.invoice_line_ids:
+                            if rec.state != 'cancel':
+                                inv_data = rec.invoice_id.print_invoice()
+                                if inv_data.get('url'):
+                                    invoices.append(inv_data['url'])
+                    if invoices:
+                        new_vals.update({
+                            "invoice_lines": invoices
+                        })
 
                 if resv_obj.third_party_ids:
                     webhook_request = resv_obj.third_party_ids[0].to_dict()
