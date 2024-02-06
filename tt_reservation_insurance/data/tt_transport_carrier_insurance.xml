@@ -24,7 +24,7 @@
         </record>
 
         <record id="tt_transport_carrier_insurance_rt_insurance" model="tt.transport.carrier">
-            <field name="name">Rodextrip Insurance</field>
+            <field name="name">RT Insurance</field>
             <field name="code">rt_insurance</field>
             <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
