@@ -1760,7 +1760,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_jj" model="tt.transport.carrier">
-            <field name="name">LATAM</field>
+            <field name="name">LATAM Brasil</field>
             <field name="code">JJ</field>
             <field name="icao">TAM</field>
             <field name="call_sign">TAM</field>
@@ -1951,6 +1951,23 @@
             <field name="code">KC</field>
             <field name="icao">KZR</field>
             <field name="call_sign">ASTANALINE</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">57</field>
+            <field name="child_length_name">44</field>
+            <field name="infant_length_name">42</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_la" model="tt.transport.carrier">
+            <field name="name">Latam Airlines</field>
+            <field name="code">LA</field>
+            <field name="icao">LAN</field>
+            <field name="call_sign">LAN CHILE</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>

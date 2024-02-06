@@ -1,71 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <record id="tt_transport_carrier_bcainsurance_1" model="tt.transport.carrier">
-            <field name="name">International Platinum Individual</field>
-            <field name="code">1</field>
-            <field name="icao">international_platinum_individual</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
-        </record>
-        <record id="tt_transport_carrier_bcainsurance_2" model="tt.transport.carrier">
-            <field name="name">Domestik Ekonomi Individual</field>
-            <field name="code">2</field>
-            <field name="icao">domestik_ekonomi_individual</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
-        </record>
-        <record id="tt_transport_carrier_bcainsurance_3" model="tt.transport.carrier">
-            <field name="name">Domestik Eksekutif Individual</field>
-            <field name="code">3</field>
-            <field name="icao">domestik_eksekutif_individual</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
-        </record>
-        <record id="tt_transport_carrier_bcainsurance_4" model="tt.transport.carrier">
-            <field name="name">Domestik Platinum Individual</field>
-            <field name="code">4</field>
-            <field name="icao">domestik_platinum_individual</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
-        </record>
-        <record id="tt_transport_carrier_bcainsurance_5" model="tt.transport.carrier">
-            <field name="name">International Economy Family</field>
-            <field name="code">5</field>
-            <field name="icao">international_economy_family</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
-        </record>
-        <record id="tt_transport_carrier_bcainsurance_6" model="tt.transport.carrier">
-            <field name="name">International Executive Family</field>
-            <field name="code">6</field>
-            <field name="icao">international_executive_family</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
-        </record>
-        <record id="tt_transport_carrier_bcainsurance_7" model="tt.transport.carrier">
-            <field name="name">International Platinum Family</field>
-            <field name="code">7</field>
-            <field name="icao">international_platinum_family</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
-        </record>
-        <record id="tt_transport_carrier_bcainsurance_8" model="tt.transport.carrier">
-            <field name="name">International Economy Individual</field>
-            <field name="code">8</field>
-            <field name="icao">international_economy_individual</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
-        </record>
-        <record id="tt_transport_carrier_bcainsurance_9" model="tt.transport.carrier">
-            <field name="name">International Executive Individual</field>
-            <field name="code">9</field>
-            <field name="icao">international_executive_individual</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
-        </record>
-
-
         <record id="tt_transport_carrier_insurance_bca" model="tt.transport.carrier">
             <field name="name">BCA Insurance</field>
             <field name="code">bcainsurance</field>
@@ -80,6 +15,17 @@
         <record id="tt_transport_carrier_insurance_zurich" model="tt.transport.carrier">
             <field name="name">Zurich</field>
             <field name="code">zurich</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">60</field>
+            <field name="child_length_name">60</field>
+            <field name="infant_length_name">60</field>
+            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
+        </record>
+
+        <record id="tt_transport_carrier_insurance_rt_insurance" model="tt.transport.carrier">
+            <field name="name">RT Insurance</field>
+            <field name="code">rt_insurance</field>
             <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">60</field>
