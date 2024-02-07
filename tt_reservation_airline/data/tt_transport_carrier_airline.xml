@@ -1197,7 +1197,7 @@
             <field name="code">SV</field>
             <field name="icao">SVA</field>
             <field name="call_sign">SAUDIA</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
@@ -1226,7 +1226,7 @@
             <field name="code">B6</field>
             <field name="icao">JBU</field>
             <field name="call_sign">JETBLUE</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
@@ -1240,7 +1240,7 @@
             <field name="code">UA</field>
             <field name="icao">UAL</field>
             <field name="call_sign">UNITED</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
@@ -1271,7 +1271,7 @@
             <field name="code">TY</field>
             <field name="icao">TPC</field>
             <field name="call_sign">AIRCAL</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1288,7 +1288,7 @@
             <field name="code">LQ</field>
             <field name="icao">MKR</field>
             <field name="call_sign">AIR LANME</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1305,7 +1305,7 @@
             <field name="code">AM</field>
             <field name="icao">AMX</field>
             <field name="call_sign">AEROMEXICO</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1322,7 +1322,7 @@
             <field name="code">8G</field>
             <field name="icao">DTL</field>
             <field name="call_sign">Aero Dili</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1339,7 +1339,7 @@
             <field name="code">AD</field>
             <field name="icao">AZU</field>
             <field name="call_sign">AZUL</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1356,7 +1356,7 @@
             <field name="code">NX</field>
             <field name="icao">AMU</field>
             <field name="call_sign">AIR MACAU</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1373,7 +1373,7 @@
             <field name="code">KQ</field>
             <field name="icao">KQA</field>
             <field name="call_sign">KENYA</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1390,7 +1390,7 @@
             <field name="code">LX</field>
             <field name="icao">SWR</field>
             <field name="call_sign">SWISS</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1407,7 +1407,7 @@
             <field name="code">HX</field>
             <field name="icao">CRK</field>
             <field name="call_sign">BAUHINA</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1424,7 +1424,7 @@
             <field name="code">UX</field>
             <field name="icao">AEA</field>
             <field name="call_sign">EUROPA</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1441,7 +1441,7 @@
             <field name="code">AT</field>
             <field name="icao">RAM</field>
             <field name="call_sign">ROYAL AIR MAROC</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1458,7 +1458,7 @@
             <field name="code">MK</field>
             <field name="icao">MAU</field>
             <field name="call_sign">AIR MAURITIUS</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1475,7 +1475,7 @@
             <field name="code">PG</field>
             <field name="icao">BKP</field>
             <field name="call_sign">BANGKOK AIR</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1492,7 +1492,7 @@
             <field name="code">FI</field>
             <field name="icao">ICE</field>
             <field name="call_sign">ICEAIR</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1509,7 +1509,7 @@
             <field name="code">KL</field>
             <field name="icao">KLM</field>
             <field name="call_sign">KLM</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1526,7 +1526,7 @@
             <field name="code">PC</field>
             <field name="icao">PGT</field>
             <field name="call_sign">SUNTURK</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1543,7 +1543,7 @@
             <field name="code">AY</field>
             <field name="icao">FIN</field>
             <field name="call_sign">FINNAIR</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1560,7 +1560,7 @@
             <field name="code">AF</field>
             <field name="icao">AFR</field>
             <field name="call_sign">AIRFRANS</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1577,7 +1577,7 @@
             <field name="code">CA</field>
             <field name="icao">CCA</field>
             <field name="call_sign">AIR CHINA</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1594,7 +1594,7 @@
             <field name="code">QV</field>
             <field name="icao">LAO</field>
             <field name="call_sign">LAO</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1611,7 +1611,7 @@
             <field name="code">VJ</field>
             <field name="icao">VJC</field>
             <field name="call_sign">VIETJETAIR</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1628,7 +1628,7 @@
             <field name="code">TP</field>
             <field name="icao">TAP</field>
             <field name="call_sign">AIR PORTUGAL</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1645,7 +1645,7 @@
             <field name="code">BA</field>
             <field name="icao">BAW</field>
             <field name="call_sign">SPEEDBIRD</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1662,7 +1662,7 @@
             <field name="code">HO</field>
             <field name="icao">DKH</field>
             <field name="call_sign">AIR JUNEYAO</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1679,7 +1679,7 @@
             <field name="code">AI</field>
             <field name="icao">AIC</field>
             <field name="call_sign">AIR INDIA</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1696,7 +1696,7 @@
             <field name="code">KU</field>
             <field name="icao">KAC</field>
             <field name="call_sign">KUWAITI</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1713,7 +1713,7 @@
             <field name="code">SA</field>
             <field name="icao">SAA</field>
             <field name="call_sign">SPRINGBOK</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1730,7 +1730,7 @@
             <field name="code">RJ</field>
             <field name="icao">RJA</field>
             <field name="call_sign">JORDANIAN</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1747,7 +1747,7 @@
             <field name="code">GF</field>
             <field name="icao">GFA</field>
             <field name="call_sign">GULF AIR</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1764,7 +1764,7 @@
             <field name="code">JJ</field>
             <field name="icao">TAM</field>
             <field name="call_sign">TAM</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1781,7 +1781,7 @@
             <field name="code">DZ</field>
             <field name="icao">EPA</field>
             <field name="call_sign">DONGHAI AIR</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1798,7 +1798,7 @@
             <field name="code">HY</field>
             <field name="icao">UZB</field>
             <field name="call_sign">UZBEK</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1815,7 +1815,7 @@
             <field name="code">IE</field>
             <field name="icao">SOL</field>
             <field name="call_sign">SOLOMON</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1832,7 +1832,7 @@
             <field name="code">JX</field>
             <field name="icao">SJX</field>
             <field name="call_sign">STARWALKER</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1849,7 +1849,7 @@
             <field name="code">LY</field>
             <field name="icao">ELY</field>
             <field name="call_sign">ELAL</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1866,7 +1866,7 @@
             <field name="code">NF</field>
             <field name="icao">AVN</field>
             <field name="call_sign">AIR VAN</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1883,7 +1883,7 @@
             <field name="code">SB</field>
             <field name="icao">ACI</field>
             <field name="call_sign">AIRCALIN</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1900,7 +1900,7 @@
             <field name="code">UO</field>
             <field name="icao">HKE</field>
             <field name="call_sign">HONGKONG SHUTTLE</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1917,7 +1917,7 @@
             <field name="code">ZH</field>
             <field name="icao">CSZ</field>
             <field name="call_sign">SHENZHEN AIR</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1934,7 +1934,7 @@
             <field name="code">8M</field>
             <field name="icao">MMA</field>
             <field name="call_sign">MYANMAR</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1951,7 +1951,7 @@
             <field name="code">KC</field>
             <field name="icao">KZR</field>
             <field name="call_sign">ASTANALINE</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
@@ -1968,7 +1968,7 @@
             <field name="code">LA</field>
             <field name="icao">LAN</field>
             <field name="call_sign">LAN CHILE</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">57</field>
             <field name="child_length_name">44</field>
