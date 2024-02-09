@@ -93,11 +93,14 @@ class PrintoutTicketForm(models.AbstractModel):
                         'pax_type': pax.pax_type,
                         'ticket_number': pax.ticket_number,
                         'total_price': 0,
-                        'ff_obj': {
-                            'name': pax.loyalty_program_id.name,
-                            'ff_number': pax.ff_number,
-                        },
                     }
+                    if hasattr(pax, 'loyalty_program_id'):
+                        price_target.update({
+                            'ff_obj': {
+                                'name': pax.loyalty_program_id.name,
+                                'ff_number': pax.ff_number,
+                            }
+                        })
                     for rec2 in pax.passenger_id.cost_service_charge_ids:
                         # if rec2.id in provider.cost_service_charge_ids.ids and rec2.charge_type.lower() in ['fare', 'roc', 'tax', 'disc', 'ssr', 'seat']:
                         if rec2.id in provider.cost_service_charge_ids.ids and rec2.charge_type.lower() in ['fare', 'roc', 'tax', 'disc']:

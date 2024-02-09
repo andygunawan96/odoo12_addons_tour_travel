@@ -886,10 +886,9 @@ class TestSearch(models.Model):
                         })
                         webhook_obj = self.env['tt.third.party.webhook'].create({
                             "third_party_provider": context['co_job_position_rules']['callback']['source'],
-                            "third_party_data": json.dumps(third_party_data)
-                        })
-                        resv_id.update({
-                            "third_party_ids": [(4, webhook_obj.id)]
+                            "third_party_data": json.dumps(third_party_data),
+                            "res_id": resv_id.id,
+                            "res_model": resv_id._name
                         })
 
         return self.get_booking_result(resv_id.id, context)
