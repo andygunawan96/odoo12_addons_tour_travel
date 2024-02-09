@@ -187,7 +187,7 @@ class TtReservation(models.Model):
 
     estimated_currency = fields.Char('Estimated Currency')
 
-    third_party_ids = fields.Char('Agent View Service Charge')
+    third_party_ids = fields.One2many('tt.third.party.webhook', 'res_id', 'Third Party Webhook', readonly=True,domain=_get_res_model_domain)
 
     @api.model
     def create(self, vals_list):
@@ -927,6 +927,12 @@ class TtReservation(models.Model):
             'total': self.total
             # END
         }
+
+        if self.third_party_ids:
+            webhook_request = self.third_party_ids[0].to_dict()
+            res.update({
+                "webhook_request": webhook_request
+            })
 
         if self.state in ['issued', 'done'] and req.get('get_invoice'):
             invoices = []

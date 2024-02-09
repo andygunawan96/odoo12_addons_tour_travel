@@ -18,7 +18,6 @@ from . import hotel_provider_data
 from . import hotel_compare
 
 ###### Reservasi ######
-from . import tt_third_party_webhook_hotel
 from . import tt_provider_hotel
 from . import tt_reservation_hotel
 from . import tt_reservation_hotel_details
