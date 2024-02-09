@@ -3889,3 +3889,27 @@ class ReservationAirline(models.Model):
         except:
             _logger.error('Error Apply Pax Name Airline API, %s' % traceback.format_exc())
             return ERR.get_error(500)
+
+    def get_btc_hold_date_airline(self, is_actual=False):
+        if not is_actual:
+            if self.agent_type_id != self.ho_id.btc_agent_type_id:
+                is_actual = True
+        if (self.booked_date + timedelta(hours=1)) >= self.hold_date or is_actual:
+            final_time = (self.hold_date + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            final_time = (self.booked_date + timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
+
+        expired_time_limit = None
+        for provider_booking in self.provider_booking_ids:
+            if not expired_time_limit or expired_time_limit < provider_booking.expired_date:
+                expired_time_limit = provider_booking.expired_date
+        is_need_print_expired_date = False
+        if final_time != expired_time_limit:
+            is_need_print_expired_date = True
+        final_time = '%s (GMT +7)' % final_time
+        if is_need_print_expired_date:
+            expired_time_limit = "%s (GMT +7)" % expired_time_limit
+            string_print = "Please complete your payment by %s, otherwise your reservation price will be expired and your reservation will be expired on %s. Thank you for your trust and support in using our service." % (final_time, expired_time_limit)
+        else:
+            string_print = "Please complete your payment by %s, otherwise your reservation will be expired. Thank you for your trust and support in using our service." % final_time
+        return string_print
