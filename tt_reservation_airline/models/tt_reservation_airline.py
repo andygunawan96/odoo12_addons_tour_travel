@@ -53,8 +53,6 @@ class ReservationAirline(models.Model):
 
     flight_number_name = fields.Char('List of Flight number', readonly=True, compute='_compute_flight_number')
 
-    third_party_ids = fields.One2many('tt.third.party.webhook', 'booking_airline_id', 'Third Party Webhook', readonly=True)
-
     @api.multi
     @api.depends('provider_booking_ids.is_hold_date_sync')
     def compute_hold_date_sync(self):
@@ -504,16 +502,12 @@ class ReservationAirline(models.Model):
                         if context['co_job_position_rules']['callback']['source'] == 'ptr':
                             third_party_data = copy.deepcopy(context['co_job_position_rules']['airline'])
                             third_party_data.update({
-                                "callback": context['co_job_position_rules']['callback']
-                            })
-                            webhook_obj = self.env['tt.third.party.webhook'].create({
-                                "third_party_provider": context['co_job_position_rules']['callback']['source'],
-                                "third_party_data": json.dumps(third_party_data)
+                                "callback": context['co_job_position_rules']['callback'],
+                                "source": context['co_job_position_rules']['callback']['source']
                             })
                             book_obj.update({
-                                "third_party_ids": [(4, webhook_obj.id)]
+                                "third_party_webhook_data": json.dumps(third_party_data)
                             })
-
             provider_ids, name_ids = book_obj._create_provider_api(booking_states, context, fare_rule_provider)
 
             # June 4, 2020 - SAM
@@ -1565,11 +1559,6 @@ class ReservationAirline(models.Model):
                     'expired_date': book_obj.expired_date and book_obj.expired_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                     # 'provider_type': book_obj.provider_type_id.code
                 })
-                if book_obj.third_party_ids:
-                    webhook_request = book_obj.third_party_ids[0].to_dict()
-                    res.update({
-                        "webhook_request": webhook_request
-                    })
                 # _logger.info("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)
             else:
@@ -3898,3 +3887,27 @@ class ReservationAirline(models.Model):
         except:
             _logger.error('Error Apply Pax Name Airline API, %s' % traceback.format_exc())
             return ERR.get_error(500)
+
+    def get_btc_hold_date_airline(self, is_actual=False):
+        if not is_actual:
+            if self.agent_type_id != self.ho_id.btc_agent_type_id:
+                is_actual = True
+        if (self.booked_date + timedelta(hours=1)) >= self.hold_date or is_actual:
+            final_time = (self.hold_date + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            final_time = (self.booked_date + timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
+
+        expired_time_limit = None
+        for provider_booking in self.provider_booking_ids:
+            if not expired_time_limit or expired_time_limit < provider_booking.expired_date:
+                expired_time_limit = provider_booking.expired_date
+        is_need_print_expired_date = False
+        if final_time != expired_time_limit:
+            is_need_print_expired_date = True
+        final_time = '%s (GMT +7)' % final_time
+        if is_need_print_expired_date:
+            expired_time_limit = "%s (GMT +7)" % expired_time_limit
+            string_print = "Please complete your payment by %s, otherwise your reservation price will be expired and your reservation will be expired on %s. Thank you for your trust and support in using our service." % (final_time, expired_time_limit)
+        else:
+            string_print = "Please complete your payment by %s, otherwise your reservation will be expired. Thank you for your trust and support in using our service." % final_time
+        return string_print

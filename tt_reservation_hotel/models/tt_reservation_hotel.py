@@ -88,7 +88,6 @@ class HotelReservation(models.Model):
     sid_issued = fields.Char('SID Issued')
     sid_cancel = fields.Char('SID Cancel')
 
-    third_party_ids = fields.One2many('tt.third.party.webhook', 'booking_hotel_id', 'Third Party Webhook',readonly=True)
 
     # Voucher
     # voucher_name = fields.Char('Voucher', store=True)

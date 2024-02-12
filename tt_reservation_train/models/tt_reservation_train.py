@@ -38,7 +38,6 @@ class TtReservationTrain(models.Model):
 
     boarding_pass_id = fields.Many2one('tt.upload.center', 'Boarding Pass', readonly=True)
 
-    third_party_ids = fields.One2many('tt.third.party.webhook', 'booking_train_id', 'Third Party Webhook',readonly=True)
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_train.tt_reservation_train_form_views")
@@ -288,14 +287,11 @@ class TtReservationTrain(models.Model):
                         if context['co_job_position_rules']['callback']['source'] == 'ptr':
                             third_party_data = copy.deepcopy(context['co_job_position_rules']['train'])
                             third_party_data.update({
-                                "callback": context['co_job_position_rules']['callback']
-                            })
-                            webhook_obj = self.env['tt.third.party.webhook'].create({
-                                "third_party_provider": context['co_job_position_rules']['callback']['source'],
-                                "third_party_data": json.dumps(third_party_data)
+                                "callback": context['co_job_position_rules']['callback'],
+                                "source": context['co_job_position_rules']['callback']['source']
                             })
                             book_obj.update({
-                                "third_party_ids": [(4, webhook_obj.id)]
+                                "third_party_webhook_data": json.dumps(third_party_data)
                             })
 
             if not req.get("bypass_psg_validator",False):
@@ -740,12 +736,6 @@ class TtReservationTrain(models.Model):
                     'provider_bookings': prov_list,
                     # 'provider_type': book_obj.provider_type_id.code
                 })
-
-                if book_obj.third_party_ids:
-                    webhook_request = book_obj.third_party_ids[0].to_dict()
-                    res.update({
-                        "webhook_request": webhook_request
-                    })
 
                 # _logger.info("Get resp\n" + json.dumps(res))
                 return ERR.get_no_error(res)

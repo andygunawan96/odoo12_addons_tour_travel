@@ -227,7 +227,7 @@ class TtBillingStatement(models.Model):
                     'filename': 'Billing Statement %s.pdf' % self.name,
                     'file_reference': 'Billing Statement Printout',
                     'file': base64.b64encode(pdf_report_bytes[0]),
-                    'delete_date': datetime.today() + timedelta(minutes=10)
+                    'delete_date': datetime.today() + timedelta(days=1)
                 },
                 {
                     'co_agent_id': co_agent_id,

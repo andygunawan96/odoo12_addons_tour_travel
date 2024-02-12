@@ -12,13 +12,6 @@
                         </h1>
                     </div>
                     <group>
-                        <notebook groups="base.group_system">
-                            <page string="Images Old">
-                                <field name="image_ids"/>
-                            </page>
-                        </notebook>
-                    </group>
-                    <group>
                         <notebook>
                             <page string="Images">
                                 <field name="image_line_ids"/>

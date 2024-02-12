@@ -187,7 +187,9 @@ class TtReservation(models.Model):
 
     estimated_currency = fields.Char('Estimated Currency')
 
-    third_party_ids = fields.Char('Agent View Service Charge')
+    third_party_webhook_data = fields.Text('Third Party Webhook Data')
+
+    # third_party_ids = fields.One2many('tt.third.party.webhook', 'res_id', 'Third Party Webhook', readonly=True,domain=_get_res_model_domain)
 
     @api.model
     def create(self, vals_list):
@@ -927,6 +929,25 @@ class TtReservation(models.Model):
             'total': self.total
             # END
         }
+
+        if self.third_party_webhook_data:
+            third_party_data = json.loads(self.third_party_webhook_data)
+            if third_party_data.get('urlredirectbook'):
+                if third_party_data.get('urlredirectbook')[len(third_party_data['urlredirectbook'])-1] != '/':
+                    third_party_data['urlredirectbook'] += '/'
+                third_party_data['urlredirectbook'] += '%s' % self.name
+            elif third_party_data.get('urlredirectissued'):
+                if third_party_data.get('urlredirectissued')[len(third_party_data['urlredirectissued'])-1] != '/':
+                    third_party_data['urlredirectissued'] += '/'
+                third_party_data['urlredirectissued'] += '%s' % self.name
+            
+            source = third_party_data.pop('source')
+            res.update({
+                "webhook_request": {
+                    'third_party_data': third_party_data,
+                    'provider': source
+                }
+            })
 
         if self.state in ['issued', 'done'] and req.get('get_invoice'):
             invoices = []

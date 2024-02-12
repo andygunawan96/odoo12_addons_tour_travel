@@ -882,14 +882,11 @@ class TestSearch(models.Model):
                     if context['co_job_position_rules']['callback']['source'] == 'ptr':
                         third_party_data = copy.deepcopy(context['co_job_position_rules']['hotel'])
                         third_party_data.update({
-                            "callback": context['co_job_position_rules']['callback']
-                        })
-                        webhook_obj = self.env['tt.third.party.webhook'].create({
-                            "third_party_provider": context['co_job_position_rules']['callback']['source'],
-                            "third_party_data": json.dumps(third_party_data)
+                            "callback": context['co_job_position_rules']['callback'],
+                            "source": context['co_job_position_rules']['callback']['source']
                         })
                         resv_id.update({
-                            "third_party_ids": [(4, webhook_obj.id)]
+                            "third_party_webhook_data": json.dumps(third_party_data)
                         })
 
         return self.get_booking_result(resv_id.id, context)
@@ -1335,10 +1332,24 @@ class TestSearch(models.Model):
                             "invoice_lines": invoices
                         })
 
-                if resv_obj.third_party_ids:
-                    webhook_request = resv_obj.third_party_ids[0].to_dict()
+                if resv_obj.third_party:
+                    third_party_data = json.loads(self.third_party)
+                    if third_party_data.get('urlredirectbook'):
+                        if third_party_data.get('urlredirectbook')[len(third_party_data['urlredirectbook']) - 1] != '/':
+                            third_party_data['urlredirectbook'] += '/'
+                        third_party_data['urlredirectbook'] += '%s' % self.name
+                    elif third_party_data.get('urlredirectissued'):
+                        if third_party_data.get('urlredirectissued')[
+                            len(third_party_data['urlredirectissued']) - 1] != '/':
+                            third_party_data['urlredirectissued'] += '/'
+                        third_party_data['urlredirectissued'] += '%s' % self.name
+                    
+                    source = third_party_data.pop('source')
                     new_vals.update({
-                        "webhook_request": webhook_request
+                        "webhook_request": {
+                            'third_party_data': third_party_data,
+                            'provider': source
+                        }
                     })
             else:
                 raise RequestException(1035)

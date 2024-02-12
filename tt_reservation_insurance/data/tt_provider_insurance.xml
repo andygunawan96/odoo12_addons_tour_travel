@@ -17,7 +17,7 @@
 
         <record id="tt_provider_insurance_rt_insurance" model="tt.provider">
             <field name="name">RT Insurance</field>
-            <field name="code">rt_insurance</field>
+            <field name="code">rodextrip_insurance</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_insurance"/>
         </record>
