@@ -195,8 +195,8 @@
                         <page string="Issued Request" name="issued_request_page" attrs="{'invisible':[('issued_request_ids','=', [])]}">
                             <field name="issued_request_ids"/>
                         </page>
-                        <page string="Third Party Webhook" name="third_party_page" attrs="{'invisible':[('third_party_ids','=', [])]}">
-                            <field name="third_party_ids"/>
+                        <page string="Third Party Webhook" name="third_party_page" attrs="{'invisible':[('third_party','=', '')]}" groups="base.group_erp_manager,base.group_system">
+                            <field name="third_party" groups="base.group_erp_manager,base.group_system"/>
                         </page>
                     </notebook>
                     <footer>

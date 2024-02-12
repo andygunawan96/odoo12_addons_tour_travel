@@ -502,13 +502,11 @@ class ReservationAirline(models.Model):
                         if context['co_job_position_rules']['callback']['source'] == 'ptr':
                             third_party_data = copy.deepcopy(context['co_job_position_rules']['airline'])
                             third_party_data.update({
-                                "callback": context['co_job_position_rules']['callback']
+                                "callback": context['co_job_position_rules']['callback'],
+                                "source": context['co_job_position_rules']['callback']['source']
                             })
-                            webhook_obj = self.env['tt.third.party.webhook'].create({
-                                "third_party_provider": context['co_job_position_rules']['callback']['source'],
-                                "third_party_data": json.dumps(third_party_data),
-                                "res_id": book_obj.id,
-                                "res_model": book_obj._name
+                            book_obj.update({
+                                "third_party": json.dumps(third_party_data)
                             })
             provider_ids, name_ids = book_obj._create_provider_api(booking_states, context, fare_rule_provider)
 
@@ -3889,3 +3887,27 @@ class ReservationAirline(models.Model):
         except:
             _logger.error('Error Apply Pax Name Airline API, %s' % traceback.format_exc())
             return ERR.get_error(500)
+
+    def get_btc_hold_date_airline(self, is_actual=False):
+        if not is_actual:
+            if self.agent_type_id != self.ho_id.btc_agent_type_id:
+                is_actual = True
+        if (self.booked_date + timedelta(hours=1)) >= self.hold_date or is_actual:
+            final_time = (self.hold_date + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            final_time = (self.booked_date + timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
+
+        expired_time_limit = None
+        for provider_booking in self.provider_booking_ids:
+            if not expired_time_limit or expired_time_limit < provider_booking.expired_date:
+                expired_time_limit = provider_booking.expired_date
+        is_need_print_expired_date = False
+        if final_time != expired_time_limit:
+            is_need_print_expired_date = True
+        final_time = '%s (GMT +7)' % final_time
+        if is_need_print_expired_date:
+            expired_time_limit = "%s (GMT +7)" % expired_time_limit
+            string_print = "Please complete your payment by %s, otherwise your reservation price will be expired and your reservation will be expired on %s. Thank you for your trust and support in using our service." % (final_time, expired_time_limit)
+        else:
+            string_print = "Please complete your payment by %s, otherwise your reservation will be expired. Thank you for your trust and support in using our service." % final_time
+        return string_print
