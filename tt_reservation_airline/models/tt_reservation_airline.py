@@ -506,7 +506,7 @@ class ReservationAirline(models.Model):
                                 "source": context['co_job_position_rules']['callback']['source']
                             })
                             book_obj.update({
-                                "third_party": json.dumps(third_party_data)
+                                "third_party_webhook_data": json.dumps(third_party_data)
                             })
             provider_ids, name_ids = book_obj._create_provider_api(booking_states, context, fare_rule_provider)
 

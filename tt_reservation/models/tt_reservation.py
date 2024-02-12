@@ -187,7 +187,7 @@ class TtReservation(models.Model):
 
     estimated_currency = fields.Char('Estimated Currency')
 
-    third_party = fields.Text('Third Party Webhook')
+    third_party_webhook_data = fields.Text('Third Party Webhook Data')
 
     # third_party_ids = fields.One2many('tt.third.party.webhook', 'res_id', 'Third Party Webhook', readonly=True,domain=_get_res_model_domain)
 
@@ -930,8 +930,8 @@ class TtReservation(models.Model):
             # END
         }
 
-        if self.third_party:
-            third_party_data = json.loads(self.third_party)
+        if self.third_party_webhook_data:
+            third_party_data = json.loads(self.third_party_webhook_data)
             if third_party_data.get('urlredirectbook'):
                 if third_party_data.get('urlredirectbook')[len(third_party_data['urlredirectbook'])-1] != '/':
                     third_party_data['urlredirectbook'] += '/'

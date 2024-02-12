@@ -886,7 +886,7 @@ class TestSearch(models.Model):
                             "source": context['co_job_position_rules']['callback']['source']
                         })
                         resv_id.update({
-                            "third_party": json.dumps(third_party_data)
+                            "third_party_webhook_data": json.dumps(third_party_data)
                         })
 
         return self.get_booking_result(resv_id.id, context)

@@ -291,7 +291,7 @@ class TtReservationTrain(models.Model):
                                 "source": context['co_job_position_rules']['callback']['source']
                             })
                             book_obj.update({
-                                "third_party": json.dumps(third_party_data)
+                                "third_party_webhook_data": json.dumps(third_party_data)
                             })
 
             if not req.get("bypass_psg_validator",False):
