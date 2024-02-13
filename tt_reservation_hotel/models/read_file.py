@@ -2234,7 +2234,7 @@ class HotelInformation(models.Model):
         #             csvFile.close()
         return True
 
-    def formating_homas(self, hotel, hotel_id, provider, city_id, city_name, destination_id=False):
+    def formating_homas(self, hotel, hotel_id, provider, city_id, city_name, destination_id=False, country_id=False):
         loc_obj = hotel.get('location') or hotel
         new_hotel = {
                     'id': str(hotel_id),
@@ -2245,6 +2245,7 @@ class HotelInformation(models.Model):
                     'location': {
                         'destination_id': destination_id,
                         'city_id': isinstance(city_id, int) and city_id or city_id.id if city_id else False,
+                        'country_id': isinstance(country_id, int) and country_id or country_id.id if city_id else False,
                         'address': loc_obj.get('address') or loc_obj.get('street'),
                         'address2': loc_obj.get('address2') or loc_obj.get('street2'),
                         'address3': loc_obj.get('address3') or loc_obj.get('street3'),
@@ -2260,7 +2261,7 @@ class HotelInformation(models.Model):
                     'lat': hotel.get('lat'),
                     'long': hotel.get('long'),
                     'state': 'confirm',
-                    'external_code': {self.masking_provider(provider): str(hotel.get('id') or hotel.get('code'))},
+                    'external_code': {provider: str(hotel.get('id') or hotel.get('code'))},
                     'near_by_facility': [],
                     'images': hotel.get('images') or hotel.get('image'),
                     'facilities': hotel.get('facilities'),
@@ -2272,48 +2273,52 @@ class HotelInformation(models.Model):
                 new_hotel['rating'] = 0
 
         fac_list = []
+        provider_id = self.env['tt.provider'].search([('code', '=ilike', provider)], limit=1)
         for img in new_hotel.get('images') or []:
-            if isinstance(img, str):
-                new_img_url = 'http' in img and img or 'http://www.sunhotels.net/Sunhotels.net/HotelInfo/hotelImage.aspx' + img + '&full=1'
-                provider_id = self.env['tt.provider'].search([('code', '=ilike', provider)], limit=1)
-                fac_list.append({'name': '', 'url': new_img_url, 'description': '' , 'provider_id': provider_id.id})
-            else:
-                # Digunakan hotel yg bisa dpet nama image nya
-                # Sampai tgl 11-11-2019 yg kyak gini (miki_api) formate sdah bener jadi bisa langsung break
-                # Lek misal formate beda mesti di format ulang
-                fac_list = new_hotel['images']
-                break
+            new_img_url = 'http://photos.hotelbeds.com/giata/bigger/' + img['path']
+            fac_list.append({'name': '', 'url': new_img_url, 'description': '', 'provider_id': provider_id.id})
+
+            # if isinstance(img, str):
+            #     new_img_url = 'http' in img and img or 'http://www.sunhotels.net/Sunhotels.net/HotelInfo/hotelImage.aspx' + img + '&full=1'
+            #     provider_id = self.env['tt.provider'].search([('code', '=ilike', provider)], limit=1)
+            #     fac_list.append({'name': '', 'url': new_img_url, 'description': '' , 'provider_id': provider_id.id})
+            # else:
+            #     # Digunakan hotel yg bisa dpet nama image nya
+            #     # Sampai tgl 11-11-2019 yg kyak gini (miki_api) formate sdah bener jadi bisa langsung break
+            #     # Lek misal formate beda mesti di format ulang
+            #     fac_list = new_hotel['images']
+            #     break
         new_hotel['images'] = fac_list
 
         new_fac = []
-        for fac in new_hotel.get('facilities') or []:
-            if isinstance(fac, dict):
-                if not fac.get('facility_name'):
-                    fac['facility_name'] = fac.pop('name')
-                fac_name = fac['facility_name']
-            else:
-                fac_name = fac
-                fac = {
-                    'facility_name': fac,
-                    'facility_id': False,
-                }
-            new_fac.append(fac)
-            # for fac_det in fac_name.split('/'):
-            #     facility = self.env['tt.hotel.facility'].search([('name', '=ilike', fac_det)])
-            #     if facility:
-            #         fac['facility_id'] = facility[0].internal_code
-            #         break
-            #     else:
-            #         facility = self.env['tt.provider.code'].search([('name', '=ilike', fac_det), ('facility_id', '!=', False)])
-            #         if facility:
-            #             fac['facility_id'] = facility[0].facility_id.internal_code
-            #             break
-            #
-            #         # Rekap Facility Other Name
-            #         with open('/var/log/cache_hotel/result log/master/new_facility.csv', 'a') as csvFile:
-            #             writer = csv.writer(csvFile)
-            #             writer.writerows([[provider, fac_det]])
-            #         csvFile.close()
+        # for fac in new_hotel.get('facilities') or []:
+        #     if isinstance(fac, dict):
+        #         if not fac.get('facility_name'):
+        #             fac['facility_name'] = fac.pop('name')
+        #         fac_name = fac['facility_name']
+        #     else:
+        #         fac_name = fac
+        #         fac = {
+        #             'facility_name': fac,
+        #             'facility_id': False,
+        #         }
+        #     new_fac.append(fac)
+        #     # for fac_det in fac_name.split('/'):
+        #     #     facility = self.env['tt.hotel.facility'].search([('name', '=ilike', fac_det)])
+        #     #     if facility:
+        #     #         fac['facility_id'] = facility[0].internal_code
+        #     #         break
+        #     #     else:
+        #     #         facility = self.env['tt.provider.code'].search([('name', '=ilike', fac_det), ('facility_id', '!=', False)])
+        #     #         if facility:
+        #     #             fac['facility_id'] = facility[0].facility_id.internal_code
+        #     #             break
+        #     #
+        #     #         # Rekap Facility Other Name
+        #     #         with open('/var/log/cache_hotel/result log/master/new_facility.csv', 'a') as csvFile:
+        #     #             writer = csv.writer(csvFile)
+        #     #             writer.writerows([[provider, fac_det]])
+        #     #         csvFile.close()
         new_hotel['facilities'] = new_fac
         return new_hotel
 
@@ -2362,7 +2367,7 @@ class HotelInformation(models.Model):
         fmt_hotel_name = fmt_hotel_name.replace('&amp;', '&')
         fmt_hotel_name = fmt_hotel_name.split(' ')
         # 3. Remove Selected String (Hotel, Motel, Apartement , dsb)
-        ext_param = ['hotel', 'motel', 'villa', 'villas', 'apartment', 'and', '&', '&amp;']
+        ext_param = ['hotel', 'hostel', 'motel', 'villa', 'villas', 'apartment', 'and', '&', '&amp;']
         # 4. Remove City Name
         ext_param += city_name and city_name.lower().split(' ') or []
 
@@ -2383,7 +2388,7 @@ class HotelInformation(models.Model):
         return False
 
     def calc_similarity(self, fmt_hotel_name, fmt_hotel_master, city_name):
-        if len(fmt_hotel_name) >= 3:
+        if len(fmt_hotel_name) > 3:
             similarity = 0
             for elem in fmt_hotel_name:
                 # Contoh "[Vagabond,a,tribute,portofolio]" "A" bikin value ne naik jadi ku skip
@@ -2411,8 +2416,13 @@ class HotelInformation(models.Model):
         if any(x == fmt_hotel_name for x in ['oyo', 'reddoors', 'zen']):
             limit = 80
 
-        # TYPE 1: cek by city dulu klo masih kurang => destination
-        if city_ids:
+        # TYPE 1:
+        # Sme Nme
+        for rec in self.env['tt.hotel.master'].search([('name', '=', hotel_name)], limit=1):
+            temp.append(rec)
+
+        # cek by city dulu klo masih kurang => destination
+        if city_ids and False not in city_ids:
             # Todo Find City
             # for rec in self.env['tt.hotel'].search([('id', '!=', new_hotel_id), ('city_id', 'in', city_ids), ('state', 'not in', ['merged',])]):
             for rec in self.env['tt.hotel.master'].search([('city_id', 'in', city_ids)]):
@@ -2437,10 +2447,6 @@ class HotelInformation(models.Model):
                     fmt_hotel_master = self.formatting_hotel_name(rec.name, city_name)
                     if self.calc_similarity(fmt_hotel_name, fmt_hotel_master, city_name):
                         temp.append(rec)
-        # Klo Blum nemu dri nama tpi cmn cari 1 aja
-        if len(temp) == 0:
-            for rec in self.env['tt.hotel.master'].search([('name', '=', hotel_name)], limit=1):
-                temp.append(rec)
         # TYPE 1: End
 
         # TYPE 2: Start cek smua barengan
@@ -2494,7 +2500,7 @@ class HotelInformation(models.Model):
             'ribbon': hotel_obj['ribbon'],
             'email': hotel_obj.get('email'),
             'website': hotel_obj.get('website'),
-            'provider': ', '.join([self.env['tt.provider'].search([('alias', '=', xxx)], limit=1).name or '' for xxx in
+            'provider': ', '.join([self.env['tt.provider'].search(['|',('code', '=', xxx),('alias', '=', xxx)], limit=1).name or '' for xxx in
                                    hotel_obj['external_code'].keys()]),
             'description': hotel_obj['description'],
             'lat': hotel_obj['lat'],
@@ -2506,7 +2512,7 @@ class HotelInformation(models.Model):
             'zip': hotel_obj['location']['zipcode'],
             'city_id': hotel_obj['location']['city_id'],  # Todo search City
             'state_id': hotel_obj['location']['state'],
-            'country_id': False,
+            'country_id': hotel_obj['location']['country_id'],
             'file_number': file_number,
             'destination_id': hotel_obj['location']['destination_id'],
         })
@@ -2537,7 +2543,7 @@ class HotelInformation(models.Model):
         # Create Provider IDS
         for vendor in hotel_obj['external_code'].keys():
             self.env['tt.provider.code'].create({
-                'provider_id': self.env['tt.provider'].search([('alias', '=', vendor)], limit=1).id,
+                'provider_id': self.env['tt.provider'].search(['|',('code', '=', vendor),('alias', '=', vendor)], limit=1).id,
                 'code': hotel_obj['external_code'][vendor],
                 'res_id': create_hotel_id.id,
                 'res_model': 'tt.hotel',
@@ -2573,12 +2579,14 @@ class HotelInformation(models.Model):
         })
         return create_hotel_id
 
-    def create_or_edit_hotel(self, hotel_obj, file_number=-1):
+    def create_or_edit_hotel(self, hotel_obj, file_number=-1, provider_id=False):
         ext_code = list(hotel_obj['external_code'].keys())[0]
-        provider_id = self.env['tt.provider'].search([('alias','=', ext_code)]).id
+        if not provider_id:
+            provider_id = self.env['tt.provider'].search(['|',('alias','=', ext_code),('code','=', ext_code)], limit=1).id
         old_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('code', '=', hotel_obj['external_code'][ext_code])])
 
-        if old_objs:
+        # Vin: 21082023: Webbeds Code e kembar antara tt.hotel dan tt.hotel.destination
+        if old_objs and old_objs[0].res_model == 'tt.hotel':
             self.file_log_write('Skip Update for Hotel ' + str(old_objs[0].name) + ' with code ' + str(old_objs[0].code) )
             return False  # Demo Only
             # self.file_log_write('Update for Hotel ' + str(old_objs[0].name) + ' with code ' + str(old_objs[0].code))
@@ -3574,6 +3582,9 @@ class HotelInformation(models.Model):
             for country in looped_country:
                 country_str = country
 
+                # if country_str == 'Turks And Caicos Islands':
+                #     country_str = country_str
+
                 # if country_str != 'ID':
                 #     _logger.info('Skiping Data For Country: ' + country_str + '. Not in Search range')
                 #     continue
@@ -3587,6 +3598,7 @@ class HotelInformation(models.Model):
                         state_name = ''
                         country_name = country_str
                     if city_name.lower() in rendered_city:
+                        _logger.info('Skipping Already Render City ' + city_name.lower() + '; ' + country_name)
                         continue
                     # Versi 2020/12 hotel di hubungkan dengan City langsung
                     # city_obj = self.env['res.city'].find_city_by_name(city_name, limit=1)
@@ -3605,17 +3617,22 @@ class HotelInformation(models.Model):
                         'country_str': country_name,
                     }, force_create=True)
                     city_obj = destination_obj.city_id
+                    country_obj = destination_obj.country_id
                     city_id = city_obj and city_obj.id or self.env['res.city'].find_city_by_name(city_name, 1)
-                    self.file_log_write(str(target_city_index + 1) + '. Start Render: ' + city_name)
+                    self.file_log_write(str(target_city_index + 1) + '. Start Render: ' + city_name + '; ' + country_name)
                     searched_city_names = [city_name, ]
                     searched_city_names += [rec.name for rec in city_obj.other_name_ids.filtered(lambda x: x.name not in city_name)]
 
-                    searched_city_ids = self.compute_related_city(city_obj, city_name)
+                    # Matikan Temp untuk speed up
+                    # searched_city_ids = self.compute_related_city(city_obj, city_name)
 
                     # Loop All provider untuk setiap city di alias name
                     for searched_city_name in searched_city_names:
                         for provider in provider_list:
                             a = 0
+                            provider_id = self.env['tt.provider'].search(['|',('alias','=', provider),('code','=', provider)], limit=1).id
+                            code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('res_model', '=', 'tt.hotel')])
+                            code_ids = [x.code for x in code_objs]
                             try:
                                 file_url = base_cache_directory + provider + "/" + country_str + "/" + searched_city_name + ".json"
                                 # Loop untuk setiap city cari file yg nama nya sma dengan  city yg dimaksud
@@ -3626,24 +3643,18 @@ class HotelInformation(models.Model):
                                     for hotel in json.loads(file):
                                         hotel_id += 1
                                         # rubah format ke odoo
-                                        if any([x in hotel['name'].lower().split(' ') for x in ['oyo', 'reddoorz', 'airy']]):
+                                        # if any([x in hotel['name'].lower().split(' ') for x in ['oyo', 'reddoorz', 'airy']]) and 'formerly' not in hotel['name'].lower().split(' '):
+                                        #     _logger.info('Skipping OYO ' + hotel['name'])
+                                        #     continue
+                                        if hotel['id'] in code_ids:
+                                        # if self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('code', '=', hotel['id'])], limit=1).ids:
                                             _logger.info('Skipping ' + hotel['name'])
                                             continue
-                                        hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, city_name, destination_obj.id)
+                                        hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, city_name, destination_obj.id, country_obj.id)
 
-                                        internal_hotel_obj = self.create_or_edit_hotel(hotel_fmt, -1)
-                                        if internal_hotel_obj:
-                                            if len(json.loads(file)):
-                                                same_hotel_obj = self.advance_find_similar_name_from_database(hotel_fmt['name'], hotel_fmt['location']['city'], searched_city_ids, destination_obj.id, internal_hotel_obj.id)
-                                            else:
-                                                same_hotel_obj = False
-                                            if same_hotel_obj:
-                                                for same_hotel_obj_id in same_hotel_obj:
-                                                    comparing_id = self.env['tt.hotel.compare'].create({
-                                                        'hotel_id': internal_hotel_obj.id,
-                                                        'comp_hotel_id': same_hotel_obj_id.id,
-                                                    })
-                                                    comparing_id.compare_hotel()
+                                        internal_hotel_obj = self.create_or_edit_hotel(hotel_fmt, -1, provider_id)
+                                        # if internal_hotel_obj:
+                                        #     internal_hotel_obj.advance_find_similar_name_from_database_2()
                                         if hotel_id % 10 == 0:
                                             _logger.info('====== Saving Poin Hotel Raw Data ======')
                                             self.env.cr.commit()
@@ -3741,6 +3752,20 @@ class HotelInformation(models.Model):
         _logger.info(msg='======================================')
         return True
 
+    def check_content_length(self, content, dest_name, country_name, idx=200):
+        if len(content) % idx == 0:
+            _logger.info(msg='Write Partial Render ' + dest_name + ', ' + country_name + ' with '+ str(len(content)) + ' data')
+
+            file = open('/var/log/tour_travel/cache_hotel/cache_hotel_partial_render.txt', 'w')
+            file.write(json.dumps(content))
+            file.close()
+        elif len(content) % 100 == 0:
+            _logger.info(msg='Rendering ' + dest_name + ', ' + country_name + ' with ' + str(len(content)) + ' data')
+    def uncontent(self):
+        file = open('/var/log/tour_travel/cache_hotel/cache_hotel_partial_render.txt', 'w')
+        file.write(json.dumps([]))
+        file.close()
+
     # 3. Send Hotel to GW
     # Compiller: Master, Send: GW Rodextrip
     # Notes: Read Data Hotel kumpulkan per City kirim ke GW
@@ -3798,19 +3823,40 @@ class HotelInformation(models.Model):
 
         catalog.sort(key=lambda k: k['index'])
         for city in catalog:
-            if last_render != 0 and int(city['index']) < int(last_render):
+            if last_render != 0 and int(city['index']) <= int(last_render):
                 _logger.info(msg=str(city['index']) +'. Skip hotel Destination: ' + city.get('destination_name') or '-' + ', Country: ' + city.get('country_name') or '-')
                 continue
-            content = []
-            # Search all Mapped Data from hotel.master
-            for hotel in self.env['tt.hotel.master'].search([('destination_id','=',city['destination_id'])]):
-                content.append(hotel.fmt_read())
+            _logger.info(msg='Render hotel Destination: ' + city.get('destination_name') + ', Country: ' + city.get('country_name') or '-')
+            f2 = open('/var/log/tour_travel/cache_hotel/cache_hotel_partial_render.txt', 'r')
+            f2 = f2.read()
+            content = json.loads(f2)
 
-            # Rubah ke format JSON
-            # Save as 1 File and send to GW
-            # API_CN_HOTEL.send_request('create_hotel_file', {'name': 'cache_hotel_' + str(city['index']), 'content': json.dumps(content)})
+            if not content:
+                # Search all Mapped Data from hotel.master
+                for hotel in self.env['tt.hotel.master'].search([('destination_id','=',city['destination_id'])]):
+                    content.append(hotel.fmt_read())
+                    self.check_content_length(content, city['destination_name'], city['country_name'])
 
-            # Test Only: Langsung Write as DB
+                # Rubah ke format JSON
+                # Save as 1 File and send to GW
+                # API_CN_HOTEL.send_request('create_hotel_file', {'name': 'cache_hotel_' + str(city['index']), 'content': json.dumps(content)})
+
+                # Urgent all DIDA di render
+                for hotel in self.env['tt.hotel'].search([('destination_id','=',city['destination_id']),('state','=','draft'),('compare_ids','=',False),('provider','=','Dida Hotel Vendor')]):
+                    content.append(hotel.fmt_read())
+                    self.check_content_length(content, city['destination_name'], city['country_name'])
+            else:
+                _logger.info(msg='Content available continuing with ' + str(len(content)) + ' data for ' + city['destination_name'])
+                content_idx = [x['id'] for x in content]
+                if len(self.env['tt.hotel.master'].search([('destination_id', '=', city['destination_id'])]).ids) > len(content_idx):
+                    for hotel in self.env['tt.hotel.master'].search([('destination_id', '=', city['destination_id'])]):
+                        hotel_id = hotel.internal_code or hotel.id
+                        if hotel_id not in content_idx:
+                            content.append(hotel.fmt_read())
+                            self.check_content_length(content, city['destination_name'], city['country_name'])
+                
+            self.uncontent()
+                # Test Only: Langsung Write as DB
             try:
                 file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'w')
                 file.write(json.dumps(content))
@@ -3857,15 +3903,26 @@ class HotelInformation(models.Model):
                 # Search all Mapped Data from hotel.master
 
                 render_idx = 0
+                # Prt #1 Strt
                 for hotel in self.env['tt.hotel.master'].search(['|',('city_id','=',city['city_id']),('destination_id','=',city['destination_id'])]):
-                # for hotel in self.env['tt.hotel'].search([('city_id','=',city['city_id'])]):  #Old Version
                     if hotel.internal_code in cache_data_id:
                         continue
-                    content.append(hotel.fmt_read(city_idx=city['index']))
+                    hotel_fmt = hotel.fmt_read(city_idx=city['index'])
+                # Prt #1 End
+                # for hotel in self.env['tt.hotel'].search([('city_id','=',city['city_id'])]):  #Old Version
+                # Prt #2 Strt
+                # for hotel in self.env['tt.hotel'].search([('destination_id','=',city['destination_id']),('provider','=','Hotelinx')]):
+                #     if 'dmhtx_' + str(hotel.id) in cache_data_id:
+                #         _logger.info(msg='Skip '+ hotel.name)
+                #         continue
+                #     hotel_fmt = hotel.fmt_read(city_idx=city['index'])
+                #     hotel_fmt.update({'id': 'dmhtx_' + hotel_fmt['id'], })
+                # Prt #2 End
+                    content.append(hotel_fmt)
                     _logger.info(msg='Adding Hotel ' + hotel.name)
 
                     render_idx += 1
-                    if render_idx % 300 == 0:
+                    if render_idx % 100 == 0:
                         _logger.info(msg='============ Save Cache ============')
                         file = open('/var/log/tour_travel/cache_hotel/cache_hotel_partial.txt', 'w')
                         file.write(json.dumps(content))
@@ -3893,6 +3950,18 @@ class HotelInformation(models.Model):
         _logger.info(msg='============== Render Done ==============')
         return True
 
+    # 3c. Update meal_type Data
+    def v3_partial_send_cache_meal_type(self):
+        file = open('/var/log/tour_travel/autocomplete_hotel/meal_cache.json', 'w')
+        file.write(json.dumps({
+            'meal_type_ids': self.env['tt.meal.type'].render_cache(),
+            'meal_category_ids': self.env['tt.meal.category'].render_cache(),
+        }))
+        file.close()
+
+    def prepare_gateway_cache(self, new_cache_dict):
+        return True
+
     # 4. Render AutoComplete
     # Notes: Render City + Auto complete
     # Notes: Kirim Auto Complete ke channel / B2B ne
@@ -3903,14 +3972,16 @@ class HotelInformation(models.Model):
         new_cache_dict = {
             'hotel_ids': [],
             'city_ids': self.env['test.search'].render_cache_city_for_gw(providers=provider_list),
+            # 'city_ids': [],
             'country_ids': self.env['test.search'].prepare_countries(self.env['res.country'].sudo().search([])),
             'landmark_ids': [],
             'meal_type_ids': self.env['tt.meal.type'].render_cache(),
             'meal_category_ids': self.env['tt.meal.category'].render_cache(),
         }
         # Update ke master nya
-        API_CN_HOTEL.signin()
-        API_CN_HOTEL.send_request('prepare_gateway_cache', new_cache_dict)
+        if int(self.env['ir.config_parameter'].sudo().get_param('last.gw.render.idx')) == 0:
+            API_CN_HOTEL.signin()
+            API_CN_HOTEL.send_request('prepare_gateway_cache', new_cache_dict)
 
         _logger.info('Render Cache Done ' + str(len(new_cache_dict['city_ids'])) + ' City(s), ' + str(len(new_cache_dict['country_ids'])) + ' Countries,')
         # Update ke BTBO2 dkk / Child / subscribers
@@ -4012,6 +4083,135 @@ class HotelInformation(models.Model):
                     'latitude': rec[5],
                     'longitude': rec[6],
                 })
+
+    # Fungsi untuk adding dri cache selected vendor ke data hasil prepare gateway
+    def v3_adding_gateway_cache_direct(self):
+    # def v3_partial_send_cache(self):
+        hotel_id = 0
+        target_city_index = 0
+        new_cache_index = 99000
+
+        f2 = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'r')
+        f2 = f2.read()
+        catalog = json.loads(f2)
+        catalog.sort(key=lambda k: k['index'])
+
+        provider_list = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',')
+        for master_provider in provider_list:
+            base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+            base_url = base_cache_directory + master_provider + "/"
+
+            looped_country = os.walk(base_url)
+            for country in os.walk(base_url):
+                if isinstance(country, tuple):
+                    looped_country = country[1]
+                    break
+                else:
+                    break
+
+            for country in looped_country:
+                country_str = country
+
+                city_ids = glob.glob(base_url + country_str + "/*.json")
+                for target_city in city_ids:
+                    city_name = target_city[len(base_url) + len(country_str) + 1:-5]
+                    if len(country_str.split('/')) == 2:
+                        state_name = country_str.split('/')[-1]
+                        country_name = country_str.split('/')[0]
+                    else:
+                        state_name = ''
+                        country_name = country_str
+
+                    searched_city_name = city_name
+                    catalog_index = 0
+                    catalog_codes = {}
+                    catalog_value = []
+                    for city in catalog:
+                        if city['destination_name'].lower() == searched_city_name.lower():
+                            catalog_index = city['index']
+                            f2 = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(catalog_index) + '.txt','r')
+                            f2 = f2.read()
+                            f3 = json.loads(f2)
+
+                            catalog_codes = {}
+                            catalog_value = f3
+                            for f2_data in f3:
+                                for f2_data_key in f2_data['external_code'].keys():
+                                    if not catalog_codes.get(f2_data_key):
+                                        catalog_codes[f2_data_key] = []
+                                    catalog_codes[f2_data_key].append(f2_data['external_code'][f2_data_key])
+                            break
+                    if not catalog_index:
+                        new_cache_index += 1
+                        catalog_index = new_cache_index
+
+                    for provider in provider_list:
+                        a = 0
+                        try:
+                            file_url = base_cache_directory + provider + "/" + country_str + "/" + searched_city_name + ".json"
+                            # Loop untuk setiap city cari file yg nama nya sma dengan  city yg dimaksud
+                            with open(file_url, 'r') as f2:
+                                file = f2.read()
+                                self.file_log_write('Provider ' + provider + ', for alias name ' + searched_city_name + ': ' + str(len(json.loads(file))))
+                                a += len(json.loads(file))
+                                for hotel in json.loads(file):
+                                    hotel_id += 1
+                                    # rubah format ke odoo
+                                    # if any([x in hotel['name'].lower().split(' ') for x in ['oyo', 'reddoorz', 'airy']]):
+                                    #     _logger.info('Skipping ' + hotel['name'])
+                                    #     continue
+                                    hotel_fmt = self.formating_homas(hotel, hotel_id, provider, 0, city_name, 0)
+                                    ext_code = list(hotel_fmt['external_code'].keys())[0]
+                                    if hotel_fmt['external_code'][ext_code] not in catalog_codes.get(ext_code) or []:
+                                        _logger.info(msg='Adding ' + str(hotel_fmt['name']) + ' with code ' + str(hotel_fmt['external_code'][ext_code]) + ' From ' + ext_code)
+                                        catalog_value.append(hotel_fmt)
+                                    # else:
+                                    #     _logger.info(msg='Removing ' + str(hotel_fmt['name']) + ' with code ' + str(hotel_fmt['external_code'][ext_code]) + ' Vendor: ' + ext_code)
+                            f2.close()
+
+                            # Proses adding dta direct ke cache
+                            # 1. Cri apa dest ada di cache
+                            #    a. Jika ada add di file tsb
+                            #    b. Jika tidak create / cek new file
+                            # 2. Loop untuk cek apa external id untuk hotel yg mau kta add sdah ada di cache
+                        except Exception as e:
+                            self.file_log_write('Error:' + provider + ' in id ' + str(hotel_id) + '; MSG:' + str(e))
+                            try:
+                                f2.close()
+                                pass
+                            except:
+                                pass
+
+                    file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(catalog_index) + '.txt', 'w')
+                    file.write(json.dumps(catalog_value))
+                    file.close()
+
+                    _logger.info('Render ' + city_name + ' End')
+                    target_city_index += 1
+        return True
+
+    # Button "3b. Hotel Mapped for Vendor"
+    # Render Hotel Code for some vendor
+    def v3_render_hotel_code(self):
+        obj_no = 1
+        prov_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_miki').id
+        csv_data = []
+        csv_data.append(['No','provider_name','provider_code','master_name','master_code','master_address','master_city','master_country'])
+        for rec in self.env['tt.provider.code'].search([('res_model','=','tt.hotel'),('provider_id','=',prov_id)]):
+            hotel_raw_obj = self.browse(rec.res_id)
+            for comp_obj in hotel_raw_obj.compare_ids:
+                if comp_obj.state in ['merge']:
+                    sim_obj = comp_obj.similar_id
+                    csv_data.append([obj_no, rec.name, rec.code, sim_obj.name, sim_obj.internal_code, sim_obj.address, sim_obj.destination_id.name , sim_obj.country_id.name])
+                    obj_no += 1
+                    break
+
+        with open('/var/log/tour_travel/autocomplete_hotel/hotel_code_for_vendor.csv', 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(csv_data)
+        csvFile.close()
+
+        return csv_data
 
     def get_xml_data(self, xml_dict, xml_list, is_list=False):
         if not isinstance(xml_list, list):

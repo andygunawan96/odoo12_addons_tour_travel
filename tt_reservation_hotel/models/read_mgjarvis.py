@@ -322,13 +322,13 @@ class HotelInformation(models.Model):
                 'offset': '',
                 'codes': '',
             }
-            nationality_ids = API_CN_HOTEL.get_record_by_api(search_req, api_context)
-            _logger.info("===== Data Done =====")
+            # nationality_ids = API_CN_HOTEL.get_record_by_api(search_req, api_context)
+            # _logger.info("===== Data Done =====")
 
             # Write Data
-            file = open(filename, 'w')
-            file.write(json.dumps(nationality_ids))
-            file.close()
+            # file = open(filename, 'w')
+            # file.write(json.dumps(nationality_ids))
+            # file.close()
 
         except:
             # Error Retrieving new Nationality Data using the old one if Exist
@@ -340,8 +340,6 @@ class HotelInformation(models.Model):
             country_ids = json.loads(txt_data)
             country_ids = country_ids['response']['result']
             for rec in country_ids.keys():
-                if rec != 'ID':
-                    continue
                 _logger.info("=== Processing (" + rec + ") ===")
 
                 country_obj = self.env['res.country'].search([('code', '=', rec)], limit=1)  # By Code
@@ -363,8 +361,8 @@ class HotelInformation(models.Model):
                 else:
                     _logger.info("Skipping " + country_ids[rec]['name'] + " with code " + rec + " already Exist")
 
+                idx = 0
                 for city_dta in country_ids[rec]['city']:
-                    idx = 0
                     name = city_dta['name']
                     code = city_dta['code']
                     old_obj = self.env['tt.provider.code'].search(
@@ -378,13 +376,13 @@ class HotelInformation(models.Model):
                             'state_str': '',
                             'country_str': country_obj.name,
                         }
-                        is_exact, new_obj = self.env['tt.hotel.destination'].find_similar_obj(new_dict)
+                        is_exact, new_obj = self.env['tt.hotel.destination'].find_similar_obj(new_dict, False)
                         if not is_exact:
                             new_obj = self.env['tt.hotel.destination'].create(new_dict)
                             new_obj.fill_obj_by_str()
                             _logger.info('Create New Destination {} with code {}'.format(name, code))
                         else:
-                            _logger.info('Destination already Exist Code for {}, Country {}'.format(name, country_obj.name))
+                            _logger.info('Destination already Exist for {}, Country {}'.format(name, country_obj.name))
 
                         self.env['tt.provider.code'].create({
                             'res_model': 'tt.hotel.destination',
@@ -393,12 +391,12 @@ class HotelInformation(models.Model):
                             'code': code,
                             'provider_id': provider_id,
                         })
-                        _logger.info('Create External ID {} with id {}'.format(code, str(new_obj.id)))
+                        _logger.info('{}. Create Provider Code for {}'.format(str(idx), name))
                     else:
-                        _logger.info('External ID {} already Exist in {} with id {}'.format(code, old_obj.res_model,
+                        _logger.info('Skipping {} already Exist in {} with id {}'.format(code, old_obj.res_model,
                                                                                             str(old_obj.res_id)))
                     idx += 1
-                    if idx % 100 == 0:
+                    if idx % 50 == 0:
                         _logger.info('Saving Record until ' + str(idx))
                         self.env.cr.commit()
         return True

@@ -166,23 +166,68 @@ class HotelInformation(models.Model):
     def v2_collect_by_human_miki_csv(self):
         hotel_fmt_list = {}
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
-        # with open(base_cache_directory + 'miki_pool/master/20190703_en.csv', 'r') as f:
-        # with open(base_cache_directory + 'miki/master/Rodex (1).csv', 'r') as f:
-        # with open(base_cache_directory + 'miki/master/new miki 20221207.csv', 'r') as f:
-        with open(base_cache_directory + 'miki/master/Miki full product list DEC 2022 for Rodex (copy).csv', 'r') as f:
+        # with open(base_cache_directory + 'miki/00_master/Rodex_Des2022_full.csv', 'r') as f: # 17k
+        # with open(base_cache_directory + 'miki/00_master/Rodex_jul2023.csv', 'r') as f: #5k
+        with open(base_cache_directory + 'miki/00_master/20231126.csv', 'r') as f: #18k
             hotel_ids = csv.reader(f, delimiter=';')
             index = False
             for hotel in hotel_ids:
                 if not index:
-                    index = hotel
+                    index = 1
                     continue
+                else:
+                    index += 1
+                # Rodex_Des2022_full
                 # _logger.info("Processing (" + hotel[5] + ").")
+                # hotel_fmt = {
+                #     'id': hotel[0],
+                #     'name': hotel[5],
+                #     'street': hotel[6],
+                #     'street2': hotel[8] or '', #Usually ZipCode
+                #     'street3': hotel[7] or '', #Usually Citydex
+                #     'email': '',
+                #     'images': [],
+                #     'facilities': [],
+                #     'phone': hotel[11],
+                #     'fax': hotel[12],
+                #     'zip': '',
+                #     'website': '',
+                #     'lat': hotel[9],
+                #     'long': hotel[10],
+                #     'rating': 0,
+                #     'hotel_type': '',
+                #     'country': hotel[3],
+                # }
+
+                # Rodex_jul2023
+                # hotel_fmt = {
+                #                     'id': hotel[0],
+                #                     'name': hotel[4],
+                #                     'street': hotel[5],
+                #                     'street2': hotel[6] or '',  # Usually Citydex
+                #                     'street3': hotel[7] or '',  # Usually ZipCode
+                #                     'email': '',
+                #                     'images': [],
+                #                     'facilities': [],
+                #                     'phone': hotel[10],
+                #                     'fax': hotel[11],
+                #                     'zip': '',
+                #                     'website': '',
+                #                     'lat': hotel[8],
+                #                     'long': hotel[9],
+                #                     'rating': 0,
+                #                     'hotel_type': '',
+                #                     'city': hotel[3],
+                #                     'country': hotel[2],
+                #                     'description': 'Giata Code: ' + str(hotel[1]),
+                #                 }
+                _logger.info("Processing " + str(index) + ". " + hotel[4])
                 hotel_fmt = {
                     'id': hotel[0],
                     'name': hotel[5],
                     'street': hotel[6],
-                    'street2': hotel[8] or '', #Usually ZipCode
-                    'street3': hotel[7] or '', #Usually Citydex
+                    'street2': hotel[7] or '',  # Usually Citydex
+                    'street3': hotel[8] or '',  # Usually ZipCode
                     'email': '',
                     'images': [],
                     'facilities': [],
@@ -194,14 +239,16 @@ class HotelInformation(models.Model):
                     'long': hotel[10],
                     'rating': 0,
                     'hotel_type': '',
+                    'city': hotel[4],
                     'country': hotel[3],
+                    'description': 'Giata Code: ' + str(hotel[1]),
                 }
 
                 # Untuk yg RO (1)
-                hotel_fmt.update({
-                    'description': 'Giata Code: ' + str(hotel[1]),
-                    'city': hotel[4],
-                })
+                # hotel_fmt.update({
+                #     'description': 'Giata Code: ' + str(hotel[1]),
+                #     'city': hotel[4],
+                # })
                 # Untuk yg 20190703_en.csv
                 # hotel_fmt.update({
                 #     'description': 'Supplier Code: ' + str(hotel[4]),
@@ -222,7 +269,7 @@ class HotelInformation(models.Model):
                     os.mkdir(filename)
                 for city in hotel_fmt_list[country].keys():
                     txt_city = city.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')', '')
-                    _logger.info("Write File " + txt_country + " City: " + txt_city)
+                    # _logger.info("Write File " + txt_country + " City: " + txt_city)
                     filename1 = filename + "/" + txt_city + ".json"
                     file = open(filename1, 'w')
                     file.write(json.dumps(hotel_fmt_list[country][city]))
@@ -231,7 +278,7 @@ class HotelInformation(models.Model):
                 need_to_add.append([city, len(hotel_fmt_list[country][city])])
         f.close()
 
-        with open(base_cache_directory + 'miki/master/result_data.csv', 'w') as csvFile:
+        with open(base_cache_directory + 'miki/00_master/result_data.csv', 'w') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerows(need_to_add)
         csvFile.close()
