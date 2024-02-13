@@ -42,3 +42,4 @@ from . import read_mgjarvis
 from . import read_itank
 from . import read_tbo
 from . import read_hotellinx
+from . import read_hotelbeds
