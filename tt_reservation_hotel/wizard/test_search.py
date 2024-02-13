@@ -1332,25 +1332,6 @@ class TestSearch(models.Model):
                             "invoice_lines": invoices
                         })
 
-                if resv_obj.third_party:
-                    third_party_data = json.loads(self.third_party)
-                    if third_party_data.get('urlredirectbook'):
-                        if third_party_data.get('urlredirectbook')[len(third_party_data['urlredirectbook']) - 1] != '/':
-                            third_party_data['urlredirectbook'] += '/'
-                        third_party_data['urlredirectbook'] += '%s' % self.name
-                    elif third_party_data.get('urlredirectissued'):
-                        if third_party_data.get('urlredirectissued')[
-                            len(third_party_data['urlredirectissued']) - 1] != '/':
-                            third_party_data['urlredirectissued'] += '/'
-                        third_party_data['urlredirectissued'] += '%s' % self.name
-                    
-                    source = third_party_data.pop('source')
-                    new_vals.update({
-                        "webhook_request": {
-                            'third_party_data': third_party_data,
-                            'provider': source
-                        }
-                    })
             else:
                 raise RequestException(1035)
             return ERR.get_no_error(new_vals)
