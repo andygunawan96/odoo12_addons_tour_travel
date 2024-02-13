@@ -24,7 +24,6 @@ class TtSsrAirline(models.Model):
     # May 18, 2020 - SAM
     provider_id = fields.Many2one('tt.provider.airline', 'Provider', default=None)
     journey_code = fields.Char('Journey Code', default='')
-    departure_date_utc = fields.Datetime('Departure Date (UTC)', compute='_compute_departure_date_utc', store=True, readonly=1)
     # END
     ticket_number = fields.Char("Ticket Number", default='')
 
@@ -65,29 +64,6 @@ class TtSsrAirline(models.Model):
             'pnr': self.provider_id and self.provider_id.pnr or '',
             'passenger_number': self.passenger_id.sequence if self.passenger_id else '',
         }
-
-    @api.depends('journey_code')
-    def _compute_departure_date_utc(self):
-        for rec in self:
-            try:
-                if rec.journey_code:
-                    journey_code = rec.journey_code.split(',')
-                    departure_date = journey_code[3]
-                    dept_time_obj = None
-                    try:
-                        dept_time_obj = datetime.strptime(departure_date, '%Y-%m-%d %H:%M:%S')
-                    except:
-                        departure_date = None
-                    origin_obj = self.env['tt.destinations'].search([('code','=',journey_code[2]),('provider_type_id.code','=','airline')], limit=1)
-                    # origin_obj = journey_code[2]
-                    if not origin_obj or not dept_time_obj:
-                        rec.departure_date_utc = departure_date
-                        continue
-
-                    utc_time = origin_obj.timezone_hour
-                    rec.departure_date_utc = dept_time_obj - timedelta(hours=utc_time)
-            except Exception as e:
-                _logger.error("%s, %s" % (str(e), traceback.format_exc()))
 
 
 class TtProviderAirlineInherit(models.Model):
