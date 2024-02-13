@@ -29,17 +29,17 @@ class FrontendBanner(models.Model):
                 image_objs = self.env.ref('tt_frontend_banner.small_banner')
             elif data['type'] == 'files_promotionbanner':
                 image_objs = self.env.ref('tt_frontend_banner.promotion')
-            image_line_obj = self.env['tt.frontend.banner.line'].create({
-                "image_id":self.env['tt.upload.center'].search([('seq_id', '=', upload['response']['seq_id'])], limit=1)[0].id,
-            })
-            image_objs.write({'image_line_ids': [(4, image_line_obj.id)]})
+
+            ho_agent_obj = None
             if context.get('co_ho_seq_id'):
                 ho_agent_obj = self.env['tt.agent'].search([('seq_id','=', context['co_ho_seq_id'])], limit=1)
-                image_objs.image_line_ids[-1].ho_id = ho_agent_obj.id
-                if data.get('domain'):
-                    image_objs.image_line_ids[-1].update({
-                        "domain": data['domain']
-                    })
+
+            image_line_obj = self.env['tt.frontend.banner.line'].create({
+                "image_id": self.env['tt.upload.center'].search([('seq_id', '=', upload['response']['seq_id'])], limit=1)[0].id,
+                "ho_id": ho_agent_obj.id if ho_agent_obj else False,
+                "domain": data.get('domain')
+            })
+            image_objs.write({'image_line_ids': [(4, image_line_obj.id)]})
         except Exception as e:
             _logger.error('Exception Upload Center')
             _logger.error(traceback.format_exc())
