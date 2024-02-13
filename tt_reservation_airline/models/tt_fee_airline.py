@@ -8,7 +8,6 @@ _logger = logging.getLogger(__name__)
 class TtSsrAirline(models.Model):
     _name = 'tt.fee.airline'
     _description = 'Fee Airline Model'
-    _order = 'departure_date_utc'
 
     name = fields.Char("Name")
     type = fields.Char("Type")
