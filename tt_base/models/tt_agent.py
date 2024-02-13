@@ -87,9 +87,6 @@ class TtAgent(models.Model):
     tac = fields.Text('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
                                                                      'confirm': [('readonly', False)]})
     active = fields.Boolean('Active', default='True')
-    image_ids = fields.Many2many('tt.upload.center', 'tt_frontend_banner_tt_upload_center_rel' 'banner_id', 'image_id',
-                                 string='Image',
-                                 context={'active_test': False, 'form_view_ref': 'tt_base.tt_upload_center_form_view'})
     payment_acq_ids = fields.One2many('payment.acquirer.number', 'agent_id', 'Payment Acquirer Number')
 
     is_using_pnr_quota = fields.Boolean('Using PNR Quota', related='agent_type_id.is_using_pnr_quota', store=True)

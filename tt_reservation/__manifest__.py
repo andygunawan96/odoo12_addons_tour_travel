@@ -25,7 +25,6 @@ Key Features
         'views/tt_reservation_psg_limiter.xml',
         'views/tt_refund_views.xml',
         'views/tt_ledger.xml',
-        'views/tt_third_party_webhook_views.xml',
         'views/tt_service_charge_views.xml',
         'views/tt_reservation_passenger_views.xml',
         'views/tt_reconcile_transaction_views.xml',

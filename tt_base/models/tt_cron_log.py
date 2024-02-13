@@ -42,8 +42,15 @@ class TtCronLog(models.Model):
         for ho_obj in ho_objs:
             try:
                 files = self.env['tt.upload.center'].with_context({'active_test':False}).search([('will_be_deleted_time', '<=', datetime.now()),('ho_id','=', ho_obj.id)])
+                idx_commit_count = 0
                 for rec in files:
                     rec.unlink()
+
+                    #commit tiap 200 biar aman dari timeout jika terjadi
+                    idx_commit_count += 1
+                    if idx_commit_count >= 200:
+                        self.env.cr.commit()
+                        idx_commit_count = 0
             except:
                 self.create_cron_log_folder()
                 self.write_cron_log('auto-delete expired file', ho_id=ho_obj.id)

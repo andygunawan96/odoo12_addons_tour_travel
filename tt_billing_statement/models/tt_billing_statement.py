@@ -227,7 +227,7 @@ class TtBillingStatement(models.Model):
                     'filename': 'Billing Statement %s.pdf' % self.name,
                     'file_reference': 'Billing Statement Printout',
                     'file': base64.b64encode(pdf_report_bytes[0]),
-                    'delete_date': datetime.today() + timedelta(minutes=10)
+                    'delete_date': datetime.today() + timedelta(days=1)
                 },
                 {
                     'co_agent_id': co_agent_id,
@@ -251,14 +251,12 @@ class TtBillingStatement(models.Model):
         zip_file = zipfile.ZipFile(bitIO, "w", zipfile.ZIP_DEFLATED)
 
         for inv_obj in self.ho_invoice_ids:
-            # if not inv_obj.printout_invoice_id:
-            #     inv_obj.print_invoice()
-            if inv_obj.printout_invoice_id:
-                zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
+            inv_obj.print_invoice()
+            zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
             # zip_file.writestr('qq' + str(inv_obj.name) + '.json', 'data_json')
         for inv_obj in self.invoice_ids:
-            if inv_obj.printout_invoice_id:
-                zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
+            inv_obj.print_invoice()
+            zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
         zip_file.close()
 
         res = self.env['tt.upload.center.wizard'].upload_file_api(

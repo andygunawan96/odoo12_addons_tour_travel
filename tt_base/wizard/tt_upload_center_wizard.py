@@ -1,5 +1,5 @@
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from odoo import api, fields, models, _
 import base64,hashlib,time,os,traceback,logging,re
@@ -45,17 +45,20 @@ class SplitInvoice(models.TransientModel):
                 active_id = self.env.context['active_id']
                 active_model = self.env.context['active_model']
                 offline_record = self.env[active_model].browse(active_id)
-                upload_id = self.env['tt.upload.center'].search([('seq_id','=',upload_res['seq_id'])],limit=1).id
+                upload_obj = self.env['tt.upload.center'].search([('seq_id','=',upload_res['seq_id'])],limit=1)
                 if offline_record._fields[self.target_field_name].type == 'many2one':
                     write_vals = {
-                        self.target_field_name: upload_id
+                        self.target_field_name: upload_obj.id
                     }
                 else:
                     write_vals = {
-                        self.target_field_name: [(4, upload_id)]
+                        self.target_field_name: [(4, upload_obj.id)]
                     }
-
+                # supaya jika issued offline attachmentny terhapus stlh 3 bulan
+                if active_model == 'tt.reservation.offline':
+                    upload_obj.will_be_deleted_time = datetime.now() + timedelta(days=90)
                 offline_record.write(write_vals)
+
 
     def upload_file_api(self,data,context):
         return self.upload(data['filename'],data['file_reference'],data['file'],context,data.get('delete_date'))

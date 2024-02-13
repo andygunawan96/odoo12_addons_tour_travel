@@ -297,13 +297,11 @@ class TtReservationTrain(models.Model):
                         if context['co_job_position_rules']['callback']['source'] == 'ptr':
                             third_party_data = copy.deepcopy(context['co_job_position_rules']['train'])
                             third_party_data.update({
-                                "callback": context['co_job_position_rules']['callback']
+                                "callback": context['co_job_position_rules']['callback'],
+                                "source": context['co_job_position_rules']['callback']['source']
                             })
-                            webhook_obj = self.env['tt.third.party.webhook'].create({
-                                "third_party_provider": context['co_job_position_rules']['callback']['source'],
-                                "third_party_data": json.dumps(third_party_data),
-                                "res_id": book_obj.id,
-                                "res_model": book_obj._name
+                            book_obj.update({
+                                "third_party_webhook_data": json.dumps(third_party_data)
                             })
 
             if not req.get("bypass_psg_validator",False):
