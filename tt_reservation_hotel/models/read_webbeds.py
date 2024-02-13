@@ -174,7 +174,54 @@ class HotelInformation(models.Model):
 
     # 1c. Get Country Code
     def v2_get_country_code_webbeds(self):
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        city_file_url = base_cache_directory + 'webbeds/00_other/dest_list.csv'
+        provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_webbeds').id
+
+        with open(city_file_url, 'r') as f:
+            file_csv = csv.reader(f, delimiter=',')
+            for data in file_csv:
+                try:
+                    data[0] = int(data[0]) #Remove Header table csv
+                except:
+                   continue
+                if data[0] % 100 == 0:
+                    _logger.info('Saving row number ' + str(data[0]))
+                    self.env.cr.commit()
+                _logger.info('Render ' + data[2] + ' Start')
+
+                # Create external ID:
+                old_obj = self.env['tt.provider.code'].search([('res_model', '=', 'tt.hotel.destination'), ('code', '=', data[1]), ('provider_id', '=', provider_id)])
+                if not old_obj:
+                    new_dict = {
+                        'id': False,
+                        'name': data[2],
+                        'city_str': data[2],
+                        'state_str': '',
+                        'country_str': data[5],
+                    }
+                    is_exact, new_obj = self.env['tt.hotel.destination'].find_similar_obj(new_dict)
+                    if not is_exact:
+                        new_obj = self.env['tt.hotel.destination'].create(new_dict)
+                        new_obj.fill_obj_by_str()
+                        _logger.info('Create New Destination {} with code {}'.format(data[2], data[1]))
+                    else:
+                        _logger.info('Destination already Exist Code for {}, Country {}'.format(data[2], data[5]))
+
+                    self.env['tt.provider.code'].create({
+                        'res_model': 'tt.hotel.destination',
+                        'res_id': new_obj.id,
+                        'name': data[2] + ', ' + data[5],
+                        'code': data[1],
+                        'provider_id': provider_id,
+                    })
+                    _logger.info('Create External ID {} with id {}'.format(data[1], str(new_obj.id)))
+                else:
+                    _logger.info('External ID {} already Exist in {} with id {}'.format(data[1], old_obj.res_model, str(old_obj.res_id)))
+                    old_obj.name = data[2] + ', ' + data[5]
+        _logger.info('Render Done')
         return True
+
 
     # 1d. Get City Code
     def v2_get_city_code_webbeds(self):

@@ -791,6 +791,7 @@
                         <button name="v2_proceeding_hotel_comparer" class="oe_stat_button" string="2c. Merge Compared Hotel" type="object" icon="fa-plus"/>
                         <button name="v3_partial_send_cache" class="oe_stat_button" string="3a. Partial Update Data" type="object" icon="fa-plus"/>
                         <button name="v3_render_hotel_code" class="oe_stat_button" string="3b. Hotel Mapped for Vendor" type="object" icon="fa-plus"/>
+                        <button name="v3_partial_send_cache_meal_type" class="oe_stat_button" string="3c. Update meal_type Data" type="object" icon="fa-plus"/>
                     </group>
                 </sheet>
             </form>

@@ -10,6 +10,8 @@ class TtHotelApiCon(models.Model):
     def action_call(self,table_obj,action,data,context):
         if action == 'create_booking':
             res = table_obj.create_booking_hotel_api(data,context)
+        elif action == 'action_done_hotel':
+            res = table_obj.action_done_hotel_api(data,context)
         elif action == 'update_pnr_provider':
             res = table_obj.update_pnr_provider_hotel_api(data,context)
         elif action == 'get_booking':

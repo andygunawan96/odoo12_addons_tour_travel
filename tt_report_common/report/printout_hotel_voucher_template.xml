@@ -215,7 +215,12 @@
                         </t>
                     </span>
                     <br/><br/>
-                    <span>*Please Use Contact Name or Any Pax Name during Check in.</span>
+                    <span>*Please Use Contact Name or Any Pax Name during Check in.</span><br/>
+                    <t t-if="doc.provider_name.lower() == 'hotelbeds'">
+                        <t t-set="room_id" t-value="doc.room_detail_ids[0]"/>
+                        <!--<span>"*Payable through HOTELBEDS PRODUCT,S.L.U., acting as agent for the service operating company, details of which can be provided upon request. VAT: ESB38877676 Reference: 102-11030200</span>-->
+                        <span>*Payable through <t t-esc="room_id['name'].split('~')[1]"/>, acting as agent for the service operating company, details of which can be provided upon request. VAT: <t t-esc="room_id['name'].split('~')[2]"/> Reference: <t t-esc="room_id['issued_name']"/></span>
+                    </t>
                 </div>
             </div>
             <hr/>

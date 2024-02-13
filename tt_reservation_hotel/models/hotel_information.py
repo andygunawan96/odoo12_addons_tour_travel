@@ -73,6 +73,13 @@ class HotelInformation(models.Model):
     def action_draft(self):
         self.state = 'draft'
 
+    @api.multi
+    def unlink(self):
+        for rec in self:
+            for prov_code in self.env['tt.provider.code'].search([('res_model','=','tt.hotel'),('res_id','=',rec.id)]):
+                prov_code.unlink()
+        return super(HotelInformation, self).unlink()
+
     def get_all_hotels(self):
         hotels = self.env['tt.hotel'].sudo().search([('state', '=', 'confirm')])
         data = []
@@ -99,26 +106,15 @@ class HotelInformation(models.Model):
         x = 0
         # for rec in self.env['tt.hotel.master'].search([('id', '>=', self.id),('provider', '=', '')]):
         for rec in self:
-            old_state = rec.state
             master_fac = []
-            rec.state = 'draft'
             rec_provider = ''
-            # rec_provider_ext_code = ''
             for provider in rec.info_ids:
-                prov_obj = provider.provider_hotel_ids[0]
-                rec_provider += prov_obj.provider_id.name + '; '
-                # rec_provider_ext_code += prov_obj.code + '; '
+                for prov_obj in provider.provider_hotel_ids:
+                    rec_provider += prov_obj.provider_id.name + '; '
+                # No vendor code
 
-                for img in provider.image_ids:
-                    if not img.master_hotel_id:
-                        img.master_hotel_id = rec.id
-                master_fac += [fac.id for fac in provider.facility_ids]
-
-            rec.update({
-                'facility_ids': [(6, 0, master_fac)],
-                'state': old_state,
+            rec.write({
                 'provider': rec_provider,
-                # 'provider_ext_code': rec_provider_ext_code,
             })
 
             # x += 1
@@ -194,12 +190,13 @@ class HotelInformation(models.Model):
             'prices': [],
             'description': hotel.get('description'),
             'location': {
-                'city_id': hotel.get('city_id') and hotel['city_id'][0] or False,
                 'address': hotel.get('address') or hotel.get('street'),
                 'city': hotel.get('city_id') and hotel['city_id'][1] or False,
-                'state': False,
-                'district': '',
-                'kelurahan': '',
+                'city_code': hotel.get('city_id') and hotel['city_id'][0] or False,
+                'state': hotel.get('state_id') and hotel['state_id'][1] or False,
+                'state_code': hotel.get('state_id') and hotel['state_id'][0] or False,
+                'country_code': hotel.get('country_id') and hotel['country_id'][0] or False,
+                'country': hotel.get('country_id') and hotel['country_id'][1] or False,
                 'zipcode': hotel.get('zip')
             },
             'telephone': hotel.get('phone'),
@@ -267,19 +264,25 @@ class HotelInformation(models.Model):
         return new_hotel
 
     def fill_country_city(self):
+        # if self.destination_id.name == 'Lampung Province':
+        #     self.destination_id = False
+        #     self.country_id = False
         if not self.destination_id:
             is_exact, destination_obj = self.env['tt.hotel.destination'].find_similar_obj({
                 'id': False,
                 'name': self.address3,
-                'city_str': False,
+                'city_str': self.address3,
+                'city_id': self.city_id and self.city_id.id or False,
                 'state_str': False,
-                'country_str': False,
+                'country_id': self.country_id and self.country_id.id or False,
             })
             self.destination_id = destination_obj
         if not self.city_id and self.destination_id.city_id:
             self.city_id = self.destination_id.city_id.id
         if not self.country_id:
             self.country_id = self.city_id and self.city_id.country_id.id or self.destination_id.country_id.id
+        if not self.state_id:
+            self.state_id = self.destination_id.state_id.id
         if self.city_id and self.country_id and not self.destination_id.city_id:
             is_exact, destination_obj = self.env['tt.hotel.destination'].find_similar_obj({
                 'id': False,
@@ -296,32 +299,48 @@ class HotelInformation(models.Model):
 
     def mass_re_mapp(self):
         for idx, rec in enumerate(self):
+            # Re Mapping Hotel XXX
+            comparer = [x for x in rec.compare_ids if x.state in ['draft', 'tobe_merged', 'merged']]
+            if rec.compare_ids and comparer:
+                # Skip Re Mapping Hotel XXX got some need process compare data
+                continue
             rec.advance_find_similar_name_from_database_2()
-            comparer = self.env['tt.hotel.compare'].search([('hotel_id', '=', rec.id),('state', 'in', ['draft', 'tobe_merged', 'confirm', 'merged'])])
-
+            comparer = [x for x in rec.compare_ids if x.state in ['draft']]
             if comparer:
                 for rec2 in comparer:
                     if rec2.score > 55 and 'stay later' not in rec2.hotel_id.name.lower():
+                        # Merging compare Hotel XXX with Hotel YYY
                         rec2.merge_hotel()
+                        break
             else:
+                # Creating Empty compare record Hotel XXX
                 comparing_id = self.env['tt.hotel.compare'].create({
                     'hotel_id': rec.id,
                     'comp_hotel_id': False
                 })
-                # comparing_id.merge_hotel()
+                if rec.destination_id and rec.destination_id.country_id and rec.address:
+                    comparing_id.merge_hotel()
 
             if idx % 5 == 0:
                 self.env.cr.commit()
 
     def mass_recalc_state(self):
         for rec in self:
+            create_new = True
+            is_draft = 0
             for line_obj in rec.compare_ids:
-                if line_obj.state == 'merge':
-                    rec.state = 'merged'
+                if line_obj.state in ['merge','tobe_merge']:
+                    create_new = False
                     break
-                elif line_obj.state == 'tobe_merge':
-                    rec.state = 'tobe_merge'
-                    break
+                if line_obj.state == 'draft' and not line_obj.comp_hotel_id:
+                    compare_id = line_obj
+                    is_draft += 1
+
+            if is_draft == 1:
+                compare_id.to_merge_hotel()
+            if create_new:
+                compare_id = self.env['tt.hotel.compare'].create({'hotel_id': rec.id,})
+                compare_id.to_merge_hotel()
 
     # Temporary Function digunakan untuk feeling mass empty data
     def set_country_by_destination_and_city(self):
@@ -363,11 +382,12 @@ class HotelMaster(models.Model):
     internal_code = fields.Char('Internal Code', help='Internal Code')
 
     def get_provider_code_fmt(self):
-        alias_code = self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').alias
+        alias_code = self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').code
         provider_fmt = {alias_code: self.internal_code}
         for hotel in self.info_ids:
             for rec in hotel.provider_hotel_ids:
-                provider_fmt.update({rec.provider_id.alias: rec.code})
+                provider_fmt.update({rec.provider_id.code: rec.code})
+                # provider_fmt.update({rec.provider_id.alias: rec.code})
         return provider_fmt
 
     def get_hotel_info(self):
@@ -385,14 +405,23 @@ class HotelMaster(models.Model):
             rec.get_provider_name()
             rec.get_hotel_info()
 
+    def comp_internal_code(self):
+        for rec in self:
+            if not rec.internal_code:
+                rec.internal_code = str(rec['id']) + '_' + ''.join(random.choices(string.ascii_letters + string.digits, k=5))
+
     def fmt_read(self, hotel_obj={}, city_idx=0):
         rec = super(HotelMaster, self).fmt_read(hotel_obj, city_idx)
-        find_obj = self.browse(int(rec['id']))
-        if find_obj:
-            if not find_obj.internal_code:
-                find_obj.internal_code = str(rec['id']) + '_' + ''.join(random.choices(string.ascii_letters + string.digits, k=5))
-            rec.update({'id': find_obj.internal_code,})
+        if not self.internal_code:
+            self.comp_internal_code()
+        rec.update({'id': self.internal_code,})
         return rec
+
+    def get_provider_name(self):
+        super(HotelMaster, self).get_provider_name()
+        if not self.internal_code:
+            self.comp_internal_code()
+
 
 
 class TtTemporaryRecord(models.Model):
