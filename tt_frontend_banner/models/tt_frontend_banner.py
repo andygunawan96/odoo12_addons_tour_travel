@@ -96,7 +96,8 @@ class FrontendBanner(models.Model):
         ho_agent_obj = None
         if context.get('co_ho_seq_id'):
             ho_agent_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
-        img_line_filter_objs = image_objs.image_line_ids.search(['|',('domain','=',False),('domain','=', data['domain']),('ho_id.id','=',ho_agent_obj.id)])
+        ### UPDATE DOMAIN DATA LAMA ####
+        img_line_filter_objs = image_objs.image_line_ids.filtered(lambda x: x.domain in [False, data['domain']] and x.ho_id.id == ho_agent_obj.id)
         for img in img_line_filter_objs:
             if data.get('domain'):
                 if not img.domain:

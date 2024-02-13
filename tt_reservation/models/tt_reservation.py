@@ -936,7 +936,7 @@ class TtReservation(models.Model):
                 if third_party_data.get('urlredirectbook')[len(third_party_data['urlredirectbook'])-1] != '/':
                     third_party_data['urlredirectbook'] += '/'
                 third_party_data['urlredirectbook'] += '%s' % self.name
-            elif third_party_data.get('urlredirectissued'):
+            if third_party_data.get('urlredirectissued'):
                 if third_party_data.get('urlredirectissued')[len(third_party_data['urlredirectissued'])-1] != '/':
                     third_party_data['urlredirectissued'] += '/'
                 third_party_data['urlredirectissued'] += '%s' % self.name
