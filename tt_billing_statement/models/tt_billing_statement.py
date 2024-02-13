@@ -246,7 +246,7 @@ class TtBillingStatement(models.Model):
         # return printout_billing_statement_action.report_action(self, data=datas)
 
     def print_all_agent_invoice(self):
-        zip_filename = "inv_%s.zip" % self.name
+        zip_filename = "ALL_INV_%s.zip" % self.name
         bitIO = BytesIO()
         zip_file = zipfile.ZipFile(bitIO, "w", zipfile.ZIP_DEFLATED)
 
