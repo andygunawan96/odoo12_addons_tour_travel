@@ -246,19 +246,17 @@ class TtBillingStatement(models.Model):
         # return printout_billing_statement_action.report_action(self, data=datas)
 
     def print_all_agent_invoice(self):
-        zip_filename = "inv_%s.zip" % self.name
+        zip_filename = "ALL_INV_%s.zip" % self.name
         bitIO = BytesIO()
         zip_file = zipfile.ZipFile(bitIO, "w", zipfile.ZIP_DEFLATED)
 
         for inv_obj in self.ho_invoice_ids:
-            # if not inv_obj.printout_invoice_id:
-            #     inv_obj.print_invoice()
-            if inv_obj.printout_invoice_id:
-                zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
+            inv_obj.print_invoice()
+            zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
             # zip_file.writestr('qq' + str(inv_obj.name) + '.json', 'data_json')
         for inv_obj in self.invoice_ids:
-            if inv_obj.printout_invoice_id:
-                zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
+            inv_obj.print_invoice()
+            zip_file.write(inv_obj.printout_invoice_id.path, inv_obj.printout_invoice_id.filename)
         zip_file.close()
 
         res = self.env['tt.upload.center.wizard'].upload_file_api(

@@ -463,8 +463,8 @@ class HotelInformationCompare(models.Model):
             # _TIMER3.stop()
 
         # _TIMER4 = Timer('Facility')
-        if not self.comp_hotel_id.facility_ids:
-            self.merge_facility()
+        # if not self.comp_hotel_id.facility_ids:
+        #     self.merge_facility()
         # _TIMER4.stop()
 
         # _TIMER5 = Timer('Merge Image')
@@ -520,7 +520,7 @@ class HotelInformationCompareLine(models.Model):
 class HotelInformation(models.Model):
     _inherit = 'tt.hotel'
 
-    compare_ids = fields.One2many('tt.hotel.compare', 'hotel_id', 'Compared')
+    compare_ids = fields.One2many('tt.hotel.compare', 'hotel_id', 'Compared', ondelete="cascade")
 
     def compare_hotel(self):
         compare_id = self.env['tt.hotel.compare'].create({'hotel_id': self.id,})

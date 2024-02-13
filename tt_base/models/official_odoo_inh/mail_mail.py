@@ -69,6 +69,7 @@ class MailMail(models.Model):
 
     @api.model
     def process_email_queue(self, ids=None):
+        #matikan email yg stuck
         on_going_list = self.search([('state', '=', 'outgoing'), ('scheduled_date', '<', datetime.now() - timedelta(hours=12))])
         if on_going_list:
             sql_query = """
@@ -81,6 +82,16 @@ class MailMail(models.Model):
             for idx, rec in enumerate(fake_ids):
                 if rec in on_going_list.ids:
                     ids.pop(idx)
+
+        #delete attachment email lama
+        # search email yang punay attachment
+        delete_attachment_list = self.search([('attachment_ids','!=',False),
+                                              ('create_date','<',datetime.now() - timedelta(days=30))],
+                                             limit=1000)
+        for attach_obj in delete_attachment_list:
+            attach_obj.attachment_ids.unlink()
+        self.env.cr.commit()
+
         return super(MailMail, self).process_email_queue(ids)
 
     def send_smtp(self, server_id, batch_id, email_server_obj, auto_commit=False, raise_exception=False): ## update fungsi official odoo karena dibuat dynamic dengan google

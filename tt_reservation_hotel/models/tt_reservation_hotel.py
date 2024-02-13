@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-import time
+import time, copy, json
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
@@ -8,6 +8,7 @@ import logging
 import traceback
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
+from decimal import Decimal
 
 from .ApiConnector_Hotel import ApiConnectorHotels
 API_CN_HOTEL = ApiConnectorHotels()
@@ -87,7 +88,6 @@ class HotelReservation(models.Model):
     cancellation_policy_str = fields.Text('Cancellation Policy')
     sid_issued = fields.Char('SID Issued')
     sid_cancel = fields.Char('SID Cancel')
-
 
     # Voucher
     # voucher_name = fields.Char('Voucher', store=True)
@@ -277,12 +277,12 @@ class HotelReservation(models.Model):
 
     def print_itinerary(self, data, ctx=None):
         book_obj = False
+        # jika panggil dari backend
         if 'order_number' not in data:
             data['order_number'] = self.name
-        if 'provider_type' not in data:
-            data['provider_type'] = self.provider_type_id.name
+            if 'provider_type' not in data:
+                data['provider_type'] = self.provider_type_id.name
 
-        if data.get('order_number'):
             book_obj = self.env['tt.reservation.hotel'].search([('name', '=', data['order_number'])], limit=1)
             datas = {'ids': book_obj.env.context.get('active_ids', [])}
             res = book_obj.read()
@@ -313,43 +313,6 @@ class HotelReservation(models.Model):
             # pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
             # pdfhttpheaders.append(('Content-Disposition', 'attachment; filename="Itinerary.pdf"'))
             # self.make_response(pdf, headers=pdfhttpheaders)
-
-        # # jika panggil dari backend
-        # if 'order_number' not in data:
-        #     data['order_number'] = self.name
-        #     if 'provider_type' not in data:
-        #         data['provider_type'] = self.provider_type_id.name
-        #
-        #     book_obj = self.env['tt.reservation.hotel'].search([('name', '=', data['order_number'])], limit=1)
-        #     datas = {'ids': book_obj.env.context.get('active_ids', [])}
-        #     res = book_obj.read()
-        #     res = res and res[0] or {}
-        #     datas['form'] = res
-        #     pdf_obj = book_obj.env.ref('tt_report_common.action_printout_itinerary_hotel')
-        #     co_agent_id = book_obj.agent_id and book_obj.agent_id.id or self.env.user.agent_id.id
-        #     co_uid = book_obj.user_id and book_obj.user_id.id or self.env.user.id
-        #
-        #     book_name = book_obj.name
-        #     if not book_obj.printout_itinerary_id or data.get('is_force_get_new_printout', False):
-        #         pdf_report = pdf_obj.report_action(book_obj, data=datas)
-        #         pdf_report['context'].update({
-        #             'active_model': book_obj._name,
-        #             'active_id': book_obj.id
-        #         })
-        #         pdf_report_bytes, _ = pdf_obj.render_qweb_pdf(data=pdf_report)
-        #     else:
-        #         pdf_report_bytes = False
-        # else:
-        #     # Part ini untuk print ittin resv yg blum terbut di backend (tidk da model dkk) jadi data full dari json frontend
-        #     pdf_obj = self.env.ref('tt_report_common.action_printout_itinerary_from_json')
-        #     data = {'context': {'json_content': data['json_printout']}}
-        #     pdf_report_bytes, _ = pdf_obj.sudo().render_qweb_pdf(False, data=data)
-        #     book_name = 'Printout'
-        #     co_agent_id = ctx['co_agent_id']
-        #     co_uid = ctx['co_uid']
-        #     # pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
-        #     # pdfhttpheaders.append(('Content-Disposition', 'attachment; filename="Itinerary.pdf"'))
-        #     # self.make_response(pdf, headers=pdfhttpheaders)
 
         if pdf_report_bytes: #Value waktu ada render report baru
             res = self.env['tt.upload.center.wizard'].upload_file_api(
@@ -1301,83 +1264,423 @@ class HotelReservation(models.Model):
 
     # Update Pake API in_connector
 
-    # Pindahan dari test.search
+    # Pindahan dari test.search START
+    ### TOOLS Start ###
+    def prepare_nightly_price(self, nightly, meal_type='Room Only'):
+        return [{
+            'date': str(night.date),
+            'currency': night.currency_id.name,
+            'sale_price': night.sale_price,
+            'meal_type': night.meal_type or meal_type,
+        } for night in nightly]
+
+    def prepare_booking_room(self, lines, customers):
+        vals = []
+        for room in lines:
+            data = {
+                # 'id': room.id,
+                'prov_issued_code': room.issued_name,
+                'prov_booking_code': room.name,
+                'provider': room.provider_id.code,
+                'dates': self.prepare_nightly_price(room.room_date_ids, room.room_info_id and room.room_info_id.meal_type or room.meal_type),
+                'room_name': room.room_info_id and room.room_info_id.name or room.room_name,
+                'room_vendor_code': room.room_vendor_code,
+                'room_type': room.room_type,
+                'room_rate': room.sale_price,
+                'person': room.room_info_id and room.room_info_id.max_guest or 2,
+                'currency': room.currency_id and room.currency_id.name,
+                'meal_type': room.room_info_id and room.room_info_id.meal_type or room.meal_type,
+            }
+            vals.append(data)
+        return vals
+
+    def prepare_passengers(self, customers):
+        return [cust.to_dict() for cust in customers]
+
+    def prepare_bookers(self, bookers):
+        return {
+            'booker_seq_id': bookers['id'],
+            'calling_code': bookers['nationality_id']['phone_code'],
+            'country_code': bookers['nationality_id']['code'],
+            'email': bookers['email'],
+            'first_name': bookers['first_name'],
+            'last_name': bookers['last_name'] or '',
+            'mobile': bookers['phone_ids'] and bookers['phone_ids'][0]['calling_number'] or '',
+            'nationality_code': bookers['nationality_id']['code'],
+            'nationality_name': bookers['nationality_id']['name'],
+            'title': bookers['gender'] == 'male' and 'MR' or bookers['marital_status'] in ['married','widowed'] and 'MRS' or 'MS',
+            'work_phone': bookers['phone_ids'] and bookers['phone_ids'][0]['calling_number'] or '',
+        }
+
+    def prepare_service_charge(self, cost_sc, obj_pnr):
+        sc_value = {}
+        for p_sc in cost_sc:
+            p_charge_type = p_sc.charge_type
+            pnr = obj_pnr if not p_sc.description or p_sc.description == '0' else p_sc.description
+            if not sc_value.get(pnr):
+                sc_value[pnr] = {}
+            if not sc_value[pnr].get(p_charge_type):
+                sc_value[pnr][p_charge_type] = {}
+                sc_value[pnr][p_charge_type].update({
+                    'amount': 0,
+                    'foreign_amount': 0,
+                })
+
+            if p_charge_type == 'RAC' and p_sc.charge_code != 'rac':
+                if p_charge_type == 'RAC' and 'csc' not in p_sc.charge_code:
+                    continue
+
+            sc_value[pnr][p_charge_type].update({
+                'charge_code': p_sc.charge_code,
+                'currency': p_sc.currency_id.name,
+                'foreign_currency': p_sc.foreign_currency_id.name,
+                'amount': sc_value[pnr][p_charge_type]['amount'] + (p_sc.amount * p_sc.pax_count),
+                # 'amount': p_sc.amount,
+                'foreign_amount': sc_value[pnr][p_charge_type]['foreign_amount'] + (p_sc.foreign_amount * p_sc.pax_count),
+                # 'foreign_amount': p_sc.foreign_amount,
+            })
+
+        return sc_value
+
+    def get_service_charge_details_breakdown(self, cost_sc, obj_pnr):
+        sc_value = {}
+        for p_sc in cost_sc:
+            p_charge_type = p_sc.charge_type
+            pnr = obj_pnr if not p_sc.description or p_sc.description == '0' else p_sc.description
+            commission_agent_id = p_sc.commission_agent_id
+
+            # if p_charge_type == 'RAC' and p_sc.charge_code != 'rac':
+            #     if p_charge_type == 'RAC' and 'csc' not in p_sc.charge_code:
+            #         continue
+
+            if p_charge_type == 'RAC' and commission_agent_id:
+                continue
+
+            if not sc_value.get(pnr):
+                sc_value[pnr] = {}
+            if not sc_value[pnr].get(p_charge_type):
+                sc_value[pnr][p_charge_type] = []
+
+            sc_value[pnr][p_charge_type].append({
+                'charge_code': p_sc.charge_code,
+                'currency': p_sc.currency_id.name,
+                'foreign_currency': p_sc.foreign_currency_id.name,
+                'amount': p_sc.amount,
+                'pax_type': p_sc.pax_type,
+                'foreign_amount': p_sc.foreign_amount,
+            })
+
+        result = []
+        for pnr, pnr_data in sc_value.items():
+            base_fare_ori = Decimal("0.0")
+            base_tax_ori = Decimal("0.0")
+            base_upsell_ori = Decimal("0.0")
+            base_upsell_adj = Decimal("0.0")
+            base_discount_ori = Decimal("0.0")
+            base_agent_commission = Decimal("0.0")
+            base_agent_commission_ori = Decimal("0.0")
+            base_agent_commission_charge = Decimal("0.0")
+            base_commission_vendor_real = Decimal("0.0")
+            base_hidden_commission_ho = Decimal("0.0")
+            base_hidden_fee_ho = Decimal("0.0")
+            base_hidden_vat_ho = Decimal("0.0")
+            base_vendor_vat = Decimal("0.0")
+            base_fee_ho = Decimal("0.0")
+            base_vat_ho = Decimal("0.0")
+            base_no_hidden_commission_ho = Decimal("0.0")
+
+            pax_type = ''
+
+            for charge_type, service_charges in pnr_data.items():
+                for sc in service_charges:
+                    sc_amount = Decimal(str(sc['amount']))
+                    '''
+                        GENERAL     |   PROVIDER    |   AGENT   |   CUSTOMER    |   Pricing notes
+                        FARE        |   ROC         |   ROC     |   ROC         |
+                        TAX         |   RAC         |   RAC     |   RAC         |
+                        ROC         |   RACHSP      |   RACHSA  |   -           |
+                        DISC        |   ROCHSP      |   ROCHSA  |   -           |   HO service fee
+                        RAC         |   RACHVP      |   RACHVA  |   -           |
+                        RACCHG      |   ROCHVP      |   ROCHVA  |   -           |   HO tax of service fee
+                        ROCCHG      |   RACAVP      |   RACAVA  |   RACAVC      |
+                        RACUA       |   ROCAVP      |   ROCAVA  |   ROCAVC      |   HO tax of commission fee
+                        ROCUA       |               |           |   
+                    '''
+                    charge_code = sc.get('charge_code', '')
+                    if charge_type == 'FARE':
+                        base_fare_ori += sc_amount
+                    elif charge_type == 'TAX':
+                        base_tax_ori += sc_amount
+                    elif charge_type == 'RAC':
+                        base_agent_commission += sc_amount
+                        base_commission_vendor_real += sc_amount
+                        base_agent_commission_ori += sc_amount
+                    elif charge_type in ['RACUA', 'RACCHG']:
+                        base_commission_vendor_real += sc_amount
+                        base_agent_commission_ori += sc_amount
+                        base_agent_commission_charge += sc_amount
+                    elif charge_type in ['ROCUA', 'ROCCHG']:
+                        pass
+                    elif charge_type == 'DISC':
+                        base_discount_ori += sc_amount
+                    elif charge_type in ['RACHSP', 'RACHVP']:
+                        base_commission_vendor_real += sc_amount
+                        base_hidden_commission_ho += sc_amount
+                    elif charge_type == 'ROCHSP':
+                        base_hidden_fee_ho += sc_amount
+                    elif charge_type == 'ROCHVP':
+                        base_hidden_vat_ho += sc_amount
+                    elif charge_type == 'RACAVP':
+                        base_commission_vendor_real += sc_amount
+                    elif charge_type == 'ROCAVP':
+                        base_vendor_vat += sc_amount
+                    elif charge_type in ['RACHSA', 'RACHVA', 'RACAVA']:
+                        base_no_hidden_commission_ho += sc_amount
+                    elif charge_type in ['ROCHVA', 'ROCAVA']:
+                        base_vat_ho += sc_amount
+                    elif charge_type == 'ROCHSA':
+                        base_fee_ho += sc_amount
+                    elif charge_type == 'RACAVC':
+                        base_no_hidden_commission_ho += sc_amount
+                    elif charge_type == 'ROCAVC':
+                        base_vat_ho += sc_amount
+                    elif charge_type == 'ROC' and charge_code[-3:] == 'adj':
+                        base_upsell_adj += sc_amount
+                    else:
+                        base_upsell_ori += sc_amount
+
+                    if not pax_type:
+                        pax_type = sc['pax_type']
+
+            base_price_ori = base_fare_ori + base_tax_ori
+            base_price = base_price_ori + base_upsell_ori + base_discount_ori + base_upsell_adj
+            base_nta_vendor_real = base_price + base_commission_vendor_real + base_vendor_vat - base_upsell_adj
+
+            base_fare = base_fare_ori
+            base_tax = base_tax_ori
+            base_upsell_com = base_upsell_ori + base_upsell_adj
+            base_discount = base_discount_ori
+            if base_hidden_commission_ho != 0:
+                base_upsell_com -= abs(base_hidden_commission_ho)
+                if base_tax != 0:
+                    base_tax += abs(base_hidden_commission_ho)
+                else:
+                    base_fare += abs(base_hidden_commission_ho)
+            if base_no_hidden_commission_ho != 0:
+                base_upsell_com -= abs(base_no_hidden_commission_ho)
+
+            base_nta = base_price - abs(base_agent_commission)
+            base_commission_ho = base_no_hidden_commission_ho + base_hidden_commission_ho
+
+            base_commission_vendor = base_commission_vendor_real - base_hidden_commission_ho
+            base_nta_vendor = base_nta_vendor_real - base_hidden_commission_ho
+            base_price_ott = base_fare + base_tax
+            base_upsell = base_upsell_ori + base_hidden_commission_ho
+            if base_upsell < 0:
+                base_upsell = 0
+
+            pax_values = {
+                'pnr': pnr,
+                'service_charges': pnr_data,
+                'pax_type': pax_type,
+                'pax_count': 1,
+                'base_fare_ori': float(base_fare_ori),
+                'base_tax_ori': float(base_tax_ori),
+                'base_price_ori': float(base_price_ori),
+                'base_upsell_ori': float(base_upsell_ori),
+                'base_upsell_adj': float(base_upsell_adj),
+                'base_discount_ori': float(base_discount_ori),
+                'base_price': float(base_price),
+                'base_commission_vendor_real': float(base_commission_vendor_real),
+                'base_vendor_vat': float(base_vendor_vat),
+                'base_nta_vendor_real': float(base_nta_vendor_real),  #
+                'base_commission_vendor': float(base_commission_vendor),
+                'base_nta_vendor': float(base_nta_vendor),
+                # 'base_price_ott': float(base_price_ott),
+                'base_price_ott': 0, #HardCode 0 by bunga 5 feb 2024 (OTT ini harga ori tiket dri vendor, hotel cannot cos markup)
+                'base_fare': float(base_fare),
+                'base_tax': float(base_tax),
+                'base_upsell_com': float(base_upsell_com),
+                'base_upsell': float(base_upsell),
+                'base_discount': float(base_discount),
+                'base_fee_ho': float(base_fee_ho),
+                'base_vat_ho': float(base_vat_ho),
+                'base_commission': float(base_agent_commission),
+                'base_commission_ori': float(base_agent_commission_ori),
+                'base_commission_charge': float(base_agent_commission_charge),
+                'base_nta': float(base_nta),
+                'base_no_hidden_commission_ho': float(base_no_hidden_commission_ho),  #
+                'base_hidden_fee_ho': float(base_hidden_fee_ho),
+                'base_hidden_vat_ho': float(base_hidden_vat_ho),
+                'base_hidden_commission_ho': float(base_hidden_commission_ho),
+                'base_commission_ho': float(base_commission_ho),  #
+            }
+            result.append(pax_values)
+        return result
+    ### TOOLS END ###
+
+    def get_booking(self, data, context=False):
+        resv_id = data['book_id']
+        # get_invoice = data['get_invoice']
+        try:
+            if isinstance(resv_id, int):
+                resv_obj = self.browse(resv_id)
+            else:
+                resv_obj = self.search([('name', '=ilike', resv_id)], limit=1)
+            if not resv_obj:
+                return 'Not Found'
+            else:
+                resv_obj = resv_obj[0]
+            _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
+            try:
+                _co_user.create_date
+            except:
+                raise RequestException(1008)
+            # if resv_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or resv_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or resv_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+            # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
+            if resv_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+                rooms = self.sudo().prepare_booking_room(resv_obj.room_detail_ids, resv_obj.passenger_ids)
+                passengers = self.sudo().prepare_passengers(resv_obj.passenger_ids)
+                bookers = self.sudo().prepare_bookers(resv_obj.booker_id)
+
+                passengers[0]['sale_service_charges'] = self.sudo().prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr or resv_obj.name)
+                if len(resv_obj.passenger_ids[0].channel_service_charge_ids.ids) > 0: ##ASUMSI UPSELL HANYA 1 PER PASSENGER & HOTEL UPSELL PER RESERVASI (MASUK KE PAX 1)
+                    svc_csc = self.sudo().prepare_service_charge(resv_obj.passenger_ids[0].channel_service_charge_ids, resv_obj.pnr or resv_obj.name)
+                    for pnr in svc_csc:
+                        passengers[0]['channel_service_charges'] = {
+                            "amount": svc_csc[pnr]['CSC']['amount'],
+                            "currency": svc_csc[pnr]['CSC']['currency']
+                        }
+                passengers[0]['service_charge_details'] = self.sudo().get_service_charge_details_breakdown(resv_obj.sale_service_charge_ids, resv_obj.pnr or resv_obj.name)
+                provider_bookings = []
+                for provider_booking in resv_obj.provider_booking_ids:
+                    provider_bookings.append(provider_booking.to_dict())
+                new_vals = resv_obj.to_dict(context, data)
+                for a in ['arrival_date', 'departure_date']:
+                    new_vals.pop(a)
+                new_vals.update({
+                    "state_description": dict(self.env['tt.reservation.hotel']._fields['state'].selection).get(resv_obj.state),
+                    "room_count": resv_obj.room_count,
+                    "checkin_date": str(resv_obj.checkin_date),
+                    "checkout_date": str(resv_obj.checkout_date),
+                    # "provider_type": "hotel",
+                    'passengers': passengers,
+                    'hotel_name': resv_obj.hotel_name,
+                    'hotel_address': resv_obj.hotel_address,
+                    'hotel_phone': resv_obj.hotel_phone,
+                    'hotel_city_name': resv_obj.hotel_city,
+                    'hotel_rating': 0,
+                    'images': [],
+                    'cancellation_policy': [],
+                    'lat': '',
+                    'long': '',
+                    'hotel_rooms': rooms,
+                    'sid_booked': resv_obj.sid_booked,
+                    'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
+                    'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
+                    'cancellation_policy_str': resv_obj.cancellation_policy_str,
+                    'special_request': resv_obj.special_req,
+                    'currency': resv_obj.currency_id.name,
+                    'provider_bookings': provider_bookings,
+                    'total': resv_obj.total,
+                })
+            else:
+                raise RequestException(1035)
+            return ERR.get_no_error(new_vals)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
     # def create_reservation(self, req, context={}):
     def create_booking_hotel_api(self, data, context):
-        total_rate = 0
-        total_commision = 0
-
         provider_data = data.get('provider_data', '')
         special_req = data.get('special_request', 'No Special Request')
         cancellation_policy = data.get('cancellation_policy', '')
+        norm_str = data.get('norm_str', '')
 
-        context.update({
-            'agent_id': self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id,
-            'ho_id': context.get('co_ho_id') and context['co_ho_id'] or self.sudo().env['res.users'].browse(context['co_uid']).ho_id.id
-        })
+        passengers_data = copy.deepcopy(data['passengers'])  # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
+
+        context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
+        context['ho_id'] = context.get('co_ho_id') and context['co_ho_id'] or self.sudo().env['res.users'].browse(
+            context['co_uid']).ho_id.id
+
+        for idx, pax in enumerate(data['passengers']):
+            pax.update({
+                'sequence': idx,
+                'gender': 'male' if pax['title'] in ['MR', 'MSTR'] else 'female'
+            })
 
         booker_obj = self.env['tt.reservation.hotel'].create_booker_api(data['booker'], context)
-        contact_objs = []
-        for con in data['contact']:
-            contact_objs.append(self.env['tt.reservation.hotel'].create_contact_api(con, booker_obj, context))
-        contact_obj = contact_objs[0]
+        contact_obj = self.env['tt.reservation.hotel'].create_contact_api(data['contact'][0], booker_obj, context)
+        list_passenger_value = self.env['tt.reservation.hotel'].create_passenger_value_api(data['passengers'])
+        list_customer_id = self.env['tt.reservation.hotel'].create_customer_api(data['passengers'], context,
+                                                                                booker_obj.seq_id, contact_obj.seq_id)
 
-        backend_hotel_obj = self.get_backend_object(data['price_codes'][0]['provider'], data['hotel_obj']['id'])
-        vals = self.prepare_resv_value(backend_hotel_obj, data['hotel_obj'], data['checkin_date'],
-                                       data['checkout_date'], data['price_codes'],
-                                       booker_obj, contact_obj, provider_data, special_req, data['passengers'],
-                                       context['ho_id'], context['agent_id'], cancellation_policy, context.get('hold_date', False))
-        # Set Customer Type by Payment
-        if data['payment_id']:
-            acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['payment_id']['acquirer_seq_id'])])
-        else:
-            acq_obj = False
+        # fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
+        for idx, rec in enumerate(list_passenger_value):
+            rec[2].update({
+                'customer_id': list_customer_id[idx].id
+            })
+            if passengers_data[idx].get('description'):
+                rec[2].update({
+                    'description': passengers_data[idx]['description']
+                })
 
-        if acq_obj:
-            customer_parent_id = self.env['tt.agent'].sudo().browse(
-                context['agent_id']).customer_parent_walkin_id.id  ##fpo
-        elif not data['payment_id']:
-            if context['hold_date']:
-                customer_parent_id = self.env['tt.agent'].sudo().browse(
-                    context['agent_id']).customer_parent_walkin_id.id
-            else:
-                customer_parent_id = False
+        for psg in list_passenger_value:
+            util.pop_empty_key(psg[2])
+
+        backend_hotel_obj = self.env['test.search'].get_backend_object(data['price_codes'][0]['provider'], data['hotel_obj']['id'])
+        vals = self.env['test.search'].prepare_resv_value(backend_hotel_obj, data['hotel_obj'], data['checkin_date'], data['checkout_date'],
+                                                          data['price_codes'],
+                                                          booker_obj, contact_obj, provider_data, special_req, data['passengers'],
+                                                          context['ho_id'], context['agent_id'], cancellation_policy,
+                                                          context.get('hold_date', False))
+
+        if data.get('member'):
+            customer_parent_id = \
+            self.env['tt.customer.parent'].search([('seq_id', '=', data['acquirer_seq_id'])], limit=1)[0]
         else:
-            customer_parent_id = self.env['tt.customer.parent'].search(
-                [('seq_id', '=', data['payment_id']['acquirer_seq_id'])], limit=1).id
+            customer_parent_id = booker_obj.customer_parent_ids[0]
+
+        customer_parent_type_id = customer_parent_id.customer_parent_type_id.id
+        customer_parent_id = customer_parent_id.id
 
         vals.update({
-            'customer_parent_id': customer_parent_id,
+            'user_id': context['co_uid'],
             'sid_booked': context['signature'],
-            'user_id': context.get('co_uid') or self.env.user.id,
+            'booker_id': booker_obj.id,
+            'contact_title': data['contact'][0]['title'],
+            'contact_id': contact_obj.id,
+            'contact_name': contact_obj.name,
+            'contact_email': contact_obj.email,
+            'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code, contact_obj.phone_ids[0].calling_number) or '-',
+            'passenger_ids': list_passenger_value,
+            'customer_parent_id': context.get('co_customer_parent_id', False) or customer_parent_id,
+            'customer_parent_type_id': context.get('co_customer_parent_type_id', False) or customer_parent_type_id,
         })
-        passenger_objs = self.env['tt.reservation.hotel'].create_customer_api(data['passengers'], context,
-                                                                              booker_obj.id,
-                                                                              contact_obj.id)  # create passenger
 
         resv_id = self.env['tt.reservation.hotel'].create(vals)
         resv_id.hold_date = context.get('hold_date', False)
         # resv_id.write({'passenger_ids': [(6, 0, [rec[0].id for rec in passenger_objs])]})
-        for idx, rec in enumerate(passenger_objs):
-            self.env['tt.reservation.passenger.hotel'].create({
-                'booking_id': resv_id.id,
-                'customer_id': rec.id,
-                'tittle': data['passengers'][idx]['title'],
-                'first_name': rec.first_name,
-                'last_name': rec.last_name,
-                'gender': rec.gender,
-                'birth_date': rec.birth_date,
-                'nationality_id': rec.nationality_id.id,
-                'identity_type': rec.identity_ids and rec.identity_ids[0].identity_type or '',
-                'identity_number': rec.identity_ids and rec.identity_ids[0].identity_number or '',
-            })
+
+        ## CURRENCY 22 JUN - IVAN
+        currency = ''
+        for price_code in data['price_codes']:
+            currency = price_code['currency']
+        if currency:
+            currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+            if currency_obj:
+                resv_id.currency_id = currency_obj.id
 
         for price_obj in data['price_codes']:
             for room_rate in price_obj['rooms']:
                 vendor_currency_id = self.env['res.currency'].sudo().search([('name', '=', room_rate['currency'])],
                                                                             limit=1).id
                 provider_id = self.env['tt.provider'].search(
-                    [('code', '=', self.unmasking_provider(price_obj['provider']))], limit=1).id
+                    [('code', '=', self.env['test.search'].unmasking_provider(price_obj['provider']))], limit=1).id
                 detail = self.env['tt.hotel.reservation.details'].sudo().create({
                     'provider_id': provider_id,
                     'reservation_id': resv_id.id,
@@ -1391,38 +1694,46 @@ class HotelReservation(models.Model):
                     'room_type': room_rate['type'],
                     'meal_type': price_obj['meal_type'],
                     'commission_amount': float(room_rate.get('commission', 0)),
+                    # 'supplements': ';; '.join([json.dumps(x) for x in room_rate['supplements']]),
+                    'supplements': ';; '.join([x['name'] for x in room_rate['supplements']]),
                 })
                 self.env.cr.commit()
+                total_price = 0
                 for charge_id in room_rate['nightly_prices']:
+                    charge_id_price = 0
+                    for sc_per_night in charge_id['service_charges']:
+                        charge_id_price += sc_per_night['total'] if sc_per_night['charge_type'] in ['FARE', 'TAX',
+                                                                                                    'ROC'] else 0
+                    total_price += charge_id_price
                     self.env['tt.room.date'].sudo().create({
                         'detail_id': detail.id,
                         'date': charge_id['date'],
-                        'sale_price': charge_id['price'],  # charge_id['price_currency'],
+                        'sale_price': charge_id_price,  # charge_id['price_currency'],
                         'commission_amount': charge_id['commission'],
                         'meal_type': '',
                     })
                     # Merge Jika Room type yg sama 2
-                    for price in charge_id['service_charges']:
-                        price.update({
+                    for scs in charge_id['service_charges']:
+                        scs.update({
                             'resv_hotel_id': resv_id.id,
-                            'total': price['amount'] * price['pax_count'],
+                            'total': scs['amount'] * scs['pax_count'],
+                            'currency_id': self.env['res.currency'].get_id(scs.get('currency'), default_param_idr=True),
+                            'foreign_currency_id': self.env['res.currency'].get_id(scs.get('foreign_currency'),
+                                                                                   default_param_idr=True),
+                            'description': '0',
+                            'ho_id': context.get('co_ho_id') and context['co_ho_id'] or (
+                                resv_id.ho_id.id if resv_id.ho_id else '')
                         })
-                        if not price.get('ho_id'):
-                            price.update({
-                                'ho_id': context.get('co_ho_id') and context['co_ho_id'] or (resv_id.ho_id.id if resv_id.ho_id else '')
-                            })
-                        self.env['tt.service.charge'].create(price)
+                        self.env['tt.service.charge'].create(scs)
 
-                # todo Room Info IDS
-                total_rate += float(room_rate['price_total'])
-                total_commision += float(room_rate['commission'])
+                detail.sale_price = total_price
         # resv_id.total = total_rate
 
         # Create provider_booking_ids
         vend_hotel = self.env['tt.provider.hotel'].create({
             'provider_id': provider_id or '',
             'booking_id': resv_id.id,
-            'pnr': '',
+            'pnr': '0',
             'pnr2': '',
             'balance_due': resv_id.total_nta,
             'total_price': resv_id.total_nta,
@@ -1439,9 +1750,60 @@ class HotelReservation(models.Model):
         vend_hotel.create_service_charge(resv_id.sale_service_charge_ids)
 
         resv_id.action_booked(context)
-        return self.get_booking_result(resv_id.id, context)
 
-    #
+        ## PAKAI VOUCHER
+        if data.get('voucher'):
+            resv_id.voucher_code = data['voucher']['voucher_reference']
+        
+        if context.get('co_job_position_rules'):
+            if context['co_job_position_rules'].get('callback'):
+                if context['co_job_position_rules']['callback'].get('source'):
+                    if context['co_job_position_rules']['callback']['source'] == 'ptr':
+                        third_party_data = copy.deepcopy(context['co_job_position_rules']['hotel'])
+                        third_party_data.update({
+                            "callback": context['co_job_position_rules']['callback'],
+                            "source": context['co_job_position_rules']['callback']['source']
+                        })
+                        resv_id.update({
+                            "third_party_webhook_data": json.dumps(third_party_data)
+                        })
+
+        return self.get_booking({'book_id':resv_id.id}, context)
+
+    def action_done_hotel_api(self, data, context):
+        book_id = data['book_id']
+        acq_id = data['acq_id']
+        issued_res = data['issued_result']
+
+        resv_obj = self.search([('name', '=', book_id)], limit=1)[0]
+        resv_obj.sid_issued = context['signature']
+        resv_obj.issued_uid = context['co_uid']
+
+        if acq_id:
+            self.env['tt.reservation'].payment_reservation_api('hotel', {
+                'book_id': resv_obj.id,
+                'member': acq_id['member'],
+                'acquirer_seq_id': acq_id['acquirer_seq_id'],
+            }, context)
+
+        # Matikan Part ini agar csc tidka tercatat di resv ny juga START
+        # for pax in resv_obj.passenger_ids:
+        #     for csc in pax.channel_service_charge_ids:
+        #         csc.resv_hotel_id = resv_obj.id
+        #         csc.total = csc.amount * csc.pax_count
+        #         resv_obj.total += csc.total
+        # Mtikan Part ini END
+        # if resv_obj.state not in ['issued', 'fail_issued']:
+        #     resv_obj.sudo().action_issued(acq_id, co_uid)
+        return resv_obj.sudo().action_done(issued_res)
+
+    def get_booking_hotel_api(self, data, context):
+        return self.get_booking(data, context)
+
+    def payment_hotel_api(self, data, context):
+        return self.env['tt.reservation'].payment_reservation_api('hotel', data, context)
+    # Pindahan dari test.search END
+
     def update_cost_service_charge_hotel_api(self, data, context):
         return data
 
