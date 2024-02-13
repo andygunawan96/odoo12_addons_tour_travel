@@ -1519,7 +1519,9 @@ class HotelReservation(models.Model):
         return result
     ### TOOLS END ###
 
-    def get_booking(self, resv_id, context=False):
+    def get_booking(self, data, context=False):
+        resv_id = data['book_id']
+        # get_invoice = data['get_invoice']
         try:
             if isinstance(resv_id, int):
                 resv_obj = self.browse(resv_id)
@@ -1553,7 +1555,7 @@ class HotelReservation(models.Model):
                 provider_bookings = []
                 for provider_booking in resv_obj.provider_booking_ids:
                     provider_bookings.append(provider_booking.to_dict())
-                new_vals = resv_obj.to_dict(context)
+                new_vals = resv_obj.to_dict(context, data)
                 for a in ['arrival_date', 'departure_date']:
                     new_vals.pop(a)
                 new_vals.update({
@@ -1765,8 +1767,8 @@ class HotelReservation(models.Model):
                         resv_id.update({
                             "third_party_webhook_data": json.dumps(third_party_data)
                         })
-        
-        return self.get_booking(resv_id.id, context)
+
+        return self.get_booking({'book_id':resv_id.id}, context)
 
     def action_done_hotel_api(self, data, context):
         book_id = data['book_id']
