@@ -36,6 +36,10 @@ class FrontendBanner(models.Model):
             if context.get('co_ho_seq_id'):
                 ho_agent_obj = self.env['tt.agent'].search([('seq_id','=', context['co_ho_seq_id'])], limit=1)
                 image_objs.image_line_ids[-1].ho_id = ho_agent_obj.id
+                if data.get('domain'):
+                    image_objs.image_line_ids[-1].update({
+                        "domain": data['domain']
+                    })
         except Exception as e:
             _logger.error('Exception Upload Center')
             _logger.error(traceback.format_exc())
@@ -92,17 +96,21 @@ class FrontendBanner(models.Model):
         ho_agent_obj = None
         if context.get('co_ho_seq_id'):
             ho_agent_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
-
-        for img in image_objs.image_line_ids:
-            if ho_agent_obj.id == img.ho_id.id:
-                imgs.append({
-                    'url': img.image_id['url'],
-                    'active': img.active,
-                    'seq_id': img.image_id['seq_id'],
-                    'url_page': img.url,
-                    'provider_type': img.provider_type_id.code,
-                    'sequence': img.sequence
-                })
+        img_line_filter_objs = image_objs.image_line_ids.search(['|',('domain','=',False),('domain','=', data['domain']),('ho_id.id','=',ho_agent_obj.id)])
+        for img in img_line_filter_objs:
+            if data.get('domain'):
+                if not img.domain:
+                    img.update({
+                        "domain": data['domain']
+                    })
+            imgs.append({
+                'url': img.image_id['url'],
+                'active': img.active,
+                'seq_id': img.image_id['seq_id'],
+                'url_page': img.url,
+                'provider_type': img.provider_type_id.code,
+                'sequence': img.sequence
+            })
 
         return ERR.get_no_error(imgs)
 
@@ -117,6 +125,7 @@ class FrontendBannerLine(models.Model):
     image_id = fields.Many2one('tt.upload.center', 'Image', invisible=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
+    domain = fields.Char('Domain', default='')
     sequence = fields.Char('Sequence')
     active = fields.Boolean('Active', default=True)
 
