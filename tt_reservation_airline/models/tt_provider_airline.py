@@ -62,7 +62,6 @@ class TtProviderAirline(models.Model):
     refund_date = fields.Datetime('Refund Date', readonly=True, states={'draft': [('readonly', False)]})
 
     ticket_ids = fields.One2many('tt.ticket.airline', 'provider_id', 'Ticket Number', readonly=True, states={'draft': [('readonly', False)]})
-    ticket_numbers = fields.Text('Ticket Number(s)', compute="_compute_ticket_numbers", store=True)
     # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.airline')], readonly=True, states={'draft': [('readonly', False)]})
@@ -106,18 +105,6 @@ class TtProviderAirline(models.Model):
     # October 19, 2023 - SAM
     notes = fields.Text('Notes')
     # END
-
-    @api.depends('ticket_ids', 'ticket_ids.ticket_number')
-    def _compute_ticket_numbers(self):
-        for rec in self:
-            ticket_number_list = []
-            for ticket_obj in rec.ticket_ids:
-                if ticket_obj.ticket_number:
-                    temp_tick_num = ticket_obj.ticket_number
-                    if ticket_obj.passenger_id and ticket_obj.passenger_id.name:
-                        temp_tick_num += ' (%s)' % ticket_obj.passenger_id.name
-                    ticket_number_list.append(temp_tick_num)
-            rec.ticket_numbers = ','.join(ticket_number_list)
 
     ##button function
     def action_change_is_hold_date_sync(self):
