@@ -53,12 +53,19 @@ class ReservationReportAirline(models.Model):
         """
 
     @staticmethod
-    def _where(date_from, date_to, agent_id, state):
+    def _where(date_from, date_to, agent_id, ho_id, customer_parent_id, state):
         where = """airline.create_date >= '%s' and airline.create_date <= '%s'""" % (date_from, date_to)
         if state == 'issue-expired':
             where += """ AND airline.state = 'issued' OR airline.state = 'cancel2'"""
         elif state != 'all':
             where += """ AND airline.state = '%s'""" %(state)
+
+        if ho_id:
+            where += """ AND airline.ho_id = """ + str(ho_id)
+        if agent_id:
+            where += """ AND airline.agent_id = """ + str(agent_id)
+        if customer_parent_id:
+            where += """ AND airline.customer_parent_id = """ + str(customer_parent_id)
         return where
 
     @staticmethod
@@ -70,16 +77,16 @@ class ReservationReportAirline(models.Model):
         return """airline.id
         """
 
-    def _lines(self, date_from, date_to, agent_id, state):
+    def _lines(self, date_from, date_to, agent_id, ho_id, customer_parent_id, state):
         # query =  "SELECT {} FROM {}".format(self._select(), self._from())
-        query = "SELECT {} FROM {} WHERE {} GROUP BY {} ORDER BY {}".format(self._select(), self._from(), self._where(date_from, date_to, agent_id, state), self._group_by(), self._order_by())
+        query = "SELECT {} FROM {} WHERE {} GROUP BY {} ORDER BY {}".format(self._select(), self._from(), self._where(date_from, date_to, agent_id, ho_id, customer_parent_id, state), self._group_by(), self._order_by())
 
         self.env.cr.execute(query)
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    def _get_lines_data(self, date_from, date_to, agent_id, state):
-        lines = self._lines(date_from, date_to, agent_id, state)
+    def _get_lines_data(self, date_from, date_to, agent_id, ho_id, customer_parent_id, state):
+        lines = self._lines(date_from, date_to, agent_id, ho_id, customer_parent_id, state)
         lines = self._convert_data(lines)
         return lines
 
@@ -104,9 +111,11 @@ class ReservationReportAirline(models.Model):
         date_to = data_form['date_to']
         if not data_form['state']:
             data_form['state'] = 'all'
+        ho_id = data_form['ho_id']
         agent_id = data_form['agent_id']
+        customer_parent_id = data_form['customer_parent_id']
         state = data_form['state']
-        lines = self._get_lines_data(date_from, date_to, agent_id, state)
+        lines = self._get_lines_data(date_from, date_to, agent_id, ho_id, customer_parent_id, state)
         self._report_title(data_form)
 
         return {
