@@ -246,7 +246,7 @@ class TtReservation(models.Model):
                     vals_phone_number = '%s%s' % (vals.get('calling_code', ''), vals['mobile'])
 
                     #jika phone index 1 plg ats sdh sama, tidak usah di update lagi supaya tidak concurrent update
-                    if booker_rec.phone_ids and vals_phone_number != booker_rec.phone_ids[0].phone_numbeer:
+                    if booker_rec.phone_ids and vals_phone_number != booker_rec.phone_ids[0].phone_number:
                         number_exist = False
                         for phone in booker_rec.phone_ids:
                             if phone.phone_number == vals_phone_number:
@@ -444,7 +444,7 @@ class TtReservation(models.Model):
                     vals_phone_number = '%s%s' % (vals.get('calling_code', ''), vals['mobile'])
 
                     # jika phone index 1 plg ats sdh sama, tidak usah di update lagi supaya tidak concurrent update
-                    if contact_rec.phone_ids and vals_phone_number != contact_rec.phone_ids[0].phone_numbeer:
+                    if contact_rec.phone_ids and vals_phone_number != contact_rec.phone_ids[0].phone_number:
                         number_exist = False
                         for phone in contact_rec.phone_ids:
                             if phone.phone_number == vals_phone_number:
