@@ -66,7 +66,7 @@ class TtProvider(models.Model):
 
     # delete after implement
     def compute_all_alias(self):
-        all_providers = self.search([('alias', '=', '')])
+        all_providers = self.search([('alias', '=', False)])
         for rec in all_providers:
             rec.write({
                 'alias': rec.name
