@@ -91,6 +91,14 @@
                                         </tree>
                                     </field>
                                 </page>
+                                <page string="Frequent Flyer">
+                                    <field name="frequent_flyer_ids">
+                                        <tree>
+                                            <field name="loyalty_program_id"/>
+                                            <field name="ff_number"/>
+                                        </tree>
+                                    </field>
+                                </page>
                                 <page string="Addresses">
                                     <field name="address_ids"/>
                                 </page>
