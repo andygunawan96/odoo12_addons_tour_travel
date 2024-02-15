@@ -6,6 +6,9 @@
             <field name="model">tt.provider</field>
             <field name="arch" type="xml">
                 <form string="Provider">
+                    <header>
+                        <button name="compute_all_alias" string="Compute All Alias" type="object" groups="base.group_system"/>
+                    </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="toggle_active" type="object"
@@ -147,9 +150,6 @@
             <field name="model">tt.provider.ho.data</field>
             <field name="arch" type="xml">
                 <form string="Provider">
-                    <header>
-                        <button name="compute_all_alias" string="Compute All Alias" type="object" groups="base.group_system"/>
-                    </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="toggle_active" type="object"
