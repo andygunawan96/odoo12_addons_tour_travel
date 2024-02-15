@@ -37,6 +37,7 @@ class TtReservationTrain(models.Model):
                                        default= lambda self: self.env.ref('tt_reservation_train.tt_provider_type_train'))
 
     boarding_pass_id = fields.Many2one('tt.upload.center', 'Boarding Pass', readonly=True)
+    train_name = fields.Char('Train Name', compute='_compute_train_name', store=True)
 
 
     def get_form_id(self):
@@ -65,6 +66,15 @@ class TtReservationTrain(models.Model):
                 rec.reconcile_state = 'cancel'
             else:
                 rec.reconcile_state = 'not_reconciled'
+
+    @api.depends("journey_ids.carrier_name")
+    def _compute_train_name(self):
+        for rec in self:
+            train_names = []
+            for journ in rec.journey_ids:
+                if journ.carrier_name:
+                    train_names.append(journ.carrier_name)
+            rec.train_name = '\r\n'.join(train_names)
 
     @api.multi
     def action_set_as_draft(self):
