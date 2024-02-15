@@ -250,7 +250,6 @@ class TtReservation(models.Model):
                         number_exist = False
                         for phone in booker_rec.phone_ids:
                             if phone.phone_number == vals_phone_number:
-                                if phone
                                 phone.last_updated_time = time.time()
                                 number_exist = True
                                 break
