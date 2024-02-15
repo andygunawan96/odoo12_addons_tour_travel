@@ -529,7 +529,7 @@ class TtReservation(models.Model):
                         vals_for_update.update({
                             'birth_date': psg['birth_date']
                         })
-                    if ho_agent_obj:
+                    if ho_agent_obj and ho_agent_obj.id != current_passenger.ho_id.id:
                         vals_for_update.update({
                             'ho_id': ho_agent_obj.id
                         })
