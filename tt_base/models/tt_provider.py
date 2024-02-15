@@ -13,7 +13,7 @@ class TtProvider(models.Model):
     _description = 'Provider Model'
 
     name = fields.Char('Name', required=True)
-    alias = fields.Char(string='Alias', compute='_compute_alias', store=True)
+    alias = fields.Char(string='Alias', compute='', store=False, required=True)
     code = fields.Char('Code', required=False)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     provider_code_ids = fields.One2many('tt.provider.code', 'provider_id', 'Provider Codes') ## yg pakai baru hotel, asumsi code selalu sama untuk semua HO
@@ -65,12 +65,12 @@ class TtProvider(models.Model):
         return super(TtProvider, self).unlink()
 
     # delete after implement
-    @api.onchange('name')
-    @api.depends('name')
-    def _compute_alias(self):
-        for rec in self:
-            if not rec.alias:
-                rec.alias = rec.name
+    def compute_all_alias(self):
+        all_providers = self.search([('alias', '=', '')])
+        for rec in all_providers:
+            rec.write({
+                'alias': rec.name
+            })
 
     def to_dict(self):
         return {
