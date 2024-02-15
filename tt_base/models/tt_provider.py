@@ -13,7 +13,7 @@ class TtProvider(models.Model):
     _description = 'Provider Model'
 
     name = fields.Char('Name', required=True)
-    alias = fields.Char(string='Alias')
+    alias = fields.Char(string='Alias', compute='_compute_alias', store=True)
     code = fields.Char('Code', required=False)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     provider_code_ids = fields.One2many('tt.provider.code', 'provider_id', 'Provider Codes') ## yg pakai baru hotel, asumsi code selalu sama untuk semua HO
@@ -46,6 +46,8 @@ class TtProvider(models.Model):
                 'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 415')
         if not vals.get('code'):
             vals['code'] = vals['name'].lower().replace(' ','_')
+        if not vals.get('alias'):
+            vals['alias'] = vals['name']
         return super(TtProvider, self).create(vals)
 
     @api.multi
@@ -61,6 +63,14 @@ class TtProvider(models.Model):
             raise UserError(
                 'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 417')
         return super(TtProvider, self).unlink()
+
+    # delete after implement
+    @api.onchange('name')
+    @api.depends('name')
+    def _compute_alias(self):
+        for rec in self:
+            if not rec.alias:
+                rec.alias = rec.name
 
     def to_dict(self):
         return {
