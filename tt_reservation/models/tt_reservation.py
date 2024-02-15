@@ -243,22 +243,25 @@ class TtReservation(models.Model):
             update_value = {}
             if booker_rec:
                 if vals.get('mobile'):
-                    number_entered = False
                     vals_phone_number = '%s%s' % (vals.get('calling_code', ''), vals['mobile'])
-                    for phone in booker_rec.phone_ids:
-                        if phone.phone_number == vals_phone_number:
-                            phone.last_updated_time = time.time()
-                            number_entered = True
-                            break
 
-                    if not number_entered:
-                        new_phone=[(0,0,{
-                            'ho_id': context['co_ho_id'],
-                            'calling_code': vals.get('calling_code', ''),
-                            'calling_number': vals.get('mobile', ''),
-                            'phone_number': vals_phone_number
-                        })]
-                        update_value['phone_ids'] = new_phone
+                    #jika phone index 1 plg ats sdh sama, tidak usah di update lagi supaya tidak concurrent update
+                    if booker_rec.phone_ids and vals_phone_number != booker_rec.phone_ids[0].phone_number:
+                        number_exist = False
+                        for phone in booker_rec.phone_ids:
+                            if phone.phone_number == vals_phone_number:
+                                phone.last_updated_time = time.time()
+                                number_exist = True
+                                break
+
+                        if not number_exist:
+                            new_phone=[(0,0,{
+                                'ho_id': context['co_ho_id'],
+                                'calling_code': vals.get('calling_code', ''),
+                                'calling_number': vals.get('mobile', ''),
+                                'phone_number': vals_phone_number
+                            })]
+                            update_value['phone_ids'] = new_phone
                 if vals.get('email'):
                     if vals['email'] != booker_rec.email:
                         update_value['email'] = vals.get('email', booker_rec.email)
@@ -438,21 +441,25 @@ class TtReservation(models.Model):
 
             if contact_rec:
                 if vals.get('mobile'):
-                    number_entered = False
                     vals_phone_number = '%s%s' % (vals.get('calling_code', ''), vals['mobile'])
-                    for phone in contact_rec.phone_ids:
-                        if phone.phone_number == vals_phone_number:
-                            phone.last_updated_time = time.time()
-                            number_entered = True
-                            break
-                    if not number_entered:
-                        new_phone = [(0, 0, {
-                            'ho_id': context['co_ho_id'],
-                            'calling_code': vals.get('calling_code', ''),
-                            'calling_number': vals.get('mobile', ''),
-                            'phone_number': vals_phone_number
-                        })]
-                        update_value['phone_ids'] = new_phone
+
+                    # jika phone index 1 plg ats sdh sama, tidak usah di update lagi supaya tidak concurrent update
+                    if contact_rec.phone_ids and vals_phone_number != contact_rec.phone_ids[0].phone_number:
+                        number_exist = False
+                        for phone in contact_rec.phone_ids:
+                            if phone.phone_number == vals_phone_number:
+                                phone.last_updated_time = time.time()
+                                number_exist = True
+                                break
+                        if not number_exist:
+                            new_phone = [(0, 0, {
+                                'ho_id': context['co_ho_id'],
+                                'calling_code': vals.get('calling_code', ''),
+                                'calling_number': vals.get('mobile', ''),
+                                'phone_number': vals_phone_number
+                            })]
+                            update_value['phone_ids'] = new_phone
+
                 if vals.get('email'):
                     if vals['email'] != contact_rec.email:
                         update_value['email'] = vals.get('email', contact_rec.email)
@@ -522,7 +529,7 @@ class TtReservation(models.Model):
                         vals_for_update.update({
                             'birth_date': psg['birth_date']
                         })
-                    if ho_agent_obj:
+                    if ho_agent_obj and ho_agent_obj.id != current_passenger.ho_id.id:
                         vals_for_update.update({
                             'ho_id': ho_agent_obj.id
                         })
