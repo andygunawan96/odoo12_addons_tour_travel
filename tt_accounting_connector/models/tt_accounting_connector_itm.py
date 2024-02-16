@@ -293,6 +293,13 @@ class AccountingConnectorITM(models.Model):
                             'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
                         }
 
+                        temp_sales = pax_setup['agent_nta']
+                        if is_ho_transaction:
+                            temp_sales += ho_prof
+                        pax_setup.update({
+                            'total_sales': temp_sales
+                        })
+
                         vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
                         vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
                         if not vat_var_obj or not vat_perc_obj:
@@ -302,9 +309,6 @@ class AccountingConnectorITM(models.Model):
                             temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
                             vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
 
-                        temp_sales = pax_setup['agent_nta']
-                        if is_ho_transaction:
-                            temp_sales += ho_prof
                         # total cost = Total NTA
                         # total sales = Agent NTA (kalo HO + total commission)
                         # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
@@ -379,6 +383,13 @@ class AccountingConnectorITM(models.Model):
                             'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
                         }
 
+                        temp_sales = pax_setup['agent_nta']
+                        if is_ho_transaction:
+                            temp_sales += ho_prof
+                        pax_setup.update({
+                            'total_sales': temp_sales
+                        })
+
                         vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
                         vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
                         if not vat_var_obj or not vat_perc_obj:
@@ -388,9 +399,6 @@ class AccountingConnectorITM(models.Model):
                             temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
                             vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
 
-                        temp_sales = pax_setup['agent_nta']
-                        if is_ho_transaction:
-                            temp_sales += ho_prof
                         # total cost = Total NTA
                         # total sales = Agent NTA
                         # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
@@ -448,6 +456,13 @@ class AccountingConnectorITM(models.Model):
                             "Nationality": pax['nationality_code']
                         })
 
+                    temp_sales = prov_setup['agent_nta']
+                    if is_ho_transaction:
+                        temp_sales += ho_prof
+                    prov_setup.update({
+                        'total_sales': temp_sales
+                    })
+
                     vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
                     vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
                     if not vat_var_obj or not vat_perc_obj:
@@ -468,9 +483,6 @@ class AccountingConnectorITM(models.Model):
                         "Arrival": ''
                     }]
                     for room_idx, room in enumerate(prov['rooms']):
-                        temp_sales = prov_setup['agent_nta'] / len(prov['rooms']) / request['nights']
-                        if is_ho_transaction:
-                            temp_sales += ho_prof / len(prov['rooms']) / request['nights']
                         provider_dict = {
                             "ItemNo": idx + 1,
                             "ProductCode": supplier_obj.product_code or '',
@@ -486,7 +498,7 @@ class AccountingConnectorITM(models.Model):
                             "Profit": (prov_setup['ho_profit'] - vat) / len(prov['rooms']) / request['nights'],
                             "ServiceFee": 0,
                             "VAT": vat / len(prov['rooms']) / request['nights'],
-                            "Sales": temp_sales,
+                            "Sales": temp_sales / len(prov['rooms']) / request['nights'],
                             "Itin": journey_list,
                             "Pax": pax_list
                         }

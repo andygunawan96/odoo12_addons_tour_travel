@@ -5,7 +5,7 @@ class ReportSelling(models.TransientModel):
     _name = 'tt.report.selling.wizard'
     _description = "report for daily transaction"
 
-    state = fields.Selection([('a', 'a')], default='a')
+    state = fields.Selection([('all', 'All')], default='all')
 
     provider_type = fields.Selection(selection=lambda self: self._compute_provider_type_selection(),
                                      string='Provider Type', default='all')
