@@ -390,6 +390,9 @@ class AccountingConnectorTravelite(models.Model):
                         if is_ho_transaction:
                             temp_sales += ho_prof - pax_setup['total_upsell']
                             temp_upsell += pax_setup['agent_profit']
+                        pax_setup.update({
+                            'total_sales': temp_sales
+                        })
 
                         tax_details = {}
                         tax_details_len = 0
@@ -509,6 +512,9 @@ class AccountingConnectorTravelite(models.Model):
                         if is_ho_transaction:
                             temp_sales += ho_prof - pax_setup['total_upsell']
                             temp_upsell += pax_setup['agent_profit']
+                        pax_setup.update({
+                            'total_sales': temp_sales
+                        })
 
                         if not vat_var_obj or not vat_perc_obj:
                             _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
@@ -570,6 +576,9 @@ class AccountingConnectorTravelite(models.Model):
                     temp_sales = prov_setup['agent_nta']
                     if is_ho_transaction:
                         temp_sales += ho_prof
+                    prov_setup.update({
+                        'total_sales': temp_sales
+                    })
 
                     if not vat_var_obj or not vat_perc_obj:
                         _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
