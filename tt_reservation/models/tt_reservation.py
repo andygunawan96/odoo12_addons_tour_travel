@@ -233,65 +233,6 @@ class TtReservation(models.Model):
     def check_approve_refund_eligibility(self):
         return True
 
-    def create_booker_api(self, vals, context):
-        booker_obj = self.env['tt.customer'].sudo()
-        get_booker_seq_id = util.get_without_empty(vals,'booker_seq_id')
-
-        if get_booker_seq_id:
-            booker_seq_id = vals['booker_seq_id']
-            booker_rec = booker_obj.search([('seq_id','=',booker_seq_id)])
-            update_value = {}
-            if booker_rec:
-                if vals.get('mobile'):
-                    vals_phone_number = '%s%s' % (vals.get('calling_code', ''), vals['mobile'])
-
-                    #jika phone index 1 plg ats sdh sama, tidak usah di update lagi supaya tidak concurrent update
-                    if booker_rec.phone_ids and vals_phone_number != booker_rec.phone_ids[0].phone_number:
-                        number_exist = False
-                        for phone in booker_rec.phone_ids:
-                            if phone.phone_number == vals_phone_number:
-                                phone.last_updated_time = time.time()
-                                number_exist = True
-                                break
-
-                        if not number_exist:
-                            new_phone=[(0,0,{
-                                'ho_id': context['co_ho_id'],
-                                'calling_code': vals.get('calling_code', ''),
-                                'calling_number': vals.get('mobile', ''),
-                                'phone_number': vals_phone_number
-                            })]
-                            update_value['phone_ids'] = new_phone
-                if vals.get('email'):
-                    if vals['email'] != booker_rec.email:
-                        update_value['email'] = vals.get('email', booker_rec.email)
-                if update_value:
-                    booker_rec.update(update_value)
-                return booker_rec
-
-        country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
-
-        vals.update({
-            'ho_id': context['co_ho_id'],
-            'agent_id': context['co_agent_id'],
-            'nationality_id': country and country[0].id or False,
-            'email': vals.get('email'),
-            'phone_ids': [(0,0,{
-                'ho_id': context['co_ho_id'],
-                'calling_code': vals.get('calling_code',''),
-                'calling_number': vals.get('mobile',''),
-                'phone_number': '%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
-                'country_id': country and country[0].id or False,
-            })],
-            'first_name': vals.get('first_name'),
-            'last_name': vals.get('last_name'),
-            'gender': vals.get('gender'),
-            'marital_status': 'married' if vals.get('title') == 'MRS' else '',
-            'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor',False),
-            'register_uid': context['co_uid']
-        })
-        return booker_obj.create(vals)
-
     def get_booking_b2c_api(self, req, context):
         try:
             res = {}
@@ -425,6 +366,76 @@ class TtReservation(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
 
+    def add_or_update_customer_mobile(self, customer_obj, calling_code, calling_number, ho_id, update_dict):
+        number_exist = False
+        vals_phone_number = '%s%s' % (calling_code, calling_number)
+
+        if customer_obj.phone_ids:
+            ## hanya masuk ke fungsi pengecheckan kesamaan nomor telepon dan update last updated timenya
+            ## jika phone_ids[0] tidak sama dengan yang di input. supaya tidak concurrent update di last_updated_time
+            if vals_phone_number != customer_obj.phone_ids[0].phone_number:
+                for phone in customer_obj.phone_ids:
+                    if phone.phone_number == vals_phone_number:
+                        phone.last_updated_time = time.time()
+                        number_exist = True
+                        break
+            else:
+                ## phone ada, tetapi sama dengan index phone_ids pertama jadi tidak di update last updated_timenya
+                ## dan existnya True
+                number_exist = True
+
+        ## Exist False dan buat phone baru jika:
+        ## 1. cutomer belum punya Phone sama sekali
+        ## 2. nomor yg di input tidak sama dengan phone yg sdh di miliki
+        if not number_exist:
+            new_phone = [(0, 0, {
+                'ho_id': ho_id,
+                'calling_code': calling_code,
+                'calling_number': calling_number,
+                'phone_number': vals_phone_number
+            })]
+            update_dict['phone_ids'] = new_phone
+    def create_booker_api(self, vals, context):
+        booker_obj = self.env['tt.customer'].sudo()
+        get_booker_seq_id = util.get_without_empty(vals,'booker_seq_id')
+
+        if get_booker_seq_id:
+            booker_seq_id = vals['booker_seq_id']
+            booker_rec = booker_obj.search([('seq_id','=',booker_seq_id)])
+            update_value = {}
+            if booker_rec:
+                if vals.get('mobile'):
+                    self.add_or_update_customer_mobile(booker_rec, vals.get('calling_code', ''), vals.get('mobile', ''),
+                                                  context['co_ho_id'], update_value)
+                if vals.get('email'):
+                    if vals['email'] != booker_rec.email:
+                        update_value['email'] = vals.get('email', booker_rec.email)
+                if update_value:
+                    booker_rec.update(update_value)
+                return booker_rec
+
+        country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
+
+        vals.update({
+            'ho_id': context['co_ho_id'],
+            'agent_id': context['co_agent_id'],
+            'nationality_id': country and country[0].id or False,
+            'email': vals.get('email'),
+            'phone_ids': [(0,0,{
+                'ho_id': context['co_ho_id'],
+                'calling_code': vals.get('calling_code',''),
+                'calling_number': vals.get('mobile',''),
+                'phone_number': '%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
+                'country_id': country and country[0].id or False,
+            })],
+            'first_name': vals.get('first_name'),
+            'last_name': vals.get('last_name'),
+            'gender': vals.get('gender'),
+            'marital_status': 'married' if vals.get('title') == 'MRS' else '',
+            'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor',False),
+            'register_uid': context['co_uid']
+        })
+        return booker_obj.create(vals)
 
     def create_contact_api(self, vals, booker, context):
         contact_obj = self.env['tt.customer'].sudo()
@@ -441,25 +452,8 @@ class TtReservation(models.Model):
 
             if contact_rec:
                 if vals.get('mobile'):
-                    vals_phone_number = '%s%s' % (vals.get('calling_code', ''), vals['mobile'])
-
-                    # jika phone index 1 plg ats sdh sama, tidak usah di update lagi supaya tidak concurrent update
-                    if contact_rec.phone_ids and vals_phone_number != contact_rec.phone_ids[0].phone_number:
-                        number_exist = False
-                        for phone in contact_rec.phone_ids:
-                            if phone.phone_number == vals_phone_number:
-                                phone.last_updated_time = time.time()
-                                number_exist = True
-                                break
-                        if not number_exist:
-                            new_phone = [(0, 0, {
-                                'ho_id': context['co_ho_id'],
-                                'calling_code': vals.get('calling_code', ''),
-                                'calling_number': vals.get('mobile', ''),
-                                'phone_number': vals_phone_number
-                            })]
-                            update_value['phone_ids'] = new_phone
-
+                    self.add_or_update_customer_mobile(contact_rec, vals.get('calling_code', ''), vals.get('mobile', ''),
+                                                  context['co_ho_id'], update_value)
                 if vals.get('email'):
                     if vals['email'] != contact_rec.email:
                         update_value['email'] = vals.get('email', contact_rec.email)
