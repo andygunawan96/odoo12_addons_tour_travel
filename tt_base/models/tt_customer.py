@@ -545,7 +545,7 @@ class TtCustomer(models.Model):
                 update_vals.update({
                     'identity_country_of_issued_id': c_issued_id
                 })
-            if expdate != datetime.strftime(existing_identity.identity_expdate,'%Y-%m-%d'):
+            if (expdate and expdate) != (existing_identity.identity_expdate and datetime.strftime(existing_identity.identity_expdate,'%Y-%m-%d') or ""):
                 update_vals.update({
                     'identity_expdate': expdate
                 })
