@@ -423,6 +423,7 @@ class TtEmailQueue(models.Model):
                     printed_inv_ids.append(rec.invoice_id.id)
             if not resv_has_invoice:
                 raise Exception(_('Reservation has no Invoice!'))
+            self.template_id.attachment_ids.unlink()
             self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
         else:
             raise Exception(_('Reservation is not issued!'))
@@ -451,6 +452,7 @@ class TtEmailQueue(models.Model):
                     raise Exception(_('Failed to convert billing attachment!'))
             else:
                 raise Exception(_('Failed to get billing attachment!'))
+            self.template_id.attachment_ids.unlink()
             self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
         else:
             raise Exception(_('Billing is already cancelled!'))
@@ -478,6 +480,7 @@ class TtEmailQueue(models.Model):
                     raise Exception(_('Failed to convert billing attachment!'))
             else:
                 raise Exception(_('Failed to get billing attachment!'))
+            self.template_id.attachment_ids.unlink()
             self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
         else:
             raise Exception(_('Billing is already cancelled!'))
@@ -511,6 +514,7 @@ class TtEmailQueue(models.Model):
                 raise Exception(_('Failed to convert refund attachment!'))
         else:
             raise Exception(_('Failed to get refund attachment!'))
+        self.template_id.attachment_ids.unlink()
         self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
 
     def prepare_attachment_voucher(self):
@@ -535,6 +539,7 @@ class TtEmailQueue(models.Model):
                 raise Exception(_('Failed to convert voucher attachment!'))
         else:
             raise Exception(_('Failed to get voucher attachment!'))
+        self.template_id.attachment_ids.unlink()
         self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
 
     def prepare_attachment_ho_invoice(self):
@@ -575,7 +580,7 @@ class TtEmailQueue(models.Model):
                 else:
                     raise Exception(_('Failed to get invoice attachment!'))
                 printed_inv_ids.append(ho_invoice_obj.invoice_id.id)
-
+        self.template_id.attachment_ids.unlink()
         self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
 
 
@@ -596,7 +601,7 @@ class TtEmailQueue(models.Model):
             elif self.type == 'ho_invoice':
                 self.prepare_attachment_ho_invoice()
             else:
-                self.template_id.attachment_ids = [(6, 0, [])]
+                self.template_id.attachment_ids.unlink()
 
             self.template_id.send_mail(self.res_id, force_send=True)
             self.write({
