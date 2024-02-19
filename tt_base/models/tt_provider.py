@@ -64,14 +64,6 @@ class TtProvider(models.Model):
                 'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 417')
         return super(TtProvider, self).unlink()
 
-    # delete after implement
-    def compute_all_alias(self):
-        all_providers = self.search([('alias', '=', False)])
-        for rec in all_providers:
-            rec.write({
-                'alias': rec.name
-            })
-
     def to_dict(self):
         return {
             'name': self.name,

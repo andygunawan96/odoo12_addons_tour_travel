@@ -423,8 +423,7 @@ class TtEmailQueue(models.Model):
                     printed_inv_ids.append(rec.invoice_id.id)
             if not resv_has_invoice:
                 raise Exception(_('Reservation has no Invoice!'))
-            self.template_id.attachment_ids.unlink()
-            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+            return attachment_id_list
         else:
             raise Exception(_('Reservation is not issued!'))
 
@@ -452,8 +451,7 @@ class TtEmailQueue(models.Model):
                     raise Exception(_('Failed to convert billing attachment!'))
             else:
                 raise Exception(_('Failed to get billing attachment!'))
-            self.template_id.attachment_ids.unlink()
-            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+            return attachment_id_list
         else:
             raise Exception(_('Billing is already cancelled!'))
 
@@ -480,8 +478,7 @@ class TtEmailQueue(models.Model):
                     raise Exception(_('Failed to convert billing attachment!'))
             else:
                 raise Exception(_('Failed to get billing attachment!'))
-            self.template_id.attachment_ids.unlink()
-            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+            return attachment_id_list
         else:
             raise Exception(_('Billing is already cancelled!'))
 
@@ -514,8 +511,7 @@ class TtEmailQueue(models.Model):
                 raise Exception(_('Failed to convert refund attachment!'))
         else:
             raise Exception(_('Failed to get refund attachment!'))
-        self.template_id.attachment_ids.unlink()
-        self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        return attachment_id_list
 
     def prepare_attachment_voucher(self):
         attachment_id_list = []
@@ -539,8 +535,7 @@ class TtEmailQueue(models.Model):
                 raise Exception(_('Failed to convert voucher attachment!'))
         else:
             raise Exception(_('Failed to get voucher attachment!'))
-        self.template_id.attachment_ids.unlink()
-        self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        return attachment_id_list
 
     def prepare_attachment_ho_invoice(self):
         attachment_id_list = []
@@ -580,8 +575,7 @@ class TtEmailQueue(models.Model):
                 else:
                     raise Exception(_('Failed to get invoice attachment!'))
                 printed_inv_ids.append(ho_invoice_obj.invoice_id.id)
-        self.template_id.attachment_ids.unlink()
-        self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        return attachment_id_list
 
 
     def action_send_email(self):
@@ -589,21 +583,21 @@ class TtEmailQueue(models.Model):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 58')
         try:
             if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_tour', 'issued_visa', 'issued_passport', 'issued_hotel', 'issued_offline', 'issued_ppob', 'issued_bus', 'issued_periksain', 'issued_phc', 'issued_medical', 'issued_swabexpress', 'issued_labpintar', 'issued_sentramedika']:
-                self.prepare_attachment_reservation_issued()
+                attachment_ids = self.prepare_attachment_reservation_issued()
             elif self.type == 'billing_statement':
-                self.prepare_attachment_billing_statement()
+                attachment_ids = self.prepare_attachment_billing_statement()
             elif self.type == 'quota_pnr':
-                self.prepare_attachment_pnr_quota()
+                attachment_ids = self.prepare_attachment_pnr_quota()
             elif self.type in ['refund_confirmed', 'refund_finalized', 'refund_done']:
-                self.prepare_attachment_refund()
+                attachment_ids = self.prepare_attachment_refund()
             elif self.type == 'voucher_created':
-                self.prepare_attachment_voucher()
+                attachment_ids = self.prepare_attachment_voucher()
             elif self.type == 'ho_invoice':
-                self.prepare_attachment_ho_invoice()
+                attachment_ids = self.prepare_attachment_ho_invoice()
             else:
-                self.template_id.attachment_ids.unlink()
+                attachment_ids = []
 
-            self.template_id.send_mail(self.res_id, force_send=True)
+            self.template_id.send_mail(self.res_id, force_send=True, email_values={'attachment_ids': attachment_ids})
             self.write({
                 'last_sent_attempt_date': datetime.now(),
                 'active': False,
