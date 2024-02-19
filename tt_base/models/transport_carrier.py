@@ -35,6 +35,7 @@ class TransportCarrier(models.Model):
     required_frequent_flyer = fields.Boolean('Is FF Required', default=False)
     is_identity_can_be_expired = fields.Boolean('Is Identity Can Be Expired', help="For input to vendor", default=False)
     is_identity_can_be_empty = fields.Boolean('Is Identity Can Be Empty', help="For input to vendor", default=False)
+    is_required_last_name = fields.Boolean('Is Required Last Name', default=False)
     active = fields.Boolean('Active', default=True)
     # country_id = fields.Many2one('res.country', 'Country') masihbutuh?
 
@@ -89,6 +90,7 @@ class TransportCarrier(models.Model):
             'is_identity_can_be_expired': self.is_identity_can_be_expired,
             'required_frequent_flyer': self.required_frequent_flyer,
             'is_identity_can_be_empty': self.is_identity_can_be_empty,
+            'is_required_last_name': self.is_required_last_name,
             'active': self.active,
         }
 
@@ -109,6 +111,7 @@ class TransportCarrier(models.Model):
             'is_identity_can_be_expired': self.is_identity_can_be_expired,
             'is_identity_can_be_empty': self.is_identity_can_be_empty,
             'required_frequent_flyer': self.required_frequent_flyer,
+            'is_required_last_name': self.is_required_last_name,
             'active': self.active,
         }
         return res
