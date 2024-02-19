@@ -32,6 +32,7 @@
                             <field name="required_frequent_flyer"/>
                             <field name="is_identity_can_be_expired"/>
                             <field name="is_identity_can_be_empty"/>
+                            <field name="is_required_last_name"/>
                         </group>
                     </group>
                 </sheet>
