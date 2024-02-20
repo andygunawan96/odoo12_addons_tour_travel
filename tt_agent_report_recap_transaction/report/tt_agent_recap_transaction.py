@@ -20,7 +20,8 @@ class AgentReportRecapTransacion(models.Model):
         return """
             rsv.id, rsv.name as order_number, rsv.state, creates.id as creator_id, creates_partner.name as create_by, 
             issued.id as issued_uid, issued_partner.name as issued_by, rsv.issued_date as issued_date, rsv.adult, rsv.child, rsv.infant, rsv.pnr,
-            rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date,
+            rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name as provider_name, 
+            rsv.provider_alias as provider_alias, rsv.create_date,
             provider_type.code as provider_type_code, provider_type.name as provider_type, agent.name as agent_name, agent.email as agent_email,
             currency.name as currency_name, rsv.carrier_name as carrier_name, customer_parent.name as customer_parent_name, 
             customer_parent_type.name as customer_parent_type_name, provider_booking.pnr as provider_pnr,
@@ -319,8 +320,14 @@ class AgentReportRecapTransacion(models.Model):
     @staticmethod
     def _order_by_join_psg_ticket():
         return """
-                    rsv.create_date, rsv.name
-                    """
+                rsv.create_date, rsv.name
+                """
+
+    @staticmethod
+    def _order_ticket_number():
+        return """
+                , ticket_obj.ticket_number
+                """
 
     ################
     #   Function to build the full query
@@ -404,6 +411,8 @@ class AgentReportRecapTransacion(models.Model):
 
         # ORDER BY
         query += 'ORDER BY ' + self._order_by_join_psg_ticket()
+        if provider_type in ['airline', 'train']:
+            query += self._order_ticket_number()
 
         self.env.cr.execute(query)
         _logger.info(query)
