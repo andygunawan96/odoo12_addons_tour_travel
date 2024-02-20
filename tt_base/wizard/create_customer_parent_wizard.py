@@ -28,7 +28,7 @@ class CreateCustomerParentWizard(models.TransientModel):
         })
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        if self.env.user.agent_id.is_ho_agent:
+        if {self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids)):
             action_num = self.env.ref('tt_base.tt_customer_parent_action_view').id
             menu_num = self.env.ref('tt_base.menu_customer_customer_parent').id
         else:

@@ -42,6 +42,7 @@ class TtReservation(models.Model):
     name = fields.Char('Order Number', index=True, default='New', readonly=True)
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)]})
     provider_name = fields.Char('List of Provider', readonly=True)
+    provider_alias = fields.Char('List of Provider Alias', readonly=True, compute='_compute_provider_alias', store=True)
     carrier_name = fields.Char('List of Carriers', readonly=True)
     voucher_code = fields.Char('Voucher', readonly=True)
     payment_method = fields.Char('Payment Method', readonly=True)
@@ -229,6 +230,25 @@ class TtReservation(models.Model):
     def _compute_total_pax(self):
         for rec in self:
             rec.total_pax = rec.adult + rec.child + rec.infant + rec.elder + rec.student + rec.labour + rec.seaman
+
+    @api.depends('provider_name')
+    def _compute_provider_alias(self):
+        provider_map = {}
+        for rec in self:
+            prov_alias_list = []
+            if rec.provider_name:
+                prov_code_list = rec.provider_name.split(',')
+                for prov in prov_code_list:
+                    mapped_alias = provider_map.get(prov)
+                    if mapped_alias:
+                        prov_alias_list.append(mapped_alias)
+                    else:
+                        prov_obj = self.env['tt.provider'].search([('code', '=', prov.strip())], limit=1)
+                        if prov_obj:
+                            alias = prov_obj.alias and prov_obj.alias or prov_obj.name
+                            prov_alias_list.append(alias)
+                            provider_map[prov.strip()] = alias
+            rec.provider_alias = ','.join(prov_alias_list)
 
     def check_approve_refund_eligibility(self):
         return True

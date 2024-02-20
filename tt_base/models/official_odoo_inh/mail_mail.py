@@ -87,7 +87,7 @@ class MailMail(models.Model):
         # search email yang punay attachment
         delete_attachment_list = self.search([('attachment_ids','!=',False),
                                               ('create_date','<',datetime.now() - timedelta(days=30))],
-                                             limit=1000)
+                                             limit=100)
         for attach_obj in delete_attachment_list:
             attach_obj.attachment_ids.unlink()
         self.env.cr.commit()
