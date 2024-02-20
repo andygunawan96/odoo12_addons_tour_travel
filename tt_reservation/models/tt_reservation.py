@@ -233,14 +233,21 @@ class TtReservation(models.Model):
 
     @api.depends('provider_name')
     def _compute_provider_alias(self):
+        provider_map = {}
         for rec in self:
             prov_alias_list = []
             if rec.provider_name:
                 prov_code_list = rec.provider_name.split(',')
                 for prov in prov_code_list:
-                    prov_obj = self.env['tt.provider'].search([('code', '=', prov.strip())], limit=1)
-                    if prov_obj:
-                        prov_alias_list.append(prov_obj.alias and prov_obj.alias or prov_obj.name)
+                    mapped_alias = provider_map.get(prov)
+                    if mapped_alias:
+                        prov_alias_list.append(mapped_alias)
+                    else:
+                        prov_obj = self.env['tt.provider'].search([('code', '=', prov.strip())], limit=1)
+                        if prov_obj:
+                            alias = prov_obj.alias and prov_obj.alias or prov_obj.name
+                            prov_alias_list.append(alias)
+                            provider_map[prov.strip()] = alias
             rec.provider_alias = ','.join(prov_alias_list)
 
     def check_approve_refund_eligibility(self):
