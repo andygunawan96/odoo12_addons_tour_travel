@@ -127,7 +127,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
                 sheet.write(row_data, 3, i['agent_name'], sty_table_data)
                 sheet.write(row_data, 4, i['issued_date'], sty_date)
                 sheet.write(row_data, 5, i['agent_email'], sty_table_data)
-                sheet.write(row_data, 6, i['provider_name'], sty_table_data)
+                sheet.write(row_data, 6, i['provider_alias'], sty_table_data)
                 sheet.write(row_data, 7, i['order_number'], sty_amount)
                 sheet.write(row_data, 8, i['adult'], sty_amount)
                 sheet.write(row_data, 9, i['child'], sty_amount)
