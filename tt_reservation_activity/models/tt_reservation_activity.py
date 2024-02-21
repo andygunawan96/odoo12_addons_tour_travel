@@ -1289,7 +1289,7 @@ class ReservationActivity(models.Model):
             carrier_list = []
             for rec in self.provider_booking_ids:
                 pnr_list.append(rec.pnr or '')
-                provider_list.append(rec.provider_id.name or '')
+                provider_list.append(rec.provider_id.code or '')
                 carrier_list.append(rec.carrier_id.name or '')
 
             self.write({
