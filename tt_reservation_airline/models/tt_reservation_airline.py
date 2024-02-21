@@ -2477,7 +2477,10 @@ class ReservationAirline(models.Model):
 
     #retrieve booking utk samakan info dengan vendor
     def sync_booking_with_vendor(self):
-        if not self.env.user.has_group('base.group_system'):
+        # if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+        if not ({self.env.ref('base.group_system').id,
+                 self.env.ref('tt_base.group_tt_tour_travel').id}.intersection(
+                set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 113')
         req = {
             'order_number': self.name,
