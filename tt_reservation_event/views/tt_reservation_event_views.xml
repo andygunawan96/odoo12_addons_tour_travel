@@ -8,7 +8,6 @@
                 <field name="event_name"/>
                 <field name="pnr"/>
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
-                <field name="provider_alias" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
