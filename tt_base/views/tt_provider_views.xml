@@ -24,6 +24,7 @@
                             <group>
                                 <field name="code" groups="base.group_system"/>
                                 <field name="alias"/>
+                                <field name="report_alias"/>
                                 <field name="provider_type_id"/>
                                 <field name="currency_id"/>
                                 <field name="is_reconcile"/>

@@ -13,7 +13,8 @@ class TtProvider(models.Model):
     _description = 'Provider Model'
 
     name = fields.Char('Name', required=True)
-    alias = fields.Char(string='Alias', required=True)
+    alias = fields.Char(string='Alias', required=False)
+    report_alias = fields.Char(string='Report Alias')
     code = fields.Char('Code', required=False)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     provider_code_ids = fields.One2many('tt.provider.code', 'provider_id', 'Provider Codes') ## yg pakai baru hotel, asumsi code selalu sama untuk semua HO
