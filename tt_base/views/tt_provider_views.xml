@@ -89,6 +89,8 @@
                 <search string="Provider">
                     <field name="name" string="Name"/>
                     <field name="code" string="Code"/>
+                    <field name="alias" string="Alias"/>
+                    <field name="report_alias" string="Report Alias"/>
                     <field name="provider_type_id"/>
                     <separator/>
                     <filter string="Active" name="active" domain="[('active', '=', True)]"/>
