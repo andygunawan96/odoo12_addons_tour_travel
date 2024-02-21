@@ -584,6 +584,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "arrival_date": retrieve_res['journeys'][-1]['arrival_date'],
             "currency": retrieve_res['currency'],
             "hold_date": retrieve_res.get('hold_date'),
+            "expired_date": retrieve_res.get('expired_date'),
             "tickets": ticket_req_list,##
             "error_msg": "",
             "promo_codes": retrieve_res.get('promo_codes', []),

@@ -223,6 +223,26 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         total_resv_breakdown_nta = 0
 
         # let's iterate the data YEY!
+        mapped_provider_alias = {}
+
+        def extract_provider_alias(provider_name):
+            if not provider_name:
+                provider_name = ''
+            prov_alias_list = []
+            prov_code_list = provider_name.split(',')
+            for prov in prov_code_list:
+                current_prov = prov.lower().strip()
+                mapped_alias = mapped_provider_alias.get(current_prov)
+                if mapped_alias:
+                    prov_alias_list.append(mapped_alias)
+                else:
+                    prov_obj = self.env['tt.provider'].search([('code', '=', current_prov)], limit=1)
+                    if prov_obj:
+                        alias = prov_obj.report_alias and prov_obj.report_alias or prov_obj.name
+                        prov_alias_list.append(alias)
+                        mapped_provider_alias[current_prov] = alias
+            return ', '.join(prov_alias_list)
+
         for idx, i in enumerate(datas):
             if not values['data_form']['is_ho']:
                 if i['ledger_agent_name'] == values['data_form']['ho_name'] and values['data_form']['ho_name'] != values['data_form']['agent_name']:
@@ -309,7 +329,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                         sheet.write(row_data, incr.generate_number(), '', sty_date)
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                        sheet.write(row_data, incr.generate_number(), i['provider_alias'], sty_table_data)
+                        sheet.write(row_data, incr.generate_number(), extract_provider_alias(i['provider_name']), sty_table_data)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
@@ -426,7 +446,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                         sheet.write(row_data, incr.generate_number(), '', sty_date)
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                        sheet.write(row_data, incr.generate_number(), i['provider_alias'], sty_table_data)
+                        sheet.write(row_data, incr.generate_number(), extract_provider_alias(i['provider_name']), sty_table_data)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
@@ -572,7 +592,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), i['issued_by'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['issued_date'], sty_date)
                     sheet.write(row_data, incr.generate_number(), i['agent_email'], sty_table_data)
-                    sheet.write(row_data, incr.generate_number(), i['provider_alias'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), extract_provider_alias(i['provider_name']), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['order_number'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['adult'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['child'], sty_amount)
@@ -649,7 +669,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_date)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                    sheet.write(row_data, incr.generate_number(), i['provider_alias'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), extract_provider_alias(i['provider_name']), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
@@ -718,7 +738,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                         sheet.write(row_data, incr.generate_number(), '', sty_date)
                         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                        sheet.write(row_data, incr.generate_number(), i['provider_alias'], sty_table_data)
+                        sheet.write(row_data, incr.generate_number(), extract_provider_alias(i['provider_name']), sty_table_data)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
@@ -946,7 +966,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_date)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                    sheet.write(row_data, incr.generate_number(), i['provider_alias'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), extract_provider_alias(i['provider_name']), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
@@ -1143,7 +1163,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), i['issued_by'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['issued_date'], sty_date)
                     sheet.write(row_data, incr.generate_number(), i['agent_email'], sty_table_data)
-                    sheet.write(row_data, incr.generate_number(), i['provider_alias'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), extract_provider_alias(i['provider_name']), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['order_number'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['adult'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['child'], sty_amount)
@@ -1220,7 +1240,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_date)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                    sheet.write(row_data, incr.generate_number(), i['provider_alias'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), extract_provider_alias(i['provider_name']), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)

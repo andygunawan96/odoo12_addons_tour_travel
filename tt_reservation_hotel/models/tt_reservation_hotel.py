@@ -576,7 +576,7 @@ class HotelReservation(models.Model):
         provider_list = []
         for rec in self.room_detail_ids:
             if rec.provider_id.name not in provider_list:
-                provider_list.append(rec.provider_id.name)
+                provider_list.append(rec.provider_id.code)
         return ','.join(provider_list)
 
     def get_pnr_list(self):
