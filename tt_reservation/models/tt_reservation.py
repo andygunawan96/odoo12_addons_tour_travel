@@ -395,6 +395,7 @@ class TtReservation(models.Model):
                 'phone_number': vals_phone_number
             })]
             update_dict['phone_ids'] = new_phone
+
     def create_booker_api(self, vals, context):
         booker_obj = self.env['tt.customer'].sudo()
         get_booker_seq_id = util.get_without_empty(vals,'booker_seq_id')

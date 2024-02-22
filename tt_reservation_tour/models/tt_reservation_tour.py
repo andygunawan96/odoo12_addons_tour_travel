@@ -156,7 +156,7 @@ class ReservationTour(models.Model):
             carrier_list = []
             for rec in self.provider_booking_ids:
                 pnr_list.append(rec.pnr or '')
-                provider_list.append(rec.provider_id.name or '')
+                provider_list.append(rec.provider_id.code or '')
                 carrier_list.append(rec.carrier_id.name or '')
 
             self.write({
@@ -521,7 +521,7 @@ class ReservationTour(models.Model):
                 'infant': data.get('infant') and int(data['infant']) or 0,
                 'departure_date': temp_dept_date,
                 'arrival_date': temp_arr_date,
-                'provider_name': provider_id.name,
+                'provider_name': provider_id.code,
                 'transport_type': 'tour',
                 'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
             })

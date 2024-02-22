@@ -82,7 +82,7 @@
                         'default_currency_id': currency_id,
                    }"/>
                 <button name="sync_booking_with_vendor" type="object" string="Sync Reservation"
-                        groups="base.group_system"/>
+                        groups="base.group_system,tt_base.group_tt_tour_travel"/>
                 <!--                <button name="CR8" string="CR8" type="object" groups="base.group_system"/>-->
             </xpath>
             <xpath expr="//div[hasclass('oe_title')]" position="inside">

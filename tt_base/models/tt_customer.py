@@ -443,7 +443,6 @@ class TtCustomer(models.Model):
 
     def add_or_ff_number(self, ff_list):
         not_exist = True
-        error_msg = ''
         for idx, rec_ff in enumerate(ff_list):
             try:
                 number = util.get_without_empty(rec_ff, 'ff_number', False)
@@ -451,8 +450,10 @@ class TtCustomer(models.Model):
             except:
                 raise RequestException(1023, additional_message="Missing key ff.")
 
+            existing_ff = False
             for customer_ff in self.frequent_flyer_ids:
                 if customer_ff.loyalty_program_id.code == code:
+                    existing_ff = customer_ff
                     not_exist = False
                     break
 
@@ -468,10 +469,11 @@ class TtCustomer(models.Model):
                     }
                     self.env['tt.customer.frequent.flyer'].create(create_vals)
             else:
-                ## update jika ada pasti di customer_ff karena di break
-                customer_ff.update({
-                    "ff_number": number
-                })
+                if existing_ff and number != existing_ff.ff_number:
+                    ## update jika ada pasti di customer_ff karena di break
+                    existing_ff.update({
+                        "ff_number": number
+                    })
 
     def add_or_update_identity(self,data):
         not_exist = True
@@ -486,10 +488,11 @@ class TtCustomer(models.Model):
         except:
             raise RequestException(1023,additional_message="Missing key.")
 
+        existing_identity = False
         for identity in self.identity_ids:
             if identity.identity_type == type:
                 not_exist = False
-                exixting_identity = identity
+                existing_identity = identity
                 break
 
         if c_issued_id:
@@ -534,30 +537,32 @@ class TtCustomer(models.Model):
             self.env['tt.customer.identity'].create(create_vals)
         else:
             update_vals = {}
-            if number != exixting_identity.identity_number:
+            if number != existing_identity.identity_number:
                 update_vals.update({
                     'identity_number': number
                 })
-            if c_issued_id != exixting_identity.identity_country_of_issued_id.id:
+            if c_issued_id != existing_identity.identity_country_of_issued_id.id:
                 update_vals.update({
                     'identity_country_of_issued_id': c_issued_id
                 })
-            if expdate != exixting_identity.identity_expdate:
+            if (expdate and expdate or "") != (existing_identity.identity_expdate and datetime.strftime(existing_identity.identity_expdate,'%Y-%m-%d') or ""):
                 update_vals.update({
                     'identity_expdate': expdate
                 })
-            if first_name and first_name != exixting_identity.identity_first_name:
+            if first_name and first_name != existing_identity.identity_first_name:
                 update_vals.update({
                     'identity_first_name': first_name
                 })
             # cek first_name supaya bisa hapus last_name
-            if first_name and last_name != exixting_identity.identity_last_name:
+            if first_name and last_name != existing_identity.identity_last_name:
                 update_vals.update({
                     'identity_last_name': last_name
                 })
             if image_ids:
                 update_vals.update({'identity_image_ids':image_ids})
-            exixting_identity.write(update_vals)
+
+            if update_vals and existing_identity:
+                existing_identity.write(update_vals)
 
     @api.model
     def customer_action_view_customer(self):

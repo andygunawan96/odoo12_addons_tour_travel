@@ -87,6 +87,26 @@ class AgentReportRecapReservationXls(models.TransientModel):
         #proceed the data
 
         filtered_data = []
+        mapped_provider_alias = {}
+
+        def extract_provider_alias(provider_name):
+            if not provider_name:
+                provider_name = ''
+            prov_alias_list = []
+            prov_code_list = provider_name.split(',')
+            for prov in prov_code_list:
+                current_prov = prov.lower().strip()
+                mapped_alias = mapped_provider_alias.get(current_prov)
+                if mapped_alias:
+                    prov_alias_list.append(mapped_alias)
+                else:
+                    prov_obj = self.env['tt.provider'].search([('code', '=', current_prov)], limit=1)
+                    if prov_obj:
+                        alias = prov_obj.report_alias and prov_obj.report_alias or prov_obj.name
+                        prov_alias_list.append(alias)
+                        mapped_provider_alias[current_prov] = alias
+            return ', '.join(prov_alias_list)
+
         temp_order_number = ''
         counter = 0
         for i in datas:
@@ -127,7 +147,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
                 sheet.write(row_data, 3, i['agent_name'], sty_table_data)
                 sheet.write(row_data, 4, i['issued_date'], sty_date)
                 sheet.write(row_data, 5, i['agent_email'], sty_table_data)
-                sheet.write(row_data, 6, i['provider_name'], sty_table_data)
+                sheet.write(row_data, 6, extract_provider_alias(i['provider_name']), sty_table_data)
                 sheet.write(row_data, 7, i['order_number'], sty_amount)
                 sheet.write(row_data, 8, i['adult'], sty_amount)
                 sheet.write(row_data, 9, i['child'], sty_amount)

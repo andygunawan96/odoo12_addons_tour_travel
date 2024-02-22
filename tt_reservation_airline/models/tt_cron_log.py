@@ -95,16 +95,17 @@ class TtCronLogInhResv(models.Model):
                     "ctr": 0
                 }## to separate long messages
                 ## Make the messages
-                ctr = 0
+                qty_ctr = 0
                 for values in segment_dict.values():
                     if values['illegal']:
-                        ctr += 1
-                        temp_lion_msg = '%s. %s PAX\n%s\n' % (ctr,values['pax'], '\n'.join(values['pax_code_list']))#ctr, pax count, pnr code list
+                        qty_ctr += 1
+                        temp_lion_msg = '%s. %s PAX\n%s\n' % (qty_ctr,values['pax'], '\n'.join(values['pax_code_list']))#ctr, pax count, pnr code list
                         util.manage_msg_length(messages_lion_dict,temp_lion_msg,"Hidden Group\n")
 
                 messages_gds_dict = {
                     "ctr": 0
                 }
+                qty_ctr = 0
                 for pax_code,segment_pnr_code_dict in pax_dict.items():
                     # only 1 segment no need to check
                     if len(segment_pnr_code_dict) <= 1:
@@ -117,8 +118,8 @@ class TtCronLogInhResv(models.Model):
                                 dupes_msg += '\n%s | %s' % (segment_pnr_code, departure_date)#pax name, pnr code list
 
                     if dupes_msg:
-                        ctr += 1
-                        temp_gds_msg = '%s. %s%s\n\n' % (ctr, pax_code, dupes_msg)#counter, pax name, pnr code list
+                        qty_ctr += 1
+                        temp_gds_msg = '%s. %s%s\n\n' % (qty_ctr, pax_code, dupes_msg)#counter, pax name, pnr code list
                         util.manage_msg_length(messages_gds_dict, temp_gds_msg,"GDS\n")
                 ## tambah context
                 ## kurang test

@@ -118,6 +118,26 @@ class AgentReportLedgerXls(models.TransientModel):
                 starting_balance = values['lines'][0]['balance'] + values['lines'][0]['credit']
                 end_balance = starting_balance
 
+        mapped_provider_alias = {}
+
+        def extract_provider_alias(provider_name):
+            if not provider_name:
+                provider_name = ''
+            prov_alias_list = []
+            prov_code_list = provider_name.split(',')
+            for prov in prov_code_list:
+                current_prov = prov.lower().strip()
+                mapped_alias = mapped_provider_alias.get(current_prov)
+                if mapped_alias:
+                    prov_alias_list.append(mapped_alias)
+                else:
+                    prov_obj = self.env['tt.provider'].search([('code', '=', current_prov)], limit=1)
+                    if prov_obj:
+                        alias = prov_obj.report_alias and prov_obj.report_alias or prov_obj.name
+                        prov_alias_list.append(alias)
+                        mapped_provider_alias[current_prov] = alias
+            return ', '.join(prov_alias_list)
+
         for rec in values['lines']:
             if rec['debit'] > 0:
                 total_debit += rec['debit']
@@ -147,7 +167,7 @@ class AgentReportLedgerXls(models.TransientModel):
             sheet.write(row_data, 2, rec['ref'], sty_table_data)
             sheet.write(row_data, 3, rec['provider_type'], sty_table_data)
             sheet.write(row_data, 4, rec['pnr'], sty_table_data)
-            sheet.write(row_data, 5, rec['display_provider_name'], sty_table_data)
+            sheet.write(row_data, 5, extract_provider_alias(rec['display_provider_name']), sty_table_data)
             sheet.write(row_data, 6, rec['agent'], sty_table_data)
             sheet.write(row_data, 7, rec['agent_type'], sty_table_data)
             sheet.write(row_data, 8, rec['description'], sty_table_data)
@@ -269,6 +289,26 @@ class AgentReportLedgerXls(models.TransientModel):
         sheet.set_column('M:M', 18)
         sheet.set_column('N:N', 18)
 
+        mapped_provider_alias = {}
+
+        def extract_provider_alias(provider_name):
+            if not provider_name:
+                provider_name = ''
+            prov_alias_list = []
+            prov_code_list = provider_name.split(',')
+            for prov in prov_code_list:
+                current_prov = prov.lower().strip()
+                mapped_alias = mapped_provider_alias.get(current_prov)
+                if mapped_alias:
+                    prov_alias_list.append(mapped_alias)
+                else:
+                    prov_obj = self.env['tt.provider'].search([('code', '=', current_prov)], limit=1)
+                    if prov_obj:
+                        alias = prov_obj.report_alias and prov_obj.report_alias or prov_obj.name
+                        prov_alias_list.append(alias)
+                        mapped_provider_alias[current_prov] = alias
+            return ', '.join(prov_alias_list)
+
         row_data = 8
         for rec in values['lines']:
             row_data += 1
@@ -291,7 +331,7 @@ class AgentReportLedgerXls(models.TransientModel):
             sheet.write(row_data, 2, rec['ref'], sty_table_data)
             sheet.write(row_data, 3, rec['provider_type'], sty_table_data)
             sheet.write(row_data, 4, rec['pnr'], sty_table_data)
-            sheet.write(row_data, 5, rec['display_provider_name'], sty_table_data)
+            sheet.write(row_data, 5, extract_provider_alias(rec['display_provider_name']), sty_table_data)
             sheet.write(row_data, 6, rec['agent'], sty_table_data)
             sheet.write(row_data, 7, rec['agent_type'], sty_table_data)
             sheet.write(row_data, 8, rec['description'], sty_table_data)
