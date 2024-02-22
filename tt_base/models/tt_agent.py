@@ -98,8 +98,6 @@ class TtAgent(models.Model):
     is_send_email_cust = fields.Boolean('Send Notification Email to Customer', default=False)
     is_share_cust_ho = fields.Boolean('Share Customers with HO', default=False)
 
-    third_party_key_ids = fields.One2many('tt.agent.third.party.key','agent_id','Third Party Key')
-
     point_reward = fields.Monetary(string="Point Reward")
     actual_point_reward = fields.Monetary(string="Actual Point Reward")
     unprocessed_point_reward = fields.Monetary(string="Unprocess Point Reward")

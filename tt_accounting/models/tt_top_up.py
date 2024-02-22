@@ -165,7 +165,6 @@ class TtTopUp(models.Model):
                                        self.id,
                                        'Top Up : %s' % (self.name),
                                        self.name,
-                                       datetime.now(),
                                        1,
                                        self.currency_id.id,
                                        self.env.user.id,

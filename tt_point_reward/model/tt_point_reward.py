@@ -102,7 +102,6 @@ class TtPointReward(models.Model):
             reservation_obj.id,
             'Points For reservation %s' % (reservation_obj.name),
             reservation_obj.name,
-            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
             10, # Point Reward
             reservation_obj.currency_id.id,
             co_uid,
@@ -124,7 +123,6 @@ class TtPointReward(models.Model):
             reservation_obj.id,
             "%s Points for Ledger %s" % (reason, reservation_obj.name),
             reservation_obj.name,
-            datetime.now() + relativedelta(hours=7),
             11, # Point Used
             reservation_obj.currency_id.id,
             co_uid,

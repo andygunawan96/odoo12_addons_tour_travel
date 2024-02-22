@@ -167,7 +167,6 @@ class TtAdjustment(models.Model):
             self.res_id,
             'Adjustment : for %s' % (self.name),
             self.referenced_document,
-            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
             ledger_type,
             self.currency_id.id,
             self.env.user.id,

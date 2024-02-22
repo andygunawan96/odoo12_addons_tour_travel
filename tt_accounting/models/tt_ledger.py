@@ -5,9 +5,9 @@ from ...tools.db_connector import GatewayConnector
 from ...tools import ERR
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
-# from ...tools.telegram import TelegramInfoNotification
 import logging,json,traceback,time,pytz
 from ...tools import util
+
 LEDGER_TYPE = [
     (0, 'Opening Balance'),
     (1, 'Top Up / Agent Payment'),
@@ -107,14 +107,13 @@ class Ledger(models.Model):
         current_balance += vals['debit'] - vals['credit']
         return current_balance
 
-    def prepare_vals(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description='', source_of_funds_type='balance'):
+    def prepare_vals(self, res_model,res_id,name, ref, ledger_type, currency_id, issued_uid, debit=0, credit=0,description='', source_of_funds_type='balance'):
         return {
             'name': name,
             'debit': debit,
             'credit': credit,
             'ref': ref,
             'currency_id': currency_id,
-            'date': ledger_date,
             'transaction_type': ledger_type,
             'res_model': res_model,
             'res_id': res_id,
@@ -123,10 +122,10 @@ class Ledger(models.Model):
             'source_of_funds_type': source_of_funds_type
         }
 
-    def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description='',source_of_funds_type='balance',**kwargs):
+    def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description='',source_of_funds_type='balance',**kwargs):
         vals = self.prepare_vals(res_model,
                                  res_id,name, ref,
-                                 ledger_date, ledger_type,
+                                 ledger_type,
                                  currency_id, issued_uid,
                                  debit, credit,description, source_of_funds_type and source_of_funds_type or 'balance')
         if customer_parent_id:
@@ -153,9 +152,14 @@ class Ledger(models.Model):
                 new_context.pop(default_context_key)
                 self.env.context = new_context
 
-
-        new_ledger = self.create(vals)
-        return new_ledger
+        do_ledger_queue_ho = self.env['ir.config_parameter'].sudo().get_param('do_ledger_queue_ho')
+        # harus ada ( ) nya di ho_id == agent_id
+        if do_ledger_queue_ho and (agent_obj.ho_id.id == agent_id):
+            self.create_ledger_queue(vals,agent_obj.ho_id.id)
+            return True
+        else:
+            new_ledger = self.create(vals)
+            return new_ledger
 
     def reverse_ledger_from_button(self):
         if not self.env.user.has_group('tt_base.group_ledger_level_5'):
@@ -177,7 +181,8 @@ class Ledger(models.Model):
     def reverse_ledger(self):
         if not self.env.user.has_group('tt_base.group_ledger_level_4'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 1')
-        reverse_id = self.env['tt.ledger'].create({
+
+        reverse_ledger_values = {
             'name': 'Reverse:' + self.name,
             'debit': self.credit,
             'credit': self.debit,
@@ -189,7 +194,6 @@ class Ledger(models.Model):
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
             'pnr': self.pnr,
-            'date': fields.datetime.now(),
             'issued_uid': self.issued_uid.id,
             'display_provider_name': self.display_provider_name,
             'res_model': self.res_model,
@@ -202,26 +206,29 @@ class Ledger(models.Model):
             'reschedule_model': hasattr(self,'reschedule_model') and self.reschedule_model or False,
             'provider_type_id': self.provider_type_id and self.provider_type_id.id or False,
             'source_of_funds_type': self.source_of_funds_type and self.source_of_funds_type or 'balance' ## default balance
-        })
+        }
 
-        self.update({
-            'reverse_id': reverse_id.id,
-            'is_reversed': True,
-        })
-        return reverse_id
+        do_ledger_queue_ho = self.env['ir.config_parameter'].sudo().get_param('do_ledger_queue_ho')
+        # harus ada ( ) nya di ho_id == agent_id
+        if do_ledger_queue_ho and (self.ho_id.id == self.agent_id.id):
+            self.create_ledger_queue(reverse_ledger_values,self.ho_id.id)
+        else:
+            self.env['tt.ledger'].create(reverse_ledger_values)
 
     @api.model
     def create(self, vals_list):
-        # successfully_created = False
-        # while(not successfully_created):
-        #     try:
         try:
             vals_list['balance'] = self.calc_balance(vals_list)
             vals_list['date'] = datetime.now(pytz.timezone('Asia/Jakarta'))
             ledger_obj = super(Ledger, self).create(vals_list)
-            #     successfully_created = True
-            # except Exception as e:
-            #     _logger.error(traceback.format_exc())
+
+            ## Reverse Ledger Stuff
+            if ledger_obj.reverse_id:
+                ledger_obj.reverse_id.write({
+                    'reverse_id': self.id,
+                    'is_reversed': True,
+                })
+
         except Exception as e:
             # raise Exception(traceback.format_exc())
             _logger.error(traceback.format_exc())
@@ -290,6 +297,7 @@ class Ledger(models.Model):
         raise UserError(_('You cannot delete a Ledger which is not draft or cancelled.'))
 
 
+
     # API START #####################################################################
     def create_ledger(self, provider_obj,issued_uid, use_point, payment_method_use_to_ho):
         amount = 0
@@ -308,7 +316,7 @@ class Ledger(models.Model):
         if use_point and website_use_point_reward == 'True':
             amount -= self.use_point_reward(booking_obj, use_point, amount, issued_uid)
 
-        ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
+        ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name,
                                           2, booking_obj.currency_id.id, issued_uid, 0, amount, '', payment_method_use_to_ho and payment_method_use_to_ho or 'balance')
 
         pnr_text = provider_obj.pnr if provider_obj.pnr else str(provider_obj.sequence)
@@ -334,6 +342,13 @@ class Ledger(models.Model):
         for sc in used_sc_list:
             sc.change_ledger_created(True)
         return True ## return berhasil create ledger
+
+    def create_ledger_queue(self,values, ho_id):
+        self.env['tt.ledger.queue'].create({
+            'ho_id': ho_id,
+            'name': values['description'],
+            'ledger_values_data': json.dumps(values),
+        })
 
     def use_point_reward(self, booking_obj, use_point, amount, issued_uid):
         website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
@@ -382,15 +397,16 @@ class Ledger(models.Model):
                 agent_commission[agent_id] += amount
                 used_sc_list.append(sc)
 
+        do_ledger_queue_ho = self.env['ir.config_parameter'].sudo().get_param('do_ledger_queue_ho')
         for agent_id, amount in agent_commission.items():
             ## FIXME DEFAULT AWAL
             if amount > 0:
-                ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
+                ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name,
                                                   3, booking_obj.currency_id.id,issued_uid, amount, 0)
             ## FIXME TAMBAL DOWNSELL
             else:
                 ledger_values = self.prepare_vals(booking_obj._name, booking_obj.id, 'Commission : ' + booking_obj.name,
-                                                  booking_obj.name, datetime.now() + relativedelta(hours=7),
+                                                  booking_obj.name,
                                                   3, booking_obj.currency_id.id, issued_uid, 0, amount*-1)
             ledger_values.update({
                 'agent_id': abs(agent_id),
@@ -403,7 +419,14 @@ class Ledger(models.Model):
                 })
             pnr_text = provider_obj.pnr if provider_obj.pnr else str(provider_obj.sequence)
             values = self.prepare_vals_for_resv(booking_obj,pnr_text,ledger_values,provider_obj.provider_id.code)
-            self.sudo().create(values)
+
+            ## Delay HO Ledger, to minimize concurrent update on HO Balance
+            #harus ada ( ) nya di ho_id == agent_id
+            if do_ledger_queue_ho and (agent_id == ho_obj.id):
+                #jika ternyata ledger yg mau di buaat adalah punya HO, delay dan masukkan ke queue saja
+                self.create_ledger_queue(values,ho_obj.id)
+            else:
+                self.sudo().create(values)
 
         for sc in used_sc_list:
             sc.change_ledger_created(True)

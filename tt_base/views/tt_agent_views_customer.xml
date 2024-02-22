@@ -90,9 +90,6 @@
                             <label for="payment_acquirer_ids"/>
                             <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view','tree_view_ref': 'tt_base.payment_acquirer_tree_view'}" readonly="1"/>
                         </page>
-                        <page string="Third Party Key">
-                            <field name="third_party_key_ids" readonly="1"/>
-                        </page>
                         <page string="Quota" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}">
                             <group>
                                 <field name="quota_package_id" attrs="{'required': [('is_using_pnr_quota','=',True)]}"/>

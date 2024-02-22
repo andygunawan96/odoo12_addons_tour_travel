@@ -7,7 +7,6 @@ class tt_ledger(models.Model):
     def prepare_vals_for_resv(self, resv_obj,provider_pnr, vals,provider_name=False):
         vals.update({
             'pnr': provider_pnr,
-            'date': fields.datetime.now(),
             'display_provider_name': provider_name or resv_obj.provider_name,
             'provider_type_id': resv_obj.provider_type_id.id,
             'description': 'Ledger for ' + resv_obj.name,

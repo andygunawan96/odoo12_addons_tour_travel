@@ -97,7 +97,6 @@ Key Features
         'views/tt_pnr_quota_usage_views.xml',
         'views/tt_pnr_quota_price_package_views.xml',
         'views/tt_email_queue_views.xml',
-        'views/tt_agent_third_party_key.xml',
 
         'wizard/tt_upload_center_wizard_view.xml',
         'wizard/create_user_wizard_view.xml',

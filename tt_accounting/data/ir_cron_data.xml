@@ -37,5 +37,17 @@
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
             <field name="code">model.cron_ledger_statement_agent(create_ledger_statement=False)</field>
         </record>
+        <record model="ir.cron" id="cron_process_ledger_queue">
+            <field name='name'>Auto-Process Ledger Queue</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name='interval_number'>5</field>
+            <field name='interval_type'>minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="(datetime.now().replace(minute=5,second=0).isoformat())"/>
+            <field name="active">True</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
+            <field name="code">model.cron_process_ledger_queue()</field>
+        </record>
     </data>
 </odoo>

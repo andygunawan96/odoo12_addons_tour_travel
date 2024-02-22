@@ -25,9 +25,6 @@ access_tt_agent_for_agent_level_3,tt.agent.for.agent.level.3,model_tt_agent,tt_b
 access_tt_agent_for_agent_level_4,tt.agent.for.agent.level.4,model_tt_agent,tt_base.group_agent_level_4,1,1,1,0
 access_tt_agent_for_agent_level_5,tt.agent.for.agent.level.5,model_tt_agent,tt_base.group_agent_level_5,1,1,1,1
 ,,,,,,,
-access_tt_agent_third_party_key_for_public,access.tt.agent.third.party.key.for.public,model_tt_agent_third_party_key,,1,0,0,0
-access_tt_agent_third_party_key_for_admin,access.tt.agent.third.party.key.for.admin,model_tt_agent_third_party_key,base.group_system,1,1,1,0
-,,,,,,,
 access_tt_customer_job_position_for_customer_level_1,tt.customer.job.position.for.customer.level.1,model_tt_customer_job_position,tt_base.group_customer_level_1,1,0,0,0
 access_tt_customer_job_position_for_customer_level_2,tt.customer.job.position.for.customer.level.2,model_tt_customer_job_position,tt_base.group_customer_level_2,1,0,1,0
 access_tt_customer_job_position_for_customer_level_3,tt.customer.job.position.for.customer.level.3,model_tt_customer_job_position,tt_base.group_customer_level_3,1,1,1,1

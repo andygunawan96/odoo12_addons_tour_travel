@@ -32,6 +32,7 @@ Key Features
         'views/tt_refund_type_views.xml',
         'views/tt_master_admin_fee_views.xml',
         'views/tt_ledger_views.xml',
+        'views/tt_ledger_queue_views.xml',
         'views/tt_adjustment_views.xml',
         'wizard/tt_adjustment_wizard_view.xml',
         'views/tt_refund_views.xml',
