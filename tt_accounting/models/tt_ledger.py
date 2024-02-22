@@ -211,21 +211,32 @@ class Ledger(models.Model):
         do_ledger_queue_ho = eval(self.env['ir.config_parameter'].sudo().get_param('do_ledger_queue_ho'))
         # harus ada ( ) nya di ho_id == agent_id
         if do_ledger_queue_ho and (self.ho_id.id == self.agent_id.id):
+            reverse_ledger_values['is_reverse_ledger_queue'] = True
             self.create_ledger_queue(reverse_ledger_values,self.ho_id.id)
+            new_reverse_id = False
         else:
-            self.env['tt.ledger'].create(reverse_ledger_values)
+            new_reverse_id = self.env['tt.ledger'].create(reverse_ledger_values)
+
+        ## is reverse selalu true
+        ## jika ledger tanpa queue, reverse_id akan langsung ter isi. jika queue akan di isi nanti
+        self.update({
+            'is_reversed': True,
+            'reverse_id': new_reverse_id
+        })
 
         #Void Ledger queue when reversing, but ledger queue is not created yet
         if do_ledger_queue_ho:
             can_be_voided_queue_objs = self.env['tt.ledger.queue'].search([('res_model','=', self.res_model),
-                                                                      ('res_id','=', self.res_id)])
-            if can_be_voided_queue_objs and datetime.now() < self.env.ref('tt_accounting.cron_process_ledger_queue').nextcall:
-                can_be_voided_queue_objs.write({
-                    'active': False
-                })
-                _logger.info("### Voiding %s ledger(s), for %s %s ###" % (len(can_be_voided_queue_objs),self.res_model,self.res_id))
-            else:
-                _logger.info("### There are can be voided ledger queue, but skipped because queue cron is running. ###")
+                                                                      ('res_id','=', self.res_id),
+                                                                           ('is_reverse_ledger_queue','=',False)])
+            if can_be_voided_queue_objs:
+                if datetime.now() < self.env.ref('tt_accounting.cron_process_ledger_queue').nextcall:
+                    can_be_voided_queue_objs.write({
+                        'active': False
+                    })
+                    _logger.info("### Voiding %s ledger(s), for %s %s ###" % (len(can_be_voided_queue_objs),self.res_model,self.res_id))
+                else:
+                    _logger.info("### There are can be voided ledger queue, but skipped because queue cron is running. ###")
 
     @api.model
     def create(self, vals_list):
@@ -235,7 +246,7 @@ class Ledger(models.Model):
             ledger_obj = super(Ledger, self).create(vals_list)
 
             ## Reverse Ledger Stuff
-            if ledger_obj.reverse_id:
+            if ledger_obj.reverse_id and not ledger_obj.reverse_id.reverse_id:
                 ledger_obj.reverse_id.write({
                     'reverse_id': ledger_obj.id,
                     'is_reversed': True,
@@ -272,7 +283,7 @@ class Ledger(models.Model):
     def get_allowed_rule(self):
         return {
             'is_reversed': (##Field yang mau di check
-                False,## boleh tumpuk atau tidak, False = hanya bisa edit jika field yg mau di check valuenya False, True boleh replace
+                True,## boleh tumpuk atau tidak, False = hanya bisa edit jika field yg mau di check valuenya False, True boleh replace
                 ('is_reversed', 'reverse_id')##yang boleh di edit
             ),
             'description': (
@@ -360,6 +371,7 @@ class Ledger(models.Model):
             'ho_id': ho_id,
             'name': values['description'],
             'ledger_values_data': json.dumps(values),
+            'is_reverse_ledger_queue': values.get('is_reverse_ledger_queue',False),
             'res_model': values['res_model'],
             'res_id': values['res_id'],
         })

@@ -10,7 +10,10 @@
                 <field name="res_id" groups="base.group_system"/>
                 <field name="ho_id" groups="base.group_erp_manager"/>
                 <separator/>
+                <filter name="ongoing" string="Ongoing" domain="[('active','=',True)]"/>
                 <filter name="archived" string="Archived" domain="[('active','=',False)]"/>
+                <filter name="reverse" string="Is Reverse" domain="[('is_reverse_ledger_queue','=',True)]"/>
+                <filter name="notreverse" string="Not Reverse" domain="[('is_reverse_ledger_queue','=',False)]"/>
             </search>
         </field>
     </record>
@@ -37,6 +40,8 @@
                         <field name="res_id" groups="base.group_system"/>
                         <field name="ledger_values_data"/>
                         <field name="ho_id"/>
+                        <field name="is_reverse_ledger_queue"/>
+                        <field name="create_date"/>
                         <field name="ledger_created_date"/>
                     </group>
                 </sheet>
@@ -56,6 +61,7 @@
                 <field name="res_id" groups="base.group_system"/>
                 <field name="ledger_values_data"/>
                 <field name="ho_id"/>
+                <field name="is_reverse_ledger_queue"/>
                 <field name="active"/>
             </tree>
         </field>

@@ -14,11 +14,12 @@ class LedgerQueue(models.Model):
     res_id = fields.Integer(
         'Related Ledger Owner ID', index=True, help='ID of the followed resource')
     active = fields.Boolean('Active', default=True)
+    is_reverse_ledger_queue = fields.Boolean('Is Reverse', default=False)
     ledger_created_date = fields.Datetime('Ledger Created Date', readonly=True)
 
     def create_queued_ledger(self):
         self.env['tt.ledger'].create(json.loads(self.ledger_values_data))
-        self.toggle_active()
+        self.active = False
         self.ledger_created_date = datetime.now()
 
     #todo untuk kondisi queue belum created, tetapi reservasi sdh di reverse. coba find reference terus cancel queuenya.
