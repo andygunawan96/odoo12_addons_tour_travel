@@ -241,6 +241,10 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         alias = prov_obj.report_alias and prov_obj.report_alias or prov_obj.name
                         prov_alias_list.append(alias)
                         mapped_provider_alias[current_prov] = alias
+                    else:
+                        # kalo ga ketemu, return apa adanya, lalu tetap di map supaya tidak search ulang
+                        prov_alias_list.append(prov)
+                        mapped_provider_alias[current_prov] = prov
             return ', '.join(prov_alias_list)
 
         for idx, i in enumerate(datas):
