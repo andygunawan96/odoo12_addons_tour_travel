@@ -1384,6 +1384,13 @@ class TtReservation(models.Model):
     def update_ledger_pnr(self, new_pnr):
         for rec in self.ledger_ids:
             rec.update({'pnr': new_pnr})
+        
+        # tt.ledger.queue
+        for rec in self.env['tt.ledger.queue'].search([('res_model','=',self._name),('res_id','=',self.id),('is_reverse_ledger_queue','=',False)]):
+            new_data = json.loads(rec.ledger_values_data)
+            new_data.update({'pnr': new_pnr})
+            new_data = json.dumps(new_data)
+            rec.ledger_values_data = new_data
 
     def set_sync_reservation_api(self, req, context):
         try:
