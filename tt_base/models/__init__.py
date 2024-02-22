@@ -21,7 +21,6 @@ from . import tt_customer_job_position
 from . import tt_customer
 from . import tt_agent_type
 from . import tt_agent
-from . import tt_agent_third_party_key
 from . import tt_destinations
 from . import transport_carrier
 from . import tt_transport_carrier_search

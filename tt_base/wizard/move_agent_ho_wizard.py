@@ -82,8 +82,3 @@ class MoveAgentHOWizard(models.TransientModel):
                             update social_media_detail set ho_id = %s where agent_id = %s and ho_id = %s;
                             """ % (self.new_ho_id.id, rec.id, old_ho_id)
                 self.env.cr.execute(sql_query)
-
-                sql_query = """
-                            update tt_agent_third_party_key set ho_id = %s where agent_id = %s and ho_id = %s;
-                            """ % (self.new_ho_id.id, rec.id, old_ho_id)
-                self.env.cr.execute(sql_query)

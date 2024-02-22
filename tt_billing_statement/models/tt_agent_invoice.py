@@ -98,7 +98,6 @@ class AgentInvoice(models.Model):
             self.id,
             '%sAgent Invoice : %s' % ("Payment For " if debit else "",self.name),
             self.name,
-            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
             2,
             self.currency_id.id,
             self.env.user.id,

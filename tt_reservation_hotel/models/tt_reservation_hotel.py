@@ -626,7 +626,7 @@ class HotelReservation(models.Model):
     def _refund_ledger(self):
         ledger = self.env['tt.ledger']
         for rec in self:
-            vals = ledger.prepare_vals('Resv : ' + rec.name, rec.name, rec.issued_date, 2, rec.currency_id.id, rec.total,
+            vals = ledger.prepare_vals('Resv : ' + rec.name, rec.name, 2, rec.currency_id.id, rec.total,
                                        0)
             vals['hotel_reservation_id'] = rec.id
             vals['agent_id'] = rec.agent_id.id

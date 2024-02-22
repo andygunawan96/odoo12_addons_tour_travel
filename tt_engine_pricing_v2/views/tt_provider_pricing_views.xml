@@ -116,6 +116,7 @@
             <field name="name"/>
             <field name="provider_name"/>
             <field name="carrier_name"/>
+            <field name="description"/>
             <field name="ho_id" groups="base.group_erp_manager"/>
             <filter name="enabled" string="Enabled" domain="[('state','=','enable')]"/>
             <filter name="disabled" string="Disabled" domain="[('state','=','disable')]"/>

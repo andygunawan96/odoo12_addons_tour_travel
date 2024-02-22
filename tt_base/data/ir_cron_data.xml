@@ -20,7 +20,7 @@
             <field name='interval_number'>1</field>
             <field name='interval_type'>days</field>
             <field name="numbercall">-1</field>
-            <field name="nextcall" eval="(datetime.now().replace(hour=16,minute=59,second=59).isoformat())"/>
+            <field name="nextcall" eval="(datetime.now().replace(hour=21,minute=5,second=59).isoformat())"/>
             <field name="active">True</field>
             <field name="state">code</field>
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>

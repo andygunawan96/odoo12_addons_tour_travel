@@ -13,6 +13,12 @@
             <field name="key">use_point_reward</field>
             <field name="value">False</field>
         </record>
+        <record id="do_ledger_queue_ho" model="ir.config_parameter">
+            <field name="key">do_ledger_queue_ho</field>
+            <field name="value">False</field>
+        </record>
+
+<!--        Edit official Odooo-->
         <record id="digest.digest_digest_default" model="digest.digest">
             <field name="state">deactivated</field>
         </record>

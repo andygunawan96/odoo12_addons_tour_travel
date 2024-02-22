@@ -32,7 +32,7 @@
                 'default_referenced_document': name,
                 'default_currency_id': currency_id,
                 'default_service_type': provider_type_id
-                }" attrs="{'invisible':['|', ('refundable','=',False), '|', ('provider_type_id','!=', %(tt_reservation_airline.tt_provider_type_airline)d), ('agent_type_id','!=', %(tt_base.agent_type_btc)d)]}"/>
+                }" attrs="{'invisible':['|', ('refundable','=',False), ('provider_type_id','!=', %(tt_reservation_airline.tt_provider_type_airline)d)]}"/>
             </xpath>
             <xpath expr="//page[@name='refund_page']" position="after">
                 <page string="After Sales" name="after_sales_page" attrs="{'invisible':[('reschedule_ids','=', [])]}">

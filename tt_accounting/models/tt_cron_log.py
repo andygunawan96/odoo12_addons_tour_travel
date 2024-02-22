@@ -1,5 +1,6 @@
 from odoo import api,models,fields
 from ...tools import variables
+import json
 import logging,traceback
 from datetime import datetime, date, timedelta
 _logger = logging.getLogger(__name__)
@@ -54,6 +55,34 @@ class TtCronLogInhResv(models.Model):
 
     def sub_func_agent_balance_report_log(self):
         pass
+
+    def cron_process_ledger_queue(self):
+        ho_objs = self.env['tt.agent'].search([('is_ho_agent', '=', True)])
+        for ho_obj in ho_objs:
+            try:
+                ledger_queue_objs = self.env['tt.ledger.queue'].search([('ho_id','=',ho_obj.id),
+                                                                        ('active','=',True)],limit=100)
+
+                create_vals = []
+                for ledger_queue_obj in ledger_queue_objs:
+                    ledger_data = json.loads(ledger_queue_obj.ledger_values_data)
+                    if type(ledger_data) == dict:
+                        create_vals.append(ledger_data)
+                    elif type(ledger_data) == list:
+                        create_vals += ledger_data
+                ledger_count = len(create_vals)
+                _logger.info("##### Processing Ledger Queue for HO: %s, %s Ledgers" % (ho_obj.name,ledger_count))
+                self.env['tt.ledger'].create(create_vals)
+
+                ledger_queue_objs.write({
+                    'active': False,
+                    'ledger_created_date': datetime.now()
+                })
+                _logger.info("##### Completed Ledger Queue for HO: %s, %s Ledgers" % (ho_obj.name,ledger_count))
+                self.env.cr.commit()
+            except Exception as e:
+                self.create_cron_log_folder()
+                self.write_cron_log('auto-process ledger queue', ho_id=ho_obj.id)
 
     def cron_ledger_statement_agent(self, create_ledger_statement=False):
         ho_objs = self.env['tt.agent'].search([('is_ho_agent', '=', True)])

@@ -186,7 +186,7 @@ class MonthlyManagementFee(models.Model):
     @api.multi
     def create_ledger(self, agent, royalty, currency_id):
         vals = self.env['tt.ledger'].prepare_vals('MMF : ' + str(self.name), 'MMF : ' + str(self.name),
-                                                  fields.Datetime.now(), 'monthly.fee',
+                                                  'monthly.fee',
                                                   currency_id.id, 0, royalty)
         vals['agent_id'] = agent.id
         new_aml = self.env['tt.ledger'].create(vals)
@@ -194,7 +194,7 @@ class MonthlyManagementFee(models.Model):
         self.ledger_id = new_aml
 
         vals = self.env['tt.ledger'].prepare_vals('MMF : ' + str(self.name), 'MMF ' + str(self.period),
-                                                  fields.Datetime.now(), 'commission',
+                                                  'commission',
                                                   currency_id.id, royalty, 0)
         vals['agent_id'] = self.env['res.partner'].sudo().search([('is_HO', '=', True), ('parent_id', '=', False)], limit=1).id
         new_aml = self.env['tt.ledger'].create(vals)

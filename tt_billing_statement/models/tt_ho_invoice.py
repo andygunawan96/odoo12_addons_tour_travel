@@ -198,7 +198,6 @@ class AgentInvoiceInh(models.Model):
                 book_obj.id,
                 '%sHO Invoice : %s%s' % ("Payment For " if debit else "",self.name, rec.get('info','')),
                 self.name,
-                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 rec['order_type'],
                 self.currency_id.id,
                 self.env.user.id,

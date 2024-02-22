@@ -17,7 +17,6 @@ class TtLedgerApi(models.Model):
                                                   False,
                                                   'TEST LEDGER CREATE',
                                                   'TEST ##',
-                                                  datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                                                   2,
                                                   12,
                                                   self.env.user.id,
