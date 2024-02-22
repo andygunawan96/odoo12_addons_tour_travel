@@ -13,29 +13,29 @@ class PrintoutTicketForm(models.AbstractModel):
     _description = 'Report Common Printout Ticket'
 
     # Dipindah ke tt_refund karena tt_refund, refund by api sma report perlu fungsi ini.
-    def get_refund_fee_amount(self, agent_id):
-        current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
-        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund')])
-        for admin_fee in refund_admin_fee_list:
-            if agent_id.id in admin_fee.agent_ids.ids:
-                current_refund_env = admin_fee
-
-        refund_fee = 0
-        for line in current_refund_env.admin_fee_line_ids:
-            refund_fee += line.amount
-        return refund_fee
-
-    def get_reschedule_fee_amount(self, agent_id):
-        current_reschedule_env = self.env.ref('tt_accounting.admin_fee_reschedule')
-        reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')])
-        for admin_fee in reschedule_admin_fee_list:
-            if agent_id.id in admin_fee.agent_ids.ids:
-                current_reschedule_env = admin_fee
-
-        reschedule_fee = 0
-        for line in current_reschedule_env.admin_fee_line_ids:
-            reschedule_fee += line.amount
-        return reschedule_fee
+    # def get_refund_fee_amount(self, agent_id):
+    #     current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
+    #     refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund')])
+    #     for admin_fee in refund_admin_fee_list:
+    #         if agent_id.id in admin_fee.agent_ids.ids:
+    #             current_refund_env = admin_fee
+    #
+    #     refund_fee = 0
+    #     for line in current_refund_env.admin_fee_line_ids:
+    #         refund_fee += line.amount
+    #     return refund_fee
+    #
+    # def get_reschedule_fee_amount(self, agent_id):
+    #     current_reschedule_env = self.env.ref('tt_accounting.admin_fee_reschedule')
+    #     reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')])
+    #     for admin_fee in reschedule_admin_fee_list:
+    #         if agent_id.id in admin_fee.agent_ids.ids:
+    #             current_reschedule_env = admin_fee
+    #
+    #     reschedule_fee = 0
+    #     for line in current_reschedule_env.admin_fee_line_ids:
+    #         reschedule_fee += line.amount
+    #     return reschedule_fee
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -144,9 +144,6 @@ class PrintoutTicketForm(models.AbstractModel):
             pnr_length = len(rec.pnr)
             agent_id = rec.agent_id
 
-            refund_fee = self.get_refund_fee_amount(agent_id)
-            reschedule_fee = self.get_reschedule_fee_amount(agent_id)
-
         airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('airline_ticket',agent_id)
         if data['context']['active_model'] == 'tt.reservation.periksain':
             airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('periksain_ticket', agent_id)
@@ -174,8 +171,6 @@ class PrintoutTicketForm(models.AbstractModel):
             'price_breakdown': price_breakdown,
             'pnr_length': pnr_length,
             'header_width': str(header_width),
-            'refund_fee': refund_fee,
-            'reschedule_fee': reschedule_fee,
             'ssr_list': ssr_list,
             'airline_ticket_footer': airline_ticket_footer and airline_ticket_footer[0].html or '',
             'date_now': fields.Datetime.now(),
@@ -605,29 +600,29 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
     _description = 'Report Common Printout Hotel Voucher'
 
     # Dipindah ke tt_refund karena tt_refund, refund by api sma report perlu fungsi ini.
-    def get_refund_fee_amount(self, agent_id):
-        current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
-        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund')])
-        for admin_fee in refund_admin_fee_list:
-            if agent_id.id in admin_fee.agent_ids.ids:
-                current_refund_env = admin_fee
-
-        refund_fee = 0
-        for line in current_refund_env.admin_fee_line_ids:
-            refund_fee += line.amount
-        return refund_fee
-
-    def get_reschedule_fee_amount(self, agent_id):
-        current_reschedule_env = self.env.ref('tt_accounting.admin_fee_reschedule')
-        reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')])
-        for admin_fee in reschedule_admin_fee_list:
-            if agent_id.id in admin_fee.agent_ids.ids:
-                current_reschedule_env = admin_fee
-
-        reschedule_fee = 0
-        for line in current_reschedule_env.admin_fee_line_ids:
-            reschedule_fee += line.amount
-        return reschedule_fee
+    # def get_refund_fee_amount(self, agent_id):
+    #     current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
+    #     refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund')])
+    #     for admin_fee in refund_admin_fee_list:
+    #         if agent_id.id in admin_fee.agent_ids.ids:
+    #             current_refund_env = admin_fee
+    #
+    #     refund_fee = 0
+    #     for line in current_refund_env.admin_fee_line_ids:
+    #         refund_fee += line.amount
+    #     return refund_fee
+    #
+    # def get_reschedule_fee_amount(self, agent_id):
+    #     current_reschedule_env = self.env.ref('tt_accounting.admin_fee_reschedule')
+    #     reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')])
+    #     for admin_fee in reschedule_admin_fee_list:
+    #         if agent_id.id in admin_fee.agent_ids.ids:
+    #             current_reschedule_env = admin_fee
+    #
+    #     reschedule_fee = 0
+    #     for line in current_reschedule_env.admin_fee_line_ids:
+    #         reschedule_fee += line.amount
+    #     return reschedule_fee
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -696,8 +691,6 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
             'price_breakdown': price_breakdown,
             'header_width': str(header_width),
             'date_now': fields.Datetime.now(),
-            'refund_fee': self.get_refund_fee_amount(self.env[data['context']['active_model']].browse(data['context']['active_ids']).agent_id),
-            'reschedule_fee': self.get_reschedule_fee_amount(self.env[data['context']['active_model']].browse(data['context']['active_ids']).agent_id),
             'hotel_ticket_footer': hotel_ticket_footer and hotel_ticket_footer[0].html or '',
             'base_color': base_color,
             'static_url': static_url,
