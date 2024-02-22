@@ -152,7 +152,7 @@ class Ledger(models.Model):
                 new_context.pop(default_context_key)
                 self.env.context = new_context
 
-        do_ledger_queue_ho = self.env['ir.config_parameter'].sudo().get_param('do_ledger_queue_ho')
+        do_ledger_queue_ho = eval(self.env['ir.config_parameter'].sudo().get_param('do_ledger_queue_ho'))
         # harus ada ( ) nya di ho_id == agent_id
         if do_ledger_queue_ho and (agent_obj.ho_id.id == agent_id):
             self.create_ledger_queue(vals,agent_obj.ho_id.id)
@@ -208,12 +208,24 @@ class Ledger(models.Model):
             'source_of_funds_type': self.source_of_funds_type and self.source_of_funds_type or 'balance' ## default balance
         }
 
-        do_ledger_queue_ho = self.env['ir.config_parameter'].sudo().get_param('do_ledger_queue_ho')
+        do_ledger_queue_ho = eval(self.env['ir.config_parameter'].sudo().get_param('do_ledger_queue_ho'))
         # harus ada ( ) nya di ho_id == agent_id
         if do_ledger_queue_ho and (self.ho_id.id == self.agent_id.id):
             self.create_ledger_queue(reverse_ledger_values,self.ho_id.id)
         else:
             self.env['tt.ledger'].create(reverse_ledger_values)
+
+        #Void Ledger queue when reversing, but ledger queue is not created yet
+        if do_ledger_queue_ho:
+            can_be_voided_queue_objs = self.env['tt.ledger.queue'].search([('res_model','=', self.res_model),
+                                                                      ('res_id','=', self.res_id)])
+            if can_be_voided_queue_objs and datetime.now() < self.env.ref('tt_accounting.cron_process_ledger_queue').nextcall:
+                can_be_voided_queue_objs.write({
+                    'active': False
+                })
+                _logger.info("### Voiding %s ledger(s), for %s %s ###" % (len(can_be_voided_queue_objs),self.res_model,self.res_id))
+            else:
+                _logger.info("### There are can be voided ledger queue, but skipped because queue cron is running. ###")
 
     @api.model
     def create(self, vals_list):
@@ -225,7 +237,7 @@ class Ledger(models.Model):
             ## Reverse Ledger Stuff
             if ledger_obj.reverse_id:
                 ledger_obj.reverse_id.write({
-                    'reverse_id': self.id,
+                    'reverse_id': ledger_obj.id,
                     'is_reversed': True,
                 })
 
@@ -348,6 +360,8 @@ class Ledger(models.Model):
             'ho_id': ho_id,
             'name': values['description'],
             'ledger_values_data': json.dumps(values),
+            'res_model': values['res_model'],
+            'res_id': values['res_id'],
         })
 
     def use_point_reward(self, booking_obj, use_point, amount, issued_uid):
@@ -397,7 +411,7 @@ class Ledger(models.Model):
                 agent_commission[agent_id] += amount
                 used_sc_list.append(sc)
 
-        do_ledger_queue_ho = self.env['ir.config_parameter'].sudo().get_param('do_ledger_queue_ho')
+        do_ledger_queue_ho = eval(self.env['ir.config_parameter'].sudo().get_param('do_ledger_queue_ho'))
         for agent_id, amount in agent_commission.items():
             ## FIXME DEFAULT AWAL
             if amount > 0:

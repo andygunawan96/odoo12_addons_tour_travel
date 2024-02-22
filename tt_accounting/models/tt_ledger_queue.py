@@ -9,6 +9,10 @@ class LedgerQueue(models.Model):
     name = fields.Char('Name', required=True)
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     ledger_values_data = fields.Text('Value Data', required=True)
+    res_model = fields.Char(
+        'Related Ledger Owner Name', index=True)
+    res_id = fields.Integer(
+        'Related Ledger Owner ID', index=True, help='ID of the followed resource')
     active = fields.Boolean('Active', default=True)
     ledger_created_date = fields.Datetime('Ledger Created Date', readonly=True)
 
@@ -16,13 +20,5 @@ class LedgerQueue(models.Model):
         self.env['tt.ledger'].create(json.loads(self.ledger_values_data))
         self.toggle_active()
         self.ledger_created_date = datetime.now()
-        self.update_reversed_ledger_info()
 
-    def update_reversed_ledger_info(self):
-        ledger_values = json.loads(self.ledger_values_data)
-        if ledger_values.get('reverse_id'):
-            reversed_ledger_obj = self.env['tt.ledger'].browse(ledger_values['reverse_id'])
-            self.update({
-                'reverse_id': reversed_ledger_obj.id,
-                'is_reversed': True,
-            })
+    #todo untuk kondisi queue belum created, tetapi reservasi sdh di reverse. coba find reference terus cancel queuenya.

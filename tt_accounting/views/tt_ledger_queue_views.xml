@@ -6,6 +6,8 @@
         <field name="arch" type="xml">
             <search string="Search Ledger Queue">
                 <field name="name"/>
+                <field name="res_model" groups="base.group_system"/>
+                <field name="res_id" groups="base.group_system"/>
                 <field name="ho_id" groups="base.group_erp_manager"/>
                 <separator/>
                 <filter name="archived" string="Archived" domain="[('active','=',False)]"/>
@@ -31,6 +33,8 @@
                     </div>
                     <group>
                         <field name="name"/>
+                        <field name="res_model" groups="base.group_system"/>
+                        <field name="res_id" groups="base.group_system"/>
                         <field name="ledger_values_data"/>
                         <field name="ho_id"/>
                         <field name="ledger_created_date"/>
@@ -48,6 +52,8 @@
             <tree create="false">
                 <field name="create_date"/>
                 <field name="name"/>
+                <field name="res_model" groups="base.group_system"/>
+                <field name="res_id" groups="base.group_system"/>
                 <field name="ledger_values_data"/>
                 <field name="ho_id"/>
                 <field name="active"/>
