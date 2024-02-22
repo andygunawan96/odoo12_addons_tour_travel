@@ -258,6 +258,8 @@ class TtProviderAirline(models.Model):
         values = {}
         # todo ini buat ngambil semua key data dari response yang dikirim
         provider_data_keys = [key for key in provider_data.keys()]
+        res_model = self.booking_id._name
+        res_id = self.booking_id.id
         for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency', 'is_hold_date_sync', 'is_advance_purchase', 'notes']:
             # if not provider_data.get(key):
             # todo ini buat ngecek klo key nya ada baru di update value nya
@@ -278,10 +280,22 @@ class TtProviderAirline(models.Model):
                     if sc.description != provider_data[key] and len(sc.description) < 5: ## default pnr 6 digit kalau uda di isi tidak di update (kata ko sam kalau update bukan fungsi yg ini)
                         sc.write({'description': pnr})
 
+                updating_ledger_sequence_to_pnr = False
                 for ledger in self.booking_id.ledger_ids:
                     # todo ini kalau misal ternyata infonya uda pnr di skip, kalau belum di update
                     if ledger.pnr == provider_sequence and len(ledger.pnr) < 5: ## default pnr 6 digit kalau uda di isi tidak di update (kata ko sam kalau update bukan fungsi yg ini)
                         ledger.write({'pnr': pnr})
+                        updating_ledger_sequence_to_pnr = True
+                if updating_ledger_sequence_to_pnr:
+                    queue_ledger_objs = self.env['tt.ledger.queue'].search([('res_model','=',res_model),
+                                                                            ('res_id','=',res_id),
+                                                                            ('is_reverse_ledger_queue','=',False)])
+                    for ledger_queue_obj in queue_ledger_objs:
+                        ledger_data = json.loads(ledger_queue_obj.ledger_values_data)
+                        if ledger_data['pnr'] == provider_sequence and len (ledger_data['pnr']) < 5:
+                            ledger_data['pnr'] = pnr
+                            ledger_queue_obj.ledger_values_data = json.dumps(ledger_data)
+
 
         if provider_data.get('hold_date'):
             values['hold_date'] = datetime.strptime(provider_data['hold_date'], "%Y-%m-%d %H:%M:%S")
