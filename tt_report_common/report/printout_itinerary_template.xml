@@ -438,7 +438,7 @@
                             </t>
                         </div>
                         <t t-set="psg_line" t-value="curr_psg_line+psg_line"/>
-                        <t t-if="psg_line%20==0">
+                        <t t-if="psg_line>=20">
                             <div style="page-break-after: always;"/>
                             <t t-set="psg_line" t-value="0"/>
                         </t>
