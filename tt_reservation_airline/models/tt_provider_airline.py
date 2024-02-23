@@ -1398,7 +1398,7 @@ class TtProviderAirline(models.Model):
             "reference": self.reference,
             "context": context
         }
-        passengers = self.booking_id.passenger_ids.to_dict()
+        passengers = [psg_obj.to_dict() for psg_obj in self.booking_id.passenger_ids]
         req.update({
             'booking_data': {
                 'passengers': passengers
