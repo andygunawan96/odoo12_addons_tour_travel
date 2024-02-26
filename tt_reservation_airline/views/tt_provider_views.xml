@@ -226,6 +226,42 @@
         </field>
     </record>
 
+    <record id="tt_reservation_airline_ticket_tree_view" model="ir.ui.view">
+        <field name="name">tt.reservation.airline.ticket.tree.view</field>
+        <field name="model">tt.ticket.airline</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="passenger_id"/>
+                <field name="provider_id"/>
+                <field name="ticket_number"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_reservation_airline_filter_views" model="ir.ui.view">
+        <field name="name">tt.reservation.airline.ticket.filter.view</field>
+        <field name="model">tt.ticket.airline</field>
+        <field name="arch" type="xml">
+            <search string="Search Airline Ticket">
+                <field name="ticket_number"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_reservation_airline_passenger_action_views" model="ir.actions.act_window" >
+        <field name="name">Passenger Airline</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.ticket.airline</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_ticket_tree_view',
+            }
+        </field>
+    </record>
+
     <menuitem id="submenu_reservations_airline_provider"
               parent="tt_reservation_airline.menu_reservations_airline_provider"
               name="Provider Form"
@@ -233,4 +269,10 @@
               groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
               action="tt_reservation_airline.tt_reservation_airline_provider_action_views"/>
 
+    <menuitem id="submenu_reservations_airline_passenger"
+              parent="tt_reservation_airline.menu_reservations_airline_provider"
+              name="Passenger Airline Form"
+              sequence="10"
+              groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
+              action="tt_reservation_airline.tt_reservation_airline_passenger_action_views"/>
 </odoo>
