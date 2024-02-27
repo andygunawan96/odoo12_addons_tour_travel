@@ -52,6 +52,7 @@ class ReservationAirline(models.Model):
     is_hold_date_sync = fields.Boolean('Hold Date Sync', compute='compute_hold_date_sync', default=True, store=True)
 
     flight_number_name = fields.Char('List of Flight number', readonly=True, compute='_compute_flight_number')
+    total_price_cost = fields.Float('Total Price (Cost)', compute='_compute_total_price_cost', store=True)
 
     @api.multi
     @api.depends('provider_booking_ids.is_hold_date_sync')
@@ -99,6 +100,14 @@ class ReservationAirline(models.Model):
 
             rec.flight_number_name = flight_number_name
 
+    @api.depends('provider_booking_ids')
+    def _compute_total_price_cost(self):
+        for rec in self:
+            tot_price_cost = 0
+            for provider_booking_obj in rec.provider_booking_ids:
+                if provider_booking_obj.total_price_cost:
+                    tot_price_cost += provider_booking_obj.total_price_cost
+            rec.total_price_cost = tot_price_cost
 
     @api.depends('segment_ids')
     def _compute_sector_type(self):

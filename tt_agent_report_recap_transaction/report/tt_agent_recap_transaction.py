@@ -38,6 +38,12 @@ class AgentReportRecapTransacion(models.Model):
             """
 
     @staticmethod
+    def _sel_total_price_cost():
+        return """
+                ,provider_booking.total_price_cost as total_price_cost, rsv.total_price_cost as rsv_total_price_cost
+                """
+
+    @staticmethod
     def _sel_train_name():
         return """
                 ,rsv.train_name as product_desc
@@ -339,6 +345,8 @@ class AgentReportRecapTransacion(models.Model):
         query = 'SELECT ' + self._select()
         if provider_type in ['airline', 'train', 'bus']:
             query += self._sel_direction()
+            if provider_type == 'airline':
+                query += self._sel_total_price_cost()
             if provider_type == 'train':
                 query += self._sel_train_name()
         if provider_type == 'hotel':

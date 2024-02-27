@@ -182,12 +182,20 @@ class TtRefund(models.Model):
     def get_admin_fee_domain(self):
         agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
         agent_adm_ids = self.agent_id.admin_fee_ids.ids
+        provider_type_adm_ids = []
+        if self.res_model and self.res_id:
+            res_obj = self.env[self.res_model].browse(self.res_id)
+            if res_obj and res_obj.provider_type_id:
+                provider_type_adm_ids = res_obj.provider_type_id.admin_fee_ids.ids
         return [('after_sales_type', '=', 'refund'), ('ho_id', '=', self.ho_id.id), '&', '|',
                 ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
                 ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
                 ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
                 ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
-                ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
+                ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids), '|',
+                ('provider_type_access_type', '=', 'all'), '|', '&',
+                ('provider_type_access_type', '=', 'allow'), ('id', 'in', provider_type_adm_ids), '&',
+                ('provider_type_access_type', '=', 'restrict'), ('id', 'not in', provider_type_adm_ids)]
 
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain, readonly=True)
     admin_fee = fields.Monetary('Total Admin Fee', default=0, readonly=True, compute="_compute_admin_fee", store=True)
@@ -310,7 +318,7 @@ class TtRefund(models.Model):
                 temp_total += rec2.real_refund_amount
             rec.real_refund_amount = temp_total
 
-    def get_refund_admin_fee_rule(self, agent_id, refund_type='regular', ho_id=False):
+    def get_refund_admin_fee_rule(self, agent_id, refund_type='regular', ho_id=False, provider_type_id=False):
         search_param = [('after_sales_type', '=', 'refund')]
         if refund_type == 'quick':
             default_refund_type_id = self.env.ref('tt_accounting.refund_type_quick_refund').id
@@ -336,6 +344,8 @@ class TtRefund(models.Model):
             for admin_fee in refund_admin_fee_list:
                 is_agent = False
                 is_agent_type = False
+                is_provider_type = False
+
                 if admin_fee.agent_access_type == 'all':
                     is_agent = True
                 elif admin_fee.agent_access_type == 'allow' and agent_id in admin_fee.agent_ids.ids:
@@ -350,7 +360,14 @@ class TtRefund(models.Model):
                 elif admin_fee.agent_type_access_type == 'restrict' and agent_obj.agent_type_id.id not in admin_fee.agent_type_ids.ids:
                     is_agent_type = True
 
-                if not is_agent_type or not is_agent:
+                if admin_fee.provider_type_access_type == 'all':
+                    is_provider_type = True
+                elif admin_fee.provider_type_access_type == 'allow' and provider_type_id in admin_fee.provider_type_ids.ids:
+                    is_provider_type = True
+                elif admin_fee.provider_type_access_type == 'restrict' and provider_type_id not in admin_fee.provider_type_ids.ids:
+                    is_provider_type = True
+
+                if not is_agent_type or not is_agent or not is_provider_type:
                     continue
 
                 qualified_admin_fee.append(admin_fee)
@@ -366,6 +383,7 @@ class TtRefund(models.Model):
                 'min_amount_agent': 0,
                 'agent_type_access_type': 'all',
                 'agent_access_type': 'all',
+                'provider_type_access_type': 'all',
                 'ho_id': ho_obj and ho_obj.id or self.env.ref('tt_base.rodex_ho').id,
                 'sequence': 500
             })

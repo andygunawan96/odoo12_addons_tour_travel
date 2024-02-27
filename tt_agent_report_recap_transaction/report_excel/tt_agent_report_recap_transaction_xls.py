@@ -136,6 +136,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         ##middle agent commission
         ##ho commission
         if values['data_form']['is_ho']:
+            if not values['data_form'].get('is_pricing_breakdown'):
+                sheet.write('%s9' % incr.generate_ascii(), 'Total Vendor Price', style.table_head_center)
             sheet.write('%s9' % incr.generate_ascii(), 'HO NTA Amount', style.table_head_center)
             sheet.write('%s9' % incr.generate_ascii(), 'Total Commission', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'Grand Total', style.table_head_center)
@@ -180,8 +182,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.set_column('AR:AR', 20)
                 sheet.set_column('AU:AU', 30)
             elif values['data_form']['is_ho']:
-                sheet.set_column('AN:AN', 20)
-                sheet.set_column('AQ:AQ', 30)
+                sheet.set_column('AO:AO', 20)
+                sheet.set_column('AR:AR', 30)
             elif values['data_form']['is_pricing_breakdown']:
                 sheet.set_column('AP:AP', 20)
                 sheet.set_column('AS:AS', 30)
@@ -219,6 +221,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
 
         total_all_agent_nta = 0
         total_all_agent_commission = 0
+        total_all_total_price_cost = 0
         total_all_ho_nta = 0
         total_all_total_commission = 0
         total_all_grand_total = 0
@@ -301,7 +304,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                     elif k['booking_charge_type'] in ['FARE', 'TAX']:
                                         this_pnr_ott += k['booking_charge_total']
                                     elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
-                                        breakdown_nta_total += k['booking_charge_total']
+                                        breakdown_nta_total += abs(k['booking_charge_total'])
                         grand_total = nta_total + commission
 
                         psg_list = []
@@ -374,6 +377,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             if values['data_form']['is_pricing_breakdown']:
                                 sheet.write(row_data, incr.generate_number(), breakdown_nta_total, sty_amount)
                         if values['data_form']['is_ho']:
+                            if not values['data_form'].get('is_pricing_breakdown'):
+                                sheet.write(row_data, incr.generate_number(), i.get('total_price_cost', '0'), sty_amount)
                             sheet.write(row_data, incr.generate_number(), nta_total, sty_amount)
                             sheet.write(row_data, incr.generate_number(), commission, sty_amount)
                         sheet.write(row_data, incr.generate_number(), grand_total, sty_amount)
@@ -492,6 +497,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             if values['data_form']['is_pricing_breakdown']:
                                 sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         if values['data_form']['is_ho']:
+                            if not values['data_form'].get('is_pricing_breakdown'):
+                                sheet.write(row_data, incr.generate_number(), '', sty_amount)
                             sheet.write(row_data, incr.generate_number(), '', sty_amount)
                             sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
@@ -568,7 +575,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                 elif k['booking_charge_type'] in ['FARE', 'TAX']:
                                     this_pnr_ott += k['booking_charge_total']
                                 elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
-                                    breakdown_nta_total += k['booking_charge_total']
+                                    breakdown_nta_total += abs(k['booking_charge_total'])
                     grand_total = nta_total + commission
 
                     for k in temp_charge_agent:
@@ -585,10 +592,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             elif k['booking_charge_type'] in ['FARE', 'TAX']:
                                 this_resv_ott += k['booking_charge_total']
                             elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
-                                resv_breakdown_nta_total += k['booking_charge_total']
+                                resv_breakdown_nta_total += abs(k['booking_charge_total'])
 
                     total_all_agent_nta += this_resv_agent_nta_total
                     total_all_agent_commission += this_resv_agent_commission
+                    total_all_total_price_cost += i.get('rsv_total_price_cost', 0)
                     total_all_ho_nta += i['total_nta']
                     total_all_total_commission += i['total_commission']
                     total_all_grand_total += i['grand_total']
@@ -646,6 +654,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         if values['data_form']['is_pricing_breakdown']:
                             sheet.write(row_data, incr.generate_number(), resv_breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
+                        if not values['data_form'].get('is_pricing_breakdown'):
+                            sheet.write(row_data, incr.generate_number(), i.get('resv_total_price_cost', '0'), sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_commission'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['grand_total'], sty_amount)
@@ -724,6 +734,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         if values['data_form']['is_pricing_breakdown']:
                             sheet.write(row_data, incr.generate_number(), breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
+                        if not values['data_form'].get('is_pricing_breakdown'):
+                            sheet.write(row_data, incr.generate_number(), i.get('total_price_cost', '0'), sty_amount)
                         sheet.write(row_data, incr.generate_number(), nta_total, sty_amount)
                         sheet.write(row_data, incr.generate_number(), commission, sty_amount)
                     sheet.write(row_data, incr.generate_number(), grand_total, sty_amount)
@@ -794,6 +806,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             if values['data_form']['is_pricing_breakdown']:
                                 sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         if values['data_form']['is_ho']:
+                            if not values['data_form'].get('is_pricing_breakdown'):
+                                sheet.write(row_data, incr.generate_number(), '', sty_amount)
                             sheet.write(row_data, incr.generate_number(), '', sty_amount)
                             sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
@@ -953,7 +967,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                 elif k['booking_charge_type'] in ['FARE', 'TAX']:
                                     this_pnr_ott += k['booking_charge_total']
                                 elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
-                                    breakdown_nta_total += k['booking_charge_total']
+                                    breakdown_nta_total += abs(k['booking_charge_total'])
                     grand_total = nta_total + commission
 
                     psg_list = []
@@ -1026,6 +1040,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         if values['data_form']['is_pricing_breakdown']:
                             sheet.write(row_data, incr.generate_number(), breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
+                        if not values['data_form'].get('is_pricing_breakdown'):
+                            sheet.write(row_data, incr.generate_number(), i.get('total_price_cost', '0'), sty_amount)
                         sheet.write(row_data, incr.generate_number(), nta_total, sty_amount)
                         sheet.write(row_data, incr.generate_number(), commission, sty_amount)
                     sheet.write(row_data, incr.generate_number(), grand_total, sty_amount)
@@ -1153,7 +1169,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                 elif k['booking_charge_type'] in ['FARE', 'TAX']:
                                     this_pnr_ott += k['booking_charge_total']
                                 elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
-                                    breakdown_nta_total += k['booking_charge_total']
+                                    breakdown_nta_total += abs(k['booking_charge_total'])
                     grand_total = nta_total + commission
 
                     for k in temp_charge_agent:
@@ -1170,10 +1186,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             elif k['booking_charge_type'] in ['FARE', 'TAX']:
                                 this_resv_ott += k['booking_charge_total']
                             elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
-                                resv_breakdown_nta_total += k['booking_charge_total']
+                                resv_breakdown_nta_total += abs(k['booking_charge_total'])
 
                     total_all_agent_nta += this_resv_agent_nta_total
                     total_all_agent_commission += this_resv_agent_commission
+                    total_all_total_price_cost += i.get('rsv_total_price_cost', 0)
                     total_all_ho_nta += i['total_nta']
                     total_all_total_commission += i['total_commission']
                     total_all_grand_total += i['grand_total']
@@ -1231,6 +1248,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         if values['data_form']['is_pricing_breakdown']:
                             sheet.write(row_data, incr.generate_number(), resv_breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
+                        if not values['data_form'].get('is_pricing_breakdown'):
+                            sheet.write(row_data, incr.generate_number(), i.get('resv_total_price_cost', '0'), sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_commission'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['grand_total'], sty_amount)
@@ -1309,6 +1328,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         if values['data_form']['is_pricing_breakdown']:
                             sheet.write(row_data, incr.generate_number(), breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
+                        if not values['data_form'].get('is_pricing_breakdown'):
+                            sheet.write(row_data, incr.generate_number(), i.get('total_price_cost', '0'), sty_amount)
                         sheet.write(row_data, incr.generate_number(), nta_total, sty_amount)
                         sheet.write(row_data, incr.generate_number(), commission, sty_amount)
                     sheet.write(row_data, incr.generate_number(), grand_total, sty_amount)
@@ -1522,6 +1543,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             if values['data_form']['is_pricing_breakdown']:
                 sheet.write(row_data, incr.generate_number(), total_resv_breakdown_nta, sty_amount)
         if values['data_form']['is_ho']:
+            if not values['data_form'].get('is_pricing_breakdown'):
+                sheet.write(row_data, incr.generate_number(), total_all_total_price_cost, sty_amount)
             sheet.write(row_data, incr.generate_number(), total_all_ho_nta, sty_amount)
             sheet.write(row_data, incr.generate_number(), total_all_total_commission, sty_amount)
         sheet.write(row_data, incr.generate_number(), total_all_grand_total, sty_amount)
@@ -1582,6 +1605,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             if values['data_form']['is_pricing_breakdown']:
                 sheet.write(row_data, incr.generate_number(), '', sty_amount)
         if values['data_form']['is_ho']:
+            if not values['data_form'].get('is_pricing_breakdown'):
+                sheet.write(row_data, incr.generate_number(), '', sty_amount)
             sheet.write(row_data, incr.generate_number(), '', sty_amount)
             sheet.write(row_data, incr.generate_number(), '', sty_amount)
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
