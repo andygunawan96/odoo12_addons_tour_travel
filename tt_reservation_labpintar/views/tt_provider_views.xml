@@ -111,11 +111,4 @@
         </field>
     </record>
 
-<!--    <menuitem id="submenu_reservations_labpintar_provider"-->
-<!--              parent="tt_reservation_labpintar.menu_reservations_labpintar_provider"-->
-<!--              name="Provider Form"-->
-<!--              sequence="10"-->
-<!--              groups="tt_base.group_tt_tour_travel_manager,tt_base.group_reservation_provider_level_1"-->
-<!--              action="tt_reservation_labpintar.tt_reservation_labpintar_provider_action_views"/>-->
-
 </odoo>
