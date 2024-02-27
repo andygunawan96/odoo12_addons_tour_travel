@@ -115,7 +115,7 @@ class TtRefundWizard(models.TransientModel):
             ref_type = 'quick'
         else:
             ref_type = 'regular'
-        default_adm_fee = self.env['tt.refund'].get_refund_admin_fee_rule(self.agent_id.id, ref_type)
+        default_adm_fee = self.env['tt.refund'].get_refund_admin_fee_rule(self.agent_id.id, ref_type, provider_type_id=resv_obj.provider_type_id.id)
         refund_obj = self.env['tt.refund'].create({
             'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
