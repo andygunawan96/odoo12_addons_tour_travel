@@ -22,11 +22,21 @@ class TtAccountingQueue(models.Model):
     transport_type = fields.Char('Transport Type', readonly=True)
     res_model = fields.Char('Related Model', readonly=True)
     res_id = fields.Integer('Related ID', index=True, help='Id of the followed resource')
+    res_name = fields.Char('Reference Name', compute='_compute_res_name')
     state = fields.Selection([('new', 'New'), ('success', 'Success'), ('failed', 'Failed'), ('partial', 'Partial'), ('manual_create', 'Manually Created on Vendor')], 'State', default='new', readonly=True)
     send_uid = fields.Many2one('res.users', 'Last Sent By', readonly=True)
     send_date = fields.Datetime('Last Sent Date', readonly=True)
     action = fields.Char('Action', readonly=True)
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
+
+    @api.depends('res_model', 'res_id')
+    def _compute_res_name(self):
+        for rec in self:
+            res_obj = self.env[rec.res_model].browse(rec.res_id)
+            if res_obj.name:
+                rec.res_name = res_obj.name
+            else:
+                rec.res_name = ''
 
     def to_dict(self):
         return {

@@ -8,6 +8,7 @@
                 <field name="request"/>
                 <field name="response"/>
                 <field name="action"/>
+                <field name="res_name"/>
                 <separator/>
                 <filter name="today" string="Today" domain="[('create_date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
                 <filter name="yesterday" string="Yesterday"
@@ -34,7 +35,7 @@
                 <group expand="0" string="Group By">
                     <filter name="state" string="State" domain="[]" context="{'group_by':'state'}"/>
                     <filter name="transport_type" string="Transport Type" domain="[]" context="{'group_by':'transport_type'}"/>
-                    <filter name="res_model" string="Res Model" domain="[]" context="{'group_by':'res_model'}"/>
+                    <filter name="res_model" string="Res Model" domain="[]" context="{'group_by':'res_model'}" groups="base.group_system"/>
                 </group>
             </search>
         </field>
@@ -61,8 +62,9 @@
                             <field name="accounting_provider"/>
                             <field name="transport_type"/>
                             <field name="action"/>
-                            <field name="res_model"/>
-                            <field name="res_id"/>
+                            <field name="res_name"/>
+                            <field name="res_model" groups="base.group_system"/>
+                            <field name="res_id" groups="base.group_system"/>
                             <button name="open_reference" string="Go to reference" type="object"
                                     attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
                         </group>
@@ -100,8 +102,9 @@
                 <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="transport_type"/>
                 <field name="action"/>
-                <field name="res_model"/>
-                <field name="res_id"/>
+                <field name="res_model" groups="base.group_system"/>
+                <field name="res_id" groups="base.group_system"/>
+                <field name="res_name"/>
                 <field name="state"/>
             </tree>
         </field>

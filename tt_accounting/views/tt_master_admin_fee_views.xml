@@ -76,24 +76,38 @@
                             </group>
                         </form>
                     </field>
-                    <group>
-                        <group>
-                            <field name="agent_type_access_type"/>
-                        </group>
-                        <group>
-                        </group>
-                    </group>
-                    <separator string="Agent Types"/>
-                    <field name="agent_type_ids"/>
-                    <group>
-                        <group>
-                            <field name="agent_access_type"/>
-                        </group>
-                        <group>
-                        </group>
-                    </group>
-                    <separator string="Agents"/>
-                    <field name="agent_ids"/>
+                    <notebook>
+                        <page string="Provider Types">
+                            <group>
+                                <group>
+                                    <field name="provider_type_access_type"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <field name="provider_type_ids"/>
+                        </page>
+                        <page string="Agent Types">
+                            <group>
+                                <group>
+                                    <field name="agent_type_access_type"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <field name="agent_type_ids"/>
+                        </page>
+                        <page string="Agents">
+                            <group>
+                                <group>
+                                    <field name="agent_access_type"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <field name="agent_ids"/>
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
