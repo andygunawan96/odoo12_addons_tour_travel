@@ -655,7 +655,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             sheet.write(row_data, incr.generate_number(), resv_breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
                         if not values['data_form'].get('is_pricing_breakdown'):
-                            sheet.write(row_data, incr.generate_number(), i.get('resv_total_price_cost', '0'), sty_amount)
+                            sheet.write(row_data, incr.generate_number(), i.get('rsv_total_price_cost', '0'), sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_commission'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['grand_total'], sty_amount)
@@ -1249,7 +1249,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             sheet.write(row_data, incr.generate_number(), resv_breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
                         if not values['data_form'].get('is_pricing_breakdown'):
-                            sheet.write(row_data, incr.generate_number(), i.get('resv_total_price_cost', '0'), sty_amount)
+                            sheet.write(row_data, incr.generate_number(), i.get('rsv_total_price_cost', '0'), sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['total_commission'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), i['grand_total'], sty_amount)
