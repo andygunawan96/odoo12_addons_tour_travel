@@ -27,6 +27,7 @@
             name="Airline Report"
             parent="tt_reservation_airline.top_reservations_airline"
             action="action_reservation_report_airline_wz"
+            groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
             sequence="100"
         />
 

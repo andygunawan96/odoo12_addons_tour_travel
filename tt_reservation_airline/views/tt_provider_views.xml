@@ -238,7 +238,7 @@
         </field>
     </record>
 
-    <record id="tt_reservation_airline_filter_views" model="ir.ui.view">
+    <record id="tt_reservation_airline_ticket_filter_views" model="ir.ui.view">
         <field name="name">tt.reservation.airline.ticket.filter.view</field>
         <field name="model">tt.ticket.airline</field>
         <field name="arch" type="xml">

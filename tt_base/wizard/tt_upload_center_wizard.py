@@ -66,7 +66,15 @@ class SplitInvoice(models.TransientModel):
     #file is encoded in base64
     def upload(self,filename,file_reference,file,context,delete_time=False):
         # old regex checker, deprecated
-        # pattern = re.compile('^[a-zA-Z0-9](?:[a-zA-Z0-9 ()._-]*[a-zA-Z0-9 )])?\.[a-zA-Z0-9_-]+$')
+        # pattern = re.compile('^[a-zA-Z0-9](?:[a-zA-Z0-9 ()._-]*[a-zA-Z0-9)])?\.[a-zA-Z0-9_-]+$')
+        # if not pattern.match(filename):
+        #     raise UserError('Filename Is Not Valid')
+
+        ##prevent uploading malicious files extension
+        pattern = re.compile('\\bjpg\\b$|\\bjpeg\\b$|\\bpng\\b$|\\bpdf\\b$|\\bwebp\\b$|\\bhtml\\b$|\\bxls\\b$|\\bxlsx\\b$|\\bdoc\\b$|\\bdocx\\b$|\\bcsv\\b$|\\bgif\\b$', re.IGNORECASE)
+        if not pattern.search(filename):
+            raise UserError('Something went wrong, please contact admin.')
+
         prohibited_pattern = r'[\\/:*?"<>|]'
         filename = re.sub(prohibited_pattern,'_',filename)
         try:

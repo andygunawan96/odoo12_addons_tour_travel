@@ -94,6 +94,7 @@ class CreateHOAgentWizard(models.TransientModel):
             'min_amount_agent': 0,
             'agent_type_access_type': 'all',
             'agent_access_type': 'all',
+            'provider_type_access_type': 'all',
             'ho_id': new_ho_obj.id,
             'sequence': 500
         })
@@ -114,6 +115,7 @@ class CreateHOAgentWizard(models.TransientModel):
             'min_amount_agent': 0,
             'agent_type_access_type': 'all',
             'agent_access_type': 'all',
+            'provider_type_access_type': 'all',
             'ho_id': new_ho_obj.id,
             'sequence': 501
         })
@@ -133,6 +135,7 @@ class CreateHOAgentWizard(models.TransientModel):
             'min_amount_agent': 0,
             'agent_type_access_type': 'all',
             'agent_access_type': 'all',
+            'provider_type_access_type': 'all',
             'ho_id': new_ho_obj.id,
             'sequence': 500
         })
@@ -152,6 +155,7 @@ class CreateHOAgentWizard(models.TransientModel):
             'min_amount_agent': 0,
             'agent_type_access_type': 'all',
             'agent_access_type': 'all',
+            'provider_type_access_type': 'all',
             'ho_id': new_ho_obj.id,
             'sequence': 500
         })
