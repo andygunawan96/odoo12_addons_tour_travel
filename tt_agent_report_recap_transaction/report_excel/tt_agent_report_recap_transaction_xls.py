@@ -182,8 +182,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.set_column('AR:AR', 20)
                 sheet.set_column('AU:AU', 30)
             elif values['data_form']['is_ho']:
-                sheet.set_column('AN:AN', 20)
-                sheet.set_column('AQ:AQ', 30)
+                sheet.set_column('AO:AO', 20)
+                sheet.set_column('AR:AR', 30)
             elif values['data_form']['is_pricing_breakdown']:
                 sheet.set_column('AP:AP', 20)
                 sheet.set_column('AS:AS', 30)
@@ -596,7 +596,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
 
                     total_all_agent_nta += this_resv_agent_nta_total
                     total_all_agent_commission += this_resv_agent_commission
-                    total_all_total_price_cost += i.get('rsv_total_price_cost', '0')
+                    total_all_total_price_cost += i.get('rsv_total_price_cost', 0)
                     total_all_ho_nta += i['total_nta']
                     total_all_total_commission += i['total_commission']
                     total_all_grand_total += i['grand_total']
@@ -1190,7 +1190,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
 
                     total_all_agent_nta += this_resv_agent_nta_total
                     total_all_agent_commission += this_resv_agent_commission
-                    total_all_total_price_cost += i.get('rsv_total_price_cost', '0')
+                    total_all_total_price_cost += i.get('rsv_total_price_cost', 0)
                     total_all_ho_nta += i['total_nta']
                     total_all_total_commission += i['total_commission']
                     total_all_grand_total += i['grand_total']

@@ -357,7 +357,7 @@ class TtReschedule(models.Model):
             'create_date': self.create_date.strftime("%Y-%m-%d %H:%M:%S")
         }
 
-    def get_reschedule_admin_fee_rule(self, agent_id, ho_id=False):
+    def get_reschedule_admin_fee_rule(self, agent_id, ho_id=False, provider_type_id=False):
         search_param = [('after_sales_type', '=', 'after_sales')]
         agent_obj = self.env['tt.agent'].browse(int(agent_id))
         if ho_id:
@@ -390,9 +390,9 @@ class TtReschedule(models.Model):
 
                 if admin_fee.provider_type_access_type == 'all':
                     is_provider_type = True
-                elif admin_fee.provider_type_access_type == 'allow' and agent_obj.agent_type_id.id in admin_fee.agent_type_ids.ids:
+                elif admin_fee.provider_type_access_type == 'allow' and provider_type_id in admin_fee.provider_type_ids.ids:
                     is_provider_type = True
-                elif admin_fee.provider_type_access_type == 'restrict' and agent_obj.agent_type_id.id not in admin_fee.agent_type_ids.ids:
+                elif admin_fee.provider_type_access_type == 'restrict' and provider_type_id not in admin_fee.provider_type_ids.ids:
                     is_provider_type = True
 
                 if not is_agent_type or not is_agent or not is_provider_type:

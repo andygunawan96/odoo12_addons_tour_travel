@@ -52,7 +52,7 @@ class ReservationAirline(models.Model):
     is_hold_date_sync = fields.Boolean('Hold Date Sync', compute='compute_hold_date_sync', default=True, store=True)
 
     flight_number_name = fields.Char('List of Flight number', readonly=True, compute='_compute_flight_number')
-    total_price_cost = fields.Float('Total Price (Cost)', readonly=True, compute='_compute_total_price_cost', store=True)
+    total_price_cost = fields.Float('Total Price (Cost)', compute='_compute_total_price_cost', store=True)
 
     @api.multi
     @api.depends('provider_booking_ids.is_hold_date_sync')
