@@ -183,9 +183,10 @@ class TtRefund(models.Model):
         agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
         agent_adm_ids = self.agent_id.admin_fee_ids.ids
         provider_type_adm_ids = []
-        res_obj = self.env[self.res_model].browse(self.res_id)
-        if res_obj and res_obj.provider_type_id:
-            provider_type_adm_ids = res_obj.provider_type_id.admin_fee_ids.ids
+        if self.res_model and self.res_id:
+            res_obj = self.env[self.res_model].browse(self.res_id)
+            if res_obj and res_obj.provider_type_id:
+                provider_type_adm_ids = res_obj.provider_type_id.admin_fee_ids.ids
         return [('after_sales_type', '=', 'refund'), ('ho_id', '=', self.ho_id.id), '&', '|',
                 ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
                 ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
