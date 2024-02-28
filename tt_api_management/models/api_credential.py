@@ -302,9 +302,19 @@ class TtAgentApiInherit(models.Model):
             '%sagent_name' % prefix: self.name,
         }
         if prefix:
-            res.update({
+            data_update = {
                 "pricing_breakdown": self.ho_id.pricing_breakdown
-            })
+            }
+            if self.email:
+                data_update.update({"%sagent_email" % prefix: self.email})
+            ## NEXT UPDATE
+            # if self.phone_ids:
+            #     data_update.update({
+            #         "%sagent_calling_code" % prefix: self.phone_ids[0].calling_code,
+            #         "%sagent_calling_number" % prefix: self.phone_ids[0].calling_number
+            #     })
+            res.update(data_update)
+
         if self.agent_type_id:
             res.update(self.agent_type_id.get_credential(prefix))
         return res
