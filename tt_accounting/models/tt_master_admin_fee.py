@@ -22,7 +22,7 @@ class TtMasterAdminFee(models.Model):
     agent_type_access_type = fields.Selection([("all", "ALL"),("allow", "Allowed"),("restrict", "Restricted")], 'Agent Type Access Type', default='all')
     agent_ids = fields.Many2many('tt.agent', 'master_admin_fee_agent_rel', 'admin_fee_id', 'agent_id', string='Agents')
     agent_access_type = fields.Selection([("all", "ALL"),("allow", "Allowed"),("restrict", "Restricted")], 'Agent Access Type', default='all')
-    provider_type_ids = fields.Many2many('tt.provider.type', 'master_admin_fee_provider_type_rel', 'master_admin_fee_id', 'provider_type_id', string='Provider Types')
+    provider_type_ids = fields.Many2many('tt.provider.type', 'admin_fee_provider_type_rel', 'admin_fee_id', 'provider_type_id', string='Provider Types')
     provider_type_access_type = fields.Selection([("all", "ALL"),("allow", "Allowed"),("restrict", "Restricted")], 'Provider Type Access Type', default='all', required=True)
     admin_fee_line_ids = fields.One2many('tt.master.admin.fee.line', 'master_admin_fee_id', 'Admin Fee Line(s)')
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
@@ -147,7 +147,7 @@ class TtAgentType(models.Model):
 class TtProviderType(models.Model):
     _inherit = 'tt.provider.type'
 
-    admin_fee_ids = fields.Many2many('tt.master.admin.fee', 'master_admin_fee_provider_type_rel', 'provider_type_id', 'admin_fee_id', string='Admin Fee')
+    admin_fee_ids = fields.Many2many('tt.master.admin.fee', 'admin_fee_provider_type_rel', 'provider_type_id', 'admin_fee_id', string='Admin Fee')
 
 
 class TtMasterAdminFeeLine(models.Model):
