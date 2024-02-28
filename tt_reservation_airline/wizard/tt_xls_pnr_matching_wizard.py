@@ -67,7 +67,7 @@ class TtXlsPnrMatchingWizard(models.TransientModel):
                         'order_number': airline_ticket.provider_id.booking_id.name,
                     })
             except Exception as e:
-                _logger.info('XLS PNR Matching skipping line: %s' % json.dumps(rec))
+                _logger.info('XLS PNR Matching skipping line: %s\nError: %s' % (json.dumps(rec), traceback.format_exc()))
                 continue
 
         if not final_res:
