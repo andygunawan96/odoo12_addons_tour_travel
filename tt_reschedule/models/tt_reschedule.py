@@ -174,7 +174,6 @@ class TtRescheduleLine(models.Model):
         for rec in self:
             rec.total_amount = rec.reschedule_amount + rec.admin_fee
 
-    @api.onchange('admin_fee_dummy')
     def get_admin_fee_domain(self):
         agent_type_adm_ids = self.reschedule_id.agent_id.agent_type_id.admin_fee_ids.ids
         agent_adm_ids = self.reschedule_id.agent_id.admin_fee_ids.ids
@@ -183,8 +182,7 @@ class TtRescheduleLine(models.Model):
             res_obj = self.env[self.reschedule_id.res_model].browse(self.reschedule_id.res_id)
             if res_obj and res_obj.provider_type_id:
                 provider_type_adm_ids = res_obj.provider_type_id.admin_fee_ids.ids
-        return {'domain': {
-            'admin_fee_id': [('after_sales_type', '=', 'after_sales'), ('ho_id', '=', self.reschedule_id.ho_id.id), '&', '|',
+        return [('after_sales_type', '=', 'after_sales'), ('ho_id', '=', self.reschedule_id.ho_id.id), '&', '|',
                  ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
                  ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
                  ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
@@ -193,6 +191,11 @@ class TtRescheduleLine(models.Model):
                  ('provider_type_access_type', '=', 'all'), '|', '&',
                  ('provider_type_access_type', '=', 'allow'), ('id', 'in', provider_type_adm_ids), '&',
                  ('provider_type_access_type', '=', 'restrict'), ('id', 'not in', provider_type_adm_ids)]
+
+    @api.onchange('admin_fee_dummy')
+    def onchange_admin_fee_dummy(self):
+        return {'domain': {
+            'admin_fee_id': self.get_admin_fee_domain()
         }}
 
     @api.onchange('provider_id')

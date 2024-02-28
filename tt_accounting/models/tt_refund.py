@@ -398,21 +398,22 @@ class TtRefund(models.Model):
         return current_refund_env
 
     def get_refund_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0, refund_type='regular'):
-        admin_fee_obj = self.get_refund_admin_fee_rule(agent_id, refund_type)
-
+        provider_type_id = False
         pnr_amount = 1
         pax_amount = 1
         journey_amount = 1
         if order_number and order_type:
             book_obj = self.env['tt.reservation.'+order_type].search([('name', '=', order_number)], limit=1)
-
-            pnr_amount = len(book_obj.provider_booking_ids.ids)
-            pax_amount = int(passenger_count) or len(book_obj.passenger_ids.ids)
-            if order_type == 'airline':
-                journey_amount = 0
-                for rec in book_obj.provider_booking_ids:
-                    for rec2 in rec.journey_ids:
-                        journey_amount += 1
+            if book_obj:
+                provider_type_id = book_obj.provider_type_id.id
+                pnr_amount = len(book_obj.provider_booking_ids.ids)
+                pax_amount = int(passenger_count) or len(book_obj.passenger_ids.ids)
+                if order_type == 'airline':
+                    journey_amount = 0
+                    for rec in book_obj.provider_booking_ids:
+                        for rec2 in rec.journey_ids:
+                            journey_amount += 1
+        admin_fee_obj = self.get_refund_admin_fee_rule(agent_id, refund_type, provider_type_id=provider_type_id)
 
         admin_fee_ho = admin_fee_obj.get_final_adm_fee_ho(refund_amount, pnr_amount, pax_amount, journey_amount)
         admin_fee_agent = admin_fee_obj.get_final_adm_fee_agent(refund_amount, pnr_amount, pax_amount, journey_amount)

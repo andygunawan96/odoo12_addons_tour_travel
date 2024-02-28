@@ -17,26 +17,12 @@ class TtChangeAdminFeeWizard(models.TransientModel):
     res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource', readonly=True)
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=[('id', '=', -1)])
 
-    @api.depends('agent_id', 'res_model')
-    @api.onchange('agent_id', 'res_model')
+    @api.depends('agent_id', 'res_model', 'res_id')
+    @api.onchange('agent_id', 'res_model', 'res_id')
     def _onchange_agent_id(self):
-        agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
-        agent_adm_ids = self.agent_id.admin_fee_ids.ids
-
-        if self.res_model == 'tt.reschedule.line':
-            after_sales_type = 'after_sales'
-        elif self.res_model == 'tt.reservation.offline':
-            after_sales_type = 'offline'
-        else:
-            after_sales_type = 'refund'
-
+        res_obj = self.env[self.res_model].browse(self.res_id)
         return {'domain': {
-            'admin_fee_id': [('after_sales_type', '=', after_sales_type), '&', '|',
-                ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
-                ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
-                ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
-                ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
-                ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
+            'admin_fee_id': res_obj.get_admin_fee_domain()
         }}
 
     def submit_change_admin_fee(self):
