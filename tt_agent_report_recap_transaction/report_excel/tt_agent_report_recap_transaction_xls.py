@@ -375,7 +375,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             sheet.write(row_data, incr.generate_number(), '', sty_amount)
                             sheet.write(row_data, incr.generate_number(), '', sty_amount)
                             if values['data_form']['is_pricing_breakdown']:
-                                sheet.write(row_data, incr.generate_number(), breakdown_nta_total, sty_amount)
+                                sheet.write(row_data, incr.generate_number(), nta_total + breakdown_nta_total, sty_amount)
                         if values['data_form']['is_ho']:
                             if not values['data_form'].get('is_pricing_breakdown'):
                                 sheet.write(row_data, incr.generate_number(), i.get('total_price_cost', '0'), sty_amount)
@@ -652,7 +652,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), i.get('commission_booker', 0), sty_amount)
                         sheet.write(row_data, incr.generate_number(), upsell, sty_amount) ### IVAN 22 dec 2022 untuk data lama upsell tidak masuk ke komisi data baru upsell sudah masuk ke komisi, aftersales recap belum masuk
                         if values['data_form']['is_pricing_breakdown']:
-                            sheet.write(row_data, incr.generate_number(), resv_breakdown_nta_total, sty_amount)
+                            sheet.write(row_data, incr.generate_number(), i['total_nta'] + resv_breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
                         if not values['data_form'].get('is_pricing_breakdown'):
                             sheet.write(row_data, incr.generate_number(), i.get('rsv_total_price_cost', '0'), sty_amount)
@@ -732,7 +732,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         if values['data_form']['is_pricing_breakdown']:
-                            sheet.write(row_data, incr.generate_number(), breakdown_nta_total, sty_amount)
+                            sheet.write(row_data, incr.generate_number(), nta_total + breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
                         if not values['data_form'].get('is_pricing_breakdown'):
                             sheet.write(row_data, incr.generate_number(), i.get('total_price_cost', '0'), sty_amount)
@@ -1038,7 +1038,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         if values['data_form']['is_pricing_breakdown']:
-                            sheet.write(row_data, incr.generate_number(), breakdown_nta_total, sty_amount)
+                            sheet.write(row_data, incr.generate_number(), nta_total + breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
                         if not values['data_form'].get('is_pricing_breakdown'):
                             sheet.write(row_data, incr.generate_number(), i.get('total_price_cost', '0'), sty_amount)
@@ -1246,7 +1246,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), i.get('commission_booker', 0), sty_amount)
                         sheet.write(row_data, incr.generate_number(), upsell, sty_table_data)  ### IVAN 22 dec 2022 untuk data lama upsell tidak masuk ke komisi data baru upsell sudah masuk ke komisi, aftersales recap belum masuk
                         if values['data_form']['is_pricing_breakdown']:
-                            sheet.write(row_data, incr.generate_number(), resv_breakdown_nta_total, sty_amount)
+                            sheet.write(row_data, incr.generate_number(), i['total_nta'] + resv_breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
                         if not values['data_form'].get('is_pricing_breakdown'):
                             sheet.write(row_data, incr.generate_number(), i.get('rsv_total_price_cost', '0'), sty_amount)
@@ -1326,7 +1326,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         if values['data_form']['is_pricing_breakdown']:
-                            sheet.write(row_data, incr.generate_number(), breakdown_nta_total, sty_amount)
+                            sheet.write(row_data, incr.generate_number(), nta_total + breakdown_nta_total, sty_amount)
                     if values['data_form']['is_ho']:
                         if not values['data_form'].get('is_pricing_breakdown'):
                             sheet.write(row_data, incr.generate_number(), i.get('total_price_cost', '0'), sty_amount)
@@ -1541,7 +1541,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             sheet.write(row_data, incr.generate_number(), '', sty_table_data)
             sheet.write(row_data, incr.generate_number(), '', sty_table_data)
             if values['data_form']['is_pricing_breakdown']:
-                sheet.write(row_data, incr.generate_number(), total_resv_breakdown_nta, sty_amount)
+                sheet.write(row_data, incr.generate_number(), total_all_ho_nta + total_resv_breakdown_nta, sty_amount)
         if values['data_form']['is_ho']:
             if not values['data_form'].get('is_pricing_breakdown'):
                 sheet.write(row_data, incr.generate_number(), total_all_total_price_cost, sty_amount)
