@@ -39,12 +39,16 @@ class TtXlsPnrMatchingWizard(models.TransientModel):
         final_res = {}
         for rec in row_list:
             try:
-                ticket_search = '%s%s' % (str(rec[0]).split('.')[0], str(rec[2]).split('.')[0])
-                airline_tickets = self.env['tt.ticket.airline'].search([('ticket_number', '=', ticket_search)])
+                # ticket_search = '%s%s' % (str(rec[0]).split('.')[0], str(rec[2]).split('.')[0])
+                airline_tickets = self.env['tt.ticket.airline'].search([('ticket_number', 'like', str(rec[2]).split('.')[0])])
                 airline_ticket = False
                 for ticket in airline_tickets:
                     if ticket.provider_id.issued_date.strftime('%d%b%y').upper() == rec[3] and ticket.provider_id.booking_id.ho_id.id == self.env.user.ho_id.id:
-                        airline_ticket = ticket
+                        if len(airline_tickets) > 1:
+                            if ticket.ticket_number[0:3] == str(rec[0]).split('.')[0] or ticket.ticket_number[1:3] == str(rec[0]).split('.')[0]:
+                                airline_ticket = ticket
+                        else:
+                            airline_ticket = ticket
                 if airline_ticket:
                     if not final_res.get(airline_ticket.provider_id.provider_id.code):
                         final_res.update({
