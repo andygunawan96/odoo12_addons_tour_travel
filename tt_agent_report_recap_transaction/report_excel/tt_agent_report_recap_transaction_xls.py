@@ -301,7 +301,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                         this_pnr_vat += k['booking_charge_total']
                                     elif k['booking_charge_type'] == 'ROCHSA':
                                         this_pnr_service_fee += k['booking_charge_total']
-                                    elif k['booking_charge_type'] in ['FARE', 'TAX']:
+                                    elif k['booking_charge_type'] in ['FARE', 'TAX'] and k['booking_charge_code'] != 'roc':
                                         this_pnr_ott += k['booking_charge_total']
                                     elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
                                         breakdown_nta_total += abs(k['booking_charge_total'])
@@ -572,7 +572,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                     this_pnr_vat += k['booking_charge_total']
                                 elif k['booking_charge_type'] == 'ROCHSA':
                                     this_pnr_service_fee += k['booking_charge_total']
-                                elif k['booking_charge_type'] in ['FARE', 'TAX']:
+                                elif k['booking_charge_type'] in ['FARE', 'TAX'] and k['booking_charge_code'] != 'roc':
                                     this_pnr_ott += k['booking_charge_total']
                                 elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
                                     breakdown_nta_total += abs(k['booking_charge_total'])
@@ -589,7 +589,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                 this_resv_vat += k['booking_charge_total']
                             elif k['booking_charge_type'] == 'ROCHSA':
                                 this_resv_service_fee += k['booking_charge_total']
-                            elif k['booking_charge_type'] in ['FARE', 'TAX']:
+                            elif k['booking_charge_type'] in ['FARE', 'TAX'] and k['booking_charge_code'] != 'roc':
                                 this_resv_ott += k['booking_charge_total']
                             elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
                                 resv_breakdown_nta_total += abs(k['booking_charge_total'])
@@ -964,7 +964,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                     this_pnr_vat += k['booking_charge_total']
                                 elif k['booking_charge_type'] == 'ROCHSA':
                                     this_pnr_service_fee += k['booking_charge_total']
-                                elif k['booking_charge_type'] in ['FARE', 'TAX']:
+                                elif k['booking_charge_type'] in ['FARE', 'TAX'] and k['booking_charge_code'] != 'roc':
                                     this_pnr_ott += k['booking_charge_total']
                                 elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
                                     breakdown_nta_total += abs(k['booking_charge_total'])
@@ -1166,7 +1166,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                     this_pnr_vat += k['booking_charge_total']
                                 elif k['booking_charge_type'] == 'ROCHSA':
                                     this_pnr_service_fee += k['booking_charge_total']
-                                elif k['booking_charge_type'] in ['FARE', 'TAX']:
+                                elif k['booking_charge_type'] in ['FARE', 'TAX'] and k['booking_charge_code'] != 'roc':
                                     this_pnr_ott += k['booking_charge_total']
                                 elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
                                     breakdown_nta_total += abs(k['booking_charge_total'])
@@ -1183,7 +1183,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                 this_resv_vat += k['booking_charge_total']
                             elif k['booking_charge_type'] == 'ROCHSA':
                                 this_resv_service_fee += k['booking_charge_total']
-                            elif k['booking_charge_type'] in ['FARE', 'TAX']:
+                            elif k['booking_charge_type'] in ['FARE', 'TAX'] and k['booking_charge_code'] != 'roc':
                                 this_resv_ott += k['booking_charge_total']
                             elif k['booking_charge_type'] in ['RACHSP', 'RACHVP']:
                                 resv_breakdown_nta_total += abs(k['booking_charge_total'])
