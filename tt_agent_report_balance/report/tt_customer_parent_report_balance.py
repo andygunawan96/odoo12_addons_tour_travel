@@ -28,8 +28,8 @@ class CustomerParentReportBalance(models.Model):
         """
 
     @staticmethod
-    def _where(agent_id, ho_id, customer_parent_id):
-        where = """customer_parent.active = True"""
+    def _where(agent_id, ho_id, customer_parent_id, customer_parent_type_ids):
+        where = """customer_parent.active = True AND customer_parent_type.id in %s""" % (str(customer_parent_type_ids).replace('[', '(').replace(']', ')'))
         if ho_id:
             where += """ AND customer_parent.ho_id = """ + str(ho_id)
         if agent_id:
@@ -47,8 +47,8 @@ class CustomerParentReportBalance(models.Model):
     def _report_title(data_form):
         data_form['title'] = 'Customer Parent Balance Report: ' + data_form['subtitle']
 
-    def _lines(self, date_from, date_to, agent_id, ho_id, customer_parent_id):
-        query = 'SELECT {} FROM {} WHERE {} ORDER BY {}'.format(self._select(), self._from(), self._where(agent_id, ho_id, customer_parent_id), self._order_by())
+    def _lines(self, date_from, date_to, agent_id, ho_id, customer_parent_id, customer_parent_type_ids):
+        query = 'SELECT {} FROM {} WHERE {} ORDER BY {}'.format(self._select(), self._from(), self._where(agent_id, ho_id, customer_parent_id, customer_parent_type_ids), self._order_by())
 
         self.env.cr.execute(query)
         _logger.info(query)
@@ -63,8 +63,8 @@ class CustomerParentReportBalance(models.Model):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self,value).strftime('%Y-%m-%d %H:%M:%S')
 
-    def _get_lines_data(self, date_from, date_to, agent_id, ho_id, customer_parent_id):
-        lines = self._lines(date_from, date_to, agent_id, ho_id, customer_parent_id)
+    def _get_lines_data(self, date_from, date_to, agent_id, ho_id, customer_parent_id, customer_parent_type_ids):
+        lines = self._lines(date_from, date_to, agent_id, ho_id, customer_parent_id, customer_parent_type_ids)
         # lines = self._convert_data(lines)
         return lines
 
@@ -76,7 +76,8 @@ class CustomerParentReportBalance(models.Model):
         ho_id = data_form['ho_id']
         agent_id = data_form['agent_id']
         customer_parent_id = data_form['customer_parent_id']
-        line = self._get_lines_data(date_from, date_to, agent_id, ho_id, customer_parent_id)
+        customer_parent_type_ids = [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id]
+        line = self._get_lines_data(date_from, date_to, agent_id, ho_id, customer_parent_id, customer_parent_type_ids)
         self._report_title(data_form)
         return {
             'lines': line,
@@ -84,7 +85,7 @@ class CustomerParentReportBalance(models.Model):
         }
 
     def _search_valued(self, data_form):
-        search_list = [('state', '=', 'done')]
+        search_list = [('state', '=', 'done'), ('customer_parent_type_id', 'in', [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id])]
         if data_form['ho_id']:
             search_list.append(('ho_id', '=', data_form['ho_id']))
         if data_form['agent_id']:
