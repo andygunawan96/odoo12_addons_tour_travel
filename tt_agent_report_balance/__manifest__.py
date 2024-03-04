@@ -19,9 +19,13 @@ Key Features
     'data': [
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
+        'data/ir_cron_data.xml',
         'views/tt_agent_report_balance_log.xml',
+        'views/tt_customer_parent_report_balance_log.xml',
         'wizard/tt_agent_report_balance_view.xml',
+        'wizard/tt_customer_parent_report_balance_view.xml',
         'report/tt_agent_report_balance_menu.xml',
+        'report/tt_customer_parent_report_balance_menu.xml',
     ],
     'demo': [],
     'qweb': [],

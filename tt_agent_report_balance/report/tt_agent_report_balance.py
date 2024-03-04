@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class AgentReportBalance(models.Model):
     _name = 'report.tt_agent_report_balance.agent_report_balance'
-    _description = "Balance Report"
+    _description = "Agent Balance Report"
 
     @staticmethod
     def _select():
@@ -29,21 +29,25 @@ class AgentReportBalance(models.Model):
         """
 
     @staticmethod
-    def _where(agent):
-        where = """agent_type.id = '%s'""" % (agent)
+    def _where(agent_id, ho_id):
+        where = """agent.active = True"""
+        if ho_id:
+            where += """ AND agent.ho_id = """ + str(ho_id)
+        if agent_id:
+            where += """ AND agent.id = """ + str(agent_id)
         return where
 
     @staticmethod
     def _order_by():
-        return """agent_type.id
+        return """agent_type.id, agent.id
         """
 
     @staticmethod
     def _report_title(data_form):
-        data_form['title'] = 'Balance Report: ' + data_form['subtitle']
+        data_form['title'] = 'Agent Balance Report: ' + data_form['subtitle']
 
-    def _lines(self, date_from, date_to, agent_id):
-        query = 'SELECT {} FROM {} WHERE {} ORDER BY {}'.format(self._select(), self._from(), self._where(agent_id), self._order_by())
+    def _lines(self, date_from, date_to, agent_id, ho_id):
+        query = 'SELECT {} FROM {} WHERE {} ORDER BY {}'.format(self._select(), self._from(), self._where(agent_id, ho_id), self._order_by())
 
         self.env.cr.execute(query)
         _logger.info(query)
@@ -58,8 +62,8 @@ class AgentReportBalance(models.Model):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self,value).strftime('%Y-%m-%d %H:%M:%S')
 
-    def _get_lines_data(self, date_from, date_to, agent_id):
-        lines = self._lines(date_from, date_to, agent_id)
+    def _get_lines_data(self, date_from, date_to, agent_id, ho_id):
+        lines = self._lines(date_from, date_to, agent_id, ho_id)
         # lines = self._convert_data(lines)
         return lines
 
@@ -68,8 +72,9 @@ class AgentReportBalance(models.Model):
         date_to = data_form['date_to']
         if not data_form['state']:
             data_form['state'] = 'all'
+        ho_id = data_form['ho_id']
         agent_id = data_form['agent_id']
-        line = self._get_lines_data(date_from, date_to, agent_id)
+        line = self._get_lines_data(date_from, date_to, agent_id, ho_id)
         self._report_title(data_form)
         return {
             'lines': line,

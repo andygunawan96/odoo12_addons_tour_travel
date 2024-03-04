@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="customer_parent_detail_balance_report_form">
+            <field name="name">Detail Balance Report Form</field>
+            <field name="model">tt.customer.parent.report.balance.wizard</field>
+            <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
+            <field name="arch" type="xml">
+                <field name="all_ho" position="before"/>
+                <xpath expr="//group[@name='group_period']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="action_customer_parent_report_balance_wz" model="ir.actions.act_window">
+            <field name="name">Customer Parent Report Balance</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.customer.parent.report.balance.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="customer_parent_detail_balance_report_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+            id="sub_menu_tour_travel_customer_parent_report_balance"
+            name="Customer Parent Balance Report"
+            parent="tt_agent_report_balance.menu_tour_travel_customer_parent_report_balance"
+            action="action_customer_parent_report_balance_wz"
+            sequence="20"
+        />
+
+        <menuitem
+            id="sub_menu_customers_report_balance"
+            name="Customer Parent Balance Report"
+            parent="tt_agent_report_balance.menu_customers_report_balance"
+            action="action_customer_parent_report_balance_wz"
+            sequence="20"
+        />
+    </data>
+</odoo>
