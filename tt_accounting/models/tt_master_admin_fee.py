@@ -22,6 +22,10 @@ class TtMasterAdminFee(models.Model):
     agent_type_access_type = fields.Selection([("all", "ALL"),("allow", "Allowed"),("restrict", "Restricted")], 'Agent Type Access Type', default='all')
     agent_ids = fields.Many2many('tt.agent', 'master_admin_fee_agent_rel', 'admin_fee_id', 'agent_id', string='Agents')
     agent_access_type = fields.Selection([("all", "ALL"),("allow", "Allowed"),("restrict", "Restricted")], 'Agent Access Type', default='all')
+    customer_parent_type_ids = fields.Many2many('tt.customer.parent.type', 'master_admin_fee_customer_parent_type_rel', 'admin_fee_id','customer_parent_type_id', string='Customer Parent Types')
+    customer_parent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Customer Parent Type Access Type', default='all')
+    customer_parent_ids = fields.Many2many('tt.customer.parent', 'master_admin_fee_customer_parent_rel', 'admin_fee_id', 'customer_parent_id', string='Customer Parents')
+    customer_parent_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Customer Parent Access Type', default='all')
     provider_type_ids = fields.Many2many('tt.provider.type', 'admin_fee_provider_type_rel', 'admin_fee_id', 'provider_type_id', string='Provider Types')
     provider_type_access_type = fields.Selection([("all", "ALL"),("allow", "Allowed"),("restrict", "Restricted")], 'Provider Type Access Type', default='all', required=True)
     admin_fee_line_ids = fields.One2many('tt.master.admin.fee.line', 'master_admin_fee_id', 'Admin Fee Line(s)')
@@ -142,6 +146,18 @@ class TtAgentType(models.Model):
     _inherit = 'tt.agent.type'
 
     admin_fee_ids = fields.Many2many('tt.master.admin.fee', 'master_admin_fee_agent_type_rel', 'agent_type_id', 'admin_fee_id', string='Admin Fee')
+
+
+class TtCustomerParent(models.Model):
+    _inherit = 'tt.customer.parent'
+
+    admin_fee_ids = fields.Many2many('tt.master.admin.fee', 'master_admin_fee_customer_parent_rel', 'customer_parent_id', 'admin_fee_id', string='Admin Fee')
+
+
+class TtCustomerParentType(models.Model):
+    _inherit = 'tt.customer.parent.type'
+
+    admin_fee_ids = fields.Many2many('tt.master.admin.fee', 'master_admin_fee_customer_parent_type_rel', 'customer_parent_type_id', 'admin_fee_id', string='Admin Fee')
 
 
 class TtProviderType(models.Model):

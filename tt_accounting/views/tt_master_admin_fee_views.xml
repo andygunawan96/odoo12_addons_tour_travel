@@ -107,6 +107,34 @@
                             </group>
                             <field name="agent_ids"/>
                         </page>
+                        <page string="Customer Parent Types">
+                            <group>
+                                <group>
+                                    <field name="customer_parent_type_access_type"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <field name="customer_parent_type_ids"/>
+                        </page>
+                        <page string="Customer Parents">
+                            <group>
+                                <group>
+                                    <field name="customer_parent_access_type"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <field name="customer_parent_ids" context="{'search_default_cor': 1, 'search_default_por': 1}">
+                                <tree create="true">
+                                    <field name="name"/>
+                                    <field name="customer_parent_type_id"/>
+                                    <field name="parent_agent_id"/>
+                                    <field name="ho_id" groups="base.group_erp_manager"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
