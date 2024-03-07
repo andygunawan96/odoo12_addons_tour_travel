@@ -23,7 +23,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-
+                    <button name="copy_setup" string="Copy Setup" type="object" groups="base.group_erp_manager,tt_base.group_tt_tour_travel"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

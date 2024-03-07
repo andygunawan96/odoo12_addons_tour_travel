@@ -21,7 +21,7 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="copy_setup" string="Copy Setup" type="object" groups="base.user_admin"/>
+                        <button name="copy_setup" string="Copy Setup" type="object" groups="base.group_erp_manager"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">

@@ -66,7 +66,7 @@ class TtAccountingSetup(models.Model):
             'name': new_setup_obj.display_name,
             'target': 'self',
             'url': base_url + "/web#id=" + str(new_setup_obj.id) + "&action=" + str(
-                action_num) + "&model=tt.master.tour&view_type=form&menu_id=" + str(menu_num),
+                action_num) + "&model=tt.accounting.setup&view_type=form&menu_id=" + str(menu_num),
         }
 
 

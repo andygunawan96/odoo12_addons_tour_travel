@@ -135,6 +135,61 @@ class TtMasterAdminFee(models.Model):
 
         return final_amt
 
+    def copy_setup(self):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 469')
+        new_setup_obj = self.copy()
+
+        for rec in self.admin_fee_line_ids:
+            self.env['tt.master.admin.fee.line'].create({
+                'master_admin_fee_id': new_setup_obj.id,
+                'type': rec.type,
+                'amount': rec.amount,
+                'is_per_pnr': rec.is_per_pnr,
+                'is_per_pax': rec.is_per_pax,
+                'is_per_journey': rec.is_per_journey,
+                'balance_for': rec.balance_for
+            })
+
+        provider_type_ids_list = []
+        for rec in self.provider_type_ids:
+            provider_type_ids_list.append(rec.id)
+
+        agent_type_ids_list = []
+        for rec in self.agent_type_ids:
+            agent_type_ids_list.append(rec.id)
+
+        agent_ids_list = []
+        for rec in self.agent_ids:
+            agent_ids_list.append(rec.id)
+
+        customer_parent_type_ids_list = []
+        for rec in self.customer_parent_type_ids:
+            customer_parent_type_ids_list.append(rec.id)
+
+        customer_parent_ids_list = []
+        for rec in self.customer_parent_ids:
+            customer_parent_ids_list.append(rec.id)
+
+        new_setup_obj.write({
+            'provider_type_ids': provider_type_ids_list,
+            'agent_type_ids': agent_type_ids_list,
+            'agent_ids': agent_ids_list,
+            'customer_parent_type_ids': customer_parent_type_ids_list,
+            'customer_parent_ids': customer_parent_ids_list
+        })
+
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        action_num = self.env.ref('tt_accounting.tt_master_admin_fee_action_views').id
+        menu_num = self.env.ref('tt_accounting.sub_menu_tour_travel_master_admin_fee').id
+        return {
+            'type': 'ir.actions.act_url',
+            'name': new_setup_obj.name,
+            'target': 'self',
+            'url': base_url + "/web#id=" + str(new_setup_obj.id) + "&action=" + str(
+                action_num) + "&model=tt.master.admin.fee&view_type=form&menu_id=" + str(menu_num),
+        }
+
 
 class TtAgent(models.Model):
     _inherit = 'tt.agent'
