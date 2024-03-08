@@ -13,7 +13,8 @@ class TtMasterAdminFee(models.Model):
     _description = 'Master Admin Fee'
     _order = 'sequence, id desc'
 
-    name = fields.Char('Name')
+    display_name = fields.Char('Display Name', compute='_compute_display_name')
+    name = fields.Char('Description')
     after_sales_type = fields.Selection([('after_sales', 'After Sales'), ('refund', 'Refund'), ('offline', 'Issued Offline')], 'Transaction Type', default='after_sales')
     refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=False)
     min_amount_ho = fields.Float('Minimum Amount (HO)', default=0)
@@ -32,6 +33,63 @@ class TtMasterAdminFee(models.Model):
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     sequence = fields.Integer('Sequence', default=50)
     active = fields.Boolean('Active', default=True)
+
+    @api.multi
+    def write(self, vals):
+        if not ({self.env.ref('tt_base.group_after_sales_master_level_2').id,
+                 self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
+            for rec in list(vals.keys()):
+                if rec not in ['sequence', 'customer_parent_type_access_type', 'customer_parent_type_ids', 'customer_parent_access_type', 'customer_parent_ids']:
+                    vals.pop(rec)
+        return super(TtMasterAdminFee, self).write(vals)
+
+    @api.depends('after_sales_type', 'refund_type_id', 'provider_type_access_type', 'provider_type_ids', 'agent_type_access_type', 'agent_type_ids', 'agent_access_type', 'agent_ids', 'customer_parent_type_access_type', 'customer_parent_type_ids', 'customer_parent_access_type', 'customer_parent_ids')
+    @api.onchange('after_sales_type', 'refund_type_id', 'provider_type_access_type', 'provider_type_ids', 'agent_type_access_type', 'agent_type_ids', 'agent_access_type', 'agent_ids', 'customer_parent_type_access_type', 'customer_parent_type_ids', 'customer_parent_access_type', 'customer_parent_ids')
+    def _compute_display_name(self):
+        for rec in self:
+            temp_disp_name = '%s' % dict(self._fields['after_sales_type'].selection).get(rec.after_sales_type)
+
+            provider_type_name = 'For All Provider Types'
+            if rec.provider_type_access_type != 'all':
+                name_list = []
+                for provider_type in rec.provider_type_ids:
+                    name_list.append('%s' % provider_type.name)
+                provider_type_name = '%s For Provider Type(s) %s' % (rec.provider_type_access_type.title(), ','.join(name_list))
+            temp_disp_name += ' (%s)' % provider_type_name
+
+            agent_type_name = 'For All Agent Types'
+            if rec.agent_type_access_type != 'all':
+                name_list = []
+                for agent_type in rec.agent_type_ids:
+                    name_list.append('%s' % agent_type.name)
+                agent_type_name = '%s For Agent Type(s) %s' % (rec.agent_type_access_type.title(), ','.join(name_list))
+            temp_disp_name += ' (%s)' % agent_type_name
+
+            agent_name = 'For All Agents'
+            if rec.agent_access_type != 'all':
+                name_list = []
+                for agent in rec.agent_ids:
+                    name_list.append('%s' % agent.name)
+                agent_name = '%s For Agent(s) %s' % (rec.agent_access_type.title(), ','.join(name_list))
+            temp_disp_name += ' (%s)' % agent_name
+
+            customer_parent_type_name = 'For All Customer Parent Types'
+            if rec.customer_parent_type_access_type != 'all':
+                name_list = []
+                for customer_parent_type in rec.customer_parent_type_ids:
+                    name_list.append('%s' % customer_parent_type.name)
+                customer_parent_type_name = '%s For Customer Parent Type(s) %s' % (rec.customer_parent_type_access_type.title(), ','.join(name_list))
+            temp_disp_name += ' (%s)' % customer_parent_type_name
+
+            customer_parent_name = 'For All Customer Parents'
+            if rec.customer_parent_access_type != 'all':
+                name_list = []
+                for customer_parent in rec.customer_parent_ids:
+                    name_list.append('%s' % customer_parent.name)
+                customer_parent_name = '%s For Customer Parent(s) %s' % (rec.customer_parent_access_type.title(), ','.join(name_list))
+            temp_disp_name += ' (%s)' % customer_parent_name
+
+            rec.display_name = temp_disp_name
 
     def get_final_adm_fee_ho(self, total=0, pnr_multiplier=1, pax_multiplier=1, journey_multiplier=1):
         final_amt = 0

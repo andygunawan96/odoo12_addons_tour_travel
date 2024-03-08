@@ -90,6 +90,27 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
     </record>
 
+    <record id="tt_master_admin_fee_for_agent_user" model="ir.rule">
+        <field name="name">Master Admin Fee For Agent User</field>
+        <field name="model_id" ref="model_tt_master_admin_fee"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id), '|', ('agent_access_type', '=', 'all'), '|', '&amp;',
+                ('agent_access_type', '=', 'allow'), ('agent_ids', '=', user.agent_id.id), '&amp;',
+                ('agent_access_type', '=', 'restrict'), ('agent_ids', '!=', user.agent_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>
+    </record>
+
+    <record id="tt_master_admin_fee_for_corpor_user" model="ir.rule">
+        <field name="name">Master Admin Fee For Corporate User</field>
+        <field name="model_id" ref="model_tt_master_admin_fee"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id), '|', ('agent_access_type', '=', 'all'), '|', '&amp;',
+                ('agent_access_type', '=', 'allow'), ('agent_ids', '=', user.agent_id.id), '&amp;',
+                ('agent_access_type', '=', 'restrict'), ('agent_ids', '!=', user.agent_id.id), '|',
+                ('customer_parent_access_type', '=', 'all'), '|', '&amp;',
+                ('customer_parent_access_type', '=', 'allow'), ('customer_parent_ids', '=', user.customer_parent_id.id), '&amp;',
+                ('customer_parent_access_type', '=', 'restrict'), ('customer_parent_ids', '!=', user.customer_parent_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>
+    </record>
+
     <record id="tt_reimburse_commission_for_ho_user" model="ir.rule">
         <field name="name">Reimburse Commission For HO User</field>
         <field name="model_id" ref="model_tt_reimburse_commission"/>

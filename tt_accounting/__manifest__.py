@@ -31,6 +31,7 @@ Key Features
         'wizard/tt_reimburse_commission_wizard_view.xml',
         'views/tt_refund_type_views.xml',
         'views/tt_master_admin_fee_views.xml',
+        'views/tt_master_admin_fee_views_transaction.xml',
         'views/tt_ledger_views.xml',
         'views/tt_ledger_queue_views.xml',
         'views/tt_adjustment_views.xml',

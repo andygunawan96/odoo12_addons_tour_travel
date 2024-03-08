@@ -330,6 +330,7 @@ class TtCustomer(models.Model):
             dom = [('agent_id','in',agent_id_list), ('is_search_allowed','=',True)]
 
             is_cor_login = util.get_without_empty(context,'co_customer_parent_id')
+            cust_id_dom = []
             cust_id_list_obj = []
             if util.get_without_empty(req,'name'):
                 if util.get_without_empty(req,'search_type') == 'cor_name' and not is_cor_login:
@@ -350,8 +351,7 @@ class TtCustomer(models.Model):
                 elif util.get_without_empty(req,'search_type') == 'birth_date':
                     dom.append(('birth_date', '=', datetime.strptime(req['name'],'%Y-%m-%d')))
                 else:
-                    cust_id_list_obj = self.env['tt.customer.identity'].search(
-                        [('customer_id.agent_id', 'in', agent_id_list), ('identity_name', 'ilike', req['name'])])
+                    cust_id_dom = [('customer_id.agent_id', 'in', agent_id_list), ('identity_name', 'ilike', req['name'])]
                     dom.append(('name','ilike',req['name']))
             if req.get('email'):
                 dom.append(('email','=',req['email']))
@@ -365,10 +365,15 @@ class TtCustomer(models.Model):
                         cust_dom_ids.append(rec_book.customer_id.id)
                 dom.append('|')
                 dom.append(('customer_parent_ids','=',context['co_customer_parent_id']))
-                # dom.append(('booker_parent_ids','=',context['co_customer_parent_id']))
                 dom.append(('id','in',cust_dom_ids))
+                if cust_id_dom:
+                    cust_id_dom.append('|')
+                    cust_id_dom.append(('customer_id.customer_parent_ids', '=', context['co_customer_parent_id']))
+                    cust_id_dom.append(('customer_id.id', 'in', cust_dom_ids))
             # customer_list_obj = self.search(dom,limit=100)
             customer_list_obj = self.search(dom)
+            if cust_id_dom:
+                cust_id_list_obj = self.env['tt.customer.identity'].search(cust_id_dom)
             ## CASE IN TIDAK KELUAR TETAPI INF KELUAR
             ## KARENA RECORD YG INF TIDAK MASUK KE CUSTOMER_LIST_OBJ, KENA LIMIT JADI RECORD
             customer_list = []

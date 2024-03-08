@@ -1,38 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="tt_master_admin_fee_filter_view" model="ir.ui.view">
-        <field name="name">tt.master.admin.fee.filter.view</field>
-        <field name="model">tt.master.admin.fee</field>
-        <field name="arch" type="xml">
-            <search string="Search Admin Fee">
-                <field name="name"/>
-                <field name="after_sales_type"/>
-                <field name="min_amount_ho"/>
-                <field name="min_amount_agent"/>
-
-                <group expand="0" string="Group By">
-                    <filter name="group_by_after_sales_type" string="After Sales Type" domain="[]" context="{'group_by':'after_sales_type'}" groups="tt_base.group_after_sales_master_level_1"/>
-                </group>
-            </search>
-        </field>
-    </record>
-
-    <record id="tt_master_admin_fee_form_view" model="ir.ui.view">
-        <field name="name">tt.master.admin.fee.form.view</field>
+    <record id="tt_master_admin_fee_form_view_transaction" model="ir.ui.view">
+        <field name="name">tt.master.admin.fee.form.view.transaction</field>
         <field name="model">tt.master.admin.fee</field>
         <field name="arch" type="xml">
             <form>
-                <header>
-                    <button name="copy_setup" string="Copy Setup" type="object" groups="base.group_erp_manager,tt_base.group_tt_tour_travel"/>
-                </header>
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="toggle_active" type="object"
-                                class="oe_stat_button" icon="fa-archive">
-                            <field name="active" widget="boolean_button"
-                                options='{"terminology": "archive"}'/>
-                        </button>
-                    </div>
                     <div class="oe_title">
                         <label for="Name" class="oe_edit_only" string="Name"/>
                         <h1>
@@ -41,19 +14,19 @@
                     </div>
                     <group>
                         <group>
-                            <field name="name"/>
-                            <field name="after_sales_type"/>
-                            <field name="refund_type_id" attrs="{'invisible': [('after_sales_type','!=','refund')]}"/>
+                            <field name="name" readonly="1"/>
+                            <field name="after_sales_type" readonly="1"/>
+                            <field name="refund_type_id" attrs="{'invisible': [('after_sales_type','!=','refund')]}" readonly="1"/>
                             <field name="sequence"/>
                             <field name="ho_id" groups="base.group_erp_manager"/>
                         </group>
                         <group>
-                            <field name="min_amount_ho"/>
-                            <field name="min_amount_agent"/>
+                            <field name="min_amount_ho" readonly="1"/>
+                            <field name="min_amount_agent" readonly="1"/>
                         </group>
                     </group>
                     <separator string="Admin Fee Line(s)"/>
-                    <field name="admin_fee_line_ids">
+                    <field name="admin_fee_line_ids" readonly="1">
                         <tree>
                             <field name="type"/>
                             <field name="amount"/>
@@ -81,32 +54,32 @@
                         <page string="Provider Types">
                             <group>
                                 <group>
-                                    <field name="provider_type_access_type"/>
+                                    <field name="provider_type_access_type" readonly="1"/>
                                 </group>
                                 <group>
                                 </group>
                             </group>
-                            <field name="provider_type_ids"/>
+                            <field name="provider_type_ids" readonly="1"/>
                         </page>
                         <page string="Agent Types">
                             <group>
                                 <group>
-                                    <field name="agent_type_access_type"/>
+                                    <field name="agent_type_access_type" readonly="1"/>
                                 </group>
                                 <group>
                                 </group>
                             </group>
-                            <field name="agent_type_ids"/>
+                            <field name="agent_type_ids" readonly="1"/>
                         </page>
                         <page string="Agents">
                             <group>
                                 <group>
-                                    <field name="agent_access_type"/>
+                                    <field name="agent_access_type" readonly="1"/>
                                 </group>
                                 <group>
                                 </group>
                             </group>
-                            <field name="agent_ids"/>
+                            <field name="agent_ids" readonly="1"/>
                         </page>
                         <page string="Customer Parent Types">
                             <group>
@@ -146,8 +119,8 @@
         </field>
     </record>
 
-    <record id="tt_master_admin_fee_tree_view" model="ir.ui.view">
-        <field name="name">tt.master.admin.fee.tree.view</field>
+    <record id="tt_master_admin_fee_tree_view_transaction" model="ir.ui.view">
+        <field name="name">tt.master.admin.fee.tree.view.transaction</field>
         <field name="model">tt.master.admin.fee</field>
         <field name="arch" type="xml">
             <tree>
@@ -163,24 +136,30 @@
         </field>
     </record>
 
-    <record id="tt_master_admin_fee_action_views" model="ir.actions.act_window">
+    <record id="tt_master_admin_fee_action_views_transaction" model="ir.actions.act_window">
         <field name="name">Master Admin Fee</field>
         <field name="res_model">tt.master.admin.fee</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_accounting.tt_master_admin_fee_form_view',
-            'tree_view_ref': 'tt_accounting.tt_master_admin_fee_tree_view'
+            'form_view_ref': 'tt_accounting.tt_master_admin_fee_form_view_transaction',
+            'tree_view_ref': 'tt_accounting.tt_master_admin_fee_tree_view_transaction'
             }
         </field>
     </record>
 
-    <menuitem id="sub_menu_tour_travel_master_admin_fee"
-              parent="tt_base.menu_tour_travel_configuration_admin_fee"
-              action="tt_accounting.tt_master_admin_fee_action_views"
+    <menuitem id="menu_transaction_admin_fee"
+                      name="Refund and After Sales"
+                      groups="tt_base.group_tt_agent_user,base.group_erp_manager"
+                      parent="tt_base.top_transaction_configuration"
+                      sequence="10"/>
+
+    <menuitem id="sub_menu_transaction_master_admin_fee"
+              parent="tt_accounting.menu_transaction_admin_fee"
+              action="tt_accounting.tt_master_admin_fee_action_views_transaction"
               name="Admin Fee"
               sequence="1"
-              groups="tt_base.group_after_sales_master_level_1"/>
+              groups="tt_base.group_tt_agent_user,base.group_erp_manager"/>
 
 </odoo>
