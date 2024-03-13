@@ -5,6 +5,7 @@
         <field name="model">tt.master.admin.fee</field>
         <field name="arch" type="xml">
             <search string="Search Admin Fee">
+                <field name="display_name"/>
                 <field name="name"/>
                 <field name="after_sales_type"/>
                 <field name="min_amount_ho"/>
