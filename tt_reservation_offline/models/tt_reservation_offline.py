@@ -73,6 +73,8 @@ class IssuedOffline(models.Model):
     # carrier_id = fields.Many2one('tt.transport.carrier')
     sector_type = fields.Selection(SECTOR_TYPE, 'Sector', readonly=True, states={'draft': [('readonly', False)],
                                                                                  'pending': [('readonly', False)]})
+    departure_date = fields.Char('Journey Date', compute='_compute_offline_departure_arrival_date', store=True)
+    arrival_date = fields.Char('Arrival Date', compute='_compute_offline_departure_arrival_date', store=True)
 
     # 171121 CANDY: add field pnr, commission 80%, nta, nta 80%
     agent_commission = fields.Monetary('Agent Commission', readonly=True, compute='_get_agent_commission_v2', store=True)
@@ -256,6 +258,25 @@ class IssuedOffline(models.Model):
                     rec.reconcile_state = 'not_reconciled'
             else:
                 rec.reconcile_state = 'not_reconciled'
+
+    @api.depends('line_ids')
+    def _compute_offline_departure_arrival_date(self):
+        for rec in self:
+            dept_date = ''
+            arr_date = ''
+            if rec.line_ids:
+                if rec.offline_provider_type in ['airline', 'train', 'bus']:
+                    dept_date = rec.line_ids[0].departure_date
+                    arr_date = rec.line_ids[-1].arrival_date
+                    if rec.line_ids[0].departure_hour and rec.line_ids[0].departure_minute:
+                        dept_date += ' %s:%s' % (rec.line_ids[0].departure_hour, rec.line_ids[0].departure_minute)
+                    if rec.line_ids[-1].departure_hour and rec.line_ids[-1].departure_minute:
+                        arr_date += ' %s:%s' % (rec.line_ids[-1].departure_hour, rec.line_ids[-1].departure_minute)
+                elif rec.offline_provider_type == 'hotel':
+                    dept_date = rec.line_ids[0].check_in
+                    arr_date = rec.line_ids[-1].check_out
+            rec.departure_date = dept_date
+            rec.arrival_date = arr_date
 
     def date_format_check(self, provider_type, vals=None):
         """ Cek format tanggal line """
