@@ -159,9 +159,9 @@
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
-        <record id="tt_provider_airline_ek_emirates" model="tt.provider">
-            <field name="name">EK Emirates</field>
-            <field name="code">ek_emirates</field>
+        <record id="tt_provider_airline_emirates" model="tt.provider">
+            <field name="name">Emirates</field>
+            <field name="code">emirates</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
