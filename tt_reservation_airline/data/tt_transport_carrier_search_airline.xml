@@ -365,7 +365,42 @@
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
             <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_etihad'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ey_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="name">Etihad Airways</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ey"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_etihad'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ey_gds" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="name">Etihad Airways GDS</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ey"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ey_ndc" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="name">Etihad Airways NDC</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ey"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_etihad')),
             ]"/>
         </record>
 
@@ -703,7 +738,31 @@
             <field name="is_favorite" eval="False"/>
             <field name="sequence">156</field>
             <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_emirates')),
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ek_gds" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="name">Emirates GDS</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ek"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">156</field>
+            <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+        <record id="tt_transport_carrier_search_ek_ndc" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="name">Emirates NDC</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ek"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">156</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_emirates'))
             ]"/>
         </record>
 

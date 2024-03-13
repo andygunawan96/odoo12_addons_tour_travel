@@ -1194,7 +1194,7 @@ tt_ssr_list_id_1192,VEGETARIAN LACTO-OVO MEAL (VLML),VLML,tt_ssr_category_meal,t
 tt_ssr_list_id_1193,VEGETARIAN ORIENTAL MEAL (VOML),VOML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1194,WHEELCHAIR TO AIRCRAFT DOOR REQUEST (WCHR),WCHR,tt_ssr_category_wheelchair,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1195,UNACCOMPANIED MINOR (PDUM),PDUM,,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
-tt_ssr_list_id_1196,Baggage XBAG,XWBG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1196,Baggage XWBG,XWBG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1197,Excess 1 Piece Baggage,ABAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1198,Excess 2 Pieces Baggage,BBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1199,Excess 3 Pieces Baggage,CBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_qatar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
@@ -1218,3 +1218,25 @@ tt_ssr_list_id_1216,Baggage 25 Kg,BG25,tt_ssr_category_baggage,tt_reservation_ai
 tt_ssr_list_id_1217,Baggage 30 Kg,BG30,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_jetstar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1218,Baggage 35 Kg,BG35,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_jetstar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
 tt_ssr_list_id_1219,Baggage 40 Kg,BG40,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_jetstar,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1220,Baggage XBAG,XWBG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1221,Excess 1 Piece Baggage,ABAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1222,Excess 2 Pieces Baggage,BBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1223,Excess 3 Pieces Baggage,CBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1224,Excess 4 Pieces Baggage,DBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1225,Excess 5 Pieces Baggage,EBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1226,ASIAN VEGETERIAN MEAL (AVML),AVML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1227,BABY MEAL REQUEST (BBML),BBML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1228,BLAND MEAL REQUEST (BLML),BLML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1229,FRUIT PLATTER MEAL REQUEST (FPML),FPML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1230,GLUTEN FREE MEAL (GFML),GFML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1231,LOW FAT MEAL REQUEST (LFML),LFML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1232,LOW SALT MEAL REQUEST (LSML),LSML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1233,NON LACTOSE MEAL (NLML),NLML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1234,VEGETARIAN RAW MEAL REQUEST (RVML),RVML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1235,VEGETARIAN VEGAN MEAL (VGML),VGML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1236,VEGETARIAN JAIN MEAL REQUEST (VJML),VJML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1237,VEGETARIAN LACTO-OVO MEAL REQUEST (VLML),VLML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1238,VEGETARIAN ORIENTAL MEAL REQUEST (VOML),VOML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1239,WHEELCHAIR TO SEAT REQUEST (WCHC),WCHC,tt_ssr_category_wheelchair,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1240,WHEELCHAIR TO AIRCRAFT DOOR REQUEST (WCHR),WCHR,tt_ssr_category_wheelchair,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
+tt_ssr_list_id_1241,WHEELCHAIR UP/DOWN STAIRS REQUEST (WCHS),WCHS,tt_ssr_category_wheelchair,tt_reservation_airline.tt_provider_airline_etihad,tt_reservation_airline.tt_provider_type_airline,,1,1,1,1,1,1,1
