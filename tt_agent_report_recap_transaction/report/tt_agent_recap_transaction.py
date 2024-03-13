@@ -59,7 +59,7 @@ class AgentReportRecapTransacion(models.Model):
     @staticmethod
     def _offline():
         return """
-        ,rsv.offline_provider_type as offline_provider
+        ,rsv.offline_provider_type as offline_provider, rsv.departure_date as departure_date, rsv.arrival_date as arrival_date
         """
 
     # this select function responsible build query for service charge
