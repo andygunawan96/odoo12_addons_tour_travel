@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tt_customer_parent_report_balance_log_form_views" model="ir.ui.view">
+            <field name="name">tt.customer.parent.report.balance.log.form.views</field>
+            <field name="model">tt.customer.parent.report.balance.log</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <form edit="false" creaet="false">
+                    <sheet>
+                        <field name="name" invisible="1"/>
+
+                        <h1>
+                            <field name="date" readonly="1"/>
+                        </h1>
+                        <group>
+                            <field name="ho_id" groups="base.group_erp_manager" readonly="1"/>
+                            <field name="agent_id" groups="base.group_erp_manager,tt_base.group_tt_tour_travel" readonly="1"/>
+                        </group>
+                        <br/>
+                        <separator string="Download File"/>
+                        <field name="file" filename="name" readonly="1"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_customer_parent_report_balance_log_tree_views" model="ir.ui.view">
+            <field name="name">tt.customer.parent.report.balance.log.tree.views</field>
+            <field name="model">tt.customer.parent.report.balance.log</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <tree create="false">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
+                    <field name="agent_id" groups="base.group_erp_manager,tt_base.group_tt_tour_travel"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_log_customer_parent_balance_report_action_views" model="ir.actions.act_window">
+            <field name="name">Log Customer Parent Balance Report</field>
+            <field name="res_model">tt.customer.parent.report.balance.log</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_agent_report_balance.tt_customer_parent_report_balance_log_form_views',
+                'tree_view_ref': 'tt_agent_report_balance.tt_customer_parent_report_balance_log_tree_views'
+                }
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_tour_travel_customer_parent_report_balance"
+                name="Customer Parent Balance"
+                parent="tt_base.top_tour_travel_report"
+                sequence="2"
+        />
+        <menuitem
+                id="sub_menu_tour_travel_customer_parent_report_log_balance"
+                name="Customer Parent Balance Log"
+                parent="tt_agent_report_balance.menu_tour_travel_customer_parent_report_balance"
+                groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"
+                sequence="10"
+                action="tt_log_customer_parent_balance_report_action_views"
+        />
+
+        <menuitem
+                id="menu_customers_report_balance"
+                name="Customer Parent Balance"
+                parent="tt_base.top_customers_report"
+                sequence="2"
+        />
+        <menuitem
+                id="sub_menu_customers_report_log_balance"
+                name="Customer Parent Balance Log"
+                parent="tt_agent_report_balance.menu_customers_report_balance"
+                groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"
+                sequence="10"
+                action="tt_log_customer_parent_balance_report_action_views"
+        />
+    </data>
+</odoo>

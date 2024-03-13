@@ -20,7 +20,7 @@
         </record>
 
         <record id="action_agent_report_balance_wz" model="ir.actions.act_window">
-            <field name="name">Report Balance</field>
+            <field name="name">Agent Report Balance</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">tt.agent.report.balance.wizard</field>
             <field name="view_type">form</field>
@@ -33,6 +33,16 @@
             id="sub_menu_tour_travel_report_balance"
             name="Agent Balance Report"
             parent="tt_agent_report_balance.menu_tour_travel_report_balance"
+            groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"
+            action="action_agent_report_balance_wz"
+            sequence="20"
+        />
+
+        <menuitem
+            id="sub_menu_customers_agent_report_balance"
+            name="Agent Balance Report"
+            parent="tt_agent_report_balance.menu_customers_agent_report_balance"
+            groups="base.group_erp_manager,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"
             action="action_agent_report_balance_wz"
             sequence="20"
         />

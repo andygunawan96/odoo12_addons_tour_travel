@@ -1,5 +1,10 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 tt_agent_report_balance_wizard,tt_agent_report_balance_wizard,model_tt_agent_report_balance_wizard,,1,1,1,1
+tt_customer_parent_report_balance_wizard,tt_customer_parent_report_balance_wizard,model_tt_customer_parent_report_balance_wizard,,1,1,1,1
 
 access_tt_agent_report_balance_log_for_ho,access.tt.agent.report.balance.log.for.ho,model_tt_agent_report_balance_log,tt_base.group_tt_tour_travel,1,0,0,0
 access_tt_agent_report_balance_log_for_admin,access.tt.agent.report.balance.log.for.admin,model_tt_agent_report_balance_log,base.group_system,1,1,1,1
+
+access_tt_customer_parent_report_balance_log_for_agent,access.tt.customer.parent.report.balance.log.for.agent,model_tt_customer_parent_report_balance_log,tt_base.group_tt_agent_user,1,0,0,0
+access_tt_customer_parent_report_balance_log_for_ho,access.tt.customer.parent.report.balance.log.for.ho,model_tt_customer_parent_report_balance_log,tt_base.group_tt_tour_travel,1,0,0,0
+access_tt_customer_parent_report_balance_log_for_admin,access.tt.customer.parent.report.balance.log.for.admin,model_tt_customer_parent_report_balance_log,base.group_system,1,1,1,1

@@ -49,38 +49,31 @@ class BusStation(models.Model):
                 country_obj = country_obj and country_obj[0] or self.env['res.country'].create({'name': rec_city['country_code']})
 
                 city_ids = self.env['res.city'].find_city_by_name(rec_city['name'], limit=5, country_id=country_obj.id)
-                if city_ids:
-                    # check_data = True  # CHECK DATA EXIST
-                    for rec_data_backend_city in city_ids:
-                        # if rec_data_backend_city.country_id.code == rec_city['country_code']:
-                        for data_provider in rec_data_backend_city.provide_code_ids:
-                            if data_provider.provider_id.code == 'traveloka_bus':
-                                # DATA FOUND UPDATE CODE
-                                data_provider.update({
-                                    "code": rec_city['id']
-                                })
-                                check_data = False
-                                break
-                        #ASUMSI KALAU ADA TETAPI TIDAK KETEMU
-                        self.env['tt.provider.code'].create({
-                            'res_model': 'res.city',
-                            'res_id': rec_data_backend_city.id,
-                            'city_id': rec_data_backend_city.id,
-                            'name': rec_city['name'],
-                            'code': rec_city['id'],
-                            'provider_id': provider_id,
-                        })
-                else:
-                    #CITY BELUM ADA CREATE BARU
-                    # CREATE NEW DATA ASUMSI CITY YG COUNTRY DI TUJU TIDAK  KETEMU
+                if not city_ids:
                     self.env['res.city'].create({
                         "name": rec_city['name'],
-                        "provider_code_ids": [(6, 0, {
-                            "provider_type_id": provider_type_id,
-                            "provider_id": provider_id,
-                            "code": rec_city['id']
-                        })],
                         "country_id": country_obj.id
+                    })
+                    city_ids = self.env['res.city'].find_city_by_name(rec_city['name'], limit=5,country_id=country_obj.id)
+                for rec_data_backend_city in city_ids:
+                    # if rec_data_backend_city.country_id.code == rec_city['country_code']:
+                    for data_provider in rec_data_backend_city.provider_code_ids:
+                        if data_provider.provider_id.code == 'traveloka_bus':
+                            # DATA FOUND UPDATE CODE
+                            data_provider.update({
+                                "code": rec_city['id']
+                            })
+                            check_data = False
+                            break
+                    #ASUMSI KALAU ADA TETAPI TIDAK KETEMU
+                    self.env['tt.provider.code'].create({
+                        'res_model': 'res.city',
+                        'res_id': rec_data_backend_city.id,
+                        'city_id': rec_data_backend_city.id,
+                        'name': rec_city['name'],
+                        'code': rec_city['id'],
+                        'provider_id': provider_id,
+                        'country_id': country_obj.id
                     })
 
             country_obj = self.env['res.country'].find_country_by_name('ID', 1)

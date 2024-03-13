@@ -60,6 +60,22 @@
                 id="sub_menu_tour_travel_report_log_balance"
                 name="Agent Balance Log"
                 parent="tt_agent_report_balance.menu_tour_travel_report_balance"
+                groups="base.group_erp_manager,tt_base.group_tt_tour_travel"
+                sequence="10"
+                action="tt_log_agent_balance_report_action_views"
+        />
+
+        <menuitem
+                id="menu_customers_agent_report_balance"
+                name="Agent Balance"
+                parent="tt_base.top_customers_report"
+                sequence="1"
+        />
+        <menuitem
+                id="sub_menu_customers_agent_report_log_balance"
+                name="Agent Balance Log"
+                parent="tt_agent_report_balance.menu_customers_agent_report_balance"
+                groups="base.group_erp_manager,tt_base.group_tt_tour_travel"
                 sequence="10"
                 action="tt_log_agent_balance_report_action_views"
         />

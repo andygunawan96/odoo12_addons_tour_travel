@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <report
+            id="action_customer_parent_report_balance"
+            model="tt.customer.parent.report.balance.wizard"
+            string="Customer Parent Balance Report"
+            report_type="qweb-html"
+            name="tt_agent_report_balance.customer_parent_report_balance"
+            file="tt_agent_report_balance.customer_parent_report_balance"
+            paperformat="tt_report_common.paperformat_A4"
+        />
+    </data>
+</odoo>

@@ -1865,8 +1865,10 @@ class HotelReservation(models.Model):
 
             # VIN: 2021/03/02: admin fee tdak bisa di hardcode
             # TODO: refund type tdak boleh hardcode lagi, jika frontend sdah support pilih refund type regular / quick
+            provider_type_id = hotel_obj.provider_type_id and hotel_obj.provider_type_id.id or False
+            customer_parent_id = hotel_obj.customer_parent_id and hotel_obj.customer_parent_id.id or False
             ref_type = data.get('refund_type', 'regular')
-            admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(hotel_obj.agent_id.id, ref_type, provider_type_id=hotel_obj.provider_type_id.id)
+            admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(hotel_obj.agent_id.id, ref_type, customer_parent_id=customer_parent_id, provider_type_id=provider_type_id)
             if ref_type == 'quick':
                 refund_type = self.env.ref('tt_accounting.refund_type_quick_refund').id
             else:

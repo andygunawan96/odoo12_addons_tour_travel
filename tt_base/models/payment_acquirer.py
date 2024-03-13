@@ -95,7 +95,7 @@ class PaymentAcquirer(models.Model):
             lost_or_profit = cust_fee-bank_fee
             return lost_or_profit,cust_fee, uniq
 
-    ## Freeze the browser when there are many payment aquirers
+    ## Freeze the browser when there are many payment acquirers
     # @api.onchange('start_time', 'end_time')
     # def check_start_end_time(self):
     #     # Opsi #1 Control klo user input 24 ++
@@ -355,8 +355,8 @@ class PaymentAcquirer(models.Model):
 
                     if can_use_payment_gateway_only: ##YANG BAYAR BEDA AGAR SEMUA PAYMENT METHOD TIDAK DAPAT
                         dom.append(('type', '=', 'payment_gateway'))
-                    else: ## UNTUK AGENT NYA AGAR TOP UP CREDIT CARD TIDAK TEMBUS
-                        dom.append(('type', '!=', 'creditcard_topup'))
+                if req['transaction_type'] != 'top_up':
+                    dom.append(('type', '!=', 'creditcard_topup'))
                 unique = 0
                 if req['transaction_type'] == 'top_up':
                     # Kalau top up Ambil agent_id HO
