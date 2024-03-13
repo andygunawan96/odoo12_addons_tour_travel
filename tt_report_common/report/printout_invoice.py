@@ -110,12 +110,13 @@ class PrintoutTicketForm(models.AbstractModel):
                                 price_breakdown[rec2.charge_type] += rec2.amount
                             price_target['total_price'] += rec2.amount
 
-                    for csc in pax.passenger_id.fee_ids:
-                        if is_break_down_price:
-                            if csc.category not in price_breakdown:
-                                price_breakdown[csc.category] = 0
-                            price_breakdown[csc.category] += csc.amount
-                        price_target['total_price'] += csc.amount
+                    if hasattr(pax.passenger_id, 'fee_ids'):
+                        for csc in pax.passenger_id.fee_ids:
+                            if is_break_down_price:
+                                if csc.category not in price_breakdown:
+                                    price_breakdown[csc.category] = 0
+                                price_breakdown[csc.category] += csc.amount
+                            price_target['total_price'] += csc.amount
 
                     # if pax.passenger_id.id not in csc_pax_list:
                     #     for scs in pax.passenger_id.channel_service_charge_ids:
