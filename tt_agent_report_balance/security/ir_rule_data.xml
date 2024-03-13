@@ -5,4 +5,16 @@
         <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
         <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
     </record>
+    <record id="tt_customer_parent_report_balance_log_for_ho_user" model="ir.rule">
+        <field name="name">Customer Parent Report Balance Log For HO User</field>
+        <field name="model_id" ref="model_tt_customer_parent_report_balance_log"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+    <record id="tt_customer_parent_report_balance_log_for_agent_user" model="ir.rule">
+        <field name="name">Customer Parent Report Balance Log For Agent User</field>
+        <field name="model_id" ref="model_tt_customer_parent_report_balance_log"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>
+    </record>
 </odoo>

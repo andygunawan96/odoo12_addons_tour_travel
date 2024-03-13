@@ -157,6 +157,8 @@ class IssuedOffline(models.Model):
     def get_admin_fee_domain(self):
         agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
         agent_adm_ids = self.agent_id.admin_fee_ids.ids
+        customer_parent_type_adm_ids = self.customer_parent_id.customer_parent_type_id.admin_fee_ids.ids
+        customer_parent_adm_ids = self.customer_parent_id.admin_fee_ids.ids
         provider_type_adm_ids = self.provider_type_id.admin_fee_ids.ids
         return [('after_sales_type', '=', 'offline'), ('ho_id', '=', self.ho_id.id), '&', '|',
                 ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
@@ -164,6 +166,12 @@ class IssuedOffline(models.Model):
                 ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
                 ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
                 ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids), '|',
+                ('customer_parent_type_access_type', '=', 'all'), '|', '&',
+                ('customer_parent_type_access_type', '=', 'allow'), ('id', 'in', customer_parent_type_adm_ids), '&',
+                ('customer_parent_type_access_type', '=', 'restrict'), ('id', 'not in', customer_parent_type_adm_ids),
+                '|', ('customer_parent_access_type', '=', 'all'), '|', '&',
+                ('customer_parent_access_type', '=', 'allow'), ('id', 'in', customer_parent_adm_ids), '&',
+                ('customer_parent_access_type', '=', 'restrict'), ('id', 'not in', customer_parent_adm_ids), '|',
                 ('provider_type_access_type', '=', 'all'), '|', '&',
                 ('provider_type_access_type', '=', 'allow'), ('id', 'in', provider_type_adm_ids), '&',
                 ('provider_type_access_type', '=', 'restrict'), ('id', 'not in', provider_type_adm_ids)]

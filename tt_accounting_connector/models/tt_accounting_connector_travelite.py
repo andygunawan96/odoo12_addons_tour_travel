@@ -382,7 +382,8 @@ class AccountingConnectorTravelite(models.Model):
                             'total_fare': pax.get('total_fare') and pax['total_fare'] or 0,
                             'total_tax': pax.get('total_tax') and pax['total_tax'] or 0,
                             'total_upsell': pax.get('total_upsell') and pax['total_upsell'] or 0,
-                            'total_discount': pax.get('total_discount') and pax['total_discount'] or 0
+                            'total_discount': pax.get('total_discount') and pax['total_discount'] or 0,
+                            'breakdown_service_fee': pax.get('breakdown_service_fee') and pax['breakdown_service_fee'] or 0
                         }
 
                         temp_sales = pax_setup['agent_nta']
@@ -435,15 +436,15 @@ class AccountingConnectorTravelite(models.Model):
                             "pubfare": pax_setup['total_fare'] + ho_prof,
                             "airporttax": pax_setup['total_tax'],
                             "commission": ho_prof,
-                            "servicefee": vat,
+                            "servicefee": pax_setup['breakdown_service_fee'],
                             "sellgst": 0,
                             "surcharge": 0.0000,
                             'discamt': pax_setup['total_discount'],
                             "markupamt": temp_upsell,
                             "sellpricenotax": pax_setup['total_fare'] + temp_upsell,
                             "nettfare": pax_setup['total_fare'],
-                            "nettprice": pax_setup['total_fare'] + pax_setup['total_tax'],
-                            "sellprice": temp_sales - vat,
+                            "nettprice": pax_setup['total_nta'],
+                            "sellprice": temp_sales,
                             "currid": prov['currency'],
                             "pubfareccy": prov['currency'],
                             "nettcurrid": prov['currency'],
@@ -504,7 +505,8 @@ class AccountingConnectorTravelite(models.Model):
                             'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0,
                             'total_fare': pax.get('total_fare') and pax['total_fare'] or 0,
                             'total_upsell': pax.get('total_upsell') and pax['total_upsell'] or 0,
-                            'total_discount': pax.get('total_discount') and pax['total_discount'] or 0
+                            'total_discount': pax.get('total_discount') and pax['total_discount'] or 0,
+                            'breakdown_service_fee': pax.get('breakdown_service_fee') and pax['breakdown_service_fee'] or 0
                         }
 
                         temp_sales = pax_setup['agent_nta']
@@ -540,15 +542,15 @@ class AccountingConnectorTravelite(models.Model):
                             "airlinecode": "KI",
                             "pubfare": pax_setup['total_fare'] + ho_prof,
                             "commission": ho_prof,
-                            "servicefee": vat,
+                            "servicefee": pax_setup['breakdown_service_fee'],
                             "sellgst": 0,
                             "surcharge": 0.0000,
                             'discamt': pax_setup['total_discount'],
                             "markupamt": temp_upsell,
                             "sellpricenotax": pax_setup['total_fare'] + temp_upsell,
                             "nettfare": pax_setup['total_fare'],
-                            "nettprice": pax_setup['total_fare'],
-                            "sellprice": temp_sales - vat,
+                            "nettprice": pax_setup['total_nta'],
+                            "sellprice": temp_sales,
                             "currid": prov['currency'],
                             "pubfareccy": prov['currency'],
                             "nettcurrid": prov['currency'],
@@ -570,7 +572,8 @@ class AccountingConnectorTravelite(models.Model):
                         'agent_nta': prov.get('agent_nta') and prov['agent_nta'] or 0,
                         'total_fare': prov.get('total_fare') and prov['total_fare'] or 0,
                         'total_upsell': prov.get('total_upsell') and prov['total_upsell'] or 0,
-                        'total_discount': prov.get('total_discount') and prov['total_discount'] or 0
+                        'total_discount': prov.get('total_discount') and prov['total_discount'] or 0,
+                        'breakdown_service_fee': prov.get('breakdown_service_fee') and prov['breakdown_service_fee'] or 0
                     }
 
                     temp_sales = prov_setup['agent_nta']
@@ -606,10 +609,10 @@ class AccountingConnectorTravelite(models.Model):
                             "checkout": "%sT00:00:00" % prov['checkout_date'],
                             "nites": int(request['nights']),
                             "nettcurrid": prov['currency'],
-                            "nettprice": prov_setup['total_fare'] / len(prov['rooms']) / int(request['nights']),
+                            "nettprice": prov_setup['total_nta'] / len(prov['rooms']) / int(request['nights']),
                             "currid": prov['currency'],
-                            "sellprice": (temp_sales - vat) / len(prov['rooms']) / int(request['nights']),
-                            "servicefee": vat / len(prov['rooms']) / int(request['nights']),
+                            "sellprice": temp_sales / len(prov['rooms']) / int(request['nights']),
+                            "servicefee": prov_setup['breakdown_service_fee'] / len(prov['rooms']) / int(request['nights']),
                             "totalsell": temp_sales / len(prov['rooms']),
                             "totalnett": prov_setup['total_fare'] / len(prov['rooms'])
                         })
@@ -639,9 +642,9 @@ class AccountingConnectorTravelite(models.Model):
                         "bfastflag": True,
                         "nettcurrid": prov['currency'],
                         "currid": prov['currency'],
-                        "totnettprice": prov_setup['total_fare'],
-                        "totservicefee": vat,
-                        "totsellprice": temp_sales - vat,
+                        "totnettprice": prov_setup['total_nta'],
+                        "totservicefee": prov_setup['breakdown_service_fee'],
+                        "totsellprice": temp_sales,
                         "canceldateline": "",
                         "confirmationno": prov['pnr'],
                         "bookdesc": "",

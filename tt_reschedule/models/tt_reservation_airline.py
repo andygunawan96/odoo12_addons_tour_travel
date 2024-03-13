@@ -319,10 +319,9 @@ class ReservationAirline(models.Model):
                 if rec.get('status', 'FAILED') == 'FAILED':
                     continue
 
-                provider_type_id = False
-                if reschedule_obj.provider_type_id:
-                    provider_type_id = reschedule_obj.provider_type_id.id
-                admin_fee_obj = self.env['tt.reschedule'].get_reschedule_admin_fee_rule(reschedule_obj.agent_id.id, provider_type_id=provider_type_id)
+                provider_type_id = reschedule_obj.provider_type_id and reschedule_obj.provider_type_id.id or False
+                customer_parent_id = reschedule_obj.customer_parent_id and reschedule_obj.customer_parent_id.id or False
+                admin_fee_obj = self.env['tt.reschedule'].get_reschedule_admin_fee_rule(reschedule_obj.agent_id.id, customer_parent_id=customer_parent_id, provider_type_id=provider_type_id)
                 for journey in rec['journeys']:
                     reschedule_type = 'reschedule'
                     for seg in journey['segments']:
@@ -1699,6 +1698,8 @@ class ReservationAirline(models.Model):
                         is_ledger_created = True
                         break
 
+                provider_type_id = airline_obj.provider_type_id and airline_obj.provider_type_id.id or False
+                customer_parent_id = airline_obj.customer_parent_id and airline_obj.customer_parent_id.id or False
                 if commit_data['status'] == 'BOOKED' and rsv_prov_obj.state == 'booked':
                     ledger_created = rsv_prov_obj.sudo().delete_service_charge()
                     if ledger_created:
@@ -1716,7 +1717,7 @@ class ReservationAirline(models.Model):
                 elif commit_data['status'] == 'ISSUED' and rsv_prov_obj.state == 'issued':
                     if is_admin_charge:
                         # admin_fee_obj = self.env.ref('tt_accounting.admin_fee_reschedule')
-                        admin_fee_obj = self.env['tt.reschedule'].get_reschedule_admin_fee_rule(airline_obj.agent_id.id, provider_type_id=airline_obj.provider_type_id.id)
+                        admin_fee_obj = self.env['tt.reschedule'].get_reschedule_admin_fee_rule(airline_obj.agent_id.id, customer_parent_id=customer_parent_id, provider_type_id=provider_type_id)
                     rsv_prov_obj.sudo().delete_passenger_fees()
                     for psg in commit_data['passengers']:
                         psg_obj = resv_passenger_number_dict[psg['passenger_number']]
@@ -1736,7 +1737,7 @@ class ReservationAirline(models.Model):
                 elif commit_data['status'] == 'REFUND' and rsv_prov_obj.state == 'issued' and commit_data['pnr'] == rsv_prov_obj.pnr:
                     # VIN: 2021/03/02: admin fee tdak bisa di hardcode
                     # TODO: refund type tdak boleh hardcode lagi, jika frontend sdah support pilih refund type regular / quick
-                    admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(airline_obj.agent_id.id, provider_type_id=airline_obj.provider_type_id.id)
+                    admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(airline_obj.agent_id.id, customer_parent_id=customer_parent_id, provider_type_id=provider_type_id)
                     refund_type = self.env.ref('tt_accounting.refund_type_regular_refund').id
                     # refund_type = 'regular'
 
@@ -2141,7 +2142,9 @@ class ReservationAirline(models.Model):
                     if prov.state == 'refund':
                         # VIN: 2021/03/02: admin fee tdak bisa di hardcode
                         # TODO: refund type tdak boleh hardcode lagi, jika frontend sdah support pilih refund type regular / quick
-                        admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(new_resv_obj.agent_id.id, provider_type_id=new_resv_obj.provider_type_id.id)
+                        provider_type_id = new_resv_obj.provider_type_id and new_resv_obj.provider_type_id.id or False
+                        customer_parent_id = new_resv_obj.customer_parent_id and new_resv_obj.customer_parent_id.id or False
+                        admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(new_resv_obj.agent_id.id, customer_parent_id=customer_parent_id, provider_type_id=provider_type_id)
                         refund_type = self.env.ref('tt_accounting.refund_type_regular_refund').id
                         # refund_type = 'regular'
 
@@ -2406,11 +2409,13 @@ class ReservationAirline(models.Model):
 
                 # August 30, 2022 - SAM
                 # TODO sementara reschedule type diasumsikan reschedule kalau ada admin charge
+                provider_type_id = airline_obj.provider_type_id and airline_obj.provider_type_id.id or False
+                customer_parent_id = airline_obj.customer_parent_id and airline_obj.customer_parent_id.id or False
                 admin_fee_obj = None
                 reschedule_type = 'addons'
                 if is_admin_charge:
                     reschedule_type = 'reschedule'
-                    admin_fee_obj = self.env['tt.reschedule'].get_reschedule_admin_fee_rule(airline_obj.agent_id.id, provider_type_id=airline_obj.provider_type_id.id)
+                    admin_fee_obj = self.env['tt.reschedule'].get_reschedule_admin_fee_rule(airline_obj.agent_id.id, customer_parent_id=customer_parent_id, provider_type_id=provider_type_id)
 
                 res_vals = {
                     'agent_id': airline_obj.agent_id.id,

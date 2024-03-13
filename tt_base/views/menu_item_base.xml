@@ -74,10 +74,17 @@
                   sequence="20"
                   groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,tt_base.group_tt_corpor_user,base.group_erp_manager"/>
 
+        <menuitem id="top_customers_report"
+                  parent="tt_base.main_customers"
+                  name="Report"
+                  sequence="50"
+                  groups="base.group_user"
+        />
+
         <menuitem id="top_customers_vendor"
                   parent="tt_base.main_customers"
                   name="External Vendor"
-                  sequence="20"
+                  sequence="80"
                   groups="base.group_user"/>
 
         <!--Upload-->

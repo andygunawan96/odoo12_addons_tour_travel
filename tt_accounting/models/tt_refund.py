@@ -182,6 +182,8 @@ class TtRefund(models.Model):
     def get_admin_fee_domain(self):
         agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
         agent_adm_ids = self.agent_id.admin_fee_ids.ids
+        customer_parent_type_adm_ids = self.customer_parent_id.customer_parent_type_id.admin_fee_ids.ids
+        customer_parent_adm_ids = self.customer_parent_id.admin_fee_ids.ids
         provider_type_adm_ids = []
         if self.res_model and self.res_id:
             res_obj = self.env[self.res_model].browse(self.res_id)
@@ -193,6 +195,12 @@ class TtRefund(models.Model):
                 ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
                 ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
                 ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids), '|',
+                ('customer_parent_type_access_type', '=', 'all'), '|', '&',
+                ('customer_parent_type_access_type', '=', 'allow'), ('id', 'in', customer_parent_type_adm_ids), '&',
+                ('customer_parent_type_access_type', '=', 'restrict'), ('id', 'not in', customer_parent_type_adm_ids),
+                '|', ('customer_parent_access_type', '=', 'all'), '|', '&',
+                ('customer_parent_access_type', '=', 'allow'), ('id', 'in', customer_parent_adm_ids), '&',
+                ('customer_parent_access_type', '=', 'restrict'), ('id', 'not in', customer_parent_adm_ids), '|',
                 ('provider_type_access_type', '=', 'all'), '|', '&',
                 ('provider_type_access_type', '=', 'allow'), ('id', 'in', provider_type_adm_ids), '&',
                 ('provider_type_access_type', '=', 'restrict'), ('id', 'not in', provider_type_adm_ids)]
@@ -318,7 +326,7 @@ class TtRefund(models.Model):
                 temp_total += rec2.real_refund_amount
             rec.real_refund_amount = temp_total
 
-    def get_refund_admin_fee_rule(self, agent_id, refund_type='regular', ho_id=False, provider_type_id=False):
+    def get_refund_admin_fee_rule(self, agent_id, refund_type='regular', ho_id=False, customer_parent_id=False, provider_type_id=False):
         search_param = [('after_sales_type', '=', 'refund')]
         if refund_type == 'quick':
             default_refund_type_id = self.env.ref('tt_accounting.refund_type_quick_refund').id
@@ -338,12 +346,19 @@ class TtRefund(models.Model):
             ho_obj = agent_obj and agent_obj.ho_id or False
         if ho_obj:
             search_param.append(('ho_id', '=', ho_obj.id))
+        customer_parent_type_id = False
+        if customer_parent_id:
+            customer_parent_obj = self.env['tt.customer.parent'].browse(int(customer_parent_id))
+            if customer_parent_obj:
+                customer_parent_type_id = customer_parent_obj.customer_parent_type_id.id
         refund_admin_fee_list = self.env['tt.master.admin.fee'].search(search_param, order='sequence, id desc')
         if refund_admin_fee_list:
             qualified_admin_fee = []
             for admin_fee in refund_admin_fee_list:
                 is_agent = False
                 is_agent_type = False
+                is_customer_parent = False
+                is_customer_parent_type = False
                 is_provider_type = False
 
                 if admin_fee.agent_access_type == 'all':
@@ -360,6 +375,20 @@ class TtRefund(models.Model):
                 elif admin_fee.agent_type_access_type == 'restrict' and agent_obj.agent_type_id.id not in admin_fee.agent_type_ids.ids:
                     is_agent_type = True
 
+                if admin_fee.customer_parent_access_type == 'all':
+                    is_customer_parent = True
+                elif admin_fee.customer_parent_access_type == 'allow' and customer_parent_id in admin_fee.customer_parent_ids.ids:
+                    is_customer_parent = True
+                elif admin_fee.customer_parent_access_type == 'restrict' and customer_parent_id not in admin_fee.customer_parent_ids.ids:
+                    is_customer_parent = True
+
+                if admin_fee.customer_parent_type_access_type == 'all':
+                    is_customer_parent_type = True
+                elif admin_fee.customer_parent_type_access_type == 'allow' and customer_parent_type_id in admin_fee.customer_parent_type_ids.ids:
+                    is_customer_parent_type = True
+                elif admin_fee.customer_parent_type_access_type == 'restrict' and customer_parent_type_id not in admin_fee.customer_parent_type_ids.ids:
+                    is_customer_parent_type = True
+
                 if admin_fee.provider_type_access_type == 'all':
                     is_provider_type = True
                 elif admin_fee.provider_type_access_type == 'allow' and provider_type_id in admin_fee.provider_type_ids.ids:
@@ -367,7 +396,7 @@ class TtRefund(models.Model):
                 elif admin_fee.provider_type_access_type == 'restrict' and provider_type_id not in admin_fee.provider_type_ids.ids:
                     is_provider_type = True
 
-                if not is_agent_type or not is_agent or not is_provider_type:
+                if not is_agent_type or not is_agent or not is_customer_parent_type or not is_customer_parent or not is_provider_type:
                     continue
 
                 qualified_admin_fee.append(admin_fee)
@@ -399,13 +428,15 @@ class TtRefund(models.Model):
 
     def get_refund_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0, refund_type='regular'):
         provider_type_id = False
+        customer_parent_id = False
         pnr_amount = 1
         pax_amount = 1
         journey_amount = 1
         if order_number and order_type:
             book_obj = self.env['tt.reservation.'+order_type].search([('name', '=', order_number)], limit=1)
             if book_obj:
-                provider_type_id = book_obj.provider_type_id.id
+                provider_type_id = book_obj.provider_type_id and book_obj.provider_type_id.id or False
+                customer_parent_id = book_obj.customer_parent_id and book_obj.customer_parent_id.id or False
                 pnr_amount = len(book_obj.provider_booking_ids.ids)
                 pax_amount = int(passenger_count) or len(book_obj.passenger_ids.ids)
                 if order_type == 'airline':
@@ -413,7 +444,7 @@ class TtRefund(models.Model):
                     for rec in book_obj.provider_booking_ids:
                         for rec2 in rec.journey_ids:
                             journey_amount += 1
-        admin_fee_obj = self.get_refund_admin_fee_rule(agent_id, refund_type, provider_type_id=provider_type_id)
+        admin_fee_obj = self.get_refund_admin_fee_rule(agent_id, refund_type, customer_parent_id=customer_parent_id, provider_type_id=provider_type_id)
 
         admin_fee_ho = admin_fee_obj.get_final_adm_fee_ho(refund_amount, pnr_amount, pax_amount, journey_amount)
         admin_fee_agent = admin_fee_obj.get_final_adm_fee_agent(refund_amount, pnr_amount, pax_amount, journey_amount)

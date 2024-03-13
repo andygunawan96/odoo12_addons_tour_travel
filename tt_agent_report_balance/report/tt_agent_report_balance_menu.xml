@@ -4,7 +4,7 @@
         <report
             id="action_agent_report_balance"
             model="tt.agent.report.balance.wizard"
-            string="Balance Report"
+            string="Agent Balance Report"
             report_type="qweb-html"
             name="tt_agent_report_balance.agent_report_balance"
             file="tt_agent_report_balance.agent_report_balance"
