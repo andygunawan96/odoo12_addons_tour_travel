@@ -133,6 +133,7 @@
             <field name="name">Qatar</field>
             <field name="code">qatar</field>
             <field name="active" eval="True"/>
+            <field name="required_last_name_on_retrieve" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
         <record id="tt_provider_airline_pelita" model="tt.provider">
@@ -159,8 +160,15 @@
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
+        <record id="tt_provider_airline_etihad" model="tt.provider">
+            <field name="name">Etihad Airlines</field>
+            <field name="code">etihad</field>
+            <field name="active" eval="True"/>
+            <field name="required_last_name_on_retrieve" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
         <record id="tt_provider_airline_emirates" model="tt.provider">
-            <field name="name">Emirates</field>
+            <field name="name">Emirates Airlines</field>
             <field name="code">emirates</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
