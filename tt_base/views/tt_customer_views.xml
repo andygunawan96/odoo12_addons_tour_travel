@@ -160,6 +160,7 @@
         <field name="model">tt.customer</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="seq_id"/>
                 <field name="first_name"/>
                 <field name="last_name"/>
                 <field name="birth_date"/>
