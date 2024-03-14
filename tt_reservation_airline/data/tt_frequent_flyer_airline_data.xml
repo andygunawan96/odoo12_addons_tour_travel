@@ -109,6 +109,20 @@
                 (4, ref('tt_reservation_airline.tt_loyalty_program_privilege')),
             ]"/>
         </record>
+
+        <record id="tt_frequent_flyer_airline_etihad" model="tt.frequent.flyer.airline">
+            <field name="name">Etihad Guest</field>
+            <field name="sequence">50</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_etihad')),
+            ]"/>
+            <field name="carrier_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_transport_carrier_airline_ey')),
+            ]"/>
+            <field name="loyalty_program_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_loyalty_program_etihadguest')),
+            ]"/>
+        </record>
     </data>
 </odoo>
     
