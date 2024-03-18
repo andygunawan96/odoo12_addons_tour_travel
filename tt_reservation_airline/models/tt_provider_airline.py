@@ -801,7 +801,7 @@ class TtProviderAirline(models.Model):
             elif rec.passenger_id:
                 is_found = False
                 for psg in backend_pax_repo:
-                    if psg['passenger_id'] == rec.passenger_id:
+                    if psg['passenger_id'] == rec.passenger_id.id:
                         is_found = True
                         vals.update(copy.deepcopy(psg))
                         if 'has_ticket' in vals:
