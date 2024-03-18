@@ -129,6 +129,7 @@ class TtAccountingQueue(models.Model):
                         'total_channel_upsell': 0,
                         'total_discount': 0,
                         'breakdown_service_fee': 0,
+                        'breakdown_vat': 0,
                         'tax_service_charges': [],
                         'tax_details': []
                     }
@@ -162,6 +163,8 @@ class TtAccountingQueue(models.Model):
                             temp_prov_price_dict['total_discount'] += sale.total
                         if sale.charge_type == 'ROCHSA':
                             temp_prov_price_dict['breakdown_service_fee'] += sale.total
+                        if sale.charge_type in ['ROCHVA', 'ROCAVA', 'ROCHVC', 'ROCAVC']:
+                            temp_prov_price_dict['breakdown_vat'] += sale.total
                         prov_sale_id_list.append(sale.id)
                     temp_prov_price_dict['parent_agent_commission'] = temp_prov_price_dict['total_commission'] - temp_prov_price_dict['agent_commission'] - temp_prov_price_dict['ho_commission']
                     temp_prov_price_dict['tax_service_charges'].append({
@@ -190,6 +193,7 @@ class TtAccountingQueue(models.Model):
                                 'total_channel_upsell': 0,
                                 'total_discount': 0,
                                 'breakdown_service_fee': 0,
+                                'breakdown_vat': 0,
                                 'tax_service_charges': [],
                                 'tax_details': []
                             }
@@ -222,6 +226,8 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['total_discount'] += sale.amount
                                 if sale.charge_type == 'ROCHSA':
                                     temp_tick_price_dict['breakdown_service_fee'] += sale.amount
+                                if sale.charge_type in ['ROCHVA', 'ROCAVA', 'ROCHVC', 'ROCAVC']:
+                                    temp_tick_price_dict['breakdown_vat'] += sale.amount
                             temp_tick_price_dict['parent_agent_commission'] = temp_tick_price_dict['total_commission'] - temp_tick_price_dict['agent_commission'] - temp_tick_price_dict['ho_commission']
                             temp_tick_price_dict['tax_service_charges'].append({
                                 'charge_code': 'tax',
@@ -255,6 +261,7 @@ class TtAccountingQueue(models.Model):
                                 'total_channel_upsell': 0,
                                 'total_discount': 0,
                                 'breakdown_service_fee': 0,
+                                'breakdown_vat': 0,
                                 'tax_service_charges': [],
                                 'tax_details': []
                             }
@@ -287,6 +294,8 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['total_discount'] += sale.amount
                                 if sale.charge_type == 'ROCHSA':
                                     temp_tick_price_dict['breakdown_service_fee'] += sale.amount
+                                if sale.charge_type in ['ROCHVA', 'ROCAVA', 'ROCHVC', 'ROCAVC']:
+                                    temp_tick_price_dict['breakdown_vat'] += sale.amount
                             temp_tick_price_dict['parent_agent_commission'] = temp_tick_price_dict['total_commission'] - temp_tick_price_dict['agent_commission'] - temp_tick_price_dict['ho_commission']
                             temp_tick_price_dict['tax_service_charges'].append({
                                 'charge_code': 'tax',
