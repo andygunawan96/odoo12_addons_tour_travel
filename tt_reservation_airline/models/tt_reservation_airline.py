@@ -643,7 +643,9 @@ class ReservationAirline(models.Model):
                 limit = rule.rebooking_limit
                 rule_check_type = rule.passenger_check_type
             else:
-                continue
+                limit = 999
+                rule_check_type = 'passenger'
+                # continue
 
             if rule_check_type == 'passenger' or rule_check_type == False: ## False jika tidak ter isi
                 for name in segment.booking_id.passenger_ids:
@@ -704,6 +706,16 @@ class ReservationAirline(models.Model):
                             return True
 
                         raise RequestException(1026,additional_message="Passenger validator failed on %s because of rebooking with same name and same route or same identity number and same route." % (name.name))
+                    elif valid_segments:
+                        duplicates_pnr_text = ''
+                        for valid_segment in valid_segments:
+                            if duplicates_pnr_text == '':
+                                duplicates_pnr_text = 'Duplicate with'
+                            duplicates_pnr_text += ' %s' % valid_segment.pnr
+                        if duplicates_pnr_text:
+                            for provider_booking_obj in book_obj.provider_booking_ids:
+                                if provider_booking_obj.pnr == segment.pnr:
+                                    provider_booking_obj.duplicates_backend = duplicates_pnr_text
             elif rule_check_type == 'contact':
                 search_query = [('segment_code', '=', segment.segment_code),
                                 ('booking_id.contact_id', '=', book_obj.contact_id.id),
