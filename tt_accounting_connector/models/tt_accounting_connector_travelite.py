@@ -383,7 +383,8 @@ class AccountingConnectorTravelite(models.Model):
                             'total_tax': pax.get('total_tax') and pax['total_tax'] or 0,
                             'total_upsell': pax.get('total_upsell') and pax['total_upsell'] or 0,
                             'total_discount': pax.get('total_discount') and pax['total_discount'] or 0,
-                            'breakdown_service_fee': pax.get('breakdown_service_fee') and pax['breakdown_service_fee'] or 0
+                            'breakdown_service_fee': pax.get('breakdown_service_fee') and pax['breakdown_service_fee'] or 0,
+                            'breakdown_vat': pax.get('breakdown_vat') and pax['breakdown_vat'] or 0
                         }
 
                         temp_sales = pax_setup['agent_nta']
@@ -391,6 +392,12 @@ class AccountingConnectorTravelite(models.Model):
                         if is_ho_transaction:
                             temp_sales += ho_prof - pax_setup['total_upsell']
                             temp_upsell += pax_setup['agent_profit']
+                        if pax_setup['total_upsell'] == 0:
+                            temp_upsell = 0
+                        # if pax_setup['breakdown_service_fee'] > 0:
+                        #     temp_sales = pax_setup['total_nta'] + pax_setup['breakdown_service_fee']
+                        if pax_setup['breakdown_vat'] > 0:
+                            temp_sales -= pax_setup['breakdown_vat']
                         pax_setup.update({
                             'total_sales': temp_sales
                         })
@@ -506,7 +513,8 @@ class AccountingConnectorTravelite(models.Model):
                             'total_fare': pax.get('total_fare') and pax['total_fare'] or 0,
                             'total_upsell': pax.get('total_upsell') and pax['total_upsell'] or 0,
                             'total_discount': pax.get('total_discount') and pax['total_discount'] or 0,
-                            'breakdown_service_fee': pax.get('breakdown_service_fee') and pax['breakdown_service_fee'] or 0
+                            'breakdown_service_fee': pax.get('breakdown_service_fee') and pax['breakdown_service_fee'] or 0,
+                            'breakdown_vat': pax.get('breakdown_vat') and pax['breakdown_vat'] or 0
                         }
 
                         temp_sales = pax_setup['agent_nta']
@@ -514,6 +522,12 @@ class AccountingConnectorTravelite(models.Model):
                         if is_ho_transaction:
                             temp_sales += ho_prof - pax_setup['total_upsell']
                             temp_upsell += pax_setup['agent_profit']
+                        if pax_setup['total_upsell'] == 0:
+                            temp_upsell = 0
+                        # if pax_setup['breakdown_service_fee'] > 0:
+                        #     temp_sales = pax_setup['total_nta'] + pax_setup['breakdown_service_fee']
+                        if pax_setup['breakdown_vat'] > 0:
+                            temp_sales -= pax_setup['breakdown_vat']
                         pax_setup.update({
                             'total_sales': temp_sales
                         })
@@ -573,12 +587,17 @@ class AccountingConnectorTravelite(models.Model):
                         'total_fare': prov.get('total_fare') and prov['total_fare'] or 0,
                         'total_upsell': prov.get('total_upsell') and prov['total_upsell'] or 0,
                         'total_discount': prov.get('total_discount') and prov['total_discount'] or 0,
-                        'breakdown_service_fee': prov.get('breakdown_service_fee') and prov['breakdown_service_fee'] or 0
+                        'breakdown_service_fee': prov.get('breakdown_service_fee') and prov['breakdown_service_fee'] or 0,
+                        'breakdown_vat': prov.get('breakdown_vat') and prov['breakdown_vat'] or 0
                     }
 
                     temp_sales = prov_setup['agent_nta']
                     if is_ho_transaction:
                         temp_sales += ho_prof
+                    # if prov_setup['breakdown_service_fee'] > 0:
+                    #     temp_sales = prov_setup['total_nta'] + prov_setup['breakdown_service_fee']
+                    if prov_setup['breakdown_vat'] > 0:
+                        temp_sales -= prov_setup['breakdown_vat']
                     prov_setup.update({
                         'total_sales': temp_sales
                     })
