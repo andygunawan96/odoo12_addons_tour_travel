@@ -174,7 +174,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_column('Y:Z', 12)
         sheet.set_column('AA:AA', 20)
         sheet.set_column('AB:AB', 18)
-        sheet.set_column('AC:AC', 20)
+        sheet.set_column('AC:AC', 35)
         sheet.set_column('AD:AD', 18)
         sheet.set_column('AE:AE', 20)
         if not values['data_form'].get('is_corpor'):

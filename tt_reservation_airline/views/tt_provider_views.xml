@@ -63,6 +63,7 @@
                     <group>
                         <field name="pnr_references"/>
                         <field name="duplicates"/>
+                        <field name="duplicates_backend"/>
                     </group>
                     <group string="Itinerary Info">
                         <group>

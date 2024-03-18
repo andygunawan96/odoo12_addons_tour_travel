@@ -102,6 +102,10 @@ class TtProviderAirline(models.Model):
     duplicates = fields.Char('Duplicates', default='')
     # END
 
+    # Mar 15, 2024 - IVAN
+    duplicates_backend = fields.Char('Duplicates Backend', default='')
+    # END
+
     # October 19, 2023 - SAM
     notes = fields.Text('Notes')
     # END
@@ -1249,6 +1253,7 @@ class TtProviderAirline(models.Model):
             # July 12, 2023 - SAM
             'pnr_references': pnr_references,
             'duplicates': duplicates,
+            'duplicates_backend': self.duplicates_backend,
             # END
             # September 12, 2023 - SAM
             'pricing_data': pricing_data,
