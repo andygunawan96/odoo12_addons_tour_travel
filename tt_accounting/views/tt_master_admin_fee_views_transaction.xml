@@ -151,7 +151,7 @@
 
     <menuitem id="menu_transaction_admin_fee"
                       name="Refund and After Sales"
-                      groups="tt_base.group_tt_agent_user,base.group_erp_manager"
+                      groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"
                       parent="tt_base.top_transaction_configuration"
                       sequence="10"/>
 
@@ -160,6 +160,6 @@
               action="tt_accounting.tt_master_admin_fee_action_views_transaction"
               name="Admin Fee"
               sequence="1"
-              groups="tt_base.group_tt_agent_user,base.group_erp_manager"/>
+              groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
 
 </odoo>
