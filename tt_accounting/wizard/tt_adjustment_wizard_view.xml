@@ -18,6 +18,7 @@
                     <field name="res_id" groups="base.group_system" />
                     <field name="component_type" invisible="context.get('hide_component_type',False)"/>
                     <field name="adjust_side"/>
+                    <field name="source_of_funds_type" />
                     <field name="adjust_amount"/>
                     <field name="adj_reason" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <field name="reason_uid" attrs="{'invisible': [('adj_reason', '=', 'sys')]}" options="{'no_create': True, 'no_quick_create': True, 'no_create_edit':True}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
