@@ -2,8 +2,8 @@
 <odoo>
     <data noupdate="0">
         <record id="tt_provider_bus_traveloka" model="tt.provider">
-            <field name="name">Traveloka Bus</field>
-            <field name="code">traveloka_bus</field>
+            <field name="name">TA Bus</field>
+            <field name="code">ta_bus</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_bus"/>
         </record>
