@@ -58,7 +58,7 @@ class BusStation(models.Model):
                 for rec_data_backend_city in city_ids:
                     # if rec_data_backend_city.country_id.code == rec_city['country_code']:
                     for data_provider in rec_data_backend_city.provider_code_ids:
-                        if data_provider.provider_id.code == 'tv_bus':
+                        if data_provider.provider_id.code == 'ta_bus':
                             # DATA FOUND UPDATE CODE
                             data_provider.update({
                                 "code": rec_city['id']

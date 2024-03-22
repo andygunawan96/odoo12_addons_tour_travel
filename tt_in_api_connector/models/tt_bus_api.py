@@ -24,7 +24,7 @@ class TtBusApiCon(models.Model):
 
     def sync_data(self, req, ho_id):
         request = {
-            "provider": "tv_bus"
+            "provider": "ta_bus"
         }
         action = 'sync_data'
         return self.send_request_to_gateway('%s/booking/bus/private' % (self.url),
@@ -33,7 +33,7 @@ class TtBusApiCon(models.Model):
                                             timeout=180, ho_id=ho_id)
     def sync_get_data_journey(self, req, ho_id):
         request = {
-            "provider": "tv_bus",
+            "provider": "ta_bus",
             "id": req['id']
         }
         action = 'sync_get_data_journey'
