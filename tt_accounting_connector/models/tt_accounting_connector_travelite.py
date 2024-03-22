@@ -398,9 +398,6 @@ class AccountingConnectorTravelite(models.Model):
                             if not is_ho_transaction:
                                 temp_upsell += pax_setup['agent_profit']
                             temp_upsell -= pax_setup['total_comm']
-                        # di kurangi service fee agar yang keluar di invoice travelite sesuai
-                        if pax_setup['breakdown_service_fee'] > 0:
-                            temp_sales -= pax_setup['breakdown_service_fee']
                         if pax_setup['total_upsell'] == 0 or temp_upsell < 0:
                             temp_upsell = 0
                         # if pax_setup['breakdown_service_fee'] > 0:
@@ -448,7 +445,7 @@ class AccountingConnectorTravelite(models.Model):
                             "sourcetypeid": source_type_id,
                             "airlinecode": first_carrier_code,
                             "pubfare": pax_setup['total_fare'] + ho_prof,
-                            "airporttax": pax_setup['total_tax'],
+                            "airporttax": pax_setup['total_tax'] - pax_setup['agent_profit'],
                             "commission": ho_prof,
                             "servicefee": pax_setup['breakdown_service_fee'],
                             "sellgst": 0,
@@ -535,9 +532,6 @@ class AccountingConnectorTravelite(models.Model):
                             if not is_ho_transaction:
                                 temp_upsell += pax_setup['agent_profit']
                             temp_upsell -= pax_setup['total_comm']
-                        # di kurangi service fee agar yang keluar di invoice travelite sesuai
-                        if pax_setup['breakdown_service_fee'] > 0:
-                            temp_sales -= pax_setup['breakdown_service_fee']
                         if pax_setup['total_upsell'] == 0 or temp_upsell < 0:
                             temp_upsell = 0
                         # if pax_setup['breakdown_service_fee'] > 0:
@@ -612,9 +606,6 @@ class AccountingConnectorTravelite(models.Model):
                     #     temp_sales = prov_setup['total_nta'] + prov_setup['breakdown_service_fee']
                     if prov_setup['breakdown_vat'] > 0:
                         temp_sales -= prov_setup['breakdown_vat']
-                    # di kurangi service fee agar yang keluar di invoice travelite sesuai
-                    if prov_setup['breakdown_service_fee'] > 0:
-                        temp_sales -= prov_setup['breakdown_service_fee']
                     prov_setup.update({
                         'total_sales': temp_sales
                     })
