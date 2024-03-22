@@ -99,7 +99,7 @@
                         <page string="Users">
                             <field name="user_ids" readonly="1"/>
                         </page>
-                        <page string="Customer Parents Relations">
+                        <page string="Customer Parent Relations">
                             <group>
                                 <group>
                                     <field name="is_master_customer_parent"/>
