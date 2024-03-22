@@ -49,6 +49,7 @@ Key Features
         'wizard/tt_upload_center_wizard_view.xml',
         'wizard/archive_dupe_customer_wizard_view.xml',
         'wizard/inactive_dormant_user_wizard_view.xml',
+        'wizard/set_customer_parent_credit_limit_wizard_view.xml',
 
         'views/res_country_views.xml',
         'views/res_country_state_views.xml',

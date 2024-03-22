@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="set_customer_parent_credit_limit_wizard_form_view" model="ir.ui.view">
+        <field name="name">Set Customer Parent Credit Limit Wizard</field>
+        <field name="model">set.customer.parent.credit.limit.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Set Customer Parent Credit Limit Wizard">
+                <group>
+                    <field name="customer_parent_id" invisible="1"/>
+                    <field name="currency_id"/>
+                    <field name="credit_limit"/>
+                </group>
+                <footer>
+                    <button name="set_cor_credit_limit" string="Submit" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="set_customer_parent_credit_limit_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Set Customer Parent Credit Limit Wizard</field>
+        <field name="res_model">set.customer.parent.credit.limit.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
