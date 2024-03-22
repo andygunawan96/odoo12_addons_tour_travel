@@ -5,6 +5,13 @@ from ...tools import ERR
 
 _logger = logging.getLogger(__name__)
 
+
+SOURCE_OF_FUNDS_TYPE = [
+    ('balance', 'Balance'),
+    ('point', 'Point Reward'),
+    ('credit_limit', 'Credit Limit')
+]
+
 class TtAdjustmentWizard(models.TransientModel):
     _name = "tt.adjustment.wizard"
     _description = 'Adjustment Wizard'
@@ -42,6 +49,8 @@ class TtAdjustmentWizard(models.TransientModel):
 
     description = fields.Text('Description')
 
+    source_of_funds_type = fields.Selection(SOURCE_OF_FUNDS_TYPE, string='Source of Funds', default='balance')
+
     def submit_adjustment(self):
         if not self.env.user.has_group('tt_base.group_adjustment_level_3'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 26')
@@ -58,6 +67,7 @@ class TtAdjustmentWizard(models.TransientModel):
             'res_model': self.res_model,
             'res_id': self.res_id,
             'component_type': self.component_type,
+            'source_of_funds_type': self.source_of_funds_type,
             'referenced_document': self.referenced_document,
             'adjust_side': self.adjust_side,
             'adjust_amount': self.adjust_amount,

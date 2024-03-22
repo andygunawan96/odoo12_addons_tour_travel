@@ -17,6 +17,12 @@ _logger = logging.getLogger(__name__)
 #     code = fields.Char('Code')
 #     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
 
+SOURCE_OF_FUNDS_TYPE = [
+    ('balance', 'Balance'),
+    ('point', 'Point Reward'),
+    ('credit_limit', 'Credit Limit')
+]
+
 class TtAdjustment(models.Model):
     _name = "tt.adjustment"
     _inherit = 'tt.history'
@@ -84,6 +90,8 @@ class TtAdjustment(models.Model):
                                   readonly=True, states={'draft': [('readonly', False)]})
     reason_uid = fields.Many2one('res.users', 'Responsible User', readonly=True,
                                  states={'draft': [('readonly', False)]})
+
+    source_of_funds_type = fields.Selection(SOURCE_OF_FUNDS_TYPE, string='Source of Funds', default='balance')
 
     def get_form_id(self):
         return self.env.ref("tt_accounting.tt_adjustment_form_view")
@@ -175,6 +183,7 @@ class TtAdjustment(models.Model):
             debit,
             credit,
             'Adjustment for %s, by %s%s' % (self.referenced_document,self.name,self.description and '\nReason: %s' % self.description or ''),
+            self.source_of_funds_type,
             **{
                 'adjustment_id': self.id,
                 'refund_id': self.res_model == 'tt.refund' and self.res_id or False,
