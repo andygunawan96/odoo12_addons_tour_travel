@@ -150,7 +150,7 @@
                                 <group>
                                     <field name="is_use_credit_limit_sharing" attrs="{'invisible':[('is_master_customer_parent','=', False)]}"/>
                                     <field name="max_child_credit_limit" readonly="1" attrs="{'invisible':['|',('is_master_customer_parent','=', False),('is_use_credit_limit_sharing','=', True)]}"/>
-                                    <field name="billing_option" attrs="{'invisible':[('is_master_customer_parent','=', False)]}"/>
+                                    <field name="billing_option" attrs="{'invisible':['|',('is_master_customer_parent','=', False),('is_use_credit_limit_sharing','=', True)]}"/>
                                 </group>
                                 <separator string="Child Customer Parents"/>
                                 <field name="child_customer_parent_ids" domain="[('is_master_customer_parent','=',False),('parent_agent_id', '=', parent_agent_id)]" context="{'search_default_cor': 1, 'search_default_por': 1}" widget="many2many" attrs="{'invisible':[('is_master_customer_parent','=', False)]}">
