@@ -216,7 +216,7 @@ class TtCustomerParent(models.Model):
         else:
             return ERR.get_no_error()
 
-    def check_balance_limit(self, amount):
+    def check_balance_limit(self, amount=0):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
         custpar_obj = self.get_credit_limit_to_check_cor_obj()
