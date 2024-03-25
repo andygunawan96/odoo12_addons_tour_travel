@@ -267,12 +267,13 @@ class TtAgent(models.Model):
         frontend_security = context.get('co_agent_frontend_security', [])
         if 'corp_limitation' in frontend_security:  # customer parent login
             customer_parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
+            bal_info = customer_parent_obj.get_balance_info()
             balance = 0
             point_reward = 0
-            customer_parent_balance = customer_parent_obj.actual_balance
-            currency_code = customer_parent_obj.currency_id.name
-            customer_parent_currency_code = customer_parent_obj.currency_id.name
-            credit_limit = customer_parent_obj.credit_limit
+            customer_parent_balance = bal_info['actual_balance']
+            currency_code = bal_info['currency_name']
+            customer_parent_currency_code = bal_info['currency_name']
+            credit_limit = bal_info['credit_limit']
             is_show_balance = False
             is_show_customer_parent_balance = True
             is_show_credit_limit = True
@@ -280,12 +281,13 @@ class TtAgent(models.Model):
         elif customer_parent_id:  # agent as customer parent login
             agent_obj = self.browse(context['co_agent_id'])
             customer_parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
+            bal_info = customer_parent_obj.get_balance_info()
             balance = agent_obj.balance
             point_reward = 0
-            customer_parent_balance = customer_parent_obj.actual_balance
+            customer_parent_balance = bal_info['actual_balance']
             currency_code = agent_obj.currency_id.name
-            customer_parent_currency_code = customer_parent_obj.currency_id.name
-            credit_limit = customer_parent_obj.credit_limit
+            customer_parent_currency_code = bal_info['currency_name']
+            credit_limit = bal_info['credit_limit']
             is_show_balance = True
             is_show_customer_parent_balance = True
             is_show_credit_limit = True
@@ -332,7 +334,7 @@ class TtAgent(models.Model):
             search_dom.append(('name', 'ilike', data['name']))
         customer_parent_list = self.env['tt.customer.parent'].search(search_dom)
         customer_parent_data = {}
-        for rec in customer_parent_list.filtered(lambda x: x.credit_limit != 0 or x.check_use_ext_credit_limit()):
+        for rec in customer_parent_list.filtered(lambda x: x.check_balance_limit() or x.check_use_ext_credit_limit()):
             booker_data = {}
             for rec2 in rec.booker_customer_ids:
                 booker_data.update({

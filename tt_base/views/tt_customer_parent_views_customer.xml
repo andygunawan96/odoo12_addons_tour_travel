@@ -15,6 +15,14 @@
                     <button name="action_reject" string="Reject" type="object" groups="base.group_system,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','=','done')]}"/>
                     <button name="set_to_done" string="Set to Done" type="object" groups="base.group_system" attrs="{'invisible':[('state','=','done')]}"/>
                     <button name="set_to_draft" string="Set to Draft" type="object" groups="base.group_system,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=','reject')]}"/>
+                    <button name="%(tt_base.set_customer_parent_credit_limit_wizard_action_view)d" groups="tt_base.group_tt_corpor_user"
+                            string="Set Credit Limit" type="action"
+                            attrs="{'invisible':['|',('is_master_customer_parent','=',True),('master_customer_parent_id','=',False)]}"
+                            context="{
+                            'default_customer_parent_id': id,
+                            'default_currency_id': currency_id,
+                            'default_credit_limit': credit_limit
+                    }"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,request,validate,done"/>
                 </header>
                 <sheet>
@@ -91,6 +99,29 @@
                         <page string="Users">
                             <field name="user_ids" readonly="1"/>
                         </page>
+                        <page string="Customer Parent Relations">
+                            <group>
+                                <group>
+                                    <field name="is_master_customer_parent"/>
+                                    <field name="master_customer_parent_id" domain="[('is_master_customer_parent','=',True),('parent_agent_id', '=', parent_agent_id)]" attrs="{'invisible':[('is_master_customer_parent','=', True)]}"/>
+                                </group>
+                                <group>
+                                    <field name="is_use_credit_limit_sharing" attrs="{'invisible':[('is_master_customer_parent','=', False)]}"/>
+                                    <field name="max_child_credit_limit" readonly="1" attrs="{'invisible':['|',('is_master_customer_parent','=', False),('is_use_credit_limit_sharing','=', True)]}"/>
+                                    <field name="billing_option" attrs="{'invisible':['|',('is_master_customer_parent','=', False),('is_use_credit_limit_sharing','=', True)]}"/>
+                                </group>
+                                <separator string="Child Customer Parents"/>
+                                <field name="child_customer_parent_ids" domain="[('is_master_customer_parent','=',False),('parent_agent_id', '=', parent_agent_id)]" context="{'search_default_cor': 1, 'search_default_por': 1}" widget="many2many" attrs="{'invisible':[('is_master_customer_parent','=', False)]}">
+                                    <tree create="true">
+                                        <field name="name"/>
+                                        <field name="customer_parent_type_id"/>
+                                        <field name="parent_agent_id"/>
+                                        <field name="ho_id" groups="base.group_erp_manager"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
                         <page string="Notes">
                             <field name="notes"/>
                         </page>
@@ -123,6 +154,9 @@
             <field name="credit_limit" position="replace">
                 <field name="credit_limit" readonly="0"/>
             </field>
+            <field name="max_child_credit_limit" position="replace">
+                <field name="max_child_credit_limit" readonly="0" attrs="{'invisible':['|',('is_master_customer_parent','=', False),('is_use_credit_limit_sharing','=', True)]}"/>
+            </field>
         </field>
     </record>
 
@@ -139,8 +173,14 @@
             <field name="parent_agent_id" position="replace">
                 <field name="parent_agent_id" readonly="0"/>
             </field>
+            <field name="tax_percentage" position="replace">
+                <field name="tax_percentage" readonly="0"/>
+            </field>
             <field name="credit_limit" position="replace">
                 <field name="credit_limit" readonly="0"/>
+            </field>
+            <field name="max_child_credit_limit" position="replace">
+                <field name="max_child_credit_limit" readonly="0" attrs="{'invisible':['|',('is_master_customer_parent','=', False),('is_use_credit_limit_sharing','=', True)]}"/>
             </field>
         </field>
     </record>
