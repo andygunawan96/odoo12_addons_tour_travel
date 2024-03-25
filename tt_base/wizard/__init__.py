@@ -11,3 +11,4 @@ from . import create_ho_transport_carrier_search_config_wizard
 from . import create_provider_ho_data_wizard
 from . import move_agent_ho_wizard
 from . import tt_input_pin_wizard
+from . import set_customer_parent_credit_limit_wizard

@@ -16,7 +16,7 @@
     <record id="tt_reservation_visa_for_corpor_user" model="ir.rule">
         <field name="name">Reservation Visa For Corporate User</field>
         <field name="model_id" ref="model_tt_reservation_visa"/>
-        <field name="domain_force">[('agent_id','=',user.agent_id.id),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="domain_force">[('agent_id','=',user.agent_id.id),'|',('customer_parent_id','=',user.customer_parent_id.id),('customer_parent_id','=',user.customer_parent_id.child_customer_parent_ids.ids)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 

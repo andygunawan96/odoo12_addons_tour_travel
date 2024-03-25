@@ -77,26 +77,30 @@ class TtCustomerParentInhAcc(models.Model):
         return self.parent_agent_id.is_use_ext_credit_cor
 
     def get_external_credit_limit(self):
-        search_params = []
-        if self.ho_id:
-            ho_obj = self.ho_id
-        else:
-            ho_obj = self.parent_agent_id.ho_id
-        if ho_obj:
-            search_params.append(('ho_id', '=', ho_obj.id))
-        setup_list = self.env['tt.accounting.setup'].search(search_params)
-        if setup_list and setup_list[0].accounting_provider:
-            acc_vendor = setup_list[0].accounting_provider
-            vals = {
-                'customer_id': self.accounting_uid,
-                'ho_id': ho_obj.id
-            }
-            ext_credit_limit = self.env['tt.accounting.connector.%s' % acc_vendor].check_credit_limit(vals)
-            ext_credit_limit = float(ext_credit_limit)
-            _logger.info('Current external credit limit for customer parent %s is %s' % (self.name, str(ext_credit_limit)))
-        else:
+        try:
+            search_params = []
+            if self.ho_id:
+                ho_obj = self.ho_id
+            else:
+                ho_obj = self.parent_agent_id.ho_id
+            if ho_obj:
+                search_params.append(('ho_id', '=', ho_obj.id))
+            setup_list = self.env['tt.accounting.setup'].search(search_params)
+            if setup_list and setup_list[0].accounting_provider:
+                acc_vendor = setup_list[0].accounting_provider
+                vals = {
+                    'customer_id': self.accounting_uid,
+                    'ho_id': ho_obj.id
+                }
+                ext_credit_limit = self.env['tt.accounting.connector.%s' % acc_vendor].check_credit_limit(vals)
+                ext_credit_limit = float(ext_credit_limit)
+                _logger.info('Current external credit limit for customer parent %s is %s' % (self.name, str(ext_credit_limit)))
+            else:
+                ext_credit_limit = 0
+                _logger.info('Accounting Setup not found, failed to check external credit limit for customer parent: %s.' % self.name)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
             ext_credit_limit = 0
-            _logger.info('Accounting Setup not found, failed to check external credit limit for customer parent: %s.' % self.name)
         return ext_credit_limit
 
     def get_external_payment_acq_seq_id(self):
