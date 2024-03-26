@@ -36,7 +36,7 @@ class TtReservationPassengerAirlineInherit(models.Model):
     frequent_flyer_ids = fields.One2many('tt.ff.passenger.airline', 'passenger_id', 'Frequent Flyers')
 
     def to_dict(self):
-        res = super().to_dict()
+        res = super(TtReservationPassengerAirlineInherit, self).to_dict()
         frequent_flyers = [rec.to_dict() for rec in self.frequent_flyer_ids]
         res.update({
             'frequent_flyers': frequent_flyers

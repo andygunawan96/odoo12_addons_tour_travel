@@ -74,7 +74,7 @@ class TtProviderAirlineInherit(models.Model):
     # END
 
     def to_dict(self):
-        result = super().to_dict()
+        result = super(TtProviderAirlineInherit, self).to_dict()
         fees = [rec.to_dict() for rec in self.fee_ids]
         result.update({
             'fees': fees,
