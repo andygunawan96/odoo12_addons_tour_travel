@@ -1222,7 +1222,7 @@ class TtProviderAirline(models.Model):
             'provider_id': self.id,
             'agent_id': self.booking_id.agent_id.id if self.booking_id and self.booking_id.agent_id else '',
             'state': self.state,
-            'state_description': variables.BOOKING_STATE_STR[self.state],
+            'state_description': variables.BOOKING_STATE_STR[self.state] if self.state else '',
             'sequence': self.sequence,
             'balance_due': self.balance_due,
             'origin': self.origin_id.code,
