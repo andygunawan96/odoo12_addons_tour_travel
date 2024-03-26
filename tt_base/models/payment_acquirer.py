@@ -582,12 +582,13 @@ class PaymentAcquirer(models.Model):
                         },
                         'total_amount': amount
                     })
-                elif rec.credit_limit != 0:
+                elif rec.check_balance_limit():
+                    bal_info = rec.get_balance_info()
                     values.append({
                         'name': rec.name,
-                        'actual_balance': rec.actual_balance,
-                        'credit_limit': rec.credit_limit,
-                        'currency': rec.currency_id.name,
+                        'actual_balance': bal_info['actual_balance'],
+                        'credit_limit': bal_info['credit_limit'],
+                        'currency': bal_info['currency_name'],
                         'acquirer_seq_id': rec.seq_id,
                         'price_component': {
                             'amount': amount,

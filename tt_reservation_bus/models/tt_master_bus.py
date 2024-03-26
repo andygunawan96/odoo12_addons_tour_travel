@@ -58,7 +58,7 @@ class BusStation(models.Model):
                 for rec_data_backend_city in city_ids:
                     # if rec_data_backend_city.country_id.code == rec_city['country_code']:
                     for data_provider in rec_data_backend_city.provider_code_ids:
-                        if data_provider.provider_id.code == 'traveloka_bus':
+                        if data_provider.provider_id.code == 'ta_bus':
                             # DATA FOUND UPDATE CODE
                             data_provider.update({
                                 "code": rec_city['id']
@@ -103,13 +103,21 @@ class BusStation(models.Model):
 
     def get_config_api(self):
         res = {
-            "station": {}
+            "station": {},
+            "city": {}
         }
         data = self.sudo().search([])
         for rec in data:
             res["station"][rec['code']] = self.get_data_origin(rec)
             for destination in rec.bus_journey_ids:
                 res["station"][rec['code']]['destination'].append(self.get_data_destination(destination))
+
+        data = self.env['tt.provider.code'].search([('provider_id.id', '=', self.env.ref('tt_reservation_bus.tt_provider_bus_traveloka').id)])
+        for rec in data:
+            res['city'][rec.code] = {
+                "name": rec.name,
+                "provider": rec.provider_id.code
+            }
         return ERR.get_no_error(res)
 
     def get_data_origin(self, data):

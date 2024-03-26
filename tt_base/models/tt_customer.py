@@ -177,12 +177,13 @@ class TtCustomer(models.Model):
 
             for rec in self.customer_parent_booker_ids:
                 cp_obj = rec.customer_parent_id
-                if cp_obj.credit_limit != 0 and cp_obj.state == 'done':
+                if cp_obj.check_balance_limit() and cp_obj.state == 'done':
+                    bal_info = cp_obj.get_balance_info()
                     customer_parent_list.append({
                         'name': cp_obj.name,
-                        'actual_balance': cp_obj.actual_balance,
-                        'credit_limit': cp_obj.credit_limit,
-                        'currency': cp_obj.currency_id.name,
+                        'actual_balance': bal_info['actual_balance'],
+                        'credit_limit': bal_info['credit_limit'],
+                        'currency': bal_info['currency_name'],
                         'seq_id': cp_obj.seq_id,
                         'type': cp_obj.customer_parent_type_id and cp_obj.customer_parent_type_id.name or ''
                     })
@@ -424,12 +425,13 @@ class TtCustomer(models.Model):
             if cust_obj:
                 if cust_obj.customer_parent_ids:
                     for rec in cust_obj.customer_parent_ids:
-                        if rec.credit_limit != 0 and rec.state == 'done':
+                        if rec.check_balance_limit() and rec.state == 'done':
+                            bal_info = rec.get_balance_info()
                             c_parent_list.append({
                                 'name': rec.name,
-                                'actual_balance': rec.actual_balance,
-                                'credit_limit': rec.credit_limit,
-                                'currency': rec.currency_id.name,
+                                'actual_balance': bal_info['actual_balance'],
+                                'credit_limit': bal_info['credit_limit'],
+                                'currency': bal_info['currency_name'],
                                 'seq_id': rec.seq_id,
                             })
 

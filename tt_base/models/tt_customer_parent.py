@@ -63,6 +63,15 @@ class TtCustomerParent(models.Model):
     notes = fields.Text('Notes')
     document_ids = fields.Many2many('tt.upload.center', 'customer_parent_attachment_rel', 'document_id', 'attachment_id', string='Attachments',domain=['|', ('active', '=', True), ('active', '=', False)])
 
+    is_master_customer_parent = fields.Boolean('Is Master Customer Parent', default=False)
+    is_use_credit_limit_sharing = fields.Boolean('Use Credit Limit Sharing', default=False, help='If activated, your credit limit will be shared and can be directly used by your child customer parents.')
+    max_child_credit_limit = fields.Monetary(string="Max Child Credit Limit")
+    billing_option = fields.Selection([('to_children', 'Bill To Each Customer Parents'), ('to_master', 'Bill To Master Customer Parent')], 'Billing Options', default='to_children')
+    master_customer_parent_id = fields.Many2one('tt.customer.parent', 'Master Customer Parent',
+                                                domain=[('is_master_customer_parent','=',True)])
+    child_customer_parent_ids = fields.One2many('tt.customer.parent', 'master_customer_parent_id',
+                                                'Child Customer Parents', domain=[('is_master_customer_parent','=',False)])
+
     def _compute_unprocessed_amount(self):
         for rec in self:
             if not rec.check_use_ext_credit_limit():
@@ -92,6 +101,10 @@ class TtCustomerParent(models.Model):
         return super(TtCustomerParent, self).create(vals_list)
 
     def write(self, vals):
+        if vals.get('master_customer_parent_id'):
+            master_obj = self.browse(int(vals['master_customer_parent_id']))
+            if master_obj.parent_agent_id.id != self.parent_agent_id.id:
+                raise UserError('Master customer parent must have the same parent agent as this customer parent.')
         super(TtCustomerParent, self).write(vals)
 
     @api.multi
@@ -174,6 +187,20 @@ class TtCustomerParent(models.Model):
         #     'domain': [('parent_agent_id', '=', self.env.user.agent_id.id)]
         # }
 
+    def get_credit_limit_to_check_cor_obj(self):
+        custpar_obj = self
+        if not self.is_master_customer_parent and self.master_customer_parent_id and self.master_customer_parent_id.is_use_credit_limit_sharing:
+            custpar_obj = self.master_customer_parent_id
+        return custpar_obj
+
+    def get_balance_info(self):
+        custpar_obj = self.get_credit_limit_to_check_cor_obj()
+        return {
+            'actual_balance': custpar_obj.actual_balance,
+            'credit_limit': custpar_obj.credit_limit,
+            'currency_name': custpar_obj.currency_id.name
+        }
+
     def check_balance_limit_api(self, customer_parent_id, amount):
         partner_obj = self.env['tt.customer.parent']
 
@@ -189,13 +216,15 @@ class TtCustomerParent(models.Model):
         else:
             return ERR.get_no_error()
 
-    def check_balance_limit(self, amount):
+    def check_balance_limit(self, amount=0):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
-        if self.check_use_ext_credit_limit():
-            enough_bal = self.get_external_credit_limit() >= (amount + (amount * self.tax_percentage / 100))
+        custpar_obj = self.get_credit_limit_to_check_cor_obj()
+
+        if custpar_obj.check_use_ext_credit_limit():
+            enough_bal = custpar_obj.get_external_credit_limit() >= (amount + (amount * custpar_obj.tax_percentage / 100))
         else:
-            enough_bal = self.actual_balance >= (amount + (amount * self.tax_percentage / 100))
+            enough_bal = custpar_obj.actual_balance >= (amount + (amount * custpar_obj.tax_percentage / 100))
         return enough_bal
 
     def check_send_email_cc(self):
@@ -367,13 +396,14 @@ class TtCustomerParent(models.Model):
     #booking History
 
     def check_credit_limit_usage(self):
-        current_perc = self.actual_balance / self.credit_limit * 100
-        if 100-current_perc >= self.limit_usage_notif:
-            return 'You have used more than %s percent of your credit limit. Remaining Credit: %s %s / %s %s' % (self.limit_usage_notif, self.currency_id.name,
-                                                                                                                 util.get_rupiah(self.actual_balance), self.currency_id.name,
-                                                                                                                 util.get_rupiah(self.credit_limit))
+        custpar_obj = self.get_credit_limit_to_check_cor_obj()
+        current_perc = custpar_obj.actual_balance / custpar_obj.credit_limit * 100
+        if 100-current_perc >= custpar_obj.limit_usage_notif:
+            return 'You have used more than %s percent of your credit limit. Remaining Credit: %s %s / %s %s' % (custpar_obj.limit_usage_notif, custpar_obj.currency_id.name,
+                                                                                                                 util.get_rupiah(custpar_obj.actual_balance), custpar_obj.currency_id.name,
+                                                                                                                 util.get_rupiah(custpar_obj.credit_limit))
         else:
-            return 'Remaining Credit: %s %s / %s %s' % (self.currency_id.name, util.get_rupiah(self.actual_balance), self.currency_id.name, util.get_rupiah(self.credit_limit))
+            return 'Remaining Credit: %s %s / %s %s' % (custpar_obj.currency_id.name, util.get_rupiah(custpar_obj.actual_balance), custpar_obj.currency_id.name, util.get_rupiah(custpar_obj.credit_limit))
 
     def create_request_cor_api(self, data, context):
         try:

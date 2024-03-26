@@ -3,9 +3,9 @@
     <data noupdate="1">
     
         <record id="tt_transport_carrier_bus_traveloka" model="tt.transport.carrier">
-            <field name="name">Traveloka Bus</field>
-            <field name="code">traveloka_bus</field>
-            <field name="icao">traveloka_bus</field>
+            <field name="name">TA Bus</field>
+            <field name="code">ta_bus</field>
+            <field name="icao">ta_bus</field>
             <field name="call_sign">Traveloka Bus</field>
             <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="False"/>

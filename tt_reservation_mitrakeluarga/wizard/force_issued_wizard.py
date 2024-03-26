@@ -29,7 +29,7 @@ class ForceIssuedWizard(models.TransientModel):
         dom_id_list = []
         for rec in self.booker_id.customer_parent_ids:
             if rec.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
-                if rec.credit_limit != 0 and rec.state == 'done':
+                if rec.check_balance_limit() and rec.state == 'done':
                     dom_id_list.append(rec.id)
             else:
                 dom_id_list.append(rec.id)

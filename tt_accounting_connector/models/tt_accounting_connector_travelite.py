@@ -388,16 +388,20 @@ class AccountingConnectorTravelite(models.Model):
                         }
 
                         temp_sales = pax_setup['agent_nta']
-                        temp_upsell = pax_setup['total_upsell'] - pax_setup['agent_profit']
+                        temp_upsell = pax_setup['total_upsell']
                         if is_ho_transaction:
                             temp_sales += ho_prof - pax_setup['total_upsell']
-                            temp_upsell += pax_setup['agent_profit']
-                        if pax_setup['total_upsell'] == 0:
+                        else:
+                            temp_upsell -= pax_setup['agent_profit']
+                        if pax_setup['breakdown_vat'] > 0:
+                            temp_sales -= pax_setup['breakdown_vat']
+                            if not is_ho_transaction:
+                                temp_upsell += pax_setup['agent_profit']
+                            temp_upsell -= pax_setup['total_comm']
+                        if pax_setup['total_upsell'] == 0 or temp_upsell < 0:
                             temp_upsell = 0
                         # if pax_setup['breakdown_service_fee'] > 0:
                         #     temp_sales = pax_setup['total_nta'] + pax_setup['breakdown_service_fee']
-                        if pax_setup['breakdown_vat'] > 0:
-                            temp_sales -= pax_setup['breakdown_vat']
                         pax_setup.update({
                             'total_sales': temp_sales
                         })
@@ -441,7 +445,7 @@ class AccountingConnectorTravelite(models.Model):
                             "sourcetypeid": source_type_id,
                             "airlinecode": first_carrier_code,
                             "pubfare": pax_setup['total_fare'] + ho_prof,
-                            "airporttax": pax_setup['total_tax'],
+                            "airporttax": pax_setup['total_tax'] - pax_setup['agent_profit'],
                             "commission": ho_prof,
                             "servicefee": pax_setup['breakdown_service_fee'],
                             "sellgst": 0,
@@ -518,16 +522,20 @@ class AccountingConnectorTravelite(models.Model):
                         }
 
                         temp_sales = pax_setup['agent_nta']
-                        temp_upsell = pax_setup['total_upsell'] - pax_setup['agent_profit']
+                        temp_upsell = pax_setup['total_upsell']
                         if is_ho_transaction:
                             temp_sales += ho_prof - pax_setup['total_upsell']
-                            temp_upsell += pax_setup['agent_profit']
-                        if pax_setup['total_upsell'] == 0:
+                        else:
+                            temp_upsell -= pax_setup['agent_profit']
+                        if pax_setup['breakdown_vat'] > 0:
+                            temp_sales -= pax_setup['breakdown_vat']
+                            if not is_ho_transaction:
+                                temp_upsell += pax_setup['agent_profit']
+                            temp_upsell -= pax_setup['total_comm']
+                        if pax_setup['total_upsell'] == 0 or temp_upsell < 0:
                             temp_upsell = 0
                         # if pax_setup['breakdown_service_fee'] > 0:
                         #     temp_sales = pax_setup['total_nta'] + pax_setup['breakdown_service_fee']
-                        if pax_setup['breakdown_vat'] > 0:
-                            temp_sales -= pax_setup['breakdown_vat']
                         pax_setup.update({
                             'total_sales': temp_sales
                         })
