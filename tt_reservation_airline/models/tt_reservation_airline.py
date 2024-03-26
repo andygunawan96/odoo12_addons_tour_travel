@@ -2467,15 +2467,19 @@ class ReservationAirline(models.Model):
         expired_date = None
         pnr_list = []
         values = {}
+        is_expired_date_provider = True
         for rec in self.provider_booking_ids:
             if rec.hold_date:
                 rec_hold_date = datetime.strptime(rec.hold_date[:19], '%Y-%m-%d %H:%M:%S')
                 if not hold_date or rec_hold_date < hold_date:
                     hold_date = rec_hold_date
-            if rec.expired_date:
+            if rec.expired_date and is_expired_date_provider:
                 rec_expired_date = datetime.strptime(rec.expired_date[:19], '%Y-%m-%d %H:%M:%S')
                 if not expired_date or rec_expired_date < expired_date:
                     expired_date = rec_expired_date
+            elif not rec.expired_date:
+                expired_date = None
+                is_expired_date_provider = False
             if rec.pnr:
                 pnr_list.append(rec.pnr)
 
