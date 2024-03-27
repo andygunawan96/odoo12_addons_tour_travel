@@ -334,7 +334,7 @@ class TtAgent(models.Model):
             search_dom.append(('name', 'ilike', data['name']))
         customer_parent_list = self.env['tt.customer.parent'].search(search_dom)
         customer_parent_data = {}
-        for rec in customer_parent_list.filtered(lambda x: x.check_balance_limit() or x.check_use_ext_credit_limit()):
+        for rec in customer_parent_list.filtered(lambda x: x.check_balance_limit()):
             booker_data = {}
             for rec2 in rec.booker_customer_ids:
                 booker_data.update({
