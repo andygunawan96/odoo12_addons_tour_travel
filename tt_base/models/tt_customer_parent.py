@@ -101,11 +101,12 @@ class TtCustomerParent(models.Model):
         return super(TtCustomerParent, self).create(vals_list)
 
     def write(self, vals):
-        if vals.get('master_customer_parent_id'):
-            master_obj = self.browse(int(vals['master_customer_parent_id']))
-            if master_obj.parent_agent_id.id != self.parent_agent_id.id:
-                raise UserError('Master customer parent must have the same parent agent as this customer parent.')
-        super(TtCustomerParent, self).write(vals)
+        for rec in self:
+            if vals.get('master_customer_parent_id'):
+                master_obj = self.browse(int(vals['master_customer_parent_id']))
+                if master_obj.parent_agent_id.id != rec.parent_agent_id.id:
+                    raise UserError('Master customer parent must have the same parent agent as this customer parent.')
+            super(TtCustomerParent, rec).write(vals)
 
     @api.multi
     def unlink(self):
