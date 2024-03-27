@@ -2463,8 +2463,8 @@ class ReservationAirline(models.Model):
 
     # May 11, 2020 - SAM
     def set_provider_detail_info(self):
-        hold_date = None
-        expired_date = None
+        hold_date = False
+        expired_date = False
         pnr_list = []
         values = {}
         is_expired_date_provider = True
@@ -2478,7 +2478,7 @@ class ReservationAirline(models.Model):
                 if not expired_date or rec_expired_date < expired_date:
                     expired_date = rec_expired_date
             elif not rec.expired_date:
-                expired_date = None
+                expired_date = False
                 is_expired_date_provider = False
             if rec.pnr:
                 pnr_list.append(rec.pnr)
