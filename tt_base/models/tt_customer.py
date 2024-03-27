@@ -330,6 +330,10 @@ class TtCustomer(models.Model):
                 agent_id_list += self.env['tt.agent'].search([('is_share_cust_ho', '=', True)]).ids
             dom = [('agent_id','in',agent_id_list), ('is_search_allowed','=',True)]
 
+            try:
+                is_search_pax_identity_name = eval(self.env['ir.config_parameter'].sudo().get_param('is_search_pax_identity_name'))
+            except:
+                is_search_pax_identity_name = False
             is_cor_login = util.get_without_empty(context,'co_customer_parent_id')
             cust_id_dom = []
             cust_id_list_obj = []
@@ -367,13 +371,13 @@ class TtCustomer(models.Model):
                 dom.append('|')
                 dom.append(('customer_parent_ids','=',context['co_customer_parent_id']))
                 dom.append(('id','in',cust_dom_ids))
-                if cust_id_dom:
+                if is_search_pax_identity_name and cust_id_dom:
                     cust_id_dom.append('|')
                     cust_id_dom.append(('customer_id.customer_parent_ids', '=', context['co_customer_parent_id']))
                     cust_id_dom.append(('customer_id.id', 'in', cust_dom_ids))
             # customer_list_obj = self.search(dom,limit=100)
             customer_list_obj = self.search(dom)
-            if cust_id_dom:
+            if is_search_pax_identity_name and cust_id_dom:
                 cust_id_list_obj = self.env['tt.customer.identity'].search(cust_id_dom)
             ## CASE IN TIDAK KELUAR TETAPI INF KELUAR
             ## KARENA RECORD YG INF TIDAK MASUK KE CUSTOMER_LIST_OBJ, KENA LIMIT JADI RECORD
