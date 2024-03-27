@@ -62,6 +62,7 @@ class AgentInvoice(models.Model):
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]}, help='COR/POR Name')
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type',
                                               related='customer_parent_id.customer_parent_type_id')
+    resv_customer_parent_id = fields.Many2one('tt.customer.parent', 'Reservation Customer', readonly=True)
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger',
                                  readonly=True, states={'draft': [('readonly', False)]}, domain=[('res_model', '=', 'tt.agent.invoice')])

@@ -57,13 +57,17 @@ class ReservationBus(models.Model):
         else:
             state = 'confirm'
             add_info = ''
+        cust_par_obj = self.customer_parent_id
+        if self.customer_parent_id.master_customer_parent_id and self.customer_parent_id.master_customer_parent_id.billing_option == 'to_master':
+            cust_par_obj = self.customer_parent_id.master_customer_parent_id
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': self.booker_id.id,
                 'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
-                'customer_parent_id': self.customer_parent_id.id,
-                'customer_parent_type_id': self.customer_parent_type_id.id,
+                'customer_parent_id': cust_par_obj.id,
+                'customer_parent_type_id': cust_par_obj.customer_parent_type_id.id,
+                'resv_customer_parent_id': self.customer_parent_id.id,
                 'currency_id': temp_ho_obj.currency_id.id,
                 'state': state,
                 'additional_information': add_info,
@@ -245,7 +249,7 @@ class ReservationBus(models.Model):
                 'currency_id': temp_ho_obj.currency_id.id,
                 'acquirer_id': data['acquirer_id'],
                 'real_total_amount': invoice_id.grand_total,
-                'customer_parent_id': data['customer_parent_id'],
+                'customer_parent_id': cust_par_obj.id,
                 'confirm_uid': data['co_uid'],
                 'confirm_date': datetime.now()
             }

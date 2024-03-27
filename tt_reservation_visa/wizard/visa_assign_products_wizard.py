@@ -23,38 +23,41 @@ class VisaAssignProductsWizard(models.TransientModel):
             raise UserError('Please select Head Office!')
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 365')
-        all_visa = self.env['tt.reservation.visa.pricelist'].sudo().search([('provider_id', '=', self.provider_id.id)])
-        for rec in all_visa:
-            if self.ho_id.id not in rec.ho_ids.ids:
-                rec.write({
-                    'ho_ids': [(4, self.ho_id.id)]
-                })
-                _logger.info('Assigning Visa %s to HO %s' % (rec.name, self.ho_id.name))
+        all_visa = self.env['tt.reservation.visa.pricelist'].search([('provider_id', '=', self.provider_id.id), ('ho_ids', '!=', self.ho_id.id)])
+        for idx, rec in enumerate(all_visa):
+            rec.write({
+                'ho_ids': [(4, self.ho_id.id)]
+            })
+            _logger.info('Assigning Visa %s to HO %s' % (rec.name, self.ho_id.name))
+            if (idx + 1) % 100 == 0:
+                self.env.cr.commit()
 
     def assign_to_multiple_hos(self):
         if not self.ho_ids:
             raise UserError('Please select Head Office(s)!')
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 366')
-        all_visa = self.env['tt.reservation.visa.pricelist'].sudo().search([('provider_id', '=', self.provider_id.id)])
-        for rec in all_visa:
-            for rec2 in self.ho_ids:
-                if rec2.id not in rec.ho_ids.ids:
-                    rec.write({
-                        'ho_ids': [(4, rec2.id)]
-                    })
-                    _logger.info('Assigning Visa %s to HO %s' % (rec.name, rec2.name))
+        for rec in self.ho_ids:
+            all_visa = self.env['tt.reservation.visa.pricelist'].search([('provider_id', '=', self.provider_id.id),('ho_ids', '!=', rec.id)])
+            for idx, rec2 in enumerate(all_visa):
+                rec2.write({
+                    'ho_ids': [(4, rec.id)]
+                })
+                _logger.info('Assigning Visa %s to HO %s' % (rec2.name, rec.name))
+                if (idx + 1) % 100 == 0:
+                    self.env.cr.commit()
 
     def delete_from_multiple_hos(self):
         if not self.ho_ids:
             raise UserError('Please select Head Office(s)!')
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 367')
-        all_visa = self.env['tt.reservation.visa.pricelist'].sudo().search([('provider_id', '=', self.provider_id.id)])
-        for rec in all_visa:
-            for rec2 in self.ho_ids:
-                if rec2.id in rec.ho_ids.ids:
-                    rec.write({
-                        'ho_ids': [(3, rec2.id)]
-                    })
-                    _logger.info('Removing Visa %s from HO %s' % (rec.name, rec2.name))
+        for rec in self.ho_ids:
+            all_visa = self.env['tt.reservation.visa.pricelist'].search([('provider_id', '=', self.provider_id.id),('ho_ids', '=', rec.id)])
+            for idx, rec2 in enumerate(all_visa):
+                rec2.write({
+                    'ho_ids': [(3, rec.id)]
+                })
+                _logger.info('Removing Visa %s from HO %s' % (rec2.name, rec.name))
+                if (idx + 1) % 100 == 0:
+                    self.env.cr.commit()
