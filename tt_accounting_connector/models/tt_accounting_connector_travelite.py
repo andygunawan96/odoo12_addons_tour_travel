@@ -428,6 +428,11 @@ class AccountingConnectorTravelite(models.Model):
                             temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
                             vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
 
+                        temp_airport_tax = pax_setup['total_tax']
+                        if pax_setup['total_upsell'] > 0 and temp_upsell == 0:
+                            temp_airport_tax += pax_setup['total_upsell']
+                        if not is_ho_transaction:
+                            temp_airport_tax -= pax_setup['agent_profit']
                         ticket_list.append({
                             "segment": pax_segment_list,
                             "proddtlcode": request['sector_type'] == 'Domestic' and 'TKTD' or 'TKTI',
@@ -445,7 +450,7 @@ class AccountingConnectorTravelite(models.Model):
                             "sourcetypeid": source_type_id,
                             "airlinecode": first_carrier_code,
                             "pubfare": pax_setup['total_fare'] + ho_prof,
-                            "airporttax": pax_setup['total_tax'] - pax_setup['agent_profit'],
+                            "airporttax": temp_airport_tax,
                             "commission": ho_prof,
                             "servicefee": pax_setup['breakdown_service_fee'],
                             "sellgst": 0,

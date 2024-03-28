@@ -67,7 +67,7 @@ class ReservationVisa(models.Model):
             add_info = ''
         book_obj = self.env['tt.reservation.visa'].search([('name', '=', data['order_number'])])
         cust_par_obj = book_obj.customer_parent_id
-        if book_obj.customer_parent_id.master_customer_parent_id and book_obj.customer_parent_id.master_customer_parent_id.billing_option == 'to_master':
+        if not book_obj.customer_parent_id.is_master_customer_parent and book_obj.customer_parent_id.master_customer_parent_id and book_obj.customer_parent_id.master_customer_parent_id.is_use_credit_limit_sharing:
             cust_par_obj = book_obj.customer_parent_id.master_customer_parent_id
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
