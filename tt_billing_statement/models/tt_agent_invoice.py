@@ -123,11 +123,15 @@ class AgentInvoice(models.Model):
         if any(rec.state != 'confirm' for rec in self):
             raise UserError(_('You cannot create Billing Statement that an Invoice has been set to \'Confirm\'.'))
 
+        bill_cuspar = self.customer_parent_id
+        if not self.customer_parent_id.is_master_customer_parent and self.customer_parent_id.master_customer_parent_id and not self.customer_parent_id.master_customer_parent_id.is_use_credit_limit_sharing and self.customer_parent_id.master_customer_parent_id.billing_option == 'to_master':
+            bill_cuspar = self.customer_parent_id.master_customer_parent_id
+
         values = {
             # 'payment_term_id': self.payment_term_id.id,
             'due_date': fields.Date.context_today(self),
             'agent_id': self.agent_id.id,
-            'customer_parent_id': self.customer_parent_id.id,
+            'customer_parent_id': bill_cuspar.id,
             'currency_id': self.currency_id.id,
             'contact_id': self.booker_id and self.booker_id .id or False,
             'invoice_ids': [(4, 0, self.ids)],
