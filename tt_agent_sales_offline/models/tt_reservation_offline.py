@@ -45,7 +45,7 @@ class ReservationOffline(models.Model):
             state = 'confirm'
             add_info = ''
         cust_par_obj = self.customer_parent_id
-        if self.customer_parent_id.master_customer_parent_id and self.customer_parent_id.master_customer_parent_id.billing_option == 'to_master':
+        if not self.customer_parent_id.is_master_customer_parent and self.customer_parent_id.master_customer_parent_id and self.customer_parent_id.master_customer_parent_id.is_use_credit_limit_sharing:
             cust_par_obj = self.customer_parent_id.master_customer_parent_id
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
