@@ -74,7 +74,7 @@ class TtCustomerParent(models.Model):
 
     def _compute_unprocessed_amount(self):
         for rec in self:
-            if not rec.check_use_ext_credit_limit():
+            if rec.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id and not rec.check_use_ext_credit_limit():
                 total_amt = 0
                 invoice_objs = self.env['tt.agent.invoice'].sudo().search([('customer_parent_id', '=', rec.id), ('state', 'in', ['draft', 'confirm'])])
                 for rec2 in invoice_objs:
@@ -82,12 +82,13 @@ class TtCustomerParent(models.Model):
                         total_amt += rec3.total_after_tax
 
                 ## check invoice billed tetapi sudah di bayar
-                invoice_bill_objs = self.env['tt.agent.invoice'].sudo().search(
-                    [('customer_parent_id', '=', rec.id), ('state', 'in', ['bill','bill2']), ('paid_amount','>',0)])
-                paid_amount = 0
-                for billed_invoice in invoice_bill_objs:
-                    paid_amount += billed_invoice.paid_amount
-                rec.unprocessed_amount = total_amt-paid_amount
+                # invoice_bill_objs = self.env['tt.agent.invoice'].sudo().search(
+                #     [('customer_parent_id', '=', rec.id), ('state', 'in', ['bill','bill2']), ('paid_amount','>',0)])
+                # paid_amount = 0
+                # for billed_invoice in invoice_bill_objs:
+                #     paid_amount += billed_invoice.paid_amount
+                # rec.unprocessed_amount = total_amt-paid_amount
+                rec.unprocessed_amount = total_amt
             else:
                 rec.unprocessed_amount = 0
 
