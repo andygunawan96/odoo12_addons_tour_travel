@@ -578,10 +578,13 @@ class AgentInvoice(models.Model):
     @api.onchange('customer_parent_id')
     def set_default_billing_to(self):
         for rec in self:
-            if rec.customer_parent_id.customer_parent_type_id.name != 'FPO':
+            custpar_obj = rec.customer_parent_id
+            if not rec.customer_parent_id.is_master_customer_parent and rec.customer_parent_id.master_customer_parent_id and not rec.customer_parent_id.master_customer_parent_id.is_use_credit_limit_sharing and rec.customer_parent_id.master_customer_parent_id.billing_option == 'to_master':
+                custpar_obj = rec.customer_parent_id.master_customer_parent_id
+            if custpar_obj.customer_parent_type_id.name != 'FPO':
                 # Klo  COR POR ambil alamat tagih dari COR/POR tsb
-                rec.bill_name = rec.customer_parent_id.name
-                rec.bill_address_id = rec.customer_parent_id.address_ids and rec.customer_parent_id.address_ids[0].id or False
+                rec.bill_name = custpar_obj.name
+                rec.bill_address_id = custpar_obj.address_ids and custpar_obj.address_ids[0].id or False
                 rec.bill_address = rec.bill_address_id.address
             else:
                 # Klo FPO ambil alamat booker tsb
