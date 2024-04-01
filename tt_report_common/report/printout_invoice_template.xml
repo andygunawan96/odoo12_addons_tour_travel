@@ -1091,31 +1091,62 @@
                     <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>
                 </td>
             </tr>
-            <tr>
-                <td style="width:50px;">Remarks</td>
-                <td style="width:10px;">:</td>
-                <td style="width:400px;">
-                    <t t-if="pay_method"><span>Payment Method via: </span><span t-esc="pay_method[doc.id]"/><br/></t>
-                    <span t-field="doc.additional_information"/>
-                </td>
-                <td style="width:20px"/>
-                <td style="width:230px;">Booker</td>
-                <td style="width:10px;">:</td>
-                <td style="width:400px;text-align: right;">
-                    <i t-field="doc.sudo().booker_id.name"/>
-                </td>
-            </tr>
-            <tr>
-                <td style="width:50px;"/>
-                <td style="width:10px;"/>
-                <td style="width:400px;"/>
-                <td style="width:20px;"/>
-                <td style="width:230px;">Operator</td>
-                <td style="width:10px;">:</td>
-                <td style="width:400px;text-align: right;">
-                    <i t-field="doc.confirmed_uid.sudo().name"/>
-                </td>
-            </tr>
+            <t t-if="doc.resv_customer_parent_id and doc.resv_customer_parent_id.id != doc.customer_parent_id.id">
+                <tr>
+                    <td style="width:50px;">Subsidiary</td>
+                    <td style="width:10px;">:</td>
+                    <td style="width:400px;">
+                        <span t-field="doc.resv_customer_parent_id.name"/>
+                    </td>
+                    <td style="width:20px"/>
+                    <td style="width:230px;">Booker</td>
+                    <td style="width:10px;">:</td>
+                    <td style="width:400px;text-align: right;">
+                        <i t-field="doc.sudo().booker_id.name"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:50px;">Remarks</td>
+                    <td style="width:10px;">:</td>
+                    <td style="width:400px;">
+                        <t t-if="pay_method"><span>Payment Method via: </span><span t-esc="pay_method[doc.id]"/><br/></t>
+                        <span t-field="doc.additional_information"/>
+                    </td>
+                    <td style="width:20px;"/>
+                    <td style="width:230px;">Operator</td>
+                    <td style="width:10px;">:</td>
+                    <td style="width:400px;text-align: right;">
+                        <i t-field="doc.confirmed_uid.sudo().name"/>
+                    </td>
+                </tr>
+            </t>
+            <t t-else="">
+                <tr>
+                    <td style="width:50px;">Remarks</td>
+                    <td style="width:10px;">:</td>
+                    <td style="width:400px;">
+                        <t t-if="pay_method"><span>Payment Method via: </span><span t-esc="pay_method[doc.id]"/><br/></t>
+                        <span t-field="doc.additional_information"/>
+                    </td>
+                    <td style="width:20px"/>
+                    <td style="width:230px;">Booker</td>
+                    <td style="width:10px;">:</td>
+                    <td style="width:400px;text-align: right;">
+                        <i t-field="doc.sudo().booker_id.name"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:50px;"/>
+                    <td style="width:10px;"/>
+                    <td style="width:400px;"/>
+                    <td style="width:20px;"/>
+                    <td style="width:230px;">Operator</td>
+                    <td style="width:10px;">:</td>
+                    <td style="width:400px;text-align: right;">
+                        <i t-field="doc.confirmed_uid.sudo().name"/>
+                    </td>
+                </tr>
+            </t>
         </table>
 
         <!-- Issued Code + Line Info -->

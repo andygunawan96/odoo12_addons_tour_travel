@@ -473,6 +473,7 @@ class TtReportDashboard(models.Model):
         file = open('%s/report_response_%s.txt' % (folder_path,datetime.now().strftime('%Y-%m-%d_%H:%M:%S')),'w')
         file.write(json.dumps(res))
         file.close()
+        _logger.info('Success: Get report dashboard. Request: %s' % str(json.dumps(data)))
         return ERR.get_no_error(res)
 
     def get_report_xls_api(self, data,  context):

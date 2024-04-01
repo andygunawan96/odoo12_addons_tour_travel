@@ -103,12 +103,19 @@ class TtCustomerParentInh(models.Model):
                                    ])
 
         for cor in cor_list_obj:
+            if not cor.is_master_customer_parent and cor.master_customer_parent_id and not cor.master_customer_parent_id.is_use_credit_limit_sharing and cor.master_customer_parent_id.billing_option == 'to_master':
+                continue
             if not cor.check_use_ext_credit_limit():
                 pr = cor.name
                 _logger.info(pr+ ' : '+','.join([str(rec.name) for rec in cor.billing_cycle_ids]))
 
+                inv_dom = [('customer_parent_id','=',cor.id),('state','in',['draft','confirm'])]
+                if cor.is_master_customer_parent and not cor.is_use_credit_limit_sharing and cor.billing_option == 'to_master':
+                    cor_id_list = [cor.id]
+                    cor_id_list += cor.child_customer_parent_ids.ids
+                    inv_dom = [('customer_parent_id','in',list(set(cor_id_list))),('state','in',['draft','confirm'])]
                 ##search invoice cor tersebut
-                invoice_list_obj = self.env['tt.agent.invoice'].search([('customer_parent_id','=',cor.id),('state','in',['draft','confirm'])])
+                invoice_list_obj = self.env['tt.agent.invoice'].search(inv_dom)
                 invoice_list = []
                 for inv in invoice_list_obj:
                     _logger.info(inv.name)

@@ -11,6 +11,7 @@
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="customer_parent_id"/>
                 <field name="customer_parent_type_id"/>
+                <field name="resv_customer_parent_id"/>
                 <field name="booker_id"/>
                 <field name="invoice_line_ids"/>
                 <separator/>
@@ -105,6 +106,7 @@
                             <field name="booker_id"/>
                             <field name="customer_parent_id"/>
                             <field name="customer_parent_type_id" string="Customer Type"/>
+                            <field name="resv_customer_parent_id"/>
                             <field name="pnr"/>
                             <field name="currency_id"/>
                             <field name="dynamic_print_count" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>

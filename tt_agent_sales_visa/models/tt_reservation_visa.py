@@ -66,13 +66,17 @@ class ReservationVisa(models.Model):
             state = 'confirm'
             add_info = ''
         book_obj = self.env['tt.reservation.visa'].search([('name', '=', data['order_number'])])
+        cust_par_obj = book_obj.customer_parent_id
+        if not book_obj.customer_parent_id.is_master_customer_parent and book_obj.customer_parent_id.master_customer_parent_id and book_obj.customer_parent_id.master_customer_parent_id.is_use_credit_limit_sharing:
+            cust_par_obj = book_obj.customer_parent_id.master_customer_parent_id
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': book_obj.booker_id.id,
                 'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': book_obj.agent_id.id,
-                'customer_parent_id': book_obj.customer_parent_id.id,
-                'customer_parent_type_id': book_obj.customer_parent_type_id.id,
+                'customer_parent_id': cust_par_obj.id,
+                'customer_parent_type_id': cust_par_obj.customer_parent_type_id.id,
+                'resv_customer_parent_id': book_obj.customer_parent_id.id,
                 'currency_id': temp_ho_obj.currency_id.id,
                 'state': state,
                 'additional_information': add_info,
@@ -259,7 +263,7 @@ class ReservationVisa(models.Model):
                 'agent_id': book_obj.agent_id.id,
                 'currency_id': temp_ho_obj.currency_id.id,
                 'real_total_amount': invoice_id.grand_total,
-                'customer_parent_id': book_obj.customer_parent_id.id
+                'customer_parent_id': cust_par_obj.id
             }
 
             if payref_id_list:
