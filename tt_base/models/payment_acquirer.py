@@ -582,7 +582,7 @@ class PaymentAcquirer(models.Model):
                         },
                         'total_amount': amount
                     })
-                elif rec.check_balance_limit():
+                elif rec.check_balance_limit(check_credit_limit_only=True):
                     bal_info = rec.get_balance_info()
                     values.append({
                         'name': rec.name,
