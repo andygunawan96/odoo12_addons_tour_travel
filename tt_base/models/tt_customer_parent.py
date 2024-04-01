@@ -217,7 +217,7 @@ class TtCustomerParent(models.Model):
         else:
             return ERR.get_no_error()
 
-    def check_balance_limit(self, amount=0):
+    def check_balance_limit(self, amount=0, check_credit_limit_only=False):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
         custpar_obj = self.get_credit_limit_to_check_cor_obj()
@@ -225,7 +225,10 @@ class TtCustomerParent(models.Model):
         if custpar_obj.check_use_ext_credit_limit():
             enough_bal = custpar_obj.get_external_credit_limit() >= (amount + (amount * custpar_obj.tax_percentage / 100))
         else:
-            enough_bal = custpar_obj.actual_balance >= (amount + (amount * custpar_obj.tax_percentage / 100))
+            if check_credit_limit_only:
+                enough_bal = custpar_obj.credit_limit > amount
+            else:
+                enough_bal = custpar_obj.actual_balance >= (amount + (amount * custpar_obj.tax_percentage / 100))
         return enough_bal
 
     def check_send_email_cc(self):
