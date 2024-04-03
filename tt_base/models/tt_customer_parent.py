@@ -74,7 +74,7 @@ class TtCustomerParent(models.Model):
 
     def _compute_unprocessed_amount(self):
         for rec in self:
-            if not rec.check_use_ext_credit_limit():
+            if rec.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id and not rec.check_use_ext_credit_limit():
                 total_amt = 0
                 invoice_objs = self.env['tt.agent.invoice'].sudo().search([('customer_parent_id', '=', rec.id), ('state', 'in', ['draft', 'confirm'])])
                 for rec2 in invoice_objs:
@@ -82,12 +82,13 @@ class TtCustomerParent(models.Model):
                         total_amt += rec3.total_after_tax
 
                 ## check invoice billed tetapi sudah di bayar
-                invoice_bill_objs = self.env['tt.agent.invoice'].sudo().search(
-                    [('customer_parent_id', '=', rec.id), ('state', 'in', ['bill','bill2']), ('paid_amount','>',0)])
-                paid_amount = 0
-                for billed_invoice in invoice_bill_objs:
-                    paid_amount += billed_invoice.paid_amount
-                rec.unprocessed_amount = total_amt-paid_amount
+                # invoice_bill_objs = self.env['tt.agent.invoice'].sudo().search(
+                #     [('customer_parent_id', '=', rec.id), ('state', 'in', ['bill','bill2']), ('paid_amount','>',0)])
+                # paid_amount = 0
+                # for billed_invoice in invoice_bill_objs:
+                #     paid_amount += billed_invoice.paid_amount
+                # rec.unprocessed_amount = total_amt-paid_amount
+                rec.unprocessed_amount = total_amt
             else:
                 rec.unprocessed_amount = 0
 
@@ -217,7 +218,7 @@ class TtCustomerParent(models.Model):
         else:
             return ERR.get_no_error()
 
-    def check_balance_limit(self, amount=0):
+    def check_balance_limit(self, amount=0, check_credit_limit_only=False):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
         custpar_obj = self.get_credit_limit_to_check_cor_obj()
@@ -225,7 +226,10 @@ class TtCustomerParent(models.Model):
         if custpar_obj.check_use_ext_credit_limit():
             enough_bal = custpar_obj.get_external_credit_limit() >= (amount + (amount * custpar_obj.tax_percentage / 100))
         else:
-            enough_bal = custpar_obj.actual_balance >= (amount + (amount * custpar_obj.tax_percentage / 100))
+            if check_credit_limit_only:
+                enough_bal = custpar_obj.credit_limit > amount
+            else:
+                enough_bal = custpar_obj.actual_balance >= (amount + (amount * custpar_obj.tax_percentage / 100))
         return enough_bal
 
     def check_send_email_cc(self):

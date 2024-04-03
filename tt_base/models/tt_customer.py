@@ -177,7 +177,7 @@ class TtCustomer(models.Model):
 
             for rec in self.customer_parent_booker_ids:
                 cp_obj = rec.customer_parent_id
-                if cp_obj.check_balance_limit() and cp_obj.state == 'done':
+                if cp_obj.check_balance_limit(check_credit_limit_only=True) and cp_obj.state == 'done':
                     bal_info = cp_obj.get_balance_info()
                     customer_parent_list.append({
                         'name': cp_obj.name,
@@ -429,7 +429,7 @@ class TtCustomer(models.Model):
             if cust_obj:
                 if cust_obj.customer_parent_ids:
                     for rec in cust_obj.customer_parent_ids:
-                        if rec.check_balance_limit() and rec.state == 'done':
+                        if rec.check_balance_limit(check_credit_limit_only=True) and rec.state == 'done':
                             bal_info = rec.get_balance_info()
                             c_parent_list.append({
                                 'name': rec.name,
